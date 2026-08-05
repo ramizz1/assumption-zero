@@ -70,14 +70,13 @@ def build_analysis_prompt(
     idea: IdeaInput,
     evidence: List[EvidenceItem],
 ) -> str:
-    """Build the user-facing analysis prompt with evidence injected."""
+    """Build the user-facing analysis prompt with evidence injected (compacted for fast, low-token inference)."""
+    compact_evidence = evidence[:25]
     evidence_block = "\n".join(
-        f"[{e.evidence_id}] {e.title}\n"
-        f"  Source: {e.source_name} | Type: {e.evidence_type.value} | "
-        f"Reliability: {e.reliability.value}\n"
-        f"  Passage: {e.passage}\n"
-        f"  URL: {e.url}\n"
-        for e in evidence
+        f"[{e.evidence_id}] {e.title[:90]}\n"
+        f"  Source: {e.source_name} | Type: {e.evidence_type.value}\n"
+        f"  Passage: {e.passage[:220]}\n"
+        for e in compact_evidence
     )
 
     return f"""

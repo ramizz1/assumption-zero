@@ -31,7 +31,6 @@ _FALLBACK_MODELS = [
     "llama-3.3-70b-versatile",
     "openai/gpt-oss-20b",
     "llama-3.1-8b-instant",
-    "qwen/qwen3.6-27b",
 ]
 
 
