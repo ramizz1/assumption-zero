@@ -121,6 +121,19 @@ export const HomePage: React.FC = () => {
     }
   }
 
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = (event) => {
+      const content = event.target?.result as string
+      if (content) {
+        setRawPromptText(content)
+      }
+    }
+    reader.readAsText(file)
+  }
+
   return (
     <div className="min-h-screen flex flex-col">
       {/* Header */}
@@ -256,12 +269,23 @@ export const HomePage: React.FC = () => {
                   Describe your idea in natural plain English (product name, problem, customer, business model, price, budget, competitors). AI will first extract all structured parameters, then run live web research & business analysis.
                 </p>
                 <div>
-                  <label className="label" htmlFor="raw-prompt">Your Startup / Product Idea Prompt</label>
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="label mb-0" htmlFor="raw-prompt">Your Startup / Product Idea Prompt</label>
+                    <label className="cursor-pointer text-xs text-amber-400 hover:text-amber-300 font-semibold bg-amber-400/10 border border-amber-400/30 px-3 py-1 rounded-lg flex items-center gap-1.5 transition-colors">
+                      <span>📁</span> Upload .txt / .md File
+                      <input
+                        type="file"
+                        accept=".txt,.md,.json"
+                        onChange={handleFileUpload}
+                        className="hidden"
+                      />
+                    </label>
+                  </div>
                   <textarea
                     id="raw-prompt"
                     className="textarea-field font-sans text-sm"
-                    rows={6}
-                    placeholder="Describe your idea in one go... e.g. wearAi: an AI mobile app for creating top daily fashion outfits from your existing wardrobe for fashion-conscious young adults worldwide. Freemium model with $20/mo subscription..."
+                    rows={8}
+                    placeholder="Describe your idea in one go or upload a .txt / .md file... e.g. wearAi: an AI mobile app for creating top daily fashion outfits from your existing wardrobe for fashion-conscious young adults worldwide. Freemium model with $20/mo subscription..."
                     value={rawPromptText}
                     onChange={(e) => setRawPromptText(e.target.value)}
                     required

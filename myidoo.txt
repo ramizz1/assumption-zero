@@ -1,0 +1,313 @@
+Act as a brutally honest startup strategist, marketplace expert, financial analyst, and Azerbaijan market researcher. Create a complete, investor-grade business analysis and business plan for **Götür.az**, using current and verifiable information. Research the Azerbaijani market, competitors, advertising prices, user behaviour, digital adoption, e-commerce trends, and relevant marketplace benchmarks. Clearly cite every external fact and never invent statistics. If reliable Azerbaijani data is unavailable, say so and use a clearly labelled regional or international benchmark.
+
+## Product overview
+
+**Götür.az** is an Azerbaijani online marketplace available as a web platform and mobile application. It is intended to let individuals and businesses:
+
+* Sell new or used products.
+* Buy products from other users and stores.
+* Rent products instead of purchasing them.
+* Exchange products through barter.
+* Publish listings with photos, descriptions, prices, categories, locations, and seller information.
+* Search, filter, browse, save, and manage listings.
+* Communicate through an integrated chat system.
+* Send images and voice messages in chat.
+* Create user profiles with avatars and listing history.
+* Use AI-assisted functionality to simplify listing creation, improve descriptions, categorise products, and help users interact with the marketplace.
+* Potentially publish “wanted” requests describing something they want to buy, rent, or exchange.
+* Use the service through both mobile and desktop devices.
+
+Treat features not explicitly confirmed as proposed features and clearly label them as such.
+
+## Core value proposition
+
+Götür.az aims to combine buying, selling, renting, barter, communication, and AI assistance in one Azerbaijan-focused platform. Its differentiation should not be described as “having more features” alone. Analyse whether these features solve meaningful user problems and determine which one could create the strongest reason for users to switch from existing platforms.
+
+The platform must serve both sides of the marketplace:
+
+1. Sellers, stores, service providers, and people with unused products.
+2. Buyers, renters, and people searching for specific products.
+
+The central marketplace challenge is liquidity: Götür.az needs enough quality listings to attract buyers and enough active buyers to motivate sellers.
+
+## Current status and infrastructure
+
+Assume that the product has been largely developed and is approaching launch, but do not assume it already has meaningful active users, revenue, or product–market fit.
+
+The current technical setup is approximately:
+
+* Web frontend deployed through Vercel.
+* Backend and database hosted through Railway.
+* Media such as listing photos, avatars, chat images, and voice messages stored and delivered through Cloudflare R2.
+* Mobile application intended for Google Play and Apple App Store.
+* AI features use paid third-party API access.
+* Google and Apple authentication are planned or being configured.
+* Development was mainly completed by the founders, so historical development expenditure was unusually low and should not be treated as the real replacement cost of the product.
+
+Known approximate early costs include around **$100 previously spent on development-related AI subscriptions and services**, anticipated infrastructure costs of approximately **$60–80 per month at the early stage**, a low initial domain cost, and variable AI API expenses. Treat these as founder estimates, not audited financial figures.
+
+## Business model
+
+Analyse the following monetisation methods:
+
+* **Premium listing:** a paid listing placed in the most prominent section at the top of the main page.
+* **VIP listing:** increased visibility above ordinary listings but below Premium positions.
+* **Raise/boost listing:** a one-time payment that moves an existing listing higher in results.
+* **Business subscriptions:** monthly plans for professional sellers and stores, potentially including more listings, analytics, verification, storefront pages, bulk management, and promotional credits.
+* **Display advertising:** banner placements on the sides or other appropriate areas of the website, sold for periods such as 3 days, 1 week, 1 month, or 3 months.
+* **Optional future revenue:** transaction protection, delivery partnerships, store verification, promoted wanted requests, lead-generation fees, or commissions in categories where a transaction can be reliably tracked.
+
+Determine which revenue streams should be introduced at launch and which should wait until the platform has sufficient traffic. Do not assume users will pay for promotion before the marketplace can provide measurable exposure.
+
+## Competition to research
+
+Analyse direct and indirect competitors operating in Azerbaijan, including—but not limited to:
+
+* Tap.az
+* Lalafo Azerbaijan
+* Facebook Marketplace
+* Instagram seller pages
+* Telegram and WhatsApp sales groups
+* Turbo.az in vehicles
+* Bina.az and other property platforms
+* Category-specific stores, classifieds platforms, rental services, and barter communities
+
+For every significant competitor, compare:
+
+* Marketplace category and target users
+* Estimated traffic or popularity, using cited data where available
+* Mobile and web availability
+* Listing process
+* Search and filtering
+* Trust and safety
+* Messaging
+* Delivery or payment support
+* Business seller options
+* Paid listing and advertising model
+* Strengths
+* Weaknesses
+* User complaints
+* Network effects
+* What Götür.az can realistically do better
+* What would be expensive or unrealistic to compete against
+
+Create a feature and positioning comparison table. Do not claim that Götür.az has “no competitors.” Renting, barter, AI assistance, and wanted requests may be differentiators, but verify whether competitors already provide similar capabilities.
+
+## Required market research
+
+Use the most recent reliable information available and cite direct sources. Research:
+
+* Population and internet penetration in Azerbaijan
+* Smartphone and social-media usage
+* Online purchasing and second-hand buying behaviour
+* Popular product categories
+* Relevant e-commerce and classifieds-market trends
+* Consumer trust and payment preferences
+* Language preferences: Azerbaijani, Russian, and English
+* Use of cash, card payments, transfers, and cash-on-delivery
+* Logistics and delivery limitations
+* Fraud and marketplace-safety concerns
+* Digital advertising costs in Azerbaijan
+* Estimated size of the realistic addressable market
+
+Calculate **TAM, SAM, and SOM**, but show every assumption and formula. Provide conservative, realistic, and optimistic scenarios instead of presenting one speculative number as fact.
+
+## Target customer segments
+
+Identify and prioritise the best early customer segments, such as:
+
+* University students
+* Young professionals
+* People selling unused electronics and household items
+* Small Instagram-based stores
+* Electronics and accessories sellers
+* Furniture and home-product sellers
+* Rental businesses
+* Hobby and gaming communities
+* Parents selling children’s products
+* People interested in barter
+* Local businesses that cannot afford large marketplace advertising packages
+
+Recommend one initial geographic and category focus. Consider beginning with Baku and a limited number of high-frequency categories rather than launching every category equally.
+
+## Go-to-market strategy
+
+Develop a realistic launch plan starting from zero users. Cover:
+
+* How to obtain the first 100, 1,000, 10,000, and 50,000 users
+* How to acquire the first high-quality listings before advertising to buyers
+* Whether listings should be manually seeded, imported with permission, or collected through direct seller outreach
+* Founding-seller programmes
+* Free Premium or VIP placement for early stores
+* Referral programmes
+* University ambassador programmes
+* Partnerships with small stores and rental businesses
+* TikTok, Instagram Reels, YouTube Shorts, Telegram, and local community promotion
+* SEO and programmatic category/location pages
+* Offline advertising and events
+* Influencer and micro-influencer campaigns
+* Paid acquisition experiments
+* Retention and reactivation campaigns
+
+Separate strategies for attracting sellers and attracting buyers. Explain how to prevent the “empty marketplace” problem.
+
+Provide a 90-day launch plan with weekly priorities, expected costs, responsible roles, measurable targets, and clear conditions for stopping unsuccessful campaigns.
+
+## Marketing positioning
+
+Evaluate possible positioning directions:
+
+1. “Sell the things you no longer use.”
+2. “Buy, sell, rent, or barter in one place.”
+3. “The modern Azerbaijani marketplace.”
+4. “Find it without buying it—rent or exchange.”
+5. “Publish faster with AI.”
+6. “Tell the market what you need through wanted requests.”
+
+Select one primary promise and no more than two supporting benefits. Create sample Azerbaijani-language slogans, landing-page copy, advertisements, and short-video hooks. Avoid generic claims such as “the best platform” unless they can be proven.
+
+## Trust, safety, and legal analysis
+
+Recommend systems for:
+
+* Phone and email verification
+* Google and Apple authentication
+* Seller identity and business verification
+* User ratings and reviews
+* Reporting and moderation
+* Fraud detection
+* Prohibited products
+* Duplicate and misleading listings
+* Fake prices
+* Spam prevention
+* Safe chat
+* Image and voice-message moderation
+* Account recovery
+* Personal-data protection
+* Secure payments, if payments are introduced
+* Dispute handling
+* Clear rental and barter rules
+* Terms of service and privacy policy
+* Compliance with applicable Azerbaijani laws
+
+This section is not formal legal advice; identify where a qualified Azerbaijani lawyer must be consulted.
+
+## Product and AI analysis
+
+Assess which AI features create genuine value and which are unnecessary expenses. Possible uses include:
+
+* Generating listing titles and descriptions
+* Automatically selecting categories
+* Detecting inappropriate or fraudulent content
+* Suggesting realistic prices
+* Improving search
+* Translating between Azerbaijani and Russian
+* Identifying duplicate listings
+* Helping customer support
+* Matching wanted requests with available products
+
+For every AI feature, estimate its user value, technical difficulty, likely API cost, risks, and recommended launch phase. Avoid presenting AI as the main value proposition unless research shows that users care about it.
+
+## Financial model
+
+Build a transparent 36-month financial model in AZN and USD. Include:
+
+* Hosting and database costs
+* Cloudflare R2 storage and bandwidth
+* AI API costs
+* Domain and third-party services
+* Apple and Google developer fees
+* Customer support
+* Moderation
+* Security
+* Legal and accounting
+* Marketing
+* Founder or employee compensation
+* Taxes and payment-processing fees
+* Unexpected operational expenses
+
+Model revenue from Premium, VIP, boosts, business subscriptions, and advertising. Use conservative conversion assumptions and clearly explain them.
+
+Include:
+
+* Monthly active users
+* Active listings
+* Paying-user conversion
+* Average revenue per paying user
+* Customer acquisition cost
+* Lifetime value
+* Churn and retention
+* Gross margin
+* Monthly burn
+* Break-even point
+* Runway
+* Sensitivity analysis
+
+Show pessimistic, base, and optimistic scenarios. Be explicit if the business cannot realistically break even under a given scenario.
+
+## Metrics and experimentation
+
+Define the marketplace’s north-star metric and supporting metrics, including:
+
+* New valid listings
+* Percentage of listings receiving messages
+* Time to first seller response
+* Buyer-to-seller conversations
+* Successful transaction proxies
+* Search-to-contact conversion
+* Listing activation rate
+* Day-7 and Day-30 retention
+* Repeat listing rate
+* Supply-to-demand balance by category and location
+* Paid-promotion conversion
+* Fraud and report rates
+* Customer acquisition cost by channel
+
+Explain how to measure completed transactions when buyers and sellers may complete deals offline.
+
+## Strategic questions
+
+Answer these directly and honestly:
+
+1. Is Götür.az solving a strong enough problem to enter Azerbaijan’s marketplace market?
+2. Why would someone use it instead of Tap.az, Lalafo, Facebook Marketplace, Instagram, or Telegram?
+3. Which feature provides the strongest realistic differentiation?
+4. Should the initial focus be general classifieds, rental, barter, wanted requests, or a narrower niche?
+5. What must be true for the marketplace to succeed?
+6. What are the three most likely reasons it could fail?
+7. What evidence should the founders obtain before spending heavily on advertising?
+8. What features should be removed or postponed?
+9. What is a realistic initial marketing budget?
+10. Can this become a profitable Azerbaijani business, and could it later expand regionally?
+11. Would investors find this attractive, or is bootstrapping the better path?
+12. What should the founders accomplish during the next 30, 90, and 365 days?
+
+## Required final structure
+
+Produce the final report in this order:
+
+1. Executive summary
+2. Confirmed facts, founder assumptions, and unknown information
+3. Product and customer problem
+4. Business Model Canvas
+5. Azerbaijani market analysis
+6. TAM/SAM/SOM calculations
+7. Competitor comparison
+8. Differentiation and positioning
+9. Target customer segments
+10. Feature prioritisation using Must Have, Should Have, Later, and Remove
+11. Go-to-market strategy
+12. 90-day launch plan
+13. Trust, safety, and legal considerations
+14. AI feature and cost analysis
+15. Pricing and monetisation
+16. 36-month financial scenarios
+17. Metrics and experiments
+18. Risks and mitigation
+19. Investor-readiness assessment
+20. Final verdict
+21. Ten highest-priority actions
+
+Use tables wherever comparisons or calculations are involved. Separate verified facts from estimates and opinions. Include links and publication dates for sources. Use current research rather than general startup clichés. Be highly specific to Azerbaijan and Götür.az.
+
+Most importantly, be **maximum honest**. Do not make the project appear stronger than the evidence supports. Explain both its opportunities and weaknesses. If information is missing, list exactly what must be measured or validated instead of inventing an answer.
