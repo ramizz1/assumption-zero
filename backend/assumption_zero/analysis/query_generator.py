@@ -57,8 +57,9 @@ def generate_queries(idea: IdeaInput) -> List[Dict[str, str]]:
     queries: List[Dict[str, str]] = []
 
     # ── Direct competitors ────────────────────────────────────────
-    queries.append({"query": f"{name} {geography} app marketplace", "type": "competitor"})
-    queries.append({"query": f"best apps for {problem}", "type": "competitor"})
+    # Use specific problem domain + name, never hardcode "app marketplace"
+    queries.append({"query": f"{name} competitors {problem[:30]}", "type": "competitor"})
+    queries.append({"query": f"best tools for {problem}", "type": "competitor"})
     queries.append({"query": f"top alternatives to {name}", "type": "competitor"})
 
     valid_comps = [
@@ -69,47 +70,48 @@ def generate_queries(idea: IdeaInput) -> List[Dict[str, str]]:
     if valid_comps:
         for comp in valid_comps[:4]:
             queries.append({"query": f"{comp} software features pricing", "type": "competitor"})
-            queries.append({"query": f"{comp} alternatives reviews", "type": "pricing"})
+            queries.append({"query": f"{comp} vs {name} comparison", "type": "pricing"})
     else:
-        queries.append({"query": f"top tools for {problem}", "type": "competitor"})
-        queries.append({"query": f"apps like {name} {problem}", "type": "competitor"})
+        queries.append({"query": f"top {problem[:40]} software 2024", "type": "competitor"})
+        queries.append({"query": f"SaaS tools for {problem[:40]}", "type": "competitor"})
 
     # ── Open-source alternatives ──────────────────────────────────
-    queries.append({"query": f"open source {name} github", "type": "oss_alternative"})
-    queries.append({"query": f"open source {problem} tool", "type": "oss_alternative"})
+    queries.append({"query": f"open source {problem[:40]} github", "type": "oss_alternative"})
+    queries.append({"query": f"self hosted {problem[:30]} tool", "type": "oss_alternative"})
 
-    # ── Customer complaints ───────────────────────────────────────
-    queries.append({"query": f"{customer} complaints {problem}", "type": "complaint"})
-    queries.append({"query": f"{problem} frustration app store reviews", "type": "complaint"})
+    # ── Customer complaints & pain ────────────────────────────────
+    queries.append({"query": f"{customer[:30]} pain points {problem[:30]}", "type": "complaint"})
+    queries.append({"query": f"problems with {problem[:40]} tools reddit", "type": "complaint"})
 
     # ── Demand indicators ─────────────────────────────────────────
-    queries.append({"query": f"demand for {problem} {geography}", "type": "demand"})
-    queries.append({"query": f"{customer} looking for {problem} app", "type": "demand"})
+    queries.append({"query": f"market demand {problem[:40]} {geography}", "type": "demand"})
+    queries.append({"query": f"{customer[:30]} need {problem[:30]}", "type": "demand"})
 
     # ── Pricing evidence ──────────────────────────────────────────
-    queries.append({"query": f"{problem} subscription pricing comparison", "type": "pricing"})
+    queries.append({"query": f"{problem[:40]} SaaS pricing tiers", "type": "pricing"})
     if model:
-        queries.append({"query": f"{model} pricing {customer}", "type": "pricing"})
+        queries.append({"query": f"{model} pricing {customer[:30]}", "type": "pricing"})
 
     # ── Existing manual workflows ─────────────────────────────────
-    queries.append({"query": f"{customer} solve {problem} manually", "type": "manual_workflow"})
+    queries.append({"query": f"how {customer[:30]} manually does {problem[:30]}", "type": "manual_workflow"})
 
     # ── Market direction ──────────────────────────────────────────
-    queries.append({"query": f"{problem} market trends", "type": "market_direction"})
+    queries.append({"query": f"{problem[:40]} industry trends 2024", "type": "market_direction"})
 
     # ── Geographic relevance ──────────────────────────────────────
-    queries.append({"query": f"{problem} market {geography}", "type": "geographic"})
+    if geography and geography != "global":
+        queries.append({"query": f"{problem[:40]} market {geography}", "type": "geographic"})
 
     # ── Regulatory concerns ───────────────────────────────────────
-    queries.append({"query": f"{problem} regulations data privacy {geography}", "type": "regulatory"})
+    queries.append({"query": f"{problem[:30]} data privacy compliance regulations", "type": "regulatory"})
 
     # ── Failed products ───────────────────────────────────────────
-    queries.append({"query": f"failed {problem} startups", "type": "failed_product"})
+    queries.append({"query": f"failed {problem[:30]} startup reasons", "type": "failed_product"})
 
     # ── Common failure reasons ────────────────────────────────────
-    queries.append({"query": f"why {customer} don't pay for {problem}", "type": "failure_reason"})
+    queries.append({"query": f"why startups fail in {problem[:30]} space", "type": "failure_reason"})
 
     # ── Distribution channels ─────────────────────────────────────
-    queries.append({"query": f"customer acquisition for {problem} app", "type": "distribution"})
+    queries.append({"query": f"how to acquire {customer[:30]} customers {problem[:25]}", "type": "distribution"})
 
     return queries

@@ -36,21 +36,21 @@ class PerspectiveOutput(BaseModel):
 PERSPECTIVE_SYSTEM_PROMPTS: Dict[str, str] = {
     PerspectiveName.MARKET_ANALYST: (
         "You are a rigorous Market Analyst evaluating startup ideas. You MUST structure your analysis into 3 DISTINCT SUB-SECTIONS:\n"
-        "1. [MARKET SIZING & TAM/SAM/SOM]: Provide explicit volume formulas, addressable users, and regional market size.\n"
-        "2. [DEMAND & CUSTOMER PAIN]: Evaluate problem severity, search query signals, and customer willingness to switch.\n"
-        "3. [MONETIZATION & PRICING POWER]: Analyze premium listing boosts, VIP badges, store subscriptions, and ad revenue."
+        "1. [MARKET SIZING & TAM/SAM/SOM]: Provide explicit addressable market size formulas (TAM/SAM/SOM), key demographics, and regional volume estimates.\n"
+        "2. [DEMAND & CUSTOMER PAIN]: Evaluate problem severity, customer pain intensity, search demand signals, and switching willingness from current solutions.\n"
+        "3. [MONETIZATION & PRICING POWER]: Analyze business model viability, pricing strategy, revenue streams, and customer willingness to pay."
     ),
     PerspectiveName.SKEPTICAL_INVESTOR: (
-        "You are a Skeptical VC Partner identifying fatal flaws. You MUST structure your analysis into 3 DISTINCT SUB-SECTIONS:\n"
-        "1. [COMPETITIVE MOAT & SWITCHING COSTS]: Challenge defensibility vs entrenched leaders and user lock-in barriers.\n"
-        "2. [UNIT ECONOMICS & CAC/LTV]: Evaluate customer acquisition costs across paid channels vs lifetime value payback limits.\n"
-        "3. [LIQUIDITY & FATAL RISKS]: Analyze two-sided marketplace cold start, seller churn, and failure modes."
+        "You are a Skeptical VC Partner stress-testing startup ideas. You MUST structure your analysis into 3 DISTINCT SUB-SECTIONS:\n"
+        "1. [COMPETITIVE MOAT & SWITCHING COSTS]: Challenge defensibility vs entrenched competitors, user lock-in barriers, and what stops copying.\n"
+        "2. [UNIT ECONOMICS & CAC/LTV]: Scrutinize customer acquisition costs, lifetime value, payback periods, and margin sustainability.\n"
+        "3. [FATAL RISKS & FAILURE MODES]: Identify the top 3 ways this startup fails — distribution, timing, regulation, or technology risks."
     ),
     PerspectiveName.PRACTICAL_BUILDER: (
-        "You are a Practical Product Builder designing execution strategy. You MUST structure your analysis into 3 DISTINCT SUB-SECTIONS:\n"
-        "1. [90-DAY GTM ROADMAP]: Define Month 1 launch scope, Month 2 seller seeding, and Month 3 VIP boost rollout.\n"
-        "2. [TECH ARCHITECTURE & INFRA]: Assess Vercel/Railway frontend/backend, Cloudflare R2 storage, and AI API costs.\n"
-        "3. [TRUST, SAFETY & COMPLIANCE]: Outline phone OTP verification, seller rating system, safe chat, and legal compliance."
+        "You are a Practical Product Builder focused on execution. You MUST structure your analysis into 3 DISTINCT SUB-SECTIONS:\n"
+        "1. [90-DAY EXECUTION ROADMAP]: Define Month 1 MVP scope, Month 2 first users, and Month 3 monetization milestones with specific deliverables.\n"
+        "2. [TECH STACK & ARCHITECTURE]: Recommend concrete technologies, infrastructure, integrations, and estimated monthly costs at launch scale.\n"
+        "3. [TRUST, COMPLIANCE & RISK MITIGATION]: Cover authentication, data security, legal/regulatory requirements, and user trust building strategies."
     ),
 }
 
@@ -104,14 +104,14 @@ def build_analysis_prompt(
 ## Your Task ({perspective_name.replace("_", " ").title()})
 
 Analyze this idea from your assigned perspective using the evidence provided above and the user's detailed specification.
-Evaluate the business model, pricing strategy, customer willingness to pay, unit economics (CAC vs LTV), TAM/SAM/SOM estimates, competitive moats, trust & safety rules, and 90-day launch roadmap thoroughly in key_findings, risks, and opportunities.
+Evaluate the business model, pricing strategy, customer willingness to pay, unit economics (CAC vs LTV), TAM/SAM/SOM estimates, competitive moats, and 90-day launch roadmap thoroughly in key_findings, risks, and opportunities.
 
 EXHAUSTIVE ANALYSIS REQUIREMENTS:
-1. **Business Model & Unit Economics**: Evaluate monetization streams (premium listings, VIP badges, boost fees, store subscriptions, banner ads) and pricing power.
-2. **TAM/SAM/SOM Calculation**: Provide explicit market size formulas, conservative vs optimistic scenarios in local currency (AZN/USD).
-3. **Go-to-Market Strategy**: Provide 90-day launch milestones for acquiring the first 100, 1,000, 10,000, and 50,000 active users.
-4. **Competitive Matrix**: Profile top competitors ({idea.known_competitors or 'Tap.az, Lalafo, Facebook Marketplace'}) with strengths, weaknesses, and defensible moats.
-5. **Trust, Safety & Legal**: Outline identity verification, fraud detection, and legal compliance considerations.
+1. **Business Model & Unit Economics**: Evaluate monetization streams specific to this product type, pricing tiers, and long-term margin structure.
+2. **TAM/SAM/SOM Calculation**: Provide explicit market size formulas for this specific problem domain and geography.
+3. **Go-to-Market Strategy**: Provide 90-day launch milestones for acquiring the first 100, 1,000, and 10,000 target customers.
+4. **Competitive Matrix**: Profile top competitors ({idea.known_competitors or 'existing alternatives in this space'}) with strengths, weaknesses, and defensible moats.
+5. **Trust, Safety & Legal**: Outline data security, identity verification, and legal compliance considerations specific to this product.
 
 CRITICAL CITATION & FACTUAL RULES:
 1. Only cite evidence IDs from the list above (e.g. [E001]). Never cite IDs not in the list.
@@ -213,21 +213,55 @@ class LLMAdapter(ABC):
 
         # 2. Extract Geography
         geography = "global"
-        geo_keywords = ["Azerbaijan", "Azerbaijani", "United States", "US", "UK", "Europe", "Turkey", "Germany", "India", "Canada"]
-        for g in geo_keywords:
-            if g.lower() in text.lower():
-                geography = "Azerbaijan" if g.lower() in ("azerbaijan", "azerbaijani") else g
+        geo_map = {
+            "azerbaijan": "Azerbaijan", "azerbaijani": "Azerbaijan",
+            "united states": "United States", "usa": "United States", " us ": "United States",
+            "united kingdom": "United Kingdom", " uk ": "United Kingdom",
+            "europe": "Europe", "turkey": "Turkey", "germany": "Germany",
+            "india": "India", "canada": "Canada", "australia": "Australia",
+            "nigeria": "Nigeria", "brazil": "Brazil", "france": "France",
+        }
+        text_lower = text.lower()
+        for kw, geo in geo_map.items():
+            if kw in text_lower:
+                geography = geo
                 break
 
-        # 3. Extract Competitors mentioned in text
+        # 3. Extract Competitors — scan text for quoted or named tools
         comps_found = []
-        for comp_name in ["Tap.az", "Lalafo", "Turbo.az", "Bina.az", "Facebook Marketplace", "Instagram", "Otter.ai", "Fireflies.ai", "Stylebook", "Whering"]:
-            if comp_name.lower() in text.lower():
+        # Known competitor names to auto-detect
+        known_comp_list = [
+            "Tap.az", "Lalafo", "Turbo.az", "Bina.az",
+            "Facebook Marketplace", "Instagram", "Otter.ai", "Fireflies.ai",
+            "Stylebook", "Whering", "Grammarly", "Notion", "Slack", "Jira",
+            "Qualys", "Tenable", "Rapid7", "Snyk", "SonarQube", "Checkmarx",
+            "GitHub", "GitLab", "Vercel", "Stripe", "Twilio", "Zapier",
+        ]
+        for comp_name in known_comp_list:
+            if comp_name.lower() in text_lower:
                 comps_found.append(comp_name)
+        # Also detect quoted names in "competitors: X, Y, Z" pattern
+        comp_patterns = re.findall(r"(?:competitors?|alternatives?|competing with|vs\.?)\s*[:\-]?\s*([A-Z][\w\.]+(?:,\s*[A-Z][\w\.]+)*)", text, re.IGNORECASE)
+        for cp in comp_patterns:
+            for c in cp.split(","):
+                c = c.strip()
+                if c and c not in comps_found:
+                    comps_found.append(c)
 
-        known_competitors = ", ".join(comps_found) if comps_found else None
+        known_competitors = ", ".join(comps_found[:8]) if comps_found else None
 
-        # 4. Extract Description & Problem
+        # 4. Extract target customer from text
+        cust_match = re.search(
+            r"(?:target customer|target user|audience|for|serving|used by)[:\s]+([^.\n]{5,80})",
+            text, re.IGNORECASE
+        )
+        if cust_match:
+            target_customer = cust_match.group(1).strip().rstrip(",;")
+        else:
+            # Infer from product description
+            target_customer = f"{name} target users"
+
+        # 5. Extract Description & Problem
         paragraphs = [p.strip() for p in text.split("\n\n") if p.strip() and not p.strip().startswith(("#", "Act as", "Create a"))]
         desc = paragraphs[0][:300] if paragraphs else text[:300]
         prob = paragraphs[1][:400] if len(paragraphs) > 1 else desc
@@ -236,7 +270,7 @@ class LLMAdapter(ABC):
             name=name[:60],
             description=desc,
             problem=prob,
-            target_customer=f"Users and buyers in {geography}",
+            target_customer=target_customer[:120],
             geography=geography,
             known_competitors=known_competitors,
             additional_context=text[:3000],

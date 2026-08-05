@@ -88,21 +88,30 @@ class ArxivProvider(ResearchProvider):
                             title_lower = title.lower()
                             summary_lower = summary.lower()
 
-                            # Filter out irrelevant academic papers (physics, COVID, etc.)
-                            RELEVANT_KEYWORDS = {
-                                "market", "marketplace", "e-commerce", "ecommerce", "pricing", "recommendation",
-                                "retail", "shopping", "app", "mobile", "user", "platform", "algorithm", "neural",
-                                "llm", "ai", "fashion", "garment", "outfit", "wardrobe", "trade", "barter",
-                                "classifieds", "consumer", "auction", "search", "retrieval", "economic", "customer"
-                            }
+                            # Hard filter: skip known irrelevant academic domains
                             IRRELEVANT_KEYWORDS = {
-                                "covid", "virus", "quark", "polarisation", "semimartingale", "materials", "fluid antenna", "medical", "clinical"
+                                "covid", "virus", "quark", "polarisation", "semimartingale",
+                                "fluid antenna", "clinical", "medical", "physics", "chemistry",
+                                "genomic", "protein", "earthquake", "seismic", "stellar",
                             }
-
                             if any(ik in title_lower or ik in summary_lower for ik in IRRELEVANT_KEYWORDS):
                                 continue
 
-                            if not any(rk in title_lower or rk in summary_lower for rk in RELEVANT_KEYWORDS):
+                            # Dynamic relevance: require at least one word from the search query
+                            query_words = set(re.sub(r"[^\w\s]", "", query.lower()).split()) - {
+                                "the", "a", "an", "for", "and", "or", "in", "of", "to", "is",
+                                "with", "on", "at", "by", "from", "this", "that", "how", "why",
+                            }
+                            # Also accept general startup/tech relevance terms
+                            ALWAYS_RELEVANT = {
+                                "startup", "market", "saas", "software", "platform", "revenue",
+                                "pricing", "user", "customer", "product", "business", "ai",
+                                "machine learning", "deep learning", "algorithm", "security",
+                                "cybersecurity", "cloud", "api", "mobile", "web", "app",
+                                "data", "privacy", "compliance", "automation", "analytics",
+                            }
+                            combined_relevant = query_words | ALWAYS_RELEVANT
+                            if not any(rk in title_lower or rk in summary_lower for rk in combined_relevant):
                                 continue
 
                             items.append(
