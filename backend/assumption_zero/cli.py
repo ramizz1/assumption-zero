@@ -1,6 +1,6 @@
 """
 Assumption Zero CLI — MVP Validation Engine
-Clean, formal, and structured terminal interface.
+Anthropic Claude-inspired warm aesthetic interface.
 """
 from __future__ import annotations
 
@@ -35,20 +35,20 @@ if hasattr(sys.stderr, "reconfigure"):
     except Exception:
         pass
 
-# ── Formal Professional Theme ──────────────────────────────────────────────────
+# ── Claude Warm & Crisp Theme (Zero Grey Text) ──────────────────────────────
 THEME = Theme(
     {
-        "a0.accent":  "bold white",         # primary text accent
-        "a0.muted":   "dim",                # secondary / metadata
-        "a0.good":    "bold green",         # high scores / positive status
-        "a0.warn":    "bold yellow",        # medium scores / warning status
-        "a0.bad":     "bold red",           # low scores / danger status
-        "a0.info":    "cyan",               # informational text
-        "a0.label":   "bold white",         # labels
-        "a0.section": "bold cyan",          # section headers
-        "a0.market":  "cyan",               # market analyst perspective
-        "a0.skeptic": "magenta",            # skeptic perspective
-        "a0.builder": "green",              # builder perspective
+        "a0.accent":  "bold #D97706",       # Claude terracotta / warm amber
+        "a0.muted":   "bright_white",       # high-contrast secondary text (no grey)
+        "a0.good":    "bold green",         # high score / positive
+        "a0.warn":    "bold #D97706",       # warm amber warning status
+        "a0.bad":     "bold red",           # low score / danger
+        "a0.info":    "bold cyan",          # primary informational text
+        "a0.label":   "bold white",         # primary labels
+        "a0.section": "bold #D97706",       # section header accent
+        "a0.market":  "bold cyan",          # market perspective
+        "a0.skeptic": "bold magenta",       # skeptic perspective
+        "a0.builder": "bold green",         # builder perspective
     }
 )
 
@@ -76,10 +76,10 @@ app = typer.Typer(
 
 def _score_color(score: float) -> str:
     if score >= 65:
-        return "green"
+        return "bold green"
     if score >= 45:
-        return "yellow"
-    return "red"
+        return "bold #D97706"
+    return "bold red"
 
 
 def _score_bar(score: float, width: int = 24) -> str:
@@ -92,22 +92,22 @@ def _score_bar(score: float, width: int = 24) -> str:
 def _rec_color(rec: str) -> str:
     return {
         "Build": "bold green",
-        "Test First": "bold yellow",
-        "Pivot": "bold yellow",
+        "Test First": "bold #D97706",
+        "Pivot": "bold #D97706",
         "Avoid": "bold red",
-    }.get(rec, "white")
+    }.get(rec, "bold white")
 
 
 def _conf_color(conf: str) -> str:
-    return {"high": "green", "medium": "yellow", "low": "red"}.get(conf.lower(), "white")
+    return {"high": "bold green", "medium": "bold #D97706", "low": "bold red"}.get(conf.lower(), "bold white")
 
 
 def _perspective_color(name: str) -> str:
     return {
-        "market_analyst": "cyan",
-        "skeptical_investor": "magenta",
-        "practical_builder": "green",
-    }.get(name, "white")
+        "market_analyst": "bold cyan",
+        "skeptical_investor": "bold magenta",
+        "practical_builder": "bold green",
+    }.get(name, "bold white")
 
 
 # ── Layout Helpers ────────────────────────────────────────────────────────────
@@ -115,14 +115,14 @@ def _perspective_color(name: str) -> str:
 
 def _print_splash() -> None:
     console.print()
-    console.print(f"[bold cyan]ASSUMPTION ZERO[/]  [dim]v{__version__}[/]  |  [dim]{TAGLINE}[/]")
-    console.print(Rule(style="dim cyan"))
+    console.print(f"[bold #D97706]✦ ASSUMPTION ZERO[/]  [bold cyan]v{__version__}[/]  |  [bright_white]{TAGLINE}[/]")
+    console.print(Rule(style="#D97706"))
     console.print()
 
 
 def _print_section(title: str, icon: str = "") -> None:
     console.print()
-    console.print(Rule(f"[bold cyan]{title.upper()}[/]", style="dim cyan"))
+    console.print(Rule(f"[bold #D97706]▸  {title.upper()}[/]", style="#D97706"))
     console.print()
 
 
@@ -130,8 +130,8 @@ def _print_disclaimer() -> None:
     console.print()
     console.print(
         Panel(
-            f"[dim]{DISCLAIMER}[/]",
-            border_style="dim",
+            f"[bright_white]{DISCLAIMER}[/]",
+            border_style="#D97706",
             box=box.ROUNDED,
             padding=(0, 2),
         )
@@ -178,8 +178,8 @@ def _run_analysis_sync(idea, is_demo: bool = False):
             current_label[0] = f"[{step}] {label}..."
 
         with Progress(
-            SpinnerColumn(spinner_name="dots", style="cyan"),
-            TextColumn("[cyan]{task.description}"),
+            SpinnerColumn(spinner_name="dots", style="bold #D97706"),
+            TextColumn("[bold #D97706]{task.description}"),
             TimeElapsedColumn(),
             console=console,
             transient=True,
@@ -246,8 +246,8 @@ def _print_report(result) -> None:
     console.print(
         Panel(
             Text.from_markup(verdict_text),
-            title=f"[bold cyan]{result.idea_input.name}[/]",
-            border_style="dim cyan",
+            title=f"[bold #D97706]{result.idea_input.name}[/]",
+            border_style="#D97706",
             box=box.ROUNDED,
             padding=(1, 2),
         )
@@ -260,14 +260,14 @@ def _print_report(result) -> None:
         table = Table(
             box=box.SIMPLE,
             show_header=True,
-            header_style="bold cyan",
+            header_style="bold #D97706",
             padding=(0, 1),
             show_edge=False,
         )
         table.add_column("Dimension", min_width=30, style="white")
         table.add_column("Score", justify="right", width=8)
         table.add_column("Bar", width=22)
-        table.add_column("Weight", justify="right", width=7, style="dim")
+        table.add_column("Weight", justify="right", width=7, style="bright_white")
         table.add_column("Conf", width=8)
 
         for dim in score.dimensions:
@@ -285,7 +285,7 @@ def _print_report(result) -> None:
             "[bold white]Total Score[/]",
             f"[{_score_color(score_val)} bold]{score_val:.0f}[/]",
             _score_bar(score_val, 14),
-            "[dim]100%[/]",
+            "[bright_white]100%[/]",
             "",
         )
         console.print(table)
@@ -296,14 +296,14 @@ def _print_report(result) -> None:
     ev_count = len(result.evidence)
     sources = sorted(set(e.source_name for e in result.evidence))
     console.print(
-        f"  [bold white]{ev_count} evidence items[/]  [dim]collected from[/]  "
-        f"[cyan]{', '.join(sources)}[/]"
+        f"  [bold white]{ev_count} evidence items[/]  [bright_white]collected from[/]  "
+        f"[bold cyan]{', '.join(sources)}[/]"
     )
 
     if result.provider_errors:
-        console.print(f"\n  [yellow][WARNING] {len(result.provider_errors)} provider issue(s):[/]")
+        console.print(f"\n  [bold #D97706][WARNING] {len(result.provider_errors)} provider issue(s):[/]")
         for err in result.provider_errors[:3]:
-            console.print(f"    - [dim]{err[:110]}[/]")
+            console.print(f"    - [bright_white]{err[:110]}[/]")
 
     if result.strongest_supporting:
         console.print()
@@ -311,7 +311,7 @@ def _print_report(result) -> None:
             Panel(
                 f"[white]{result.strongest_supporting[:280]}[/]",
                 title="[bold green]Strongest Supporting Evidence[/]",
-                border_style="dim green",
+                border_style="green",
                 box=box.ROUNDED,
                 padding=(0, 2),
             )
@@ -321,7 +321,7 @@ def _print_report(result) -> None:
             Panel(
                 f"[white]{result.strongest_contradicting[:280]}[/]",
                 title="[bold red]Strongest Contradicting Evidence[/]",
-                border_style="dim red",
+                border_style="red",
                 box=box.ROUNDED,
                 padding=(0, 2),
             )
@@ -334,12 +334,12 @@ def _print_report(result) -> None:
         comp_table = Table(
             box=box.SIMPLE,
             show_header=True,
-            header_style="bold cyan",
+            header_style="bold #D97706",
             show_edge=False,
             padding=(0, 1),
         )
         comp_table.add_column("Name", min_width=20, style="bold white")
-        comp_table.add_column("Type", width=14, style="dim")
+        comp_table.add_column("Type", width=14, style="bright_white")
         comp_table.add_column("Description")
 
         for comp in result.competitors[:10]:
@@ -382,7 +382,7 @@ def _print_report(result) -> None:
             )
 
         body_text = (
-            f"  [bold white]Verdict:[/] [{rec_c}]{p.recommendation.value}[/]   [dim](Model: {p.model_id})[/]\n\n"
+            f"  [bold white]Verdict:[/] [{rec_c}]{p.recommendation.value}[/]   [bright_white](Model: {p.model_id})[/]\n\n"
             f"  [white]{p.summary}[/]"
             f"{findings_text}"
             f"{risks_text}"
@@ -392,8 +392,8 @@ def _print_report(result) -> None:
         console.print(
             Panel(
                 body_text,
-                title=f"[bold {pcol}]{p.perspective_display.upper()}[/]",
-                border_style="dim cyan",
+                title=f"[{pcol}]{p.perspective_display.upper()}[/]",
+                border_style="#D97706",
                 box=box.ROUNDED,
                 padding=(1, 2),
             )
@@ -404,9 +404,9 @@ def _print_report(result) -> None:
     if result.disagreements:
         _print_section(f"Model Disagreements ({len(result.disagreements)})")
         for d in result.disagreements:
-            console.print(f"  [bold yellow][!][/] [bold white]{d.topic}[/]")
+            console.print(f"  [bold #D97706][!][/] [bold white]{d.topic}[/]")
             for pos in d.positions:
-                console.print(f"    - [dim]{pos.perspective}:[/] [white]{pos.position}[/]")
+                console.print(f"    - [bright_white]{pos.perspective}:[/] [white]{pos.position}[/]")
             console.print()
 
     # ── 7. Decision Intelligence ──────────────────────────────────
@@ -456,7 +456,7 @@ def _print_report(result) -> None:
         _print_section(f"Validation Experiments ({len(result.experiments)})")
 
         for i, exp in enumerate(result.experiments, 1):
-            meta = f"[dim]Est. Cost:[/] [yellow]{exp.estimated_cost_range}[/]   |   [dim]Est. Time:[/] [cyan]{exp.estimated_time}[/]"
+            meta = f"[bright_white]Est. Cost:[/] [bold #D97706]{exp.estimated_cost_range}[/]   |   [bright_white]Est. Time:[/] [bold cyan]{exp.estimated_time}[/]"
             body = (
                 f"{meta}\n\n"
                 f"  [bold white]Assumption Tested:[/]  [white]{exp.assumption_tested}[/]\n"
@@ -464,13 +464,13 @@ def _print_report(result) -> None:
                 f"  [bold white]Procedure:[/]         [white]{exp.procedure}[/]\n\n"
                 f"  [bold green]Success Criteria:[/]  [white]{exp.success_threshold}[/]\n"
                 f"  [bold red]Failure Criteria:[/]  [white]{exp.failure_threshold}[/]\n\n"
-                f"  [dim]Ethics / Compliance: {exp.legal_ethical}[/]"
+                f"  [bright_white]Ethics / Compliance: {exp.legal_ethical}[/]"
             )
             console.print(
                 Panel(
                     body,
-                    title=f"[bold cyan]Experiment {i} — {exp.title}[/]",
-                    border_style="dim cyan",
+                    title=f"[bold #D97706]Experiment {i} — {exp.title}[/]",
+                    border_style="#D97706",
                     box=box.ROUNDED,
                     padding=(1, 2),
                 )
@@ -576,19 +576,19 @@ def _ask_idea():
     from assumption_zero.schemas import IdeaInput
 
     console.print()
-    console.print("[bold cyan]Step-by-Step Idea Definition[/]\n")
+    console.print("[bold #D97706]Step-by-Step Idea Definition[/]\n")
 
     def ask(label: str, hint: str = "", required: bool = False) -> str:
-        suffix = " [red](required)[/]" if required else " [dim](optional)[/]"
-        hint_str = f" [dim]e.g. {hint}[/]" if hint else ""
+        suffix = " [bold red](required)[/]" if required else " [bright_white](optional)[/]"
+        hint_str = f" [bright_white]e.g. {hint}[/]" if hint else ""
         while True:
             val = Prompt.ask(
-                f"  [cyan]›[/] [bold white]{label}[/]{suffix}{hint_str}",
+                f"  [bold #D97706]›[/] [bold white]{label}[/]{suffix}{hint_str}",
                 default="",
                 console=console,
             ).strip()
             if required and not val:
-                console.print("    [red]Error: This field is required.[/]")
+                console.print("    [bold red]Error: This field is required.[/]")
                 continue
             return val
 
@@ -602,17 +602,17 @@ def _ask_idea():
 
     import os
     if os.getenv("OPENROUTER_API_KEY"):
-        console.print("  [green]Using OpenRouter API key from environment[/]\n")
+        console.print("  [bold green]Using OpenRouter API key from environment[/]\n")
     else:
         _print_section("AI Key Setup")
         console.print(
-            "  [dim]Get a free OpenRouter key at:[/] [cyan]https://openrouter.ai/keys[/]\n"
-            "  [dim]Press Enter to use built-in Assumption Zero Beta key.[/]\n"
+            "  [bright_white]Get a free OpenRouter key at:[/] [bold cyan]https://openrouter.ai/keys[/]\n"
+            "  [bright_white]Press Enter to use built-in Assumption Zero Beta key.[/]\n"
         )
         user_key = ask("OpenRouter API Key", "sk-or-v1-...")
         if user_key:
             os.environ["OPENROUTER_API_KEY"] = user_key
-            console.print("  [green]Using custom OpenRouter API key[/]\n")
+            console.print("  [bold green]Using custom OpenRouter API key[/]\n")
 
     _print_section("Business Details")
     model = ask("Business model", "SaaS subscription per seat")
@@ -655,32 +655,32 @@ def guide() -> None:
     _print_section("Idea Formulation Guide")
 
     guide_text = (
-        "[bold white]To get actionable insights and realistic scores from Assumption Zero:[/]\n\n"
-        "[bold cyan]1. Precise Problem Definition[/]\n"
+        "[bold white]To get actionable insights and realistic scores from Assumption Zero:[/\n\n"
+        "[bold #D97706]1. Precise Problem Definition[/]\n"
         "   State who suffers, current broken alternatives, and financial or time cost.\n"
-        "   [dim]Example: 'Solo law firms lose 10+ hours/week summarizing meetings due to privacy compliance.'[/]\n\n"
-        "[bold cyan]2. Target Customer & Geography[/]\n"
+        "   [bright_white]Example: 'Solo law firms lose 10+ hours/week summarizing meetings due to privacy compliance.'[/]\n\n"
+        "[bold #D97706]2. Target Customer & Geography[/]\n"
         "   Define specific demographics, size, and location.\n"
-        "   [dim]Example: 'Solo law practice attorneys in the US with 1-20 employees.'[/]\n\n"
-        "[bold cyan]3. Competitors & Alternatives[/]\n"
+        "   [bright_white]Example: 'Solo law practice attorneys in the US with 1-20 employees.'[/]\n\n"
+        "[bold #D97706]3. Competitors & Alternatives[/]\n"
         "   Include direct software tools (e.g. Otter.ai) and indirect solutions (Excel, WhatsApp).\n\n"
-        "[bold cyan]4. Budget & Founder Fit[/]\n"
+        "[bold #D97706]4. Budget & Founder Fit[/]\n"
         "   Specify developer skills and runway to evaluate technical & execution risk.\n"
     )
-    console.print(Panel(guide_text, border_style="dim cyan", box=box.ROUNDED, padding=(1, 2)))
+    console.print(Panel(guide_text, border_style="#D97706", box=box.ROUNDED, padding=(1, 2)))
 
 
 @app.command()
 def analyze(
     file: Optional[Path] = typer.Option(
-        None, "--file", "-f", help="Path to a JSON file with IdeaInput fields"
+        None, "--file", "-f", help="Path to a JSON file or text prompt file with IdeaInput fields"
     ),
     prompt: Optional[str] = typer.Option(
         None, "--prompt", "-p", help="Analyze from a single freeform text prompt"
     ),
 ) -> None:
     """
-    Analyse an MVP idea interactively, from a 1-prompt text, or from a JSON file.
+    Analyse an MVP idea interactively, from a 1-prompt text, or from a JSON or text file.
     """
     _print_splash()
 
@@ -688,23 +688,29 @@ def analyze(
         if not file.exists():
             err_console.print(f"File not found: {file}")
             raise typer.Exit(1)
+        raw_content = file.read_text(encoding="utf-8").strip()
         try:
-            data = json.loads(file.read_text(encoding="utf-8"))
+            data = json.loads(raw_content)
             from assumption_zero.schemas import IdeaInput
             idea = IdeaInput(**data)
             console.print(
-                f"[dim]Loaded from[/] [cyan]{file}[/]\n"
-                f"  [bold white]Idea:[/] [bold cyan]{idea.name}[/]"
+                f"[bright_white]Loaded from[/] [bold cyan]{file}[/]\n"
+                f"  [bold white]Idea:[/] [bold #D97706]{idea.name}[/]"
             )
-        except Exception as exc:
-            err_console.print(f"Invalid idea file: {exc}")
-            raise typer.Exit(1)
+        except Exception:
+            # Fall back smoothly if the file is text/markdown instead of JSON!
+            console.print(f"[bright_white]Loaded text prompt from[/] [bold cyan]{file}[/]")
+            console.print("[bright_white]Parsing idea details with AI...[/]")
+            from assumption_zero.services.analysis_service import build_llm_adapter
+            llm = build_llm_adapter()
+            idea = asyncio.run(llm.parse_raw_prompt(raw_content))
+            console.print(f"[bold green]Extracted Idea:[/] [bold #D97706]{idea.name}[/]")
     elif prompt:
-        console.print("[dim]Parsing freeform prompt using AI...[/]")
+        console.print("[bright_white]Parsing freeform prompt using AI...[/]")
         from assumption_zero.services.analysis_service import build_llm_adapter
         llm = build_llm_adapter()
         idea = asyncio.run(llm.parse_raw_prompt(prompt))
-        console.print(f"[green]Extracted Idea:[/] [bold cyan]{idea.name}[/]")
+        console.print(f"[bold green]Extracted Idea:[/] [bold #D97706]{idea.name}[/]")
     else:
         _print_section("Idea Definition")
         idea = _ask_idea()
@@ -712,10 +718,10 @@ def analyze(
     console.print()
     console.print(
         Panel(
-            f"  [bold white]Idea:[/]  [bold cyan]{idea.name}[/]\n"
+            f"  [bold white]Idea:[/]  [bold #D97706]{idea.name}[/]\n"
             f"  [white]{idea.description}[/]\n\n"
-            f"  [dim]Running analysis engine...[/]",
-            border_style="dim cyan",
+            f"  [bright_white]Running analysis engine...[/]",
+            border_style="#D97706",
             box=box.ROUNDED,
             padding=(1, 2),
         )
@@ -736,14 +742,14 @@ def prompt(
             err_console.print(f"File not found: {file}")
             raise typer.Exit(1)
         text = file.read_text(encoding="utf-8")
-        console.print(f"[dim]Loaded prompt from[/] [cyan]{file}[/]")
+        console.print(f"[bright_white]Loaded prompt from[/] [bold cyan]{file}[/]")
 
     if not text:
         _print_splash()
         _print_section("Freeform Input Mode")
         console.print(
-            "  [dim]Paste your startup idea prompt below.[/]\n"
-            "  [dim]Type 'END' on a new line when finished, or pass a file: azero prompt -f my_idea.txt[/]\n"
+            "  [bright_white]Paste your startup idea prompt below.[/]\n"
+            "  [bright_white]Type 'END' on a new line when finished, or pass a file: azero prompt -f my_idea.txt[/]\n"
         )
         lines = []
         try:
@@ -757,7 +763,7 @@ def prompt(
         text = "\n".join(lines).strip()
 
         if not text:
-            console.print("  [red]Error: Prompt cannot be empty.[/]")
+            console.print("  [bold red]Error: Prompt cannot be empty.[/]")
             raise typer.Exit(1)
 
     analyze(file=None, prompt=text)
@@ -778,9 +784,9 @@ def list_cmd() -> None:
         console.print(
             Panel(
                 "[white]No analyses yet.[/]\n"
-                "Run [bold cyan]azero analyze[/] to analyse your first idea,\n"
-                "or [bold cyan]azero guide[/] to view idea formatting tips.",
-                border_style="dim cyan",
+                "Run [bold #D97706]azero analyze[/] to analyse your first idea,\n"
+                "or [bold #D97706]azero guide[/] to view idea formatting tips.",
+                border_style="#D97706",
                 box=box.ROUNDED,
                 padding=(0, 2),
             )
@@ -791,29 +797,29 @@ def list_cmd() -> None:
         title="Saved Analyses",
         box=box.SIMPLE,
         show_header=True,
-        header_style="bold cyan",
+        header_style="bold #D97706",
         show_edge=False,
         padding=(0, 1),
     )
-    table.add_column("#", width=4, style="cyan")
-    table.add_column("ID", width=10, style="dim")
+    table.add_column("#", width=4, style="bold cyan")
+    table.add_column("ID", width=10, style="bright_white")
     table.add_column("Idea", min_width=24, style="bold white")
     table.add_column("Status", width=10)
     table.add_column("Score", justify="right", width=8)
     table.add_column("Verdict", width=13)
-    table.add_column("Created", width=17, style="dim")
+    table.add_column("Created", width=17, style="bright_white")
 
     for i, item in enumerate(items, 1):
-        status_col = "green" if item.status.value == "complete" else "yellow"
+        status_col = "bold green" if item.status.value == "complete" else "bold #D97706"
         score_str = (
             f"[{_score_color(item.opportunity_score)}]{item.opportunity_score:.0f}[/]"
             if item.opportunity_score is not None
-            else "[dim]—[/]"
+            else "[bright_white]—[/]"
         )
         rec_str = (
             f"[{_rec_color(item.recommendation.value)}]{item.recommendation.value}[/]"
             if item.recommendation
-            else "[dim]—[/]"
+            else "[bright_white]—[/]"
         )
         created = item.created_at.strftime("%b %d %H:%M") if item.created_at else "—"
         table.add_row(
@@ -828,7 +834,7 @@ def list_cmd() -> None:
 
     console.print(table)
     console.print(
-        f"\n[dim]  Use [/][bold cyan]azero show 1[/][dim] or [/][bold cyan]azero show {items[0].analysis_id[:8]}[/][dim] to view report.[/]"
+        f"\n[bright_white]  Use [/][bold #D97706]azero show 1[/][bright_white] or [/][bold #D97706]azero show {items[0].analysis_id[:8]}[/][bright_white] to view report.[/]"
     )
 
 
@@ -850,7 +856,7 @@ def show(
     result = asyncio.run(_get())
     if not result:
         err_console.print(f"Analysis '{target_id}' not found.")
-        console.print(f"[dim]Run [/][bold cyan]azero list[/][dim] to see all saved analyses.[/]")
+        console.print(f"[bright_white]Run [/][bold #D97706]azero list[/][bright_white] to see all saved analyses.[/]")
         raise typer.Exit(1)
 
     _print_report(result)
@@ -886,8 +892,8 @@ def export(
         output.write_text(content, encoding="utf-8")
         console.print(
             Panel(
-                f"[green]Exported to [cyan]{output}[/]",
-                border_style="dim green",
+                f"[bold green]Exported to [bold cyan]{output}[/]",
+                border_style="green",
                 box=box.ROUNDED,
                 padding=(0, 2),
             )
@@ -907,8 +913,8 @@ def version() -> None:
     providers = build_research_providers()
 
     table = Table(box=box.SIMPLE, show_header=False, show_edge=False, padding=(0, 2))
-    table.add_column(style="dim", width=24)
-    table.add_column(style="cyan")
+    table.add_column(style="bright_white", width=24)
+    table.add_column(style="bold cyan")
 
     table.add_row("Version", f"[bold white]{__version__}[/]")
     table.add_row("AI Provider", adapter.model_id)
