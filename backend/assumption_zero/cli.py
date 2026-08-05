@@ -79,10 +79,10 @@ app = typer.Typer(
 
 def _score_color(score: float) -> str:
     if score >= 65:
-        return "a0.good"
+        return "#00FF66"
     if score >= 45:
-        return "a0.warn"
-    return "a0.bad"
+        return "#FFCC00"
+    return "#FF3333"
 
 
 def _score_bar(score: float, width: int = 30) -> str:
@@ -255,20 +255,20 @@ def _print_report(result) -> None:
     # ── 1. Executive Verdict ──────────────────────────────────────
     _print_section("Executive Verdict", "◈")
 
-    body = Text()
-    body.append(f"  {_score_bar(score_val)}\n\n")
-    body.append("  Recommendation     ", style="a0.label")
-    body.append(f"{rec_str}\n", style=_rec_color(rec_str))
-    body.append("  Evidence Confidence  ", style="a0.label")
-    body.append(f"{conf_str}\n", style=conf_col)
-
+    verdict_text = (
+        f"  {_score_bar(score_val)}\n\n"
+        f"  [a0.label]Recommendation[/]       [{_rec_color(rec_str)}]{rec_str}[/]\n"
+        f"  [a0.label]Evidence Confidence[/]  [{conf_col}]{conf_str}[/]\n"
+    )
     if result.most_dangerous_assumption:
-        body.append("\n  ⚠  Most Dangerous Assumption\n", style="a0.warn")
-        body.append(f"  {result.most_dangerous_assumption}\n", style="white")
+        verdict_text += (
+            f"\n  [a0.warn]⚠  Most Dangerous Assumption[/]\n"
+            f"  [white]{result.most_dangerous_assumption}[/]\n"
+        )
 
     console.print(
         Panel(
-            body,
+            Text.from_markup(verdict_text),
             title=f"[{score_col}]● {result.idea_input.name}[/]",
             border_style="yellow",
             padding=(0, 1),
