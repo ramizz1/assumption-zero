@@ -24,6 +24,11 @@ export const HomePage: React.FC = () => {
   const [error, setError] = useState<string | null>(null)
   const [customApiKey, setCustomApiKey] = useState('')
   const [showJsonExample, setShowJsonExample] = useState(false)
+  const [inputMode, setInputMode] = useState<'prompt' | 'form'>('prompt')
+
+  const [rawPromptText, setRawPromptText] = useState(
+    'wearAi — an AI mobile app for creating top daily fashion outfits from your existing wardrobe for fashion-conscious young adults worldwide. Model: fremium then $20/mo subscription. Founder has fullstack skills with $1000 budget.'
+  )
 
   const [idea, setIdea] = useState({
     name: '',
@@ -49,9 +54,28 @@ export const HomePage: React.FC = () => {
 
   const handleLoadSample = () => {
     setIdea(SAMPLE_IDEA)
+    setInputMode('form')
   }
 
-  const handleAnalyze = async (e: React.FormEvent) => {
+  const handleAnalyzePrompt = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!rawPromptText.trim()) return
+    setLoading(true)
+    setError(null)
+
+    try {
+      const result = await api.createAnalysisFromPrompt({
+        prompt: rawPromptText,
+        openrouter_api_key: customApiKey || undefined,
+      })
+      navigate(`/analysis/${result.analysis_id}`)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to start prompt analysis')
+      setLoading(false)
+    }
+  }
+
+  const handleAnalyzeForm = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
     setError(null)
@@ -137,10 +161,6 @@ export const HomePage: React.FC = () => {
           <p className="text-lg text-gray-500 mb-6">
             Stress-test your idea before you build it.
           </p>
-          <p className="text-sm text-gray-500 max-w-2xl mx-auto">
-            Research competitors, challenge assumptions and design real validation experiments
-            using source-backed analysis and multiple AI perspectives.
-          </p>
         </div>
       </section>
 
@@ -153,11 +173,37 @@ export const HomePage: React.FC = () => {
             </div>
           )}
 
+          {/* Mode Switcher Tabs */}
+          <div className="flex border-b border-[#2a2a35] mb-6">
+            <button
+              type="button"
+              onClick={() => setInputMode('prompt')}
+              className={`py-3 px-6 text-sm font-semibold border-b-2 transition-colors flex items-center gap-2 ${
+                inputMode === 'prompt'
+                  ? 'border-amber-400 text-amber-400 bg-amber-400/5'
+                  : 'border-transparent text-gray-400 hover:text-gray-200'
+              }`}
+            >
+              <span>⚡</span> 1-Prompt Quick Mode (AI Analyzes Text First)
+            </button>
+            <button
+              type="button"
+              onClick={() => setInputMode('form')}
+              className={`py-3 px-6 text-sm font-semibold border-b-2 transition-colors flex items-center gap-2 ${
+                inputMode === 'form'
+                  ? 'border-amber-400 text-amber-400 bg-amber-400/5'
+                  : 'border-transparent text-gray-400 hover:text-gray-200'
+              }`}
+            >
+              <span>📋</span> Detailed Form Fields
+            </button>
+          </div>
+
           {/* Action toolbar */}
           <div className="mb-6 flex flex-wrap items-center justify-between gap-3 p-4 bg-[#141419] border border-[#2a2a35] rounded-xl">
             <div className="flex items-center gap-2 text-xs text-gray-400">
               <span className="font-semibold text-white">Quick Actions:</span>
-              <span>Need ready test data?</span>
+              <span>Need test data?</span>
             </div>
             <div className="flex flex-wrap gap-2">
               <button
@@ -181,7 +227,7 @@ export const HomePage: React.FC = () => {
           {showJsonExample && (
             <div className="mb-6 p-5 bg-[#0f0f14] border border-amber-400/30 rounded-xl">
               <div className="flex items-center justify-between mb-3">
-                <span className="text-xs font-bold text-amber-400 uppercase tracking-wider">JSON File Format Example (for CLI --file option or API)</span>
+                <span className="text-xs font-bold text-amber-400 uppercase tracking-wider">JSON File Format Example</span>
                 <button
                   type="button"
                   onClick={() => navigator.clipboard.writeText(JSON.stringify(SAMPLE_IDEA, null, 2))}
@@ -196,210 +242,248 @@ export const HomePage: React.FC = () => {
             </div>
           )}
 
-          {/* Step-by-Step Guidance Banner */}
-          <div className="mb-6 p-5 bg-amber-400/5 border border-amber-400/20 rounded-xl text-sm text-gray-300">
-            <div className="flex items-center gap-2 text-amber-400 font-bold mb-2 text-base">
-              <span>💡</span> Step-by-Step Guide for Best Analysis Results
-            </div>
-            <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-gray-400">
-              <li className="flex items-start gap-1.5">
-                <span className="text-amber-400 font-bold">1.</span>
-                <span><strong className="text-gray-200">Be Specific:</strong> State exact target customer (e.g. <em>"Solo law firms in the US"</em>).</span>
-              </li>
-              <li className="flex items-start gap-1.5">
-                <span className="text-amber-400 font-bold">2.</span>
-                <span><strong className="text-gray-200">Explain the Pain:</strong> Describe what fails today & how customers solve it manually.</span>
-              </li>
-              <li className="flex items-start gap-1.5">
-                <span className="text-amber-400 font-bold">3.</span>
-                <span><strong className="text-gray-200">Name Competitors:</strong> List direct competitors or alternatives (e.g. <em>"Otter.ai, Fireflies.ai"</em>).</span>
-              </li>
-              <li className="flex items-start gap-1.5">
-                <span className="text-amber-400 font-bold">4.</span>
-                <span><strong className="text-gray-200">State Moat & Assumptions:</strong> Include your unfair advantage and core unvalidated assumptions.</span>
-              </li>
-            </ul>
-          </div>
-
-          <form onSubmit={handleAnalyze} className="space-y-6">
-            {/* Basic info */}
-            <div className="card p-6">
-              <h2 className="section-title">Your Idea</h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {/* 1-PROMPT MODE */}
+          {inputMode === 'prompt' && (
+            <form onSubmit={handleAnalyzePrompt} className="space-y-6">
+              <div className="card p-6 border-amber-400/30">
+                <div className="flex items-center justify-between mb-2">
+                  <h2 className="section-title mb-0">⚡ 1-Prompt Idea Analyzer</h2>
+                  <span className="text-xs text-amber-400 font-semibold bg-amber-400/10 border border-amber-400/20 px-2 py-0.5 rounded">
+                    AI Auto-Extraction Mode
+                  </span>
+                </div>
+                <p className="text-xs text-gray-400 mb-4">
+                  Describe your idea in natural plain English (product name, problem, customer, business model, price, budget, competitors). AI will first extract all structured parameters, then run live web research & business analysis.
+                </p>
                 <div>
-                  <label className="label" htmlFor="idea-name">Idea / Product Name *</label>
-                  <input
-                    id="idea-name"
-                    className="input-field"
-                    placeholder="e.g. Gotur.az"
-                    value={idea.name}
-                    onChange={update('name')}
+                  <label className="label" htmlFor="raw-prompt">Your Startup / Product Idea Prompt</label>
+                  <textarea
+                    id="raw-prompt"
+                    className="textarea-field font-sans text-sm"
+                    rows={6}
+                    placeholder="Describe your idea in one go... e.g. wearAi: an AI mobile app for creating top daily fashion outfits from your existing wardrobe for fashion-conscious young adults worldwide. Freemium model with $20/mo subscription..."
+                    value={rawPromptText}
+                    onChange={(e) => setRawPromptText(e.target.value)}
                     required
-                    maxLength={200}
                   />
                 </div>
+              </div>
+
+              {/* OpenRouter Key */}
+              <div className="card p-6 border-gray-800">
+                <div className="flex items-center justify-between mb-2">
+                  <h2 className="section-title mb-0">🔑 OpenRouter AI Setup</h2>
+                  <a
+                    href="https://openrouter.ai/keys"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs text-amber-400 hover:text-amber-300 underline font-medium flex items-center gap-1"
+                  >
+                    <span>Get free key at openrouter.ai/keys</span>
+                    <span>→</span>
+                  </a>
+                </div>
                 <div>
-                  <label className="label" htmlFor="idea-description">Short Description *</label>
                   <input
-                    id="idea-description"
-                    className="input-field"
-                    placeholder="One sentence description of the product"
-                    value={idea.description}
-                    onChange={update('description')}
+                    id="openrouter-key-prompt"
+                    type="password"
+                    className="input-field font-mono text-sm"
+                    placeholder="sk-or-v1-... (optional, leave blank for built-in key)"
+                    value={customApiKey}
+                    onChange={(e) => setCustomApiKey(e.target.value)}
+                  />
+                </div>
+              </div>
+
+              <div className="flex items-center gap-4 pt-2">
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="btn-primary flex-1 py-3.5 text-base font-semibold"
+                >
+                  {loading ? 'AI Parsing & Stress-Testing Idea…' : '⚡ Stress-Test Idea via 1-Prompt →'}
+                </button>
+                <button
+                  type="button"
+                  onClick={handleDemo}
+                  disabled={loading}
+                  className="btn-secondary py-3.5 text-sm"
+                >
+                  Try Built-in Demo
+                </button>
+              </div>
+            </form>
+          )}
+
+          {/* DETAILED FORM MODE */}
+          {inputMode === 'form' && (
+            <form onSubmit={handleAnalyzeForm} className="space-y-6">
+              {/* Basic info */}
+              <div className="card p-6">
+                <h2 className="section-title">Your Idea</h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="label" htmlFor="idea-name">Idea / Product Name *</label>
+                    <input
+                      id="idea-name"
+                      className="input-field"
+                      placeholder="e.g. LegalMind Local"
+                      value={idea.name}
+                      onChange={update('name')}
+                      required
+                      maxLength={200}
+                    />
+                  </div>
+                  <div>
+                    <label className="label" htmlFor="idea-description">Short Description *</label>
+                    <input
+                      id="idea-description"
+                      className="input-field"
+                      placeholder="One sentence description of the product"
+                      value={idea.description}
+                      onChange={update('description')}
+                      required
+                      maxLength={2000}
+                    />
+                  </div>
+                </div>
+
+                <div className="mt-4">
+                  <label className="label" htmlFor="idea-problem">
+                    Problem Being Solved <span className="text-red-400 font-normal">(required)</span>
+                  </label>
+                  <textarea
+                    id="idea-problem"
+                    className="textarea-field"
+                    rows={3}
+                    placeholder="What specific problem does this solve? Who has it and how painfully?"
+                    value={idea.problem}
+                    onChange={update('problem')}
                     required
                     maxLength={2000}
                   />
                 </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+                  <div>
+                    <label className="label" htmlFor="idea-customer">
+                      Target Customer <span className="text-red-400 font-normal">(required)</span>
+                    </label>
+                    <input
+                      id="idea-customer"
+                      className="input-field"
+                      placeholder="e.g. Solo practitioners & small law firms"
+                      value={idea.target_customer}
+                      onChange={update('target_customer')}
+                      required
+                      maxLength={500}
+                    />
+                  </div>
+                  <div>
+                    <label className="label" htmlFor="idea-geography">
+                      Target Geography <span className="text-red-400 font-normal">(required)</span>
+                    </label>
+                    <input
+                      id="idea-geography"
+                      className="input-field"
+                      placeholder="e.g. United States"
+                      value={idea.geography}
+                      onChange={update('geography')}
+                      required
+                      maxLength={200}
+                    />
+                  </div>
+                </div>
               </div>
 
-              <div className="mt-4">
-                <label className="label" htmlFor="idea-problem">
-                  Problem Being Solved{' '}
-                  <span className="text-red-400 font-normal">(required)</span>
-                </label>
-                <textarea
-                  id="idea-problem"
-                  className="textarea-field"
-                  rows={3}
-                  placeholder="What specific problem does this solve? Who has it and how painfully?"
-                  value={idea.problem}
-                  onChange={update('problem')}
-                  required
-                  maxLength={2000}
-                />
+              {/* Strategic & Business details */}
+              <div className="card p-6">
+                <h2 className="section-title">Business & Strategic Details <span className="text-gray-600 font-normal text-sm">(optional)</span></h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="label" htmlFor="idea-model">Business Model</label>
+                    <input id="idea-model" className="input-field" placeholder="e.g. SaaS subscription per seat"
+                      value={idea.business_model} onChange={update('business_model')} maxLength={500} />
+                  </div>
+                  <div>
+                    <label className="label" htmlFor="idea-price">Expected Price</label>
+                    <input id="idea-price" className="input-field" placeholder="e.g. $49/month per attorney seat"
+                      value={idea.price} onChange={update('price')} maxLength={200} />
+                  </div>
+                  <div>
+                    <label className="label" htmlFor="idea-skills">Founder Skills</label>
+                    <input id="idea-skills" className="input-field" placeholder="e.g. Full-stack developer (Python + React)"
+                      value={idea.founder_skills} onChange={update('founder_skills')} maxLength={1000} />
+                  </div>
+                  <div>
+                    <label className="label" htmlFor="idea-budget">Available Budget / Runway</label>
+                    <input id="idea-budget" className="input-field" placeholder="e.g. $15,000 for 6 months"
+                      value={idea.budget} onChange={update('budget')} maxLength={200} />
+                  </div>
+                  <div>
+                    <label className="label" htmlFor="idea-competitors">Known Competitors</label>
+                    <input id="idea-competitors" className="input-field" placeholder="e.g. Otter.ai, Fireflies.ai"
+                      value={idea.known_competitors} onChange={update('known_competitors')} maxLength={500} />
+                  </div>
+                  <div>
+                    <label className="label" htmlFor="idea-advantage">Unfair Advantage / Moat</label>
+                    <input id="idea-advantage" className="input-field" placeholder="e.g. Proprietary local model quantization"
+                      value={idea.unfair_advantage} onChange={update('unfair_advantage')} maxLength={1000} />
+                  </div>
+                </div>
+                <div className="mt-4">
+                  <label className="label" htmlFor="idea-assumptions">Core Unvalidated Assumptions</label>
+                  <input id="idea-assumptions" className="input-field" placeholder="e.g. Attorneys will pay $49/mo for on-device data privacy"
+                    value={idea.key_assumptions} onChange={update('key_assumptions')} maxLength={1000} />
+                </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+              {/* OpenRouter Key */}
+              <div className="card p-6 border-amber-400/30">
+                <div className="flex items-center justify-between mb-2">
+                  <h2 className="section-title mb-0">🔑 OpenRouter AI Setup</h2>
+                  <a
+                    href="https://openrouter.ai/keys"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs text-amber-400 hover:text-amber-300 underline font-medium flex items-center gap-1"
+                  >
+                    <span>Get free key at openrouter.ai/keys</span>
+                    <span>→</span>
+                  </a>
+                </div>
                 <div>
-                  <label className="label" htmlFor="idea-customer">
-                    Target Customer{' '}
-                    <span className="text-red-400 font-normal">(required)</span>
-                  </label>
                   <input
-                    id="idea-customer"
-                    className="input-field"
-                    placeholder="e.g. Individual sellers & small merchants in Azerbaijan"
-                    value={idea.target_customer}
-                    onChange={update('target_customer')}
-                    required
-                    maxLength={500}
+                    id="openrouter-key-form"
+                    type="password"
+                    className="input-field font-mono text-sm"
+                    placeholder="sk-or-v1-..."
+                    value={customApiKey}
+                    onChange={(e) => setCustomApiKey(e.target.value)}
                   />
                 </div>
-                <div>
-                  <label className="label" htmlFor="idea-geography">
-                    Target Geography{' '}
-                    <span className="text-red-400 font-normal">(required)</span>
-                  </label>
-                  <input
-                    id="idea-geography"
-                    className="input-field"
-                    placeholder="e.g. Azerbaijan"
-                    value={idea.geography}
-                    onChange={update('geography')}
-                    required
-                    maxLength={200}
-                  />
-                </div>
               </div>
-            </div>
 
-            {/* Strategic & Business details */}
-            <div className="card p-6">
-              <h2 className="section-title">Business & Strategic Details <span className="text-gray-600 font-normal text-sm">(optional)</span></h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="label" htmlFor="idea-model">Business Model</label>
-                  <input id="idea-model" className="input-field" placeholder="e.g. Freemium + $2-$10 boost listing packages"
-                    value={idea.business_model} onChange={update('business_model')} maxLength={500} />
-                </div>
-                <div>
-                  <label className="label" htmlFor="idea-price">Expected Price</label>
-                  <input id="idea-price" className="input-field" placeholder="e.g. Free basic listings, $5/boost package"
-                    value={idea.price} onChange={update('price')} maxLength={200} />
-                </div>
-                <div>
-                  <label className="label" htmlFor="idea-skills">Founder Skills</label>
-                  <input id="idea-skills" className="input-field" placeholder="e.g. Full-stack developer (Nuxt + Django + Flutter)"
-                    value={idea.founder_skills} onChange={update('founder_skills')} maxLength={1000} />
-                </div>
-                <div>
-                  <label className="label" htmlFor="idea-budget">Available Budget / Runway</label>
-                  <input id="idea-budget" className="input-field" placeholder="e.g. $5,000 for 6 months"
-                    value={idea.budget} onChange={update('budget')} maxLength={200} />
-                </div>
-                <div>
-                  <label className="label" htmlFor="idea-competitors">Known Competitors</label>
-                  <input id="idea-competitors" className="input-field" placeholder="e.g. tap.az, lalafo.az, boss.az"
-                    value={idea.known_competitors} onChange={update('known_competitors')} maxLength={500} />
-                </div>
-                <div>
-                  <label className="label" htmlFor="idea-advantage">Unfair Advantage / Moat</label>
-                  <input id="idea-advantage" className="input-field" placeholder="e.g. Full in-house codebase built, local merchant access"
-                    value={idea.unfair_advantage} onChange={update('unfair_advantage')} maxLength={1000} />
-                </div>
-              </div>
-              <div className="mt-4">
-                <label className="label" htmlFor="idea-assumptions">Core Unvalidated Assumptions</label>
-                <input id="idea-assumptions" className="input-field" placeholder="e.g. Sellers will switch if mobile chat is 2x faster than tap.az"
-                  value={idea.key_assumptions} onChange={update('key_assumptions')} maxLength={1000} />
-              </div>
-              <div className="mt-4">
-                <label className="label" htmlFor="idea-context">Additional Context</label>
-                <textarea id="idea-context" className="textarea-field" rows={2}
-                  placeholder="Any other relevant context (tech stack, local payment integrations ePUL/MilliÖN, etc.)"
-                  value={idea.additional_context} onChange={update('additional_context')} maxLength={3000} />
-              </div>
-            </div>
-
-            {/* AI Provider Setup & OpenRouter API Key Tutorial */}
-            <div className="card p-6 border-amber-400/30">
-              <div className="flex items-center justify-between mb-2">
-                <h2 className="section-title mb-0">🔑 OpenRouter AI Setup</h2>
-                <a
-                  href="https://openrouter.ai/keys"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-xs text-amber-400 hover:text-amber-300 underline font-medium flex items-center gap-1"
+              {/* Submit */}
+              <div className="flex items-center gap-4 pt-2">
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="btn-primary flex-1 py-3.5 text-base font-semibold"
                 >
-                  <span>Get your free key at openrouter.ai/keys</span>
-                  <span>→</span>
-                </a>
+                  {loading ? 'Starting Analysis…' : 'Stress-Test My Idea →'}
+                </button>
+                <button
+                  type="button"
+                  onClick={handleDemo}
+                  disabled={loading}
+                  className="btn-secondary py-3.5 text-sm"
+                >
+                  Try Built-in Demo
+                </button>
               </div>
-              <p className="text-xs text-gray-400 mb-4">
-                Assumption Zero runs on OpenRouter models under the hood. Leave blank to use the free built-in key, or enter your own key for higher rate limits.
-              </p>
-              <div>
-                <label className="label" htmlFor="openrouter-key">Your OpenRouter API Key <span className="text-gray-500 font-normal">(optional)</span></label>
-                <input
-                  id="openrouter-key"
-                  type="password"
-                  className="input-field font-mono text-sm"
-                  placeholder="sk-or-v1-..."
-                  value={customApiKey}
-                  onChange={(e) => setCustomApiKey(e.target.value)}
-                />
-              </div>
-            </div>
-
-            {/* Submit */}
-            <div className="flex items-center gap-4 pt-2">
-              <button
-                type="submit"
-                disabled={loading}
-                className="btn-primary flex-1 py-3.5 text-base font-semibold"
-              >
-                {loading ? 'Starting Analysis…' : 'Stress-Test My Idea →'}
-              </button>
-              <button
-                type="button"
-                onClick={handleDemo}
-                disabled={loading}
-                className="btn-secondary py-3.5 text-sm"
-              >
-                Try Built-in Demo
-              </button>
-            </div>
-          </form>
+            </form>
+          )}
         </div>
       </main>
 

@@ -31,8 +31,10 @@ from assumption_zero.schemas import (
     AnalysisResult,
     HealthResponse,
     IdeaInput,
+    PromptAnalysisRequest,
 )
 from assumption_zero.services.analysis_service import (
+    build_llm_adapter,
     create_analysis,
     delete_analysis,
     get_analysis,
@@ -111,6 +113,38 @@ async def create_analysis_endpoint(
         is_demo=False,
     )
     return {"analysis_id": analysis_id, "status": "pending"}
+
+
+@router.post("/analyses/from-prompt", response_model=dict, status_code=status.HTTP_202_ACCEPTED)
+async def create_analysis_from_prompt_endpoint(
+    request: Request,
+    body: PromptAnalysisRequest,
+    background_tasks: BackgroundTasks,
+) -> dict:
+    """Analyze a startup idea from a single freeform text prompt."""
+    if body.openrouter_api_key:
+        import os
+        os.environ["OPENROUTER_API_KEY"] = body.openrouter_api_key
+
+    llm = build_llm_adapter(body.ai_provider)
+    parsed_idea = await llm.parse_raw_prompt(body.prompt)
+
+    analysis_id = await create_analysis(
+        idea=parsed_idea,
+        ai_provider_override=body.ai_provider,
+        research_providers_override=body.research_providers,
+        is_demo=False,
+    )
+    background_tasks.add_task(
+        run_analysis,
+        analysis_id=analysis_id,
+        idea=parsed_idea,
+        ai_provider_override=body.ai_provider,
+        openrouter_api_key=body.openrouter_api_key,
+        research_providers_override=body.research_providers,
+        is_demo=False,
+    )
+    return {"analysis_id": analysis_id, "status": "pending", "parsed_idea": parsed_idea.model_dump(mode="json")}
 
 
 @router.get("/analyses", response_model=List[AnalysisListItem])

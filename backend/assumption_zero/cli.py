@@ -680,11 +680,15 @@ def analyze(
     file: Optional[Path] = typer.Option(
         None, "--file", "-f", help="Path to a JSON file with IdeaInput fields"
     ),
+    prompt: Optional[str] = typer.Option(
+        None, "--prompt", "-p", help="Analyze from a single freeform text prompt"
+    ),
 ) -> None:
     """
-    Analyse an MVP idea interactively or from a JSON file.
+    Analyse an MVP idea interactively, from a 1-prompt text, or from a JSON file.
 
     Interactive mode (default): answer the prompts.
+    1-Prompt mode: pass --prompt "your freeform idea text"
     File mode: pass --file path/to/idea.json
     """
     _print_splash()
@@ -704,6 +708,12 @@ def analyze(
         except Exception as exc:
             err_console.print(f"Invalid idea file: {exc}")
             raise typer.Exit(1)
+    elif prompt:
+        console.print("[a0.muted]Parsing freeform 1-prompt using AI...[/]")
+        from assumption_zero.services.analysis_service import build_llm_adapter
+        llm = build_llm_adapter()
+        idea = asyncio.run(llm.parse_raw_prompt(prompt))
+        console.print(f"[a0.good]✓ Extracted Idea:[/] [a0.accent]{idea.name}[/]")
     else:
         _print_section("Tell me about your idea", "💡")
         idea = _ask_idea()
@@ -722,6 +732,14 @@ def analyze(
     console.print()
     result = _run_analysis_sync(idea)
     _print_report(result)
+
+
+@app.command()
+def prompt(
+    text: str = typer.Argument(..., help="Single natural language text prompt describing your startup idea")
+) -> None:
+    """Analyze a startup idea from a single freeform text prompt."""
+    analyze(file=None, prompt=text)
 
 
 @app.command(name="list")

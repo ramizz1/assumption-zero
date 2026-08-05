@@ -312,6 +312,13 @@ class AnalysisCreateRequest(BaseModel):
     research_providers: Optional[List[str]] = None  # Pin specific providers; None = all enabled
 
 
+class PromptAnalysisRequest(BaseModel):
+    prompt: str
+    ai_provider: Optional[str] = None
+    openrouter_api_key: Optional[str] = None
+    research_providers: Optional[List[str]] = None
+
+
 class AnalysisListItem(BaseModel):
     analysis_id: str
     status: AnalysisStatus

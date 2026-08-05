@@ -35,24 +35,22 @@ class PerspectiveOutput(BaseModel):
 # System prompt templates injected before each perspective prompt
 PERSPECTIVE_SYSTEM_PROMPTS: Dict[str, str] = {
     PerspectiveName.MARKET_ANALYST: (
-        "You are a rigorous Market Analyst evaluating startup ideas based solely on "
-        "the provided evidence. Your job: assess whether sufficient real-world demand "
-        "exists for this product. Evaluate problem evidence, demand signals, market "
-        "timing, willingness to pay, geography, and market size. "
+        "You are a rigorous Market Analyst and Venture Strategist evaluating startup ideas based solely on "
+        "the provided evidence. Your job: assess market demand, willingness to pay, pricing power, monetization feasibility, "
+        "TAM/SAM, market timing, customer acquisition dynamics, and business model sustainability. "
+        "Pay special attention to unit economics, paywall placement, freemium conversion potential, and revenue expansion opportunities. "
         "Do NOT invent information. If evidence is missing, say so explicitly."
     ),
     PerspectiveName.SKEPTICAL_INVESTOR: (
-        "You are a Skeptical Investor whose job is to DISPROVE the startup idea. "
-        "Look for strong existing competitors, weak differentiation, distribution "
-        "challenges, unrealistic economics, legal risks, and reasons customers won't "
-        "switch. Challenge every assumption. Only acknowledge strengths if the evidence "
-        "is compelling. Do NOT invent information."
+        "You are a Skeptical VC Partner whose job is to DISPROVE the startup idea and find fatal business model flaws. "
+        "Examine unit economics, CAC vs LTV ratios, price sensitivity, customer churn risks, margin compression, "
+        "competitive moats, switching costs, and distribution bottlenecks. "
+        "Challenge every monetization assumption. Only acknowledge strengths if the evidence is compelling. Do NOT invent information."
     ),
     PerspectiveName.PRACTICAL_BUILDER: (
-        "You are a Practical Builder evaluating MVP feasibility. Assess technical "
-        "complexity, infrastructure needs, security and privacy concerns, features to "
-        "remove from the MVP, cheapest testable implementation, and whether the "
-        "founder's skills and budget match the build requirements. "
+        "You are a Practical Product Builder evaluating MVP build costs and monetization execution. "
+        "Assess infrastructure overhead per user, cost-to-serve, technical complexity, paywall implementation feasibility, "
+        "founder skills & budget alignment vs burn rate, and the leanest MVP that validates willingness-to-pay. "
         "Do NOT invent information."
     ),
 }
@@ -107,16 +105,17 @@ def build_analysis_prompt(
 ## Your Task ({perspective_name.replace("_", " ").title()})
 
 Analyze this idea from your assigned perspective using ONLY the evidence provided above.
+Evaluate the business model, pricing strategy, customer willingness to pay, unit economics (CAC vs LTV), and monetization risks thoroughly in key_findings and risks.
 
 CRITICAL RULES:
 1. Only cite evidence IDs from the list above (e.g. [E001]). Never cite IDs not in the list.
 2. If you lack evidence for a claim, write "Insufficient evidence" — never invent facts.
-3. Never state a probability of success (e.g. "80% chance of success"). 
+3. Evaluate the business model viability explicitly in your key findings & risks.
 4. Base every factual claim on a cited evidence ID.
 
 Respond with a JSON object matching EXACTLY this schema:
 {{
-  "summary": "3-4 sentence executive summary of your analysis",
+  "summary": "3-4 sentence executive summary evaluating problem, business model, and competitive reality",
   "key_findings": ["finding 1 [E001]", "finding 2 [E002]"],
   "risks": ["risk 1", "risk 2"],
   "opportunities": ["opportunity 1", "opportunity 2"],
@@ -177,4 +176,22 @@ class LLMAdapter(ABC):
             f"Problem: {idea.problem}\n"
             f"Customer: {idea.target_customer} in {idea.geography}\n"
             f"Model: {idea.business_model or 'Not specified'}"
+        )
+
+    async def parse_raw_prompt(self, raw_text: str) -> IdeaInput:
+        """
+        Parse a single natural language text prompt into a structured IdeaInput.
+        """
+        lines = [line.strip() for line in raw_text.splitlines() if line.strip()]
+        first_line = lines[0] if lines else raw_text[:50]
+        words = first_line.split()
+        name = " ".join(words[:4]) if words else "New Idea"
+
+        return IdeaInput(
+            name=name[:100],
+            description=raw_text[:300],
+            problem=raw_text[:500],
+            target_customer="Target users & buyers",
+            geography="global",
+            additional_context=raw_text,
         )

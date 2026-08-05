@@ -32,6 +32,13 @@ async function request<T>(
   return res.json()
 }
 
+export interface PromptAnalysisRequest {
+  prompt: str
+  ai_provider?: string
+  openrouter_api_key?: string
+  research_providers?: string[]
+}
+
 export const api = {
   health(): Promise<HealthResponse> {
     return request('/health')
@@ -39,6 +46,10 @@ export const api = {
 
   createAnalysis(body: AnalysisCreateRequest): Promise<{ analysis_id: string; status: string }> {
     return request('/analyses', { method: 'POST', body: JSON.stringify(body) })
+  },
+
+  createAnalysisFromPrompt(body: { prompt: string; openrouter_api_key?: string }): Promise<{ analysis_id: string; status: string; parsed_idea: IdeaInput }> {
+    return request('/analyses/from-prompt', { method: 'POST', body: JSON.stringify(body) })
   },
 
   listAnalyses(): Promise<AnalysisListItem[]> {

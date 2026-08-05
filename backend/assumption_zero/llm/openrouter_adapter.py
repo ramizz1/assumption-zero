@@ -263,3 +263,42 @@ class OpenRouterAdapter(LLMAdapter):
         except Exception as exc:
             logger.debug("OpenRouter clarify_idea failed: %s", exc)
             return f"{idea.name}: {idea.description}"
+
+    async def parse_raw_prompt(self, raw_text: str) -> IdeaInput:
+        """Parse freeform prompt text into structured IdeaInput using OpenRouter LLM."""
+        system_prompt = (
+            "You are a startup analyst. Convert the user's raw idea text into a JSON object matching this schema EXACTLY:\n"
+            "{\n"
+            '  "name": "Short product name (max 5 words)",\n'
+            '  "description": "1 sentence description",\n'
+            '  "problem": "Clear problem statement",\n'
+            '  "target_customer": "Target audience",\n'
+            '  "geography": "Geographic target, e.g. global or specific country",\n'
+            '  "business_model": "Monetization model or null",\n'
+            '  "price": "Pricing details if mentioned or null",\n'
+            '  "founder_skills": "Skills if mentioned or null",\n'
+            '  "budget": "Budget if mentioned or null",\n'
+            '  "known_competitors": "Competitors if mentioned or null",\n'
+            '  "unfair_advantage": "Moat if mentioned or null",\n'
+            '  "key_assumptions": "Core assumption if mentioned or null"\n'
+            "}\n"
+            "Output ONLY valid JSON."
+        )
+
+        try:
+            raw_response = await self._chat([
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": f"Parse this startup idea:\n{raw_text}"},
+            ])
+            parsed_data = _repair_and_parse_json(raw_response)
+            parsed_data["name"] = parsed_data.get("name") or "New Idea"
+            parsed_data["description"] = parsed_data.get("description") or raw_text[:200]
+            parsed_data["problem"] = parsed_data.get("problem") or raw_text[:300]
+            parsed_data["target_customer"] = parsed_data.get("target_customer") or "Target users"
+            parsed_data["geography"] = parsed_data.get("geography") or "global"
+            parsed_data["additional_context"] = raw_text
+
+            return IdeaInput(**parsed_data)
+        except Exception as exc:
+            logger.warning("OpenRouter parse_raw_prompt failed (%s) — using fallback extractor", exc)
+            return await super().parse_raw_prompt(raw_text)
