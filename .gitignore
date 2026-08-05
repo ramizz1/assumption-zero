@@ -11,7 +11,8 @@ build/
 venv/
 env/
 
-# Database
+# Data
+azero_data/
 *.db
 *.sqlite3
 
