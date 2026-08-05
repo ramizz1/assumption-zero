@@ -308,6 +308,7 @@ class AnalysisResult(BaseModel):
 class AnalysisCreateRequest(BaseModel):
     idea: IdeaInput
     ai_provider: Optional[str] = None  # Overrides the configured provider for this run
+    openrouter_api_key: Optional[str] = None  # Custom OpenRouter API key for this run
     research_providers: Optional[List[str]] = None  # Pin specific providers; None = all enabled
 
 

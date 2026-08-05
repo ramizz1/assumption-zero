@@ -121,10 +121,15 @@ async def run_analysis(
     analysis_id: str,
     idea: IdeaInput,
     ai_provider_override: Optional[str] = None,
+    openrouter_api_key: Optional[str] = None,
     research_providers_override: Optional[List[str]] = None,
     is_demo: bool = False,
 ) -> None:
     """Run the full analysis pipeline. Called as a FastAPI BackgroundTask."""
+
+    if openrouter_api_key:
+        import os
+        os.environ["OPENROUTER_API_KEY"] = openrouter_api_key
 
     async def progress_callback(stage: AnalysisStage, desc: str) -> None:
         store.update_stage(analysis_id, "running", stage.value)

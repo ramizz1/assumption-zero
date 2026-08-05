@@ -13,34 +13,16 @@ const GOTUR_SAMPLE = {
   founder_skills: "Full-stack developer with experience in Vue/Nuxt.js, Python/Django REST API, and Flutter mobile development",
   budget: "$5,000 budget with 6 months runway",
   known_competitors: "tap.az, lalafo.az, boss.az, Facebook Marketplace Azerbaijan",
-  unfair_advantage: "Full technical ownership (Nuxt+Django+Flutter built), local market knowledge, and zero reliance on expensive agency outsourcing",
+  unfair_advantage: "Full technical ownership (Nuxt+Django+Flutter codebase built), local market knowledge, and zero reliance on expensive agency outsourcing",
   key_assumptions: "Sellers will list on Gotur.az if chat response rate is 2x faster than tap.az and basic listings remain 100% free",
   additional_context: "Unified Django REST backend serving both Nuxt 3 web frontend and Flutter mobile apps. Integrated with local payment gateways (ePUL, MilliÖN) and Cloudflare R2 image storage."
 }
-
-const AI_PROVIDERS = [
-  {
-    value: 'beta',
-    label: 'Assumption Zero Beta AI',
-    description: 'Built-in shared key (OpenRouter open-weight models). No setup required.',
-  },
-  {
-    value: 'mock',
-    label: 'Template Analysis (Offline)',
-    description: 'Heuristic scoring without AI API calls. Useful for quick testing.',
-  },
-  {
-    value: 'ollama',
-    label: 'Local Ollama',
-    description: 'Runs on your machine (llama3.2). Requires local Ollama server.',
-  },
-]
 
 export const HomePage: React.FC = () => {
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [aiProvider, setAiProvider] = useState('beta')
+  const [customApiKey, setCustomApiKey] = useState('')
   const [showJsonExample, setShowJsonExample] = useState(false)
 
   const [idea, setIdea] = useState({
@@ -93,7 +75,8 @@ export const HomePage: React.FC = () => {
 
       const result = await api.createAnalysis({
         idea: payload,
-        ai_provider_override: aiProvider,
+        ai_provider_override: 'beta',
+        openrouter_api_key: customApiKey || undefined,
       })
       navigate(`/analysis/${result.analysis_id}`)
     } catch (err) {
@@ -143,7 +126,7 @@ export const HomePage: React.FC = () => {
         <div className="max-w-3xl mx-auto">
           <div className="inline-flex items-center gap-2 bg-amber-400/5 border border-amber-400/15 rounded-full px-4 py-1.5 text-xs text-amber-400/70 mb-6">
             <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
-            Beta AI built-in · No signup · Real research
+            Beta AI built-in · OpenRouter · Real Web Research
           </div>
           <h1 className="text-4xl sm:text-5xl font-extrabold text-white tracking-tight mb-4">
             Assumption Zero
@@ -368,34 +351,33 @@ export const HomePage: React.FC = () => {
               </div>
             </div>
 
-            {/* AI Provider */}
-            <div className="card p-6">
-              <h2 className="section-title">AI Provider</h2>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                {AI_PROVIDERS.map((p) => (
-                  <label
-                    key={p.value}
-                    htmlFor={`provider-${p.value}`}
-                    className={`flex items-start gap-3 p-4 rounded-lg border cursor-pointer transition-colors ${aiProvider === p.value
-                        ? 'border-amber-400/50 bg-amber-400/5'
-                        : 'border-[#2a2a35] hover:border-gray-600'
-                      }`}
-                  >
-                    <input
-                      type="radio"
-                      id={`provider-${p.value}`}
-                      name="ai_provider"
-                      value={p.value}
-                      checked={aiProvider === p.value}
-                      onChange={() => setAiProvider(p.value)}
-                      className="mt-0.5 accent-amber-400"
-                    />
-                    <div>
-                      <p className="text-sm font-medium text-white">{p.label}</p>
-                      <p className="text-xs text-gray-500 mt-0.5">{p.description}</p>
-                    </div>
-                  </label>
-                ))}
+            {/* AI Provider Setup & OpenRouter API Key Tutorial */}
+            <div className="card p-6 border-amber-400/30">
+              <div className="flex items-center justify-between mb-2">
+                <h2 className="section-title mb-0">🔑 OpenRouter AI Setup</h2>
+                <a
+                  href="https://openrouter.ai/keys"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs text-amber-400 hover:text-amber-300 underline font-medium flex items-center gap-1"
+                >
+                  <span>Get your free key at openrouter.ai/keys</span>
+                  <span>→</span>
+                </a>
+              </div>
+              <p className="text-xs text-gray-400 mb-4">
+                Assumption Zero runs on OpenRouter models under the hood. Leave blank to use the free built-in key, or enter your own key for higher rate limits.
+              </p>
+              <div>
+                <label className="label" htmlFor="openrouter-key">Your OpenRouter API Key <span className="text-gray-500 font-normal">(optional)</span></label>
+                <input
+                  id="openrouter-key"
+                  type="password"
+                  className="input-field font-mono text-sm"
+                  placeholder="sk-or-v1-..."
+                  value={customApiKey}
+                  onChange={(e) => setCustomApiKey(e.target.value)}
+                />
               </div>
             </div>
 

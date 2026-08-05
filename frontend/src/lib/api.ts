@@ -9,7 +9,8 @@ import type {
 
 export interface AnalysisCreateRequest {
   idea: IdeaInput
-  ai_provider?: string
+  ai_provider_override?: string
+  openrouter_api_key?: string
   research_providers?: string[]
 }
 

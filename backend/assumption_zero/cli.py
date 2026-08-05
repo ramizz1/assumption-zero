@@ -604,6 +604,24 @@ def _ask_idea():
     customer = ask("Target customer", "Individual sellers and buyers in Azerbaijan", required=True)
     geography = ask("Target geography", "Azerbaijan", required=True)
 
+    _print_section("AI Key Setup", "🔑")
+    console.print(
+        "  [a0.muted]Get a free OpenRouter key at:[/] [a0.info]https://openrouter.ai/keys[/]\n"
+        "  [a0.muted]Press Enter to use built-in Assumption Zero Beta key.[/]\n"
+    )
+    user_key = ask("OpenRouter API Key", "sk-or-v1-...")
+    if user_key:
+        import os
+        os.environ["OPENROUTER_API_KEY"] = user_key
+        console.print("  [a0.good]✓ Using custom OpenRouter API key[/]\n")
+
+    _print_section("Business Details", "📋")
+    model = ask("Business model", "Marketplace with boost listing packages")
+    price = ask("Expected price", "Free basic, $5/boost package")
+    skills = ask("Founder skills", "Full-stack dev (Nuxt + Django + Flutter)")
+    budget = ask("Available budget / runway", "$5,000 for 6 months")
+    competitors = ask("Known competitors", "tap.az, lalafo.az")
+
     _print_section("Strategic Insights", "⚡")
     advantage = ask("Unfair advantage / Moat", "Full technical ownership (Nuxt+Django+Flutter built), local market knowledge")
     assumptions = ask("Core assumption to test", "Sellers will switch if chat response rate is 2x faster than tap.az")

@@ -106,6 +106,7 @@ async def create_analysis_endpoint(
         analysis_id=analysis_id,
         idea=body.idea,
         ai_provider_override=body.ai_provider,
+        openrouter_api_key=body.openrouter_api_key,
         research_providers_override=body.research_providers,
         is_demo=False,
     )
