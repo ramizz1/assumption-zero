@@ -189,8 +189,13 @@ class LLMAdapter(ABC):
         Uses intelligent pattern extraction for name, geography, competitors, and problem.
         """
         import re
+        from assumption_zero.schemas import is_gibberish
 
         text = raw_text.strip()
+        if is_gibberish(text):
+            raise ValueError(
+                "The input text appears to be random characters or gibberish. Please enter a valid product or business idea."
+            )
 
         # 1. Extract Name (look for **Name**, "Name", 'Name', or keywords after 'for', 'called', 'named')
         name = ""

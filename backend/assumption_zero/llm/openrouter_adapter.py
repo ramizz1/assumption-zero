@@ -236,7 +236,7 @@ class OpenRouterAdapter(LLMAdapter):
                                 return content
                         if "error" in data:
                             err_msg = data["error"].get("message", str(data["error"]))
-                            logger.warning("OpenRouter model %s error payload: %s", model_name, err_msg)
+                            logger.debug("OpenRouter model %s error payload: %s", model_name, err_msg)
                             last_error = RuntimeError(f"OpenRouter model {model_name} error: {err_msg}")
                             continue
                     elif resp.status_code == 401:
@@ -251,12 +251,12 @@ class OpenRouterAdapter(LLMAdapter):
                         )
                     else:
                         error_msg = f"HTTP {resp.status_code} for {model_name}: {resp.text[:150]}"
-                        logger.warning("OpenRouter model %s failed: %s", model_name, error_msg)
+                        logger.debug("OpenRouter model %s failed: %s", model_name, error_msg)
                         last_error = RuntimeError(error_msg)
                 except RuntimeError:
                     raise
                 except Exception as exc:
-                    logger.warning("OpenRouter model %s exception: %s", model_name, exc)
+                    logger.debug("OpenRouter model %s exception: %s", model_name, exc)
                     last_error = exc
 
         raise RuntimeError(f"All OpenRouter models failed. Last error: {last_error}")
@@ -289,6 +289,11 @@ class OpenRouterAdapter(LLMAdapter):
 
     async def parse_raw_prompt(self, raw_text: str) -> IdeaInput:
         """Parse freeform prompt text into structured IdeaInput using OpenRouter LLM."""
+        from assumption_zero.schemas import is_gibberish
+        if is_gibberish(raw_text):
+            raise ValueError(
+                "The input text appears to be random characters or gibberish. Please enter a valid product or business idea."
+            )
         system_prompt = (
             "You are a startup analyst. Convert the user's raw idea text into a JSON object matching this schema EXACTLY:\n"
             "{\n"
