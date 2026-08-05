@@ -373,36 +373,35 @@ def _print_report(result) -> None:
             )
         console.print(comp_table)
 
-    # ── 5. AI Perspectives ────────────────────────────────────────
+    # ── 5. AI Perspectives  (9 sub-panels: 3 perspectives × 3 sub-sections) ───
     _print_section("AI Perspectives", "◈")
+
+    PERSPECTIVE_SUB_ICONS = {
+        # Market Analyst sub-sections
+        "MARKET SIZING": "📐", "TAM": "📐",
+        "DEMAND": "📣", "CUSTOMER PAIN": "📣",
+        "MONETIZATION": "💰", "PRICING POWER": "💰",
+        # Skeptical Investor sub-sections
+        "COMPETITIVE MOAT": "🏰", "SWITCHING COSTS": "🏰",
+        "UNIT ECONOMICS": "📉", "CAC": "📉",
+        "FATAL RISKS": "☠", "FAILURE MODES": "☠",
+        # Practical Builder sub-sections
+        "90-DAY": "🗓", "ROADMAP": "🗓",
+        "TECH STACK": "⚙", "ARCHITECTURE": "⚙",
+        "TRUST": "🔒", "COMPLIANCE": "🔒",
+    }
+
+    def _sub_icon(section_title: str) -> str:
+        title_up = section_title.upper()
+        for kw, ico in PERSPECTIVE_SUB_ICONS.items():
+            if kw in title_up:
+                return ico
+        return "▸"
 
     for p in result.perspectives:
         pcol = _perspective_color(p.perspective_name.value)
         icon = _perspective_icon(p.perspective_name.value)
         rec_c = _rec_color(p.recommendation.value)
-
-        findings_text = ""
-        if p.key_findings:
-            findings_text = "\n[a0.label]Key Findings[/]\n" + "\n".join(
-                f"  [a0.accent]→[/] [white]{f}[/]" for f in p.key_findings[:4]
-            )
-        risks_text = ""
-        if p.risks:
-            risks_text = "\n\n[a0.label]Risks[/]\n" + "\n".join(
-                f"  [a0.bad]✗[/] [white]{r}[/]" for r in p.risks[:4]
-            )
-        opps_text = ""
-        if p.opportunities:
-            opps_text = "\n\n[a0.label]Opportunities[/]\n" + "\n".join(
-                f"  [a0.good]✓[/] [white]{o}[/]" for o in p.opportunities[:3]
-            )
-
-        body = (
-            f"[{rec_c}]▶  {p.recommendation.value}[/]  "
-            f"[a0.muted]via {p.model_id}[/]\n\n"
-            f"[white]{p.summary}[/]"
-            f"{findings_text}{risks_text}{opps_text}"
-        )
 
         border_color = "blue"
         if "skeptic" in p.perspective_name.value:
@@ -410,14 +409,66 @@ def _print_report(result) -> None:
         elif "builder" in p.perspective_name.value:
             border_color = "green"
 
+        # ── Top summary panel ──────────────────────────────────────
+        risks_text = ""
+        if p.risks:
+            risks_text = "\n\n[a0.label]Risks[/]\n" + "\n".join(
+                f"  [a0.bad]✗[/] [white]{r}[/]" for r in p.risks
+            )
+        opps_text = ""
+        if p.opportunities:
+            opps_text = "\n\n[a0.label]Opportunities[/]\n" + "\n".join(
+                f"  [a0.good]✓[/] [white]{o}[/]" for o in p.opportunities
+            )
+
+        summary_body = (
+            f"[{rec_c}]▶  {p.recommendation.value}[/]  "
+            f"[a0.muted]via {p.model_id}[/]\n\n"
+            f"[white]{p.summary}[/]"
+            f"{risks_text}{opps_text}"
+        )
         console.print(
             Panel(
-                body,
+                summary_body,
                 title=f"[{pcol}]{icon}  {p.perspective_display}[/]",
                 border_style=border_color,
                 padding=(1, 2),
             )
         )
+
+        # ── 3 sub-section panels ───────────────────────────────────
+        # Split key_findings by §SECTION§ markers
+        sections: list[tuple[str, list[str]]] = []
+        current_title = "Analysis"
+        current_items: list[str] = []
+        for f in p.key_findings:
+            if f.startswith("§") and f.endswith("§"):
+                if current_items:
+                    sections.append((current_title, current_items))
+                current_title = f.strip("§")
+                current_items = []
+            else:
+                current_items.append(f)
+        if current_items:
+            sections.append((current_title, current_items))
+
+        # Render each sub-section as its own indented panel
+        for sec_title, sec_items in sections:
+            sub_ico = _sub_icon(sec_title)
+            sub_body = "\n".join(
+                f"  [a0.accent]→[/] [white]{item}[/]" for item in sec_items
+            )
+            console.print(
+                Panel(
+                    sub_body,
+                    title=f"[{pcol}]{sub_ico}  {sec_title}[/]",
+                    border_style=border_color,
+                    padding=(0, 2),
+                    box=box.SIMPLE_HEAVY,
+                ),
+            )
+
+        console.print()  # spacer between perspectives
 
     # ── 6. Disagreements ─────────────────────────────────────────
     if result.disagreements:

@@ -240,6 +240,8 @@ class MockAdapter(LLMAdapter):
         comps = idea.known_competitors or "existing alternatives"
         price_model = idea.price or idea.business_model or "proposed pricing"
         budget_str = idea.budget or "early budget"
+        problem_short = (idea.problem or idea.description or idea.name)[:80]
+        adv = idea.unfair_advantage or "AI-powered automation"
 
         if perspective_name == PerspectiveName.MARKET_ANALYST:
             summary = (
@@ -248,63 +250,93 @@ class MockAdapter(LLMAdapter):
                 f"{len(set(e.source_name for e in evidence))} live search sources. "
                 f"TAM/SAM Analysis: Target market in {loc} for {idea.target_customer}."
             )
-            findings.extend([
-                f"TAM / SAM / SOM Breakdown: TAM = Global market for solving {idea.problem[:60]}; SAM = Addressable segment in {loc}; SOM = Early target adopters.",
-                f"Monetisation Viability: {price_model} provides a direct revenue path for target customer segment ({idea.target_customer}).",
-                f"Market Demand: Target users in {loc} actively seek automated solutions for {idea.problem[:80]}."
-            ])
+            # 3 explicit sub-sections embedded as §SECTION§ markers
+            findings = [
+                f"§MARKET SIZING & TAM/SAM/SOM§",
+                f"TAM = Global market for solving: {problem_short}",
+                f"SAM = Addressable segment in {loc} matching target profile: {idea.target_customer}",
+                f"SOM = Realistic first-year capture; requires acquiring first 1,000 paying accounts to establish baseline",
+                f"§DEMAND & CUSTOMER PAIN§",
+                f"Demand signals identified: {len([e for e in evidence if e.evidence_type == EvidenceType.DEMAND])} evidence items show active market search behaviour",
+                f"Customer pain intensity: {problem_short[:60]} is an unsolved or underserved problem for {idea.target_customer}",
+                f"Switching willingness: Users switch when solution delivers >2x ROI over existing tools ({comps})",
+                f"§MONETIZATION & PRICING POWER§",
+                f"Revenue model: {price_model} — validated by similar SaaS products in this category",
+                f"Pricing power: Willingness to pay at {price_model} requires 3-5 customer discovery interviews before public launch",
+                f"Revenue stream diversification opportunity: tiered pricing, API access, and enterprise plans should be modelled in Year 1",
+            ]
             risks = [
                 f"High competitive density from established solutions ({comps}).",
                 f"Willingness to pay at {price_model} requires explicit customer discovery validation.",
-                f"Customer acquisition friction in {loc} requiring targeted positioning."
+                f"Customer acquisition friction in {loc} requiring targeted positioning.",
             ]
             opportunities = [
-                f"Target customer segment ({idea.target_customer}) exhibits active problem search behavior.",
-                f"Product differentiation ({idea.unfair_advantage or 'AI-powered automation'}) attracts early adopters.",
-                f"Expansion potential across secondary target segments in {loc}."
+                f"Target segment ({idea.target_customer}) exhibits active problem search behaviour.",
+                f"Product differentiation via {adv} attracts early adopters.",
+                f"Expansion potential across secondary segments in {loc}.",
             ]
             mda = f"Unvalidated assumption: {idea.target_customer} will switch to {idea.name} from {comps}."
+
         elif perspective_name == PerspectiveName.SKEPTICAL_INVESTOR:
             comp_count = len([e for e in evidence if e.evidence_type == EvidenceType.COMPETITOR])
             summary = (
-                f"Investment risk & unit economics critique of {idea.name}. "
-                f"Identified {comp_count} direct/indirect competitor(s) in {loc}. "
-                f"CAC vs LTV Ratio: Organic growth assumptions fail if paid acquisition CAC exceeds 20% of first-year LTV."
+                f"Skeptical VC stress-test of {idea.name}. "
+                f"Identified {comp_count} direct/indirect competitor(s). "
+                f"CAC vs LTV: organic growth fails if CAC exceeds 20% of first-year LTV."
             )
-            findings.extend([
-                f"Competitor Dominance: Entrenched players ({comps}) hold high network effects and brand search volume.",
-                f"Pricing Power Vulnerability: Monetization via {price_model} requires proving high ROI before customer churn occurs.",
-                f"Unit Economics Floor: Founder runway ({budget_str}) requires immediate low-cost customer acquisition."
-            ])
+            findings = [
+                f"§COMPETITIVE MOAT & SWITCHING COSTS§",
+                f"Entrenched players ({comps}) hold strong brand recognition and switching cost barriers",
+                f"Defensibility: What stops a well-funded competitor from copying {idea.name} in 6 months?",
+                f"Lock-in mechanism required: proprietary data, integrations, or network effects must be built from Day 1",
+                f"§UNIT ECONOMICS & CAC/LTV§",
+                f"Customer acquisition cost (CAC): paid channel CAC must not exceed 20% of Year 1 LTV to be sustainable",
+                f"Founder runway ({budget_str}) covers approx. 60-90 days of lean GTM outreach at zero paid CAC",
+                f"LTV viability: monetising via {price_model} yields positive LTV only after 3+ months of retention per account",
+                f"§FATAL RISKS & FAILURE MODES§",
+                f"Risk #1 — Distribution: {idea.name} may fail to reach {idea.target_customer} cheaply enough before runway ends",
+                f"Risk #2 — Timing: Market may not be ready, or a larger player may enter with superior resources",
+                f"Risk #3 — Regulation: Data compliance in {loc} adds unexpected legal overhead to product development",
+            ]
             risks = [
-                f"User switching costs: Target customers default to existing tools ({comps}) unless ROI is 2x higher.",
+                f"Target customers default to existing tools ({comps}) unless ROI is demonstrably 2x higher.",
                 f"Paid acquisition CAC risks exceeding customer LTV in early launch phase.",
-                f"Regulatory & data compliance considerations for target users in {loc}."
+                f"Regulatory and data compliance in {loc} adds build complexity and legal risk.",
             ]
             opportunities = [
-                f"High gross margin potential once subscription model ({price_model}) scales with target accounts.",
-                f"Proprietary workflow features create defensible product retention moat."
+                f"High gross margin potential once {price_model} subscription scales.",
+                f"Proprietary workflow features create defensible retention moat.",
             ]
             mda = f"Distribution & CAC: Can {idea.name} acquire target customers in {loc} within {budget_str}?"
+
         else:  # PRACTICAL_BUILDER
             skills = idea.founder_skills or "Full-stack developer"
             summary = (
-                f"Technical architecture & 90-day execution roadmap for {idea.name}. "
-                f"Founder capabilities ({skills}) align with MVP development. "
-                f"Infrastructure Overhead: Cloud deployment keeps early infrastructure cost low (~$50–80/mo)."
+                f"90-day execution roadmap for {idea.name}. "
+                f"Founder skills ({skills}) align with MVP delivery. "
+                f"Target: first paying customer in 60 days, sustainable revenue by Day 90."
             )
-            findings.extend([
-                f"90-Day Execution Roadmap: Month 1: Launch MVP with core automated workflow; Month 2: Onboard first 100 beta accounts; Month 3: Introduce paid tier monetization.",
-                f"Core Feature Prioritization: Phase 1: Core automated engine; Phase 2: User management & analytics; Phase 3: Integrations & API access.",
-                f"Trust & Security Architecture: Implement secure authentication, data encryption, role-based access control, and privacy terms."
-            ])
+            findings = [
+                f"§90-DAY EXECUTION ROADMAP§",
+                f"Month 1: Scope and ship MVP — core value loop only; no secondary features; target: 10 beta users",
+                f"Month 2: Gather feedback from first 10 users; validate willingness to pay; onboard first 100 users",
+                f"Month 3: Launch paid tier ({price_model}); target 3-5 paying accounts; instrument key retention metrics",
+                f"§TECH STACK & ARCHITECTURE§",
+                f"Recommended stack: Next.js / React frontend, FastAPI or Node.js backend, PostgreSQL, deployed on Vercel + Railway",
+                f"Estimated infra cost at launch: $50–80/mo; scales to $200-400/mo at 1,000 active users",
+                f"AI integration: use OpenRouter or OpenAI API; budget $50-100/mo for AI calls at early scale",
+                f"§TRUST, COMPLIANCE & RISK MITIGATION§",
+                f"Authentication: implement email/OAuth + 2FA from Day 1 — non-negotiable for {idea.target_customer}",
+                f"Data privacy: GDPR or equivalent compliance required for {loc}; use data processing agreements with all subprocessors",
+                f"Risk mitigation: build in staged rollout, feature flags, and user feedback loop before scaling marketing spend",
+            ]
             risks = [
-                f"Over-scoping MVP: building secondary features before validating core value proposition risks slow launch.",
-                f"Third-party API latency or unexpected recurring API costs during high usage."
+                f"Over-scoping MVP before core value is validated risks delayed launch and wasted runway.",
+                f"Third-party API costs can spike unexpectedly; set hard budget limits and alert thresholds from Day 1.",
             ]
             opportunities = [
-                f"Focus Phase 1 on core target segment ({idea.target_customer}) before secondary market expansion.",
-                f"Deploy on modern cloud stack for lean initial infrastructure overhead."
+                f"Focus Phase 1 on the core job-to-be-done for {idea.target_customer} only.",
+                f"Modern cloud stack enables lean infrastructure at <$80/mo initially.",
             ]
             mda = f"Scope management: Launch single core value loop for {idea.name} within founder budget ({budget_str})."
 
