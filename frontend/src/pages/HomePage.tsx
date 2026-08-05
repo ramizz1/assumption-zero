@@ -2,20 +2,20 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { api } from '../lib/api'
 
-const GOTUR_SAMPLE = {
-  name: "Gotur.az",
-  description: "P2P listing, rental, and barter marketplace in Azerbaijan connecting buyers & sellers with instant chat and boost packages",
-  problem: "Local peer-to-peer sellers and small merchants in Azerbaijan face high fees, slow listing verification, and poor mobile chat experience on legacy classified platforms. Buyers lack a modern mobile-first interface with verified seller ratings and instant barter options.",
-  target_customer: "Individual sellers, buyers, and local SMB merchants in Azerbaijan trading electronics, real estate, vehicles, and secondhand goods",
-  geography: "Azerbaijan",
-  business_model: "Freemium listing marketplace with paid VIP/Premium listing boost packages ($2 to $10) and targeted seller banner ads",
-  price: "Free basic listings, $2-$10 per boost package",
-  founder_skills: "Full-stack developer with experience in Vue/Nuxt.js, Python/Django REST API, and Flutter mobile development",
-  budget: "$5,000 budget with 6 months runway",
-  known_competitors: "tap.az, lalafo.az, boss.az, Facebook Marketplace Azerbaijan",
-  unfair_advantage: "Full technical ownership (Nuxt+Django+Flutter codebase built), local market knowledge, and zero reliance on expensive agency outsourcing",
-  key_assumptions: "Sellers will list on Gotur.az if chat response rate is 2x faster than tap.az and basic listings remain 100% free",
-  additional_context: "Unified Django REST backend serving both Nuxt 3 web frontend and Flutter mobile apps. Integrated with local payment gateways (ePUL, MilliÖN) and Cloudflare R2 image storage."
+const SAMPLE_IDEA = {
+  name: "LegalMind Local",
+  description: "A privacy-first AI meeting summarizer that runs entirely on-device for small legal firms",
+  problem: "Legal professionals have confidential client meetings that cannot be recorded or transcribed using cloud-based AI tools due to attorney-client privilege and data sovereignty concerns. Existing tools like Otter.ai and Fireflies.ai send audio to remote servers, creating compliance risks.",
+  target_customer: "Solo practitioners and small law firms (1–20 attorneys) who have weekly client meetings and hearings they need documented but cannot use cloud AI tools due to ethical obligations",
+  geography: "United States",
+  business_model: "SaaS subscription per seat, installed locally, no data leaves the device",
+  price: "$49/month per attorney seat",
+  founder_skills: "Full-stack developer with 5 years experience, no legal industry background, some ML experience running local models",
+  budget: "$15,000 runway for 6 months",
+  known_competitors: "Otter.ai, Fireflies.ai, Whisper (open source), Tactiq",
+  unfair_advantage: "Proprietary lightweight local model quantization pipeline running 4x faster on Apple Silicon and Windows NPU chips",
+  key_assumptions: "Attorneys will pay $49/mo for 100% on-device data privacy rather than risk cloud security compliance violations",
+  additional_context: "Planning to use OpenAI Whisper for transcription and a local Llama model for summarization. Initial target is solo practitioners in the US who already use case management software."
 }
 
 export const HomePage: React.FC = () => {
@@ -48,7 +48,7 @@ export const HomePage: React.FC = () => {
   }
 
   const handleLoadSample = () => {
-    setIdea(GOTUR_SAMPLE)
+    setIdea(SAMPLE_IDEA)
   }
 
   const handleAnalyze = async (e: React.FormEvent) => {
@@ -165,7 +165,7 @@ export const HomePage: React.FC = () => {
                 onClick={handleLoadSample}
                 className="px-3 py-1.5 bg-amber-400/10 hover:bg-amber-400/20 text-amber-400 border border-amber-400/30 rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5"
               >
-                <span>⚡</span> Load Gotur.az Sample Data
+                <span>⚡</span> Load Sample Idea Data
               </button>
               <button
                 type="button"
@@ -184,14 +184,14 @@ export const HomePage: React.FC = () => {
                 <span className="text-xs font-bold text-amber-400 uppercase tracking-wider">JSON File Format Example (for CLI --file option or API)</span>
                 <button
                   type="button"
-                  onClick={() => navigator.clipboard.writeText(JSON.stringify(GOTUR_SAMPLE, null, 2))}
+                  onClick={() => navigator.clipboard.writeText(JSON.stringify(SAMPLE_IDEA, null, 2))}
                   className="text-xs text-amber-400 hover:text-amber-300 underline"
                 >
                   Copy JSON to Clipboard
                 </button>
               </div>
               <pre className="text-xs font-mono text-gray-300 bg-[#0a0a0d] p-4 rounded-lg overflow-x-auto border border-[#1f1f26]">
-                {JSON.stringify(GOTUR_SAMPLE, null, 2)}
+                {JSON.stringify(SAMPLE_IDEA, null, 2)}
               </pre>
             </div>
           )}
@@ -204,7 +204,7 @@ export const HomePage: React.FC = () => {
             <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-gray-400">
               <li className="flex items-start gap-1.5">
                 <span className="text-amber-400 font-bold">1.</span>
-                <span><strong className="text-gray-200">Be Specific:</strong> State exact target customer (e.g. <em>"Solo law firms in Azerbaijan"</em>).</span>
+                <span><strong className="text-gray-200">Be Specific:</strong> State exact target customer (e.g. <em>"Solo law firms in the US"</em>).</span>
               </li>
               <li className="flex items-start gap-1.5">
                 <span className="text-amber-400 font-bold">2.</span>
@@ -212,7 +212,7 @@ export const HomePage: React.FC = () => {
               </li>
               <li className="flex items-start gap-1.5">
                 <span className="text-amber-400 font-bold">3.</span>
-                <span><strong className="text-gray-200">Name Competitors:</strong> List direct competitors or alternatives (e.g. <em>"tap.az, lalafo.az"</em>).</span>
+                <span><strong className="text-gray-200">Name Competitors:</strong> List direct competitors or alternatives (e.g. <em>"Otter.ai, Fireflies.ai"</em>).</span>
               </li>
               <li className="flex items-start gap-1.5">
                 <span className="text-amber-400 font-bold">4.</span>

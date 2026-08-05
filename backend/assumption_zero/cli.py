@@ -596,13 +596,13 @@ def _ask_idea():
                 continue
             return val
 
-    name = ask("Idea / product name", "Gotur.az", required=True)
-    description = ask("Short description", "P2P marketplace in Azerbaijan connecting buyers & sellers", required=True)
+    name = ask("Idea / product name", "LegalMind Local", required=True)
+    description = ask("Short description", "On-device AI legal meeting summarizer for small law firms", required=True)
 
     _print_section("The Problem", "🔎")
-    problem = ask("Problem being solved", "Sellers lack a low-fee platform for instant listing & chat", required=True)
-    customer = ask("Target customer", "Individual sellers and buyers in Azerbaijan", required=True)
-    geography = ask("Target geography", "Azerbaijan", required=True)
+    problem = ask("Problem being solved", "Attorneys lose 10+ hours/week summarizing client meetings due to cloud data privacy compliance", required=True)
+    customer = ask("Target customer", "Solo practitioners and small law firms (1-20 attorneys)", required=True)
+    geography = ask("Target geography", "United States", required=True)
 
     _print_section("AI Key Setup", "🔑")
     console.print(
@@ -616,11 +616,11 @@ def _ask_idea():
         console.print("  [a0.good]✓ Using custom OpenRouter API key[/]\n")
 
     _print_section("Business Details", "📋")
-    model = ask("Business model", "Marketplace with boost listing packages")
-    price = ask("Expected price", "Free basic, $5/boost package")
-    skills = ask("Founder skills", "Full-stack dev (Nuxt + Django + Flutter)")
-    budget = ask("Available budget / runway", "$5,000 for 6 months")
-    competitors = ask("Known competitors", "tap.az, lalafo.az")
+    model = ask("Business model", "SaaS subscription per seat")
+    price = ask("Expected price", "$49/month per attorney seat")
+    skills = ask("Founder skills", "Full-stack developer (Python + React)")
+    budget = ask("Available budget / runway", "$15,000 for 6 months")
+    competitors = ask("Known competitors", "Otter.ai, Fireflies.ai")
 
     _print_section("Strategic Insights", "⚡")
     advantage = ask("Unfair advantage / Moat", "Full technical ownership (Nuxt+Django+Flutter built), local market knowledge")
