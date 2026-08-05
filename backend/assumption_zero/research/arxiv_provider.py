@@ -85,6 +85,26 @@ class ArxivProvider(ResearchProvider):
                             paper_url = id_m.group(1).strip()
                             summary = summary_m.group(1).replace("\n", " ").strip() if summary_m else ""
 
+                            title_lower = title.lower()
+                            summary_lower = summary.lower()
+
+                            # Filter out irrelevant academic papers (physics, COVID, etc.)
+                            RELEVANT_KEYWORDS = {
+                                "market", "marketplace", "e-commerce", "ecommerce", "pricing", "recommendation",
+                                "retail", "shopping", "app", "mobile", "user", "platform", "algorithm", "neural",
+                                "llm", "ai", "fashion", "garment", "outfit", "wardrobe", "trade", "barter",
+                                "classifieds", "consumer", "auction", "search", "retrieval", "economic", "customer"
+                            }
+                            IRRELEVANT_KEYWORDS = {
+                                "covid", "virus", "quark", "polarisation", "semimartingale", "materials", "fluid antenna", "medical", "clinical"
+                            }
+
+                            if any(ik in title_lower or ik in summary_lower for ik in IRRELEVANT_KEYWORDS):
+                                continue
+
+                            if not any(rk in title_lower or rk in summary_lower for rk in RELEVANT_KEYWORDS):
+                                continue
+
                             items.append(
                                 EvidenceItem(
                                     evidence_id=_stable_id(paper_url),

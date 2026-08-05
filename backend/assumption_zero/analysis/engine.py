@@ -96,9 +96,12 @@ def _clean_competitor_name(title: str) -> str:
                 name = candidate
                 break
 
-    # If name looks like a long sentence, skip or truncate
+    # Filter out raw GitHub repo paths (User/Repo) or junk names
+    if "/" in name or name.startswith(("-", "http", "www", "Skip to")):
+        return ""
+
     words = name.split()
-    if len(words) > 5 or name.lower().startswith(("as a", "the ", "i ", "how ", "why ", "cost-effective")):
+    if len(words) > 4 or name.lower().startswith(("as a", "the ", "i ", "how ", "why ", "cost-effective", "show hn", "launch hn", "nicehash")):
         return ""
 
     return name.strip()

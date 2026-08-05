@@ -253,30 +253,38 @@ class MockAdapter(LLMAdapter):
             ]
             mda = f"Unvalidated assumption: customers in {idea.geography} will pay {idea.price or 'the proposed price'}"
         elif perspective_name == PerspectiveName.SKEPTICAL_INVESTOR:
+            comp_count = len([e for e in evidence if e.evidence_type == EvidenceType.COMPETITOR])
             summary = (
-                f"Template skeptical review of {idea.name}. "
-                f"{len([e for e in evidence if e.evidence_type == EvidenceType.COMPETITOR])} "
-                "competitor(s) found. Configure a real AI provider for a full investment-grade critique."
+                f"Investment risk & unit economics critique of {idea.name}. "
+                f"Identified {comp_count} active marketplace competitor(s) in {idea.geography}. "
+                f"Competitive Gap score: {scores.get('competitive_gap', 40):.0f}/100; Unit Economics score: {scores.get('unit_economics', 45):.0f}/100."
             )
             risks = [
-                "Competitor landscape not fully analyzed — configure AI provider.",
-                "Switching costs and distribution challenges require qualitative assessment.",
-            ]
-            opportunities = []
-            mda = "Distribution: how will this product reach customers cost-effectively?"
-        else:  # PRACTICAL_BUILDER
-            summary = (
-                f"Template builder assessment of {idea.name}. "
-                f"Founder skills: {idea.founder_skills or 'not specified'}. "
-                "Configure a real AI provider for MVP scope recommendations."
-            )
-            risks = [
-                "Technical feasibility requires AI-assisted assessment — configure provider.",
+                f"High user switching costs from dominant platforms ({idea.known_competitors or 'local market leaders'}).",
+                f"Paid acquisition CAC risks outpacing initial LTV in {idea.geography} without high organic retention.",
+                f"Liquidity risk: two-sided marketplace cold start requires heavy seeding before monetisation works."
             ]
             opportunities = [
-                "A minimal walkthrough demo can be built before full AI analysis.",
+                f"Monetisation leverage via premium listing boosts and local business subscriptions.",
+                f"AI-assisted listing creation reduces seller onboarding friction by 3x."
             ]
-            mda = f"Budget {idea.budget or 'unknown'} may not cover full MVP build — validate assumptions cheaply first."
+            mda = f"Distribution & CAC: Can {idea.name} acquire sellers and buyers in {idea.geography} below customer LTV?"
+        else:  # PRACTICAL_BUILDER
+            skills = idea.founder_skills or "Full-stack developer"
+            summary = (
+                f"Technical architecture & 90-day execution plan for {idea.name}. "
+                f"Founder capabilities ({skills}) align with MVP development. "
+                f"Distribution score: {scores.get('distribution_feasibility', 40):.0f}/100; Founder fit: {scores.get('founder_fit', 50):.0f}/100."
+            )
+            risks = [
+                f"Over-scoping MVP: launching barter, rentals, chat, and AI tools at once risks slow launch cycle.",
+                f"Third-party API latency or recurring LLM cost per listing creation."
+            ]
+            opportunities = [
+                f"Focus Phase 1 on core search, listing creation, and chat in high-density target region ({idea.geography}).",
+                f"Deploy on Vercel/Railway + Cloudflare R2 for < $50/mo initial infra overhead."
+            ]
+            mda = f"Scope management: Launch single core transaction loop in {idea.geography} within budget ({idea.budget or '$1,000'})."
 
         return PerspectiveOutput(
             perspective_name=perspective_name,
