@@ -236,72 +236,77 @@ class MockAdapter(LLMAdapter):
         findings = _findings(perspective_name, evidence, idea)
         cited = [e.evidence_id for e in evidence[:10]]
 
+        loc = idea.geography or "global"
+        comps = idea.known_competitors or "existing alternatives"
+        price_model = idea.price or idea.business_model or "proposed pricing"
+        budget_str = idea.budget or "early budget"
+
         if perspective_name == PerspectiveName.MARKET_ANALYST:
             summary = (
                 f"Exhaustive market analysis of {idea.name}. "
                 f"{len(evidence)} evidence items collected across "
                 f"{len(set(e.source_name for e in evidence))} live search sources. "
-                f"TAM/SAM Liquidity Analysis: Target population in {idea.geography} provides estimated SOM of 50,000–150,000 early active users."
+                f"TAM/SAM Analysis: Target market in {loc} for {idea.target_customer}."
             )
             findings.extend([
-                f"TAM / SAM / SOM Breakdown: TAM = Total e-commerce & classifieds buyers in {idea.geography}; SAM = Active digital users in Baku; SOM = 50,000 users in Year 1.",
-                f"Monetisation Viability: Premium listings, VIP position, boost/raise fees, and store subscriptions provide multi-stream revenue.",
-                f"Marketplace Liquidity: Cold-start requires acquiring first 1,000 high-quality seller listings before driving buyer traffic."
+                f"TAM / SAM / SOM Breakdown: TAM = Global market for solving {idea.problem[:60]}; SAM = Addressable segment in {loc}; SOM = Early target adopters.",
+                f"Monetisation Viability: {price_model} provides a direct revenue path for target customer segment ({idea.target_customer}).",
+                f"Market Demand: Target users in {loc} actively seek automated solutions for {idea.problem[:80]}."
             ])
             risks = [
-                f"High competitive density from established local platforms ({idea.known_competitors or 'dominant classifieds'}).",
-                f"Customer willingness to pay for listing boosts requires measurable traffic exposure before charging sellers.",
-                f"Consumer trust and payment preference risks (reliance on cash / cash-on-delivery vs online card payments in {idea.geography})."
+                f"High competitive density from established solutions ({comps}).",
+                f"Willingness to pay at {price_model} requires explicit customer discovery validation.",
+                f"Customer acquisition friction in {loc} requiring targeted positioning."
             ]
             opportunities = [
-                f"Target customer segment ({idea.target_customer}) exhibits high mobile usage and active product search behavior.",
-                f"Barter & rental feature differentiation attracts budget-conscious users seeking non-cash transactions.",
-                f"AI-assisted listing creation reduces friction for non-technical small merchants."
+                f"Target customer segment ({idea.target_customer}) exhibits active problem search behavior.",
+                f"Product differentiation ({idea.unfair_advantage or 'AI-powered automation'}) attracts early adopters.",
+                f"Expansion potential across secondary target segments in {loc}."
             ]
-            mda = f"Unvalidated assumption: sellers in {idea.geography} will switch from existing platforms if chat response is 2x faster."
+            mda = f"Unvalidated assumption: {idea.target_customer} will switch to {idea.name} from {comps}."
         elif perspective_name == PerspectiveName.SKEPTICAL_INVESTOR:
             comp_count = len([e for e in evidence if e.evidence_type == EvidenceType.COMPETITOR])
             summary = (
                 f"Investment risk & unit economics critique of {idea.name}. "
-                f"Identified {comp_count} active marketplace competitor(s) in {idea.geography}. "
+                f"Identified {comp_count} direct/indirect competitor(s) in {loc}. "
                 f"CAC vs LTV Ratio: Organic growth assumptions fail if paid acquisition CAC exceeds 20% of first-year LTV."
             )
             findings.extend([
-                f"Competitor Dominance: Entrenched players ({idea.known_competitors or 'Tap.az, Lalafo'}) hold high network effects and organic brand search volume.",
-                f"Pricing Power Vulnerability: Charging sellers prematurely before reaching 10,000 active buyers will cause seller churn.",
-                f"Unit Economics Floor: Founder runway ({idea.budget or '$1,000'}) requires immediate low-cost GTM seeding."
+                f"Competitor Dominance: Entrenched players ({comps}) hold high network effects and brand search volume.",
+                f"Pricing Power Vulnerability: Monetization via {price_model} requires proving high ROI before customer churn occurs.",
+                f"Unit Economics Floor: Founder runway ({budget_str}) requires immediate low-cost customer acquisition."
             ])
             risks = [
-                f"User switching costs: Buyers & sellers default to dominant platforms unless chat response rate is 2x faster.",
+                f"User switching costs: Target customers default to existing tools ({comps}) unless ROI is 2x higher.",
                 f"Paid acquisition CAC risks exceeding customer LTV in early launch phase.",
-                f"Regulatory & data compliance considerations for storing user phone, email, and identity data in {idea.geography}."
+                f"Regulatory & data compliance considerations for target users in {loc}."
             ]
             opportunities = [
-                f"High gross margin potential once business subscriptions ($20/mo) scale with local SMB stores.",
-                f"AI auto-categorization and voice-message chat features create defensible product UX moat."
+                f"High gross margin potential once subscription model ({price_model}) scales with target accounts.",
+                f"Proprietary workflow features create defensible product retention moat."
             ]
-            mda = f"Distribution & CAC: Can {idea.name} acquire 10,000 active users in {idea.geography} within $1,000 budget?"
+            mda = f"Distribution & CAC: Can {idea.name} acquire target customers in {loc} within {budget_str}?"
         else:  # PRACTICAL_BUILDER
             skills = idea.founder_skills or "Full-stack developer"
             summary = (
                 f"Technical architecture & 90-day execution roadmap for {idea.name}. "
                 f"Founder capabilities ({skills}) align with MVP development. "
-                f"Infrastructure Overhead: Vercel frontend + Railway backend + Cloudflare R2 storage keeps early cost at ~$60–80/mo."
+                f"Infrastructure Overhead: Cloud deployment keeps early infrastructure cost low (~$50–80/mo)."
             )
             findings.extend([
-                f"90-Day GTM Roadmap: Month 1: Launch web/mobile MVP with listing creation & chat; Month 2: Seed first 1,000 listings via store outreach; Month 3: Introduce VIP/boost monetization.",
-                f"AI Feature Prioritization: Phase 1: AI title/description generation; Phase 2: Category auto-tagging; Phase 3: Price suggestion & duplicate detection.",
-                f"Trust & Safety Architecture: Implement phone OTP verification, seller rating system, safe chat image moderation, and terms of service."
+                f"90-Day Execution Roadmap: Month 1: Launch MVP with core automated workflow; Month 2: Onboard first 100 beta accounts; Month 3: Introduce paid tier monetization.",
+                f"Core Feature Prioritization: Phase 1: Core automated engine; Phase 2: User management & analytics; Phase 3: Integrations & API access.",
+                f"Trust & Security Architecture: Implement secure authentication, data encryption, role-based access control, and privacy terms."
             ])
             risks = [
-                f"Over-scoping MVP: launching barter, rentals, chat, wanted requests, and AI tools at once risks delaying launch.",
-                f"Third-party AI API latency or unexpected API bill spikes during high listing volumes."
+                f"Over-scoping MVP: building secondary features before validating core value proposition risks slow launch.",
+                f"Third-party API latency or unexpected recurring API costs during high usage."
             ]
             opportunities = [
-                f"Focus Phase 1 on core search, listing creation, and instant chat in Baku before national expansion.",
-                f"Deploy on Vercel/Railway + Cloudflare R2 for < $80/mo initial infra overhead."
+                f"Focus Phase 1 on core target segment ({idea.target_customer}) before secondary market expansion.",
+                f"Deploy on modern cloud stack for lean initial infrastructure overhead."
             ]
-            mda = f"Scope management: Launch single core transaction loop in {idea.geography} within founder budget ({idea.budget or '$1,000'})."
+            mda = f"Scope management: Launch single core value loop for {idea.name} within founder budget ({budget_str})."
 
         return PerspectiveOutput(
             perspective_name=perspective_name,

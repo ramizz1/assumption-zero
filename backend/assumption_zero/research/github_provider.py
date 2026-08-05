@@ -87,7 +87,7 @@ class GitHubProvider(ResearchProvider):
                 resp.raise_for_status()
                 data: Dict[str, Any] = resp.json()
         except Exception as exc:
-            logger.warning("GitHub search failed for %r: %s", query, exc)
+            logger.debug("GitHub search skipped or rate limited for %r: %s", query, exc)
             return []
 
         items: List[EvidenceItem] = []
