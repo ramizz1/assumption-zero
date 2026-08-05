@@ -74,7 +74,7 @@ export const HomePage: React.FC = () => {
     setLoading(true)
     setError(null)
 
-    try:
+    try {
       const payload = {
         name: idea.name,
         description: idea.description,
@@ -435,3 +435,5 @@ export const HomePage: React.FC = () => {
     </div>
   )
 }
+
+export default HomePage
