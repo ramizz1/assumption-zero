@@ -1,0 +1,13 @@
+{
+  "name": "LegalMind Local",
+  "description": "A privacy-first AI meeting summarizer that runs entirely on-device for small legal firms",
+  "problem": "Legal professionals have confidential client meetings that cannot be recorded or transcribed using cloud-based AI tools due to attorney-client privilege and data sovereignty concerns. Existing tools like Otter.ai and Fireflies.ai send audio to remote servers, creating compliance risks.",
+  "target_customer": "Solo practitioners and small law firms (1–20 attorneys) who have weekly client meetings and hearings they need documented but cannot use cloud AI tools due to ethical obligations",
+  "geography": "United States",
+  "business_model": "SaaS subscription per seat, installed locally, no data leaves the device",
+  "price": "$49/month per attorney seat",
+  "founder_skills": "Full-stack developer with 5 years experience, no legal industry background, some ML experience running local models",
+  "budget": "$15,000 runway for 6 months",
+  "known_competitors": "Otter.ai, Fireflies.ai, Whisper (open source), Tactiq",
+  "additional_context": "Planning to use OpenAI Whisper for transcription and a local Llama model for summarization. Initial target is solo practitioners in the US who already use case management software."
+}

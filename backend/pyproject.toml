@@ -1,0 +1,67 @@
+[project]
+name = "assumption-zero"
+version = "0.1.0"
+description = "Open-source MVP validation engine with evidence-backed competitor research and multi-model analysis"
+readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "MIT" }
+authors = [{ name = "Assumption Zero Contributors" }]
+keywords = ["mvp", "validation", "startup", "ai", "analysis"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.12",
+]
+
+dependencies = [
+    "fastapi>=0.111.0",
+    "uvicorn[standard]>=0.30.0",
+    "pydantic>=2.7.0",
+    "pydantic-settings>=2.3.0",
+    "sqlalchemy>=2.0.30",
+    "aiosqlite>=0.20.0",
+    "httpx>=0.27.0",
+    "typer>=0.12.0",
+    "rich>=13.7.0",
+
+    "python-dotenv>=1.0.0",
+    "slowapi>=0.1.9",
+    "cachetools>=5.3.0",
+]
+
+[project.optional-dependencies]
+# No extra optional deps needed — OpenRouter uses httpx (already in core deps)
+# For Ollama: httpx is sufficient; no extra install required
+dev = [
+    "pytest>=8.2.0",
+    "pytest-asyncio>=0.23.0",
+    "pytest-cov>=5.0.0",
+    "httpx>=0.27.0",
+    "ruff>=0.4.0",
+    "mypy>=1.10.0",
+]
+
+[project.scripts]
+azero = "assumption_zero.cli:app"
+
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["assumption_zero*"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+filterwarnings = ["ignore::DeprecationWarning"]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+
+[tool.mypy]
+python_version = "3.12"
+strict = false
+ignore_missing_imports = true

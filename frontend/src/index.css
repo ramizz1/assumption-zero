@@ -1,0 +1,81 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    font-family: 'Inter', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body {
+    background-color: #0d0d0f;
+    color: #f1f1f3;
+    min-height: 100vh;
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #111114;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #2a2a35;
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #3a3a48;
+  }
+}
+
+@layer components {
+  .card {
+    @apply bg-[#111114] border border-[#1f1f26] rounded-xl;
+  }
+
+  .btn-primary {
+    @apply bg-white text-gray-950 font-semibold px-6 py-2.5 rounded-lg
+           hover:bg-gray-100 transition-all duration-200 active:scale-95
+           focus:outline-none focus:ring-2 focus:ring-white/50;
+  }
+
+  .btn-ghost {
+    @apply border border-[#2a2a35] text-gray-300 font-medium px-6 py-2.5 rounded-lg
+           hover:border-gray-500 hover:text-white transition-all duration-200
+           active:scale-95 focus:outline-none focus:ring-2 focus:ring-gray-500/30;
+  }
+
+  .input-field {
+    @apply w-full bg-[#0d0d0f] border border-[#2a2a35] rounded-lg px-4 py-3 text-white
+           placeholder-gray-600 focus:outline-none focus:border-gray-500 transition-colors
+           text-sm;
+  }
+
+  .textarea-field {
+    @apply input-field resize-none;
+  }
+
+  .label {
+    @apply block text-sm font-medium text-gray-300 mb-1.5;
+  }
+
+  .badge {
+    @apply inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border;
+  }
+
+  .section-title {
+    @apply text-lg font-semibold text-white mb-4;
+  }
+
+  .citation-badge {
+    @apply inline-flex items-center px-1.5 py-0.5 rounded text-xs font-mono
+           bg-blue-400/10 text-blue-400 border border-blue-500/20
+           hover:bg-blue-400/20 transition-colors cursor-pointer;
+  }
+}
