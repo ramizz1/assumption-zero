@@ -736,19 +736,39 @@ def analyze(
 
 @app.command()
 def prompt(
-    text: Optional[str] = typer.Argument(None, help="Single natural language text prompt describing your startup idea")
+    text: Optional[str] = typer.Argument(None, help="Single natural language text prompt describing your startup idea"),
+    file: Optional[Path] = typer.Option(None, "--file", "-f", help="Path to a text or markdown file containing your idea prompt"),
 ) -> None:
-    """Analyze a startup idea from a single freeform text prompt."""
+    """Analyze a startup idea from a freeform text prompt or text/markdown file."""
+    if file:
+        if not file.exists():
+            err_console.print(f"File not found: {file}")
+            raise typer.Exit(1)
+        text = file.read_text(encoding="utf-8")
+        console.print(f"[a0.muted]Loaded prompt from[/] [a0.info]{file}[/]")
+
     if not text:
         _print_splash()
         _print_section("1-Prompt Quick Mode", "⚡")
         console.print(
-            "  [a0.muted]Describe your startup idea in plain English (product name, problem, customer, pricing, budget, etc.):[/]\n"
+            "  [a0.muted]Paste your multi-line startup idea prompt below.[/]\n"
+            "  [a0.muted]Type 'END' on a new line when finished, or pass a file: azero prompt -f my_idea.txt[/]\n"
         )
-        text = Prompt.ask("  [a0.accent]›[/] [a0.label]Startup Idea Prompt[/]", console=console).strip()
+        lines = []
+        try:
+            while True:
+                line = input("  › ")
+                if line.strip().upper() == "END":
+                    break
+                lines.append(line)
+        except (EOFError, KeyboardInterrupt):
+            pass
+        text = "\n".join(lines).strip()
+
         if not text:
             console.print("  [a0.bad]✗ Prompt cannot be empty.[/]")
             raise typer.Exit(1)
+
     analyze(file=None, prompt=text)
 
 
