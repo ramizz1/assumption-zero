@@ -53,15 +53,44 @@ def _write_all(rows: list[dict]) -> None:
         writer.writerows(rows)
 
 
+def resolve_id(query: str) -> Optional[str]:
+    """Resolve a full UUID, short prefix (e.g. b28a73fb), or 1-based index (e.g. 1) to a full analysis ID."""
+    rows = _read_all()
+    if not rows:
+        return None
+
+    # Check 1-based index (e.g. "1", "2")
+    if query.isdigit():
+        idx = int(query) - 1
+        if 0 <= idx < len(rows):
+            return rows[idx]["id"]
+
+    query_clean = query.strip().lower()
+
+    # Check exact match
+    for row in rows:
+        if row["id"].lower() == query_clean:
+            return row["id"]
+
+    # Check prefix match (e.g. first 8 characters)
+    matches = [row["id"] for row in rows if row["id"].lower().startswith(query_clean)]
+    if matches:
+        return matches[0]
+
+    return None
+
+
 def _input_path(analysis_id: str) -> Path:
-    return _ANALYSES_DIR / f"{analysis_id}_input.json"
+    full_id = resolve_id(analysis_id) or analysis_id
+    return _ANALYSES_DIR / f"{full_id}_input.json"
 
 
 def _result_path(analysis_id: str) -> Path:
-    return _ANALYSES_DIR / f"{analysis_id}_result.json"
+    full_id = resolve_id(analysis_id) or analysis_id
+    return _ANALYSES_DIR / f"{full_id}_result.json"
 
 
-# ── Public API (all sync — wrapped in async in analysis_service) ──────────────
+# ── Public API ────────────────────────────────────────────────────────────────
 
 
 def create_record(
@@ -73,7 +102,6 @@ def create_record(
     """Insert a new analysis row and write the input JSON."""
     _ensure_dirs()
 
-    # Write input JSON
     _input_path(analysis_id).write_text(
         json.dumps(input_data, ensure_ascii=False, indent=2), encoding="utf-8"
     )
@@ -94,9 +122,10 @@ def create_record(
 
 def update_stage(analysis_id: str, status: str, stage: str) -> None:
     """Update status/stage while analysis is running."""
+    full_id = resolve_id(analysis_id) or analysis_id
     rows = _read_all()
     for row in rows:
-        if row["id"] == analysis_id:
+        if row["id"] == full_id:
             row["status"] = status
             row["stage"] = stage
             break
@@ -105,13 +134,14 @@ def update_stage(analysis_id: str, status: str, stage: str) -> None:
 
 def complete_record(analysis_id: str, result_dict: dict) -> None:
     """Mark analysis complete and write the result JSON."""
-    _result_path(analysis_id).write_text(
+    full_id = resolve_id(analysis_id) or analysis_id
+    _result_path(full_id).write_text(
         json.dumps(result_dict, ensure_ascii=False, default=str, indent=2),
         encoding="utf-8",
     )
     rows = _read_all()
     for row in rows:
-        if row["id"] == analysis_id:
+        if row["id"] == full_id:
             row["status"] = "complete"
             row["stage"] = "complete"
             row["completed_at"] = datetime.utcnow().isoformat(timespec="seconds")
@@ -121,9 +151,10 @@ def complete_record(analysis_id: str, result_dict: dict) -> None:
 
 def fail_record(analysis_id: str, error: str) -> None:
     """Mark analysis as failed."""
+    full_id = resolve_id(analysis_id) or analysis_id
     rows = _read_all()
     for row in rows:
-        if row["id"] == analysis_id:
+        if row["id"] == full_id:
             row["status"] = "failed"
             row["error_message"] = error[:500]
             break
@@ -132,21 +163,26 @@ def fail_record(analysis_id: str, error: str) -> None:
 
 def get_record(analysis_id: str) -> Optional[dict]:
     """Return the CSV row dict for an analysis, or None."""
+    full_id = resolve_id(analysis_id)
+    if not full_id:
+        return None
     for row in _read_all():
-        if row["id"] == analysis_id:
+        if row["id"] == full_id:
             return row
     return None
 
 
 def get_input(analysis_id: str) -> Optional[dict]:
-    p = _input_path(analysis_id)
+    full_id = resolve_id(analysis_id) or analysis_id
+    p = _input_path(full_id)
     if p.exists():
         return json.loads(p.read_text(encoding="utf-8"))
     return None
 
 
 def get_result(analysis_id: str) -> Optional[dict]:
-    p = _result_path(analysis_id)
+    full_id = resolve_id(analysis_id) or analysis_id
+    p = _result_path(full_id)
     if p.exists():
         return json.loads(p.read_text(encoding="utf-8"))
     return None
@@ -155,18 +191,20 @@ def get_result(analysis_id: str) -> Optional[dict]:
 def list_records(limit: int = 50) -> list[dict]:
     """Return rows newest-first."""
     rows = _read_all()
-    # CSV is already newest-first (we insert at index 0)
     return rows[:limit]
 
 
 def delete_record(analysis_id: str) -> bool:
     """Delete analysis row + JSON files. Returns True if found."""
+    full_id = resolve_id(analysis_id)
+    if not full_id:
+        return False
     rows = _read_all()
-    new_rows = [r for r in rows if r["id"] != analysis_id]
+    new_rows = [r for r in rows if r["id"] != full_id]
     if len(new_rows) == len(rows):
         return False
     _write_all(new_rows)
-    for p in (_input_path(analysis_id), _result_path(analysis_id)):
+    for p in (_input_path(full_id), _result_path(full_id)):
         if p.exists():
             p.unlink()
     return True

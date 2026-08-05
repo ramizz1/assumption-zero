@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import json
 import logging
+import re
 from typing import Any, Dict, List
 
 import httpx
@@ -43,22 +44,105 @@ _FALLBACK_MODELS = [
 ]
 
 
-def _parse_output(raw: str, perspective_name: PerspectiveName, model_id: str) -> PerspectiveOutput:
-    text = raw.strip()
-    if text.startswith("```"):
-        text = text.split("```", 2)[1]
-        if text.startswith("json"):
-            text = text[4:]
-        text = text.rsplit("```", 1)[0].strip()
+def _repair_and_parse_json(text: str) -> dict:
+    """Robustly parse JSON, repairing common LLM output syntax flaws."""
+    text = text.strip()
+    if "```" in text:
+        parts = text.split("```")
+        for part in parts:
+            part_str = part.strip()
+            if part_str.startswith("json"):
+                part_str = part_str[4:].strip()
+            if part_str.startswith("{") and part_str.endswith("}"):
+                text = part_str
+                break
 
+    start = text.find("{")
+    end = text.rfind("}") + 1
+    if start >= 0 and end > start:
+        text = text[start:end]
+
+    # Attempt 1: Standard JSON parse
     try:
-        data = json.loads(text)
+        return json.loads(text)
     except json.JSONDecodeError:
-        start, end = text.find("{"), text.rfind("}") + 1
-        if start >= 0 and end > start:
-            data = json.loads(text[start:end])
+        pass
+
+    # Attempt 2: Fix trailing commas and missing commas between properties
+    cleaned = re.sub(r",\s*([\}\]])", r"\1", text)
+    cleaned = re.sub(r'("|\d|true|false)\s*\n\s*(")', r'\1,\n\2', cleaned)
+    try:
+        return json.loads(cleaned)
+    except json.JSONDecodeError:
+        pass
+
+    # Attempt 3: Sanitize newlines inside quoted strings
+    buf: List[str] = []
+    in_string = False
+    escaped = False
+    for char in cleaned:
+        if char == '"' and not escaped:
+            in_string = not in_string
+            buf.append(char)
+        elif char == "\n" and in_string:
+            buf.append("\\n")
+        elif char == "\r" and in_string:
+            buf.append("")
         else:
-            raise ValueError(f"OpenRouter response is not valid JSON: {text[:200]}")
+            buf.append(char)
+        escaped = (char == "\\" and not escaped)
+
+    sanitized = "".join(buf)
+    try:
+        return json.loads(sanitized)
+    except json.JSONDecodeError:
+        pass
+
+    # Attempt 4: Fallback regex extraction of essential fields
+    result: dict = {}
+
+    summary_match = re.search(r'"summary"\s*:\s*"(.*?)"', text, re.DOTALL)
+    result["summary"] = summary_match.group(1).replace("\n", " ").strip() if summary_match else text[:300]
+
+    rec_match = re.search(r'"recommendation"\s*:\s*"(.*?)"', text)
+    result["recommendation"] = rec_match.group(1).strip() if rec_match else "Test First"
+
+    assumption_match = re.search(r'"most_dangerous_assumption"\s*:\s*"(.*?)"', text, re.DOTALL)
+    if assumption_match:
+        result["most_dangerous_assumption"] = assumption_match.group(1).strip()
+
+    # Extract lists of strings for findings/risks/opportunities
+    findings: List[str] = []
+    findings_block = re.search(r'"key_findings"\s*:\s*\[(.*?)\]', text, re.DOTALL)
+    if findings_block:
+        findings = re.findall(r'"([^"]{5,300})"', findings_block.group(1))
+    result["key_findings"] = findings
+
+    risks: List[str] = []
+    risks_block = re.search(r'"risks"\s*:\s*\[(.*?)\]', text, re.DOTALL)
+    if risks_block:
+        risks = re.findall(r'"([^"]{5,300})"', risks_block.group(1))
+    result["risks"] = risks
+
+    opps: List[str] = []
+    opps_block = re.search(r'"opportunities"\s*:\s*\[(.*?)\]', text, re.DOTALL)
+    if opps_block:
+        opps = re.findall(r'"([^"]{5,300})"', opps_block.group(1))
+    result["opportunities"] = opps
+
+    # Extract dimension scores
+    dim_scores: dict = {}
+    dim_block = re.search(r'"dimension_scores"\s*:\s*\{(.*?)\}', text, re.DOTALL)
+    if dim_block:
+        for key, val in re.findall(r'"(\w+)"\s*:\s*(\d+(?:\.\d+)?)', dim_block.group(1)):
+            dim_scores[key] = float(val)
+    result["dimension_scores"] = dim_scores
+
+    return result
+
+
+def _parse_output(raw: str, perspective_name: PerspectiveName, model_id: str) -> PerspectiveOutput:
+    data = _repair_and_parse_json(raw)
 
     rec = data.get("recommendation", "Test First")
     if rec not in _VALID_RECOMMENDATIONS:
@@ -162,10 +246,7 @@ class OpenRouterAdapter(LLMAdapter):
             logger.error("OpenRouter API error for %s: %s", perspective_name.value, exc)
             raise
 
-        try:
-            return _parse_output(raw, perspective_name, self.model_id)
-        except Exception as exc:
-            raise ValueError(f"OpenRouter returned unparseable output: {exc}") from exc
+        return _parse_output(raw, perspective_name, self.model_id)
 
     async def clarify_idea(self, idea: IdeaInput) -> str:
         prompt = (
@@ -177,5 +258,5 @@ class OpenRouterAdapter(LLMAdapter):
             raw = await self._chat([{"role": "user", "content": prompt}])
             return raw.strip()
         except Exception as exc:
-            logger.warning("OpenRouter clarify_idea failed: %s", exc)
+            logger.debug("OpenRouter clarify_idea failed: %s", exc)
             return f"{idea.name}: {idea.description}"

@@ -25,11 +25,24 @@ from rich.theme import Theme
 
 from assumption_zero import __version__
 
+import sys
+
+if hasattr(sys.stdout, "reconfigure"):
+    try:
+        sys.stdout.reconfigure(encoding="utf-8")
+    except Exception:
+        pass
+if hasattr(sys.stderr, "reconfigure"):
+    try:
+        sys.stderr.reconfigure(encoding="utf-8")
+    except Exception:
+        pass
+
 # ── Theme ─────────────────────────────────────────────────────────────────────
 THEME = Theme(
     {
         "a0.accent":  "bold #F5A623",       # amber — primary brand
-        "a0.muted":   "#C8C8C8",            # light — for secondary text (NOT grey)
+        "a0.muted":   "#C8C8C8",            # light — for secondary text
         "a0.good":    "bold #4CAF50",       # green
         "a0.warn":    "bold #FFC107",       # yellow/amber
         "a0.bad":     "bold #F44336",       # red
@@ -42,8 +55,8 @@ THEME = Theme(
     }
 )
 
-console = Console(theme=THEME, highlight=False)
-err_console = Console(stderr=True, style="bold red")
+console = Console(theme=THEME, highlight=False, legacy_windows=False)
+err_console = Console(stderr=True, style="bold red", legacy_windows=False)
 
 DISCLAIMER = (
     "Assumption Zero provides decision support, not a prediction "
@@ -106,11 +119,6 @@ def _perspective_icon(name: str) -> str:
         "skeptical_investor": "🔍",
         "practical_builder": "🔨",
     }.get(name, "◆")
-
-
-def _border(color: str) -> str:
-    """Strip rich markup prefix for use as plain border_style."""
-    return color.replace("a0.", "").replace("bold ", "").strip()
 
 
 # ── Layout helpers ────────────────────────────────────────────────────────────
@@ -396,17 +404,11 @@ def _print_report(result) -> None:
             f"{findings_text}{risks_text}{opps_text}"
         )
 
-        border_color = pcol.replace("a0.", "").replace("bold ", "").strip()
-        # Map theme names to actual border colors Rich understands
-        border_map = {
-            "market": "blue",
-            "skeptic": "red",
-            "builder": "green",
-        }
-        for k, v in border_map.items():
-            if k in border_color:
-                border_color = v
-                break
+        border_color = "blue"
+        if "skeptic" in p.perspective_name.value:
+            border_color = "red"
+        elif "builder" in p.perspective_name.value:
+            border_color = "green"
 
         console.print(
             Panel(
@@ -567,11 +569,15 @@ def _ask_idea():
     console.print()
     console.print(
         Panel(
-            "[a0.muted]Answer the questions below.\n"
-            "Name, description, problem, customer, and geography are required.\n"
-            "Press [bold]Enter[/bold] to skip optional fields.[/a0.muted]",
+            "[a0.accent]💡 How to get 100% accurate validation results:[/]\n\n"
+            "1. [bold white]Be Specific:[/] Mention your target audience (e.g. 'solo law firms in Azerbaijan').\n"
+            "2. [bold white]Explain the Pain:[/] Describe why customers struggle without your solution.\n"
+            "3. [bold white]List Competitors:[/] Name existing local or global tools (e.g. 'tap.az, lalafo').\n"
+            "4. [bold white]Specify Budget & Model:[/] State pricing model and available capital.\n\n"
+            "[a0.muted]Press Enter to skip optional fields.[/]",
             border_style="#F5A623",
-            padding=(0, 2),
+            padding=(1, 2),
+            title="[bold #F5A623]Step-by-Step Idea Definition Guide[/]",
         )
     )
     console.print()
@@ -590,21 +596,21 @@ def _ask_idea():
                 continue
             return val
 
-    name = ask("Idea / product name", "LegalMind Local", required=True)
-    description = ask("Short description", "one sentence", required=True)
+    name = ask("Idea / product name", "Gotur.az", required=True)
+    description = ask("Short description", "P2P marketplace in Azerbaijan connecting buyers & sellers", required=True)
 
     _print_section("The Problem", "🔎")
-    problem = ask("Problem being solved", "who has it and how painful?", required=True)
-    customer = ask("Target customer", "solo law firms in the US", required=True)
-    geography = ask("Target geography", "United States", required=True)
+    problem = ask("Problem being solved", "Sellers lack a low-fee platform for instant listing & chat", required=True)
+    customer = ask("Target customer", "Individual sellers and buyers in Azerbaijan", required=True)
+    geography = ask("Target geography", "Azerbaijan", required=True)
 
     _print_section("Business Details", "📋")
-    model = ask("Business model", "SaaS, marketplace")
-    price = ask("Expected price", "$49/month")
-    skills = ask("Founder skills", "Full-stack dev, ex-lawyer")
-    budget = ask("Available budget / runway", "$15k for 6 months")
-    competitors = ask("Known competitors", "Otter.ai, Fireflies.ai")
-    context = ask("Additional context")
+    model = ask("Business model", "Marketplace with boost listing packages")
+    price = ask("Expected price", "Free basic, $5/boost package")
+    skills = ask("Founder skills", "Full-stack dev (Nuxt + Django + Flutter)")
+    budget = ask("Available budget / runway", "$5,000 for 6 months")
+    competitors = ask("Known competitors", "tap.az, lalafo.az")
+    context = ask("Additional context", "Web (Nuxt) + Mobile (Flutter) backed by Django REST API")
 
     return IdeaInput(
         name=name,
@@ -627,23 +633,26 @@ def _ask_idea():
 
 
 @app.command()
-def demo() -> None:
-    """Run the built-in example idea through the real research and AI pipeline."""
+def guide() -> None:
+    """Show the comprehensive guide for formulating startup ideas."""
     _print_splash()
-    console.print(
-        Panel(
-            "[a0.label]Running built-in example:[/]  [a0.accent]LegalMind Local[/]\n"
-            "[white]Privacy-first AI meeting summarizer for legal firms.[/]\n\n"
-            "[a0.muted]Using real research providers — results vary with internet access.[/]",
-            border_style="#F5A623",
-            padding=(0, 2),
-        )
-    )
-    console.print()
+    _print_section("Step-by-Step Idea Formulation Guide", "💡")
 
-    from assumption_zero.api.routes import DEMO_IDEA
-    result = _run_analysis_sync(DEMO_IDEA, is_demo=True)
-    _print_report(result)
+    guide_text = (
+        "[a0.accent]To get 100% accurate scores and actionable insights from Assumption Zero:[/\n\n"
+        "[bold white]1. Precise Problem Definition[/]\n"
+        "   State exactly who suffers, what fails today, and the financial/time cost of inaction.\n"
+        "   [a0.muted]Good:[/] 'Solo law firms lose 10+ hours/week manually summarizing client meetings due to cloud privacy compliance.'\n"
+        "   [a0.muted]Bad:[/] 'Making it easier for buyers and sellers.'\n\n"
+        "[bold white]2. Specific Target Customer & Location[/]\n"
+        "   Identify exact demographics, region, and segment.\n"
+        "   [a0.muted]Good:[/] 'B2B SMBs in Azerbaijan with 5-20 employees.'\n\n"
+        "[bold white]3. Real Competitors & Existing Alternatives[/]\n"
+        "   List direct competitors (e.g. tap.az, lalafo) and indirect alternatives (Excel, WhatsApp).\n\n"
+        "[bold white]4. Realistic Budget & Founder Skills[/]\n"
+        "   State your technical skills and runway so the AI can evaluate Founder/Project Fit accurately.\n"
+    )
+    console.print(Panel(guide_text, border_style="#F5A623", padding=(1, 2)))
 
 
 @app.command()
@@ -684,7 +693,7 @@ def analyze(
         Panel(
             f"[a0.label]Idea:[/]  [a0.accent]{idea.name}[/]\n"
             f"[white]{idea.description}[/]\n\n"
-            f"[a0.muted]Running research across GitHub, Hacker News, Reddit, Wikipedia…[/]\n"
+            f"[a0.muted]Running research across GitHub, Hacker News, Wikipedia, Reddit…[/]\n"
             f"[a0.muted]This usually takes 30–90 seconds.[/]",
             border_style="#F5A623",
             padding=(0, 2),
@@ -711,7 +720,7 @@ def list_cmd() -> None:
             Panel(
                 "[white]No analyses yet.[/]\n"
                 "Run [a0.accent]azero analyze[/] to analyse your first idea,\n"
-                "or [a0.accent]azero demo[/] to try the built-in example.",
+                "or [a0.accent]azero guide[/] to view idea formatting tips.",
                 border_style="#F5A623",
                 padding=(0, 2),
             )
@@ -726,6 +735,7 @@ def list_cmd() -> None:
         show_edge=False,
         padding=(0, 1),
     )
+    table.add_column("#", width=4, style="a0.accent")
     table.add_column("ID", width=10, style="a0.muted")
     table.add_column("Idea", min_width=24)
     table.add_column("Status", width=10)
@@ -733,7 +743,7 @@ def list_cmd() -> None:
     table.add_column("Verdict", width=13)
     table.add_column("Created", width=17, style="a0.muted")
 
-    for item in items:
+    for i, item in enumerate(items, 1):
         status_col = "a0.good" if item.status.value == "complete" else "a0.warn"
         score_str = (
             f"[{_score_color(item.opportunity_score)}]{item.opportunity_score:.0f}[/]"
@@ -747,7 +757,8 @@ def list_cmd() -> None:
         )
         created = item.created_at.strftime("%b %d %H:%M") if item.created_at else "—"
         table.add_row(
-            item.analysis_id[:8] + "…",
+            f"#{i}",
+            item.analysis_id[:8],
             f"[a0.accent]{item.idea_name[:26]}[/]",
             f"[{status_col}]{item.status.value}[/]",
             score_str,
@@ -757,24 +768,28 @@ def list_cmd() -> None:
 
     console.print(table)
     console.print(
-        f"\n[a0.muted]  Use [/][a0.accent]azero show <ID>[/][a0.muted] to view a full report.[/]"
+        f"\n[a0.muted]  Use [/][a0.accent]azero show 1[/][a0.muted] or [/][a0.accent]azero show {items[0].analysis_id[:8]}[/][a0.muted] to view report.[/]"
     )
 
 
 @app.command()
 def show(
-    analysis_id: str = typer.Argument(..., help="Analysis ID (or first 8 chars)"),
+    analysis_id: Optional[str] = typer.Argument(
+        None, help="Analysis ID, 8-char short ID (e.g. b28a73fb), or index (1, 2, ...). Omit for latest."
+    ),
 ) -> None:
-    """Show the full report for a saved analysis."""
+    """Show the full report for a saved analysis. Omit ID to show the latest analysis."""
     _print_splash()
+
+    target_id = analysis_id or "1"
 
     async def _get():
         from assumption_zero.services.analysis_service import get_analysis
-        return await get_analysis(analysis_id)
+        return await get_analysis(target_id)
 
     result = asyncio.run(_get())
     if not result:
-        err_console.print(f"Analysis '{analysis_id}' not found.")
+        err_console.print(f"Analysis '{target_id}' not found.")
         console.print(f"[a0.muted]Run [/][a0.accent]azero list[/][a0.muted] to see all saved analyses.[/]")
         raise typer.Exit(1)
 
@@ -783,28 +798,29 @@ def show(
 
 @app.command()
 def export(
-    analysis_id: str = typer.Argument(..., help="Analysis ID to export"),
+    analysis_id: Optional[str] = typer.Argument(
+        None, help="Analysis ID, short ID, or index (1, 2, ...). Omit for latest."
+    ),
     format: str = typer.Option("markdown", "--format", "-f", help="markdown or json"),
     output: Optional[Path] = typer.Option(None, "--output", "-o", help="Output file path"),
 ) -> None:
     """Export an analysis as Markdown or JSON."""
+    target_id = analysis_id or "1"
 
     async def _get():
         from assumption_zero.services.analysis_service import get_analysis
-        return await get_analysis(analysis_id)
+        return await get_analysis(target_id)
 
     result = asyncio.run(_get())
     if not result:
-        err_console.print(f"Analysis '{analysis_id}' not found.")
+        err_console.print(f"Analysis '{target_id}' not found.")
         raise typer.Exit(1)
 
     fmt = format.lower()
     if fmt == "json":
         content = result.model_dump_json(indent=2)
-        default_ext = "json"
     else:
         content = _export_markdown(result)
-        default_ext = "md"
 
     if output:
         output.write_text(content, encoding="utf-8")

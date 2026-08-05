@@ -126,6 +126,31 @@ export default function HomePage() {
             </div>
           )}
 
+          {/* Step-by-Step Guidance Banner */}
+          <div className="mb-6 p-5 bg-amber-400/5 border border-amber-400/20 rounded-xl text-sm text-gray-300">
+            <div className="flex items-center gap-2 text-amber-400 font-bold mb-2 text-base">
+              <span>💡</span> Step-by-Step Guide for Best Analysis Results
+            </div>
+            <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-gray-400">
+              <li className="flex items-start gap-1.5">
+                <span className="text-amber-400 font-bold">1.</span>
+                <span><strong className="text-gray-200">Be Specific:</strong> State your exact target customer (e.g. <em>"Solo law firms in Azerbaijan"</em>).</span>
+              </li>
+              <li className="flex items-start gap-1.5">
+                <span className="text-amber-400 font-bold">2.</span>
+                <span><strong className="text-gray-200">Explain the Pain:</strong> Describe what fails today & how customers solve it manually.</span>
+              </li>
+              <li className="flex items-start gap-1.5">
+                <span className="text-amber-400 font-bold">3.</span>
+                <span><strong className="text-gray-200">Name Competitors:</strong> List known competitors or alternatives (e.g. <em>"tap.az, lalafo.az"</em>).</span>
+              </li>
+              <li className="flex items-start gap-1.5">
+                <span className="text-amber-400 font-bold">4.</span>
+                <span><strong className="text-gray-200">State Budget & Skills:</strong> Give your technical skills & budget for accurate fit scoring.</span>
+              </li>
+            </ul>
+          </div>
+
           <form onSubmit={handleAnalyze} className="space-y-6">
             {/* Basic info */}
             <div className="card p-6">
