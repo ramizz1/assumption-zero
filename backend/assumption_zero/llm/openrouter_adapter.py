@@ -34,13 +34,13 @@ _BUILTIN_OPENROUTER_KEY = "sk-or-v1-9e838dc2f410fc379a98647c045cac8e53e2e678ddde
 _OPENROUTER_BASE = "https://openrouter.ai/api/v1"
 
 # Primary default model & fallback list of verified free models on OpenRouter
-_DEFAULT_MODEL = "google/gemma-4-26b-a4b-it:free"
+_DEFAULT_MODEL = "openrouter/free"
 _FALLBACK_MODELS = [
+    "openrouter/free",
+    "google/gemma-4-31b-it:free",
     "google/gemma-4-26b-a4b-it:free",
-    "openai/gpt-oss-20b:free",
     "inclusionai/ling-3.0-flash:free",
-    "nvidia/nemotron-nano-9b-v2:free",
-    "poolside/laguna-xs-2.1:free",
+    "poolside/laguna-s-2.1:free",
 ]
 
 
