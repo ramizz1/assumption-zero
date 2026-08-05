@@ -30,7 +30,7 @@ class Settings(BaseSettings):
     # The built-in key works out of the box; set your own for higher limits.
     # https://openrouter.ai
     openrouter_api_key: Optional[str] = None   # leave blank to use built-in key
-    openrouter_model: str = "meta-llama/llama-3.3-70b-instruct:free"
+    openrouter_model: str = "google/gemma-4-26b-a4b-it:free"
 
     # ── Ollama (local models) ────────────────────────────────────
     ollama_base_url: str = "http://localhost:11434"

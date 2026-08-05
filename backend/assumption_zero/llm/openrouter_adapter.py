@@ -6,11 +6,6 @@ https://openrouter.ai
 
 By default this adapter uses the built-in Assumption Zero Beta key.
 Users can override with their own OPENROUTER_API_KEY in .env.
-
-Configure (optional — works out of the box):
-  AI_PROVIDER=openrouter
-  OPENROUTER_API_KEY=sk-or-v1-...        # optional override
-  OPENROUTER_MODEL=meta-llama/llama-3.3-70b-instruct:free
 """
 from __future__ import annotations
 
@@ -33,10 +28,19 @@ logger = logging.getLogger(__name__)
 
 _VALID_RECOMMENDATIONS = {r.value for r in Recommendation}
 
-# Default built-in key — allows zero-config usage
+# Built-in community key for zero-config out-of-the-box usage
 _BUILTIN_OPENROUTER_KEY = "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"
 _OPENROUTER_BASE = "https://openrouter.ai/api/v1"
-_DEFAULT_MODEL = "meta-llama/llama-3.3-70b-instruct:free"
+
+# Primary default model & fallback list of verified free models on OpenRouter
+_DEFAULT_MODEL = "google/gemma-4-26b-a4b-it:free"
+_FALLBACK_MODELS = [
+    "google/gemma-4-26b-a4b-it:free",
+    "openai/gpt-oss-20b:free",
+    "inclusionai/ling-3.0-flash:free",
+    "nvidia/nemotron-nano-9b-v2:free",
+    "poolside/laguna-xs-2.1:free",
+]
 
 
 def _parse_output(raw: str, perspective_name: PerspectiveName, model_id: str) -> PerspectiveOutput:
@@ -54,7 +58,7 @@ def _parse_output(raw: str, perspective_name: PerspectiveName, model_id: str) ->
         if start >= 0 and end > start:
             data = json.loads(text[start:end])
         else:
-            raise ValueError(f"OpenRouter response is not JSON: {text[:200]}")
+            raise ValueError(f"OpenRouter response is not valid JSON: {text[:200]}")
 
     rec = data.get("recommendation", "Test First")
     if rec not in _VALID_RECOMMENDATIONS:
@@ -63,7 +67,7 @@ def _parse_output(raw: str, perspective_name: PerspectiveName, model_id: str) ->
     return PerspectiveOutput(
         perspective_name=perspective_name,
         model_id=model_id,
-        summary=data.get("summary", ""),
+        summary=data.get("summary", "Analysis completed."),
         key_findings=data.get("key_findings", []),
         risks=data.get("risks", []),
         opportunities=data.get("opportunities", []),
@@ -79,8 +83,8 @@ class OpenRouterAdapter(LLMAdapter):
     """
     OpenRouter adapter.
 
-    Uses a built-in community key by default so the app works without any
-    configuration. Users can set OPENROUTER_API_KEY to use their own key.
+    Uses built-in key and automatically tries active free models with fallback
+    support if a model is unavailable.
     """
 
     def __init__(self) -> None:
@@ -98,7 +102,6 @@ class OpenRouterAdapter(LLMAdapter):
 
     @property
     def is_available(self) -> bool:
-        # Always available — built-in key is always present
         return True
 
     def _headers(self) -> Dict[str, str]:
@@ -111,20 +114,37 @@ class OpenRouterAdapter(LLMAdapter):
 
     async def _chat(self, messages: List[Dict[str, str]]) -> str:
         url = f"{_OPENROUTER_BASE}/chat/completions"
-        payload: Dict[str, Any] = {
-            "model": self._model(),
-            "messages": messages,
-            "temperature": 0.3,
-        }
+        primary = self._model()
+        models_to_try = [primary] + [m for m in _FALLBACK_MODELS if m != primary]
+
+        last_error = None
+        timeout = max(30.0, float(self._settings.request_timeout))
+
         async with httpx.AsyncClient(
-            timeout=self._settings.request_timeout,
+            timeout=timeout,
             headers=self._headers(),
         ) as client:
-            resp = await client.post(url, json=payload)
-            resp.raise_for_status()
-            data = resp.json()
-            content = data["choices"][0]["message"]["content"]
-            return content
+            for model_name in models_to_try:
+                payload: Dict[str, Any] = {
+                    "model": model_name,
+                    "messages": messages,
+                    "temperature": 0.3,
+                }
+                try:
+                    resp = await client.post(url, json=payload)
+                    if resp.status_code == 200:
+                        data = resp.json()
+                        content = data["choices"][0]["message"]["content"]
+                        return content
+                    else:
+                        error_msg = f"HTTP {resp.status_code} for {model_name}: {resp.text[:150]}"
+                        logger.debug("OpenRouter model %s failed: %s", model_name, error_msg)
+                        last_error = RuntimeError(error_msg)
+                except Exception as exc:
+                    logger.debug("OpenRouter model %s exception: %s", model_name, exc)
+                    last_error = exc
+
+        raise RuntimeError(f"All OpenRouter models failed. Last error: {last_error}")
 
     async def analyze_perspective(
         self,
