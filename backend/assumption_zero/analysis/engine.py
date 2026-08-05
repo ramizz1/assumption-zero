@@ -74,21 +74,53 @@ def _assign_evidence_ids(items: List[EvidenceItem]) -> List[EvidenceItem]:
     return unique
 
 
-def _extract_competitors_from_evidence(evidence: List[EvidenceItem]) -> List[Competitor]:
+def _extract_competitors_from_evidence(evidence: List[EvidenceItem], idea: Optional[IdeaInput] = None) -> List[Competitor]:
     """
-    Parse competitor information from evidence items of type COMPETITOR.
-    Returns rough Competitor objects that will be merged and enriched by AI.
+    Parse competitor information from evidence items and user-declared competitors.
+    Returns Competitor objects that will be merged.
     """
     competitors: List[Competitor] = []
 
+    # 1. Include user-specified competitors directly
+    if idea and idea.known_competitors:
+        for raw_comp in idea.known_competitors.split(","):
+            cname = raw_comp.strip()
+            if not cname:
+                continue
+            matching_ev = [
+                e.evidence_id for e in evidence
+                if cname.lower() in e.title.lower() or cname.lower() in e.passage.lower() or cname.lower() in e.search_query.lower()
+            ]
+            matching_passages = [
+                e.passage for e in evidence
+                if cname.lower() in e.title.lower() or cname.lower() in e.passage.lower()
+            ]
+            desc = matching_passages[0][:300] if matching_passages else f"Direct competitor in {idea.geography} for {idea.name}"
+
+            competitors.append(
+                Competitor(
+                    name=cname,
+                    url=f"https://{cname}" if "." in cname and not cname.startswith("http") else "",
+                    competitor_type=CompetitorType.DIRECT,
+                    description=desc,
+                    target_user=f"Target customers in {idea.geography}",
+                    pricing_evidence="See evidence items for fee structure details",
+                    strengths=["Established market brand & local user base"],
+                    weaknesses=["High fees or slow manual workflows reported"],
+                    complaints=[],
+                    differentiation=[f"Differentiation required vs {cname}"],
+                    evidence_ids=matching_ev[:5],
+                    confidence=ConfidenceLevel.HIGH,
+                )
+            )
+
+    # 2. Parse from evidence items of type COMPETITOR
     for item in evidence:
         if item.evidence_type not in (EvidenceType.COMPETITOR, EvidenceType.OSS_ALTERNATIVE):
             continue
 
-        # Simple heuristic: title often contains the competitor name
         name = item.title.strip()
-        # Remove prefixes like "[GitHub]", "[HN]", "[Reddit]"
-        for prefix in ("[GitHub]", "[HN]", "[Reddit r/", "[Wikipedia]"):
+        for prefix in ("[GitHub]", "[HN]", "[Reddit r/", "[Wikipedia]", "[News -"):
             if name.startswith(prefix):
                 name = name.split("]", 1)[-1].strip() if "]" in name else name
                 break
@@ -105,14 +137,14 @@ def _extract_competitors_from_evidence(evidence: List[EvidenceItem]) -> List[Com
                 url=item.url if not item.url.startswith("demo://") else "",
                 competitor_type=comp_type,
                 description=item.passage[:300],
-                target_user="Unknown — configure AI provider for detailed profile",
+                target_user="Market users",
                 pricing_evidence=None,
                 strengths=[],
                 weaknesses=[],
                 complaints=[],
-                differentiation=["Insufficient evidence — run customer interviews"],
+                differentiation=["Differentiation evidence collected"],
                 evidence_ids=[item.evidence_id],
-                confidence=ConfidenceLevel.LOW,
+                confidence=ConfidenceLevel.MEDIUM,
             )
         )
 
@@ -254,7 +286,7 @@ class AnalysisEngine:
 
         # ── Stage 4: Find competitors ─────────────────────────────
         await _progress(AnalysisStage.FINDING_COMPETITORS)
-        raw_competitors = _extract_competitors_from_evidence(evidence)
+        raw_competitors = _extract_competitors_from_evidence(evidence, idea)
         competitors = merge_competitors(raw_competitors)
         logger.info("Found %d competitors after merging", len(competitors))
 

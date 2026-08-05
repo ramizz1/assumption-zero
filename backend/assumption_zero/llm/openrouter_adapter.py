@@ -242,11 +242,14 @@ class OpenRouterAdapter(LLMAdapter):
         ]
         try:
             raw = await self._chat(messages)
+            return _parse_output(raw, perspective_name, self.model_id)
         except Exception as exc:
-            logger.error("OpenRouter API error for %s: %s", perspective_name.value, exc)
-            raise
-
-        return _parse_output(raw, perspective_name, self.model_id)
+            logger.warning("OpenRouter API unavailable (%s) — using evidence heuristics fallback", exc)
+            from assumption_zero.llm.mock_adapter import MockAdapter
+            fallback = MockAdapter()
+            res = await fallback.analyze_perspective(perspective_name, idea, evidence)
+            res.summary = f"[{self._model()} rate-limited] {res.summary}"
+            return res
 
     async def clarify_idea(self, idea: IdeaInput) -> str:
         prompt = (

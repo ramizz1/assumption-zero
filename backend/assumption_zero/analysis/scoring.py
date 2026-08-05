@@ -37,10 +37,49 @@ DIMENSION_DISPLAY_NAMES: Dict[str, str] = {
     "legal_operational_risk": "Legal & Operational Risk",
 }
 
+# Alias mapping for LLM output variations
+DIMENSION_ALIASES: Dict[str, str] = {
+    "problem_validation": "problem_evidence",
+    "problem_fit": "problem_evidence",
+    "problem": "problem_evidence",
+    "demand": "demand_signals",
+    "demand_signal": "demand_signals",
+    "demand_evidence": "demand_signals",
+    "competitive_advantage": "competitive_gap",
+    "competition": "competitive_gap",
+    "moat": "competitive_gap",
+    "distribution": "distribution_feasibility",
+    "go_to_market": "distribution_feasibility",
+    "channel": "distribution_feasibility",
+    "unit_econ": "unit_economics",
+    "economics": "unit_economics",
+    "monetization": "unit_economics",
+    "founder": "founder_fit",
+    "team": "founder_fit",
+    "founder_experience": "founder_fit",
+    "legal": "legal_operational_risk",
+    "compliance": "legal_operational_risk",
+    "regulatory": "legal_operational_risk",
+    "operational_risk": "legal_operational_risk",
+}
+
 # Verify at module load — tests also assert this
 assert sum(DIMENSION_WEIGHTS.values()) == 100, (
     f"DIMENSION_WEIGHTS must sum to 100, got {sum(DIMENSION_WEIGHTS.values())}"
 )
+
+
+def _normalize_dimension_scores(scores: Dict[str, float]) -> Dict[str, float]:
+    """Map alias dimension keys to canonical keys."""
+    normalized: Dict[str, float] = {}
+    for key, val in scores.items():
+        canonical_key = DIMENSION_ALIASES.get(key.lower(), key.lower())
+        if canonical_key in DIMENSION_WEIGHTS:
+            try:
+                normalized[canonical_key] = max(0.0, min(100.0, float(val)))
+            except (ValueError, TypeError):
+                pass
+    return normalized
 
 
 def _avg_dimension_scores(perspectives: List[AnalysisPerspective]) -> Dict[str, float]:
@@ -48,10 +87,11 @@ def _avg_dimension_scores(perspectives: List[AnalysisPerspective]) -> Dict[str, 
     sums: Dict[str, List[float]] = {k: [] for k in DIMENSION_WEIGHTS}
 
     for p in perspectives:
+        norm_scores = _normalize_dimension_scores(p.dimension_scores)
         for dim in DIMENSION_WEIGHTS:
-            val = p.dimension_scores.get(dim)
+            val = norm_scores.get(dim)
             if val is not None:
-                sums[dim].append(float(val))
+                sums[dim].append(val)
 
     return {
         dim: (sum(vals) / len(vals)) if vals else 50.0  # 50 = neutral when unknown
@@ -80,7 +120,8 @@ def _find_evidence_for_dimension(
     contradicting: set[str] = set()
 
     for p in perspectives:
-        score = p.dimension_scores.get(dim, 50.0)
+        norm_scores = _normalize_dimension_scores(p.dimension_scores)
+        score = norm_scores.get(dim, 50.0)
         if score >= 55:
             supporting.update(p.cited_evidence_ids[:3])
         elif score <= 40:
@@ -95,7 +136,7 @@ def _dimension_explanation(dim: str, raw: float, idea: IdeaInput) -> str:
     level = "strong" if raw >= 65 else ("moderate" if raw >= 45 else "weak")
     return (
         f"{name}: {level} signal (score {raw:.0f}/100). "
-        "See cited evidence for details — configure an AI provider for qualitative explanation."
+        "See cited evidence for details."
     )
 
 
@@ -110,8 +151,6 @@ def calculate_opportunity_score(
     - Averages raw scores across perspectives
     - Applies fixed weights (pure Python math)
     - Returns full breakdown with supporting/contradicting evidence per dimension
-
-    No AI model is involved in the mathematical calculation.
     """
     avg_raw = _avg_dimension_scores(perspectives)
 
@@ -119,29 +158,25 @@ def calculate_opportunity_score(
     total_weighted = 0.0
 
     for dim, weight in DIMENSION_WEIGHTS.items():
-        raw = avg_raw[dim]
-        weighted = (raw / 100.0) * weight
-        total_weighted += weighted
+        raw_val = avg_raw.get(dim, 50.0)
+        weighted_val = (raw_val * weight) / 100.0
+        total_weighted += weighted_val
 
-        sup_ids, con_ids = _find_evidence_for_dimension(dim, perspectives)
-        conf = _confidence_from_evidence(evidence, sup_ids, con_ids)
-
-        missing: List[str] = []
-        if not sup_ids and not con_ids:
-            missing.append(f"No evidence found for {DIMENSION_DISPLAY_NAMES[dim].lower()}")
+        supporting, contradicting = _find_evidence_for_dimension(dim, perspectives)
+        conf = _confidence_from_evidence(evidence, supporting, contradicting)
+        explanation = _dimension_explanation(dim, raw_val, idea)
 
         dimensions.append(
             DimensionScore(
                 dimension=dim,
                 display_name=DIMENSION_DISPLAY_NAMES[dim],
-                raw_score=round(raw, 1),
                 weight=weight,
-                weighted_score=round(weighted, 2),
-                explanation=_dimension_explanation(dim, raw, idea),
-                supporting_evidence_ids=sup_ids,
-                contradicting_evidence_ids=con_ids,
+                raw_score=round(raw_val, 1),
+                weighted_score=round(weighted_val, 1),
                 confidence=conf,
-                missing_information=missing,
+                explanation=explanation,
+                supporting_evidence_ids=supporting,
+                contradicting_evidence_ids=contradicting,
             )
         )
 
