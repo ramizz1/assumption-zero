@@ -78,28 +78,30 @@ def _score_color(score: float) -> str:
     if score >= 65:
         return "bold green"
     if score >= 45:
-        return "bold #D97706"
+        return "bold #F5A623"
     return "bold red"
 
 
-def _score_bar(score: float, width: int = 24) -> str:
+def _score_bar(score: float, width: int = 18, show_ratio: bool = False) -> str:
     filled = max(0, min(width, int(score / 100 * width)))
     col = _score_color(score)
-    bar = "=" * filled + "-" * (width - filled)
-    return f"[{col}][{bar}][/] [{col}]{score:.0f}/100[/]"
+    bar_filled = "█" * filled
+    bar_unfilled = "░" * (width - filled)
+    ratio_str = f" [{col}]{score:.0f}/100[/]" if show_ratio else ""
+    return f"[{col}]{bar_filled}[/][grey50]{bar_unfilled}[/]{ratio_str}"
 
 
 def _rec_color(rec: str) -> str:
     return {
         "Build": "bold green",
-        "Test First": "bold #D97706",
-        "Pivot": "bold #D97706",
+        "Test First": "bold #F5A623",
+        "Pivot": "bold #F5A623",
         "Avoid": "bold red",
     }.get(rec, "bold white")
 
 
 def _conf_color(conf: str) -> str:
-    return {"high": "bold green", "medium": "bold #D97706", "low": "bold red"}.get(conf.lower(), "bold white")
+    return {"high": "bold green", "medium": "bold #F5A623", "low": "bold red"}.get(conf.lower(), "bold white")
 
 
 def _perspective_color(name: str) -> str:
@@ -116,15 +118,15 @@ def _perspective_color(name: str) -> str:
 def _print_splash() -> None:
     console.print()
     banner_text = (
-        f"[bold #D97706]✦ A S S U M P T I O N   Z E R O[/]   [bold cyan]v{__version__}[/]\n"
+        f"[bold #F5A623]✦ A S S U M P T I O N   Z E R O[/]   [bold cyan]v{__version__}[/]\n"
         f"[bold white]{TAGLINE}[/]\n\n"
-        f"[bold cyan]Multi-Source Live Research[/]  [bright_white]•[/]  [bold green]3 AI Perspectives[/]  [bright_white]•[/]  [bold #D97706]Deterministic Scoring[/]\n"
+        f"[bold cyan]Multi-Source Live Research[/]  [bright_white]•[/]  [bold green]3 AI Perspectives[/]  [bright_white]•[/]  [bold #F5A623]Deterministic Scoring[/]\n"
         f"[bright_white]GitHub:[/] [bold cyan]https://github.com/ramizz1/assumption-zero[/]"
     )
     console.print(
         Panel(
             banner_text,
-            border_style="#D97706",
+            border_style="#F5A623",
             box=box.ROUNDED,
             padding=(1, 3),
         )
@@ -132,9 +134,9 @@ def _print_splash() -> None:
     console.print()
 
 
-def _print_section(title: str, icon: str = "") -> None:
+def _print_section(title: str, icon: str = "◈") -> None:
     console.print()
-    console.print(Rule(f"[bold #D97706]▸  {title.upper()}[/]", style="#D97706"))
+    console.print(Rule(f"[bold #F5A623]{icon}  {title}  {icon}[/]", style="#F5A623"))
     console.print()
 
 
@@ -272,13 +274,13 @@ def _print_report(result) -> None:
         table = Table(
             box=box.SIMPLE,
             show_header=True,
-            header_style="bold #D97706",
+            header_style="bold #F5A623",
             padding=(0, 1),
             show_edge=False,
         )
-        table.add_column("Dimension", min_width=30, style="white")
+        table.add_column("Dimension", min_width=30, style="bold white")
         table.add_column("Score", justify="right", width=8)
-        table.add_column("Bar", width=22)
+        table.add_column("Bar", width=24)
         table.add_column("Weight", justify="right", width=7, style="bright_white")
         table.add_column("Conf", width=8)
 
@@ -294,9 +296,9 @@ def _print_report(result) -> None:
 
         table.add_section()
         table.add_row(
-            "[bold white]Total Score[/]",
+            "[bold white]Total[/]",
             f"[{_score_color(score_val)} bold]{score_val:.0f}[/]",
-            _score_bar(score_val, 14),
+            _score_bar(score_val, 14, show_ratio=True),
             "[bright_white]100%[/]",
             "",
         )
