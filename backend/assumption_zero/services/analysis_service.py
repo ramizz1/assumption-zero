@@ -1,15 +1,11 @@
 """
-Analysis service — builds and runs the engine, persists results.
+Analysis service — orchestrates research, AI, scoring, and file-based persistence.
 
-This is the bridge between the API/CLI layer and the shared analysis engine.
-It handles:
-  - Building the engine with configured providers and LLM
-  - Persisting progress to the database
-  - Returning fully typed AnalysisResult objects
+Storage: CSV metadata + JSON files under ./azero_data/
+No database required.
 """
 from __future__ import annotations
 
-import json
 import logging
 import uuid
 from datetime import datetime
@@ -22,7 +18,6 @@ from assumption_zero.llm.beta_adapter import BetaAdapter
 from assumption_zero.llm.mock_adapter import MockAdapter
 from assumption_zero.llm.ollama_adapter import OllamaAdapter
 from assumption_zero.llm.openrouter_adapter import OpenRouterAdapter
-from assumption_zero.models import AnalysisRecord, get_async_session_maker
 from assumption_zero.research.base import ResearchProvider
 from assumption_zero.research.github_provider import GitHubProvider
 from assumption_zero.research.hackernews_provider import HackerNewsProvider
@@ -35,29 +30,33 @@ from assumption_zero.schemas import (
     AnalysisStage,
     AnalysisStatus,
     IdeaInput,
+    Recommendation,
     STAGE_DESCRIPTIONS,
 )
+import assumption_zero.storage as store
 
 logger = logging.getLogger(__name__)
 
 
+# ── LLM adapter factory ───────────────────────────────────────────────────────
+
+
 def build_llm_adapter(provider_override: Optional[str] = None) -> LLMAdapter:
-    """Build the configured LLM adapter."""
+    """Return the configured LLM adapter."""
     settings = get_settings()
     provider = provider_override or settings.ai_provider
 
     if provider == "beta":
         adapter: LLMAdapter = BetaAdapter()
-        # Beta is always available (built-in key), no fallback needed
     elif provider == "openrouter":
         adapter = OpenRouterAdapter()
         if not adapter.is_available:
-            logger.warning("OpenRouter selected but not configured — falling back to Beta")
+            logger.warning("OpenRouter not configured — falling back to Beta")
             adapter = BetaAdapter()
     elif provider == "ollama":
         adapter = OllamaAdapter()
         if not adapter.is_available:
-            logger.warning("Ollama selected but OLLAMA_BASE_URL not set — falling back to Beta")
+            logger.warning("Ollama not available — falling back to Beta")
             adapter = BetaAdapter()
     else:
         adapter = MockAdapter()
@@ -66,20 +65,22 @@ def build_llm_adapter(provider_override: Optional[str] = None) -> LLMAdapter:
     return adapter
 
 
+# ── Research provider factory ─────────────────────────────────────────────────
+
+
 def build_research_providers(
     requested: Optional[List[str]] = None,
 ) -> List[ResearchProvider]:
-    """Build all enabled research providers."""
+    """Return all enabled research providers."""
     all_providers: List[ResearchProvider] = [
         GitHubProvider(),
         HackerNewsProvider(),
         WikipediaProvider(),
         RedditProvider(),
-        SearXNGProvider(),  # Only active when SEARXNG_BASE_URL is configured
+        SearXNGProvider(),
     ]
 
     if requested:
-        # Filter to only the requested providers
         name_map = {p.name.lower(): p for p in all_providers}
         return [name_map[r.lower()] for r in requested if r.lower() in name_map]
 
@@ -88,31 +89,23 @@ def build_research_providers(
     return available
 
 
+# ── CRUD operations ───────────────────────────────────────────────────────────
+
+
 async def create_analysis(
     idea: IdeaInput,
     ai_provider_override: Optional[str] = None,
     research_providers_override: Optional[List[str]] = None,
     is_demo: bool = False,
 ) -> str:
-    """
-    Create a new analysis record in the database and return its ID.
-    The actual analysis runs asynchronously via run_analysis().
-    """
+    """Create a new analysis record and return its ID."""
     analysis_id = str(uuid.uuid4())
-    SessionMaker = get_async_session_maker()
-
-    async with SessionMaker() as session:
-        record = AnalysisRecord(
-            id=analysis_id,
-            status=AnalysisStatus.PENDING.value,
-            stage=AnalysisStage.CLARIFYING_IDEA.value,
-            created_at=datetime.utcnow(),
-            input_data=idea.model_dump_json(),
-            is_demo=is_demo,
-        )
-        session.add(record)
-        await session.commit()
-
+    store.create_record(
+        analysis_id=analysis_id,
+        idea_name=idea.name or "Unnamed Idea",
+        input_data=idea.model_dump(mode="json"),
+        is_demo=is_demo,
+    )
     logger.info("Created analysis %s", analysis_id)
     return analysis_id
 
@@ -124,20 +117,10 @@ async def run_analysis(
     research_providers_override: Optional[List[str]] = None,
     is_demo: bool = False,
 ) -> None:
-    """
-    Run the full analysis pipeline for an existing record.
-    Updates the database record as stages progress.
-    Called as a FastAPI BackgroundTask.
-    """
-    SessionMaker = get_async_session_maker()
+    """Run the full analysis pipeline. Called as a FastAPI BackgroundTask."""
 
     async def progress_callback(stage: AnalysisStage, desc: str) -> None:
-        async with SessionMaker() as session:
-            record = await session.get(AnalysisRecord, analysis_id)
-            if record:
-                record.status = AnalysisStatus.RUNNING.value
-                record.stage = stage.value
-                await session.commit()
+        store.update_stage(analysis_id, "running", stage.value)
 
     try:
         llm = build_llm_adapter(ai_provider_override)
@@ -151,104 +134,95 @@ async def run_analysis(
             is_demo=is_demo,
         )
 
-        async with SessionMaker() as session:
-            record = await session.get(AnalysisRecord, analysis_id)
-            if record:
-                record.status = AnalysisStatus.COMPLETE.value
-                record.stage = AnalysisStage.COMPLETE.value
-                record.completed_at = datetime.utcnow()
-                record.set_result(result.model_dump(mode="json"))
-                await session.commit()
-
+        store.complete_record(analysis_id, result.model_dump(mode="json"))
         logger.info("Analysis %s complete", analysis_id)
 
     except Exception as exc:
         logger.exception("Analysis %s failed: %s", analysis_id, exc)
-        async with SessionMaker() as session:
-            record = await session.get(AnalysisRecord, analysis_id)
-            if record:
-                record.status = AnalysisStatus.FAILED.value
-                record.error_message = str(exc)
-                await session.commit()
+        store.fail_record(analysis_id, str(exc))
 
 
 async def get_analysis(analysis_id: str) -> Optional[AnalysisResult]:
-    """Retrieve a full AnalysisResult from the database."""
-    SessionMaker = get_async_session_maker()
-    async with SessionMaker() as session:
-        record = await session.get(AnalysisRecord, analysis_id)
-        if not record:
-            return None
+    """Retrieve a full AnalysisResult (in-progress or complete)."""
+    row = store.get_record(analysis_id)
+    if not row:
+        return None
 
-        # Build a minimal result from the record (for progress polling)
-        idea_data = json.loads(record.input_data)
-        idea = IdeaInput(**idea_data)
+    input_data = store.get_input(analysis_id)
+    if not input_data:
+        return None
+    idea = IdeaInput(**input_data)
 
-        if record.result_data:
-            raw = json.loads(record.result_data)
-            return AnalysisResult(**raw)
+    # Full result available
+    result_data = store.get_result(analysis_id)
+    if result_data:
+        return AnalysisResult(**result_data)
 
-        # Analysis still in progress
-        return AnalysisResult(
-            analysis_id=analysis_id,
-            status=AnalysisStatus(record.status),
-            stage=AnalysisStage(record.stage),
-            stage_description=STAGE_DESCRIPTIONS.get(record.stage, ""),
-            created_at=record.created_at,
-            completed_at=record.completed_at,
-            idea_input=idea,
-            is_demo=record.is_demo,
-            error_message=record.error_message,
-        )
+    # Still in progress — return minimal status object
+    created = _parse_dt(row.get("created_at"))
+    completed = _parse_dt(row.get("completed_at")) if row.get("completed_at") else None
+    stage_val = row.get("stage", "clarifying_idea")
+
+    return AnalysisResult(
+        analysis_id=analysis_id,
+        status=AnalysisStatus(row.get("status", "pending")),
+        stage=AnalysisStage(stage_val),
+        stage_description=STAGE_DESCRIPTIONS.get(stage_val, ""),
+        created_at=created,
+        completed_at=completed,
+        idea_input=idea,
+        is_demo=row.get("is_demo", "false") == "true",
+        error_message=row.get("error_message") or None,
+    )
 
 
 async def list_analyses() -> List[AnalysisListItem]:
-    """List all analyses ordered by creation date descending."""
-    from sqlalchemy import select, desc
-
-    SessionMaker = get_async_session_maker()
-    async with SessionMaker() as session:
-        stmt = select(AnalysisRecord).order_by(desc(AnalysisRecord.created_at)).limit(50)
-        result = await session.execute(stmt)
-        records = result.scalars().all()
-
+    """Return all analyses as list items, newest first."""
+    rows = store.list_records()
     items: List[AnalysisListItem] = []
-    for record in records:
-        idea_data = json.loads(record.input_data)
+
+    for row in rows:
         score: Optional[float] = None
-        rec = None
-        if record.result_data:
-            raw = json.loads(record.result_data)
-            score_data = raw.get("opportunity_score")
-            if score_data:
-                score = score_data.get("total")
-            rec_val = raw.get("recommendation")
+        rec: Optional[Recommendation] = None
+
+        result_data = store.get_result(row["id"])
+        if result_data:
+            score_obj = result_data.get("opportunity_score")
+            if score_obj:
+                score = score_obj.get("total")
+            rec_val = result_data.get("recommendation")
             if rec_val:
-                from assumption_zero.schemas import Recommendation
                 rec = Recommendation(rec_val)
+
         items.append(
             AnalysisListItem(
-                analysis_id=record.id,
-                status=AnalysisStatus(record.status),
-                stage=AnalysisStage(record.stage),
-                created_at=record.created_at,
-                completed_at=record.completed_at,
-                idea_name=idea_data.get("name", "Unknown"),
-                is_demo=record.is_demo,
+                analysis_id=row["id"],
+                status=AnalysisStatus(row.get("status", "pending")),
+                stage=AnalysisStage(row.get("stage", "clarifying_idea")),
+                created_at=_parse_dt(row.get("created_at")),
+                completed_at=_parse_dt(row.get("completed_at")) if row.get("completed_at") else None,
+                idea_name=row.get("idea_name", "Unknown"),
+                is_demo=row.get("is_demo", "false") == "true",
                 opportunity_score=score,
                 recommendation=rec,
             )
         )
+
     return items
 
 
 async def delete_analysis(analysis_id: str) -> bool:
     """Delete an analysis. Returns True if found and deleted."""
-    SessionMaker = get_async_session_maker()
-    async with SessionMaker() as session:
-        record = await session.get(AnalysisRecord, analysis_id)
-        if not record:
-            return False
-        await session.delete(record)
-        await session.commit()
-    return True
+    return store.delete_record(analysis_id)
+
+
+# ── Helpers ───────────────────────────────────────────────────────────────────
+
+
+def _parse_dt(value: Optional[str]) -> Optional[datetime]:
+    if not value:
+        return None
+    try:
+        return datetime.fromisoformat(value)
+    except (ValueError, TypeError):
+        return None

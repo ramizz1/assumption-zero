@@ -1,0 +1,13 @@
+{
+  "name": "TestProduct",
+  "description": "Test description",
+  "problem": "Test problem that is long enough",
+  "target_customer": "Test customers",
+  "geography": "US",
+  "business_model": null,
+  "price": null,
+  "founder_skills": null,
+  "budget": null,
+  "known_competitors": null,
+  "additional_context": null
+}

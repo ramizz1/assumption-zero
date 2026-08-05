@@ -13,7 +13,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from assumption_zero import __version__
 from assumption_zero.api.routes import router
 from assumption_zero.config import get_settings
-from assumption_zero.models import init_db
+from assumption_zero.storage import init_storage
 
 logging.basicConfig(
     level=logging.INFO,
@@ -53,7 +53,7 @@ def create_app() -> FastAPI:
 
     @app.on_event("startup")
     async def startup() -> None:
-        await init_db()
+        await init_storage()
         logger.info(
             "Assumption Zero v%s started | AI provider: %s | Debug: %s",
             __version__,

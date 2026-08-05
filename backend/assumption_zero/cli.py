@@ -701,8 +701,6 @@ def list_cmd() -> None:
     _print_splash()
 
     async def _list():
-        from assumption_zero.models import init_db
-        await init_db()
         from assumption_zero.services.analysis_service import list_analyses
         return await list_analyses()
 
@@ -771,8 +769,6 @@ def show(
     _print_splash()
 
     async def _get():
-        from assumption_zero.models import init_db
-        await init_db()
         from assumption_zero.services.analysis_service import get_analysis
         return await get_analysis(analysis_id)
 
@@ -794,8 +790,6 @@ def export(
     """Export an analysis as Markdown or JSON."""
 
     async def _get():
-        from assumption_zero.models import init_db
-        await init_db()
         from assumption_zero.services.analysis_service import get_analysis
         return await get_analysis(analysis_id)
 

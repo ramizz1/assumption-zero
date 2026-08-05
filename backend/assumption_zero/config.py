@@ -20,9 +20,6 @@ class Settings(BaseSettings):
     app_version: str = "0.1.0"
     debug: bool = False
 
-    # ── Database ──────────────────────────────────────────────────
-    database_url: str = "sqlite:///./assumption_zero.db"
-
     # ── AI Providers ──────────────────────────────────────────────
     # Selects which adapter to use as the primary provider.
     # "beta" = Assumption Zero Beta AI (built-in, no key needed)
