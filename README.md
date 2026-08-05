@@ -1,5 +1,5 @@
 # Assumption Zero — MVP Validation Engine
-
+![Screenshot](https://i.ibb.co/C3sbq4pq/Screenshot-2026-08-05-232315.png)
 **The open-source MVP validation engine.**  
 *Stress-test your idea before you build it.*
 
