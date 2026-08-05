@@ -11,6 +11,7 @@ export interface AnalysisCreateRequest {
   idea: IdeaInput
   ai_provider_override?: string
   openrouter_api_key?: string
+  groq_api_key?: string
   research_providers?: string[]
 }
 
@@ -25,17 +26,24 @@ async function request<T>(
     ...options,
   })
   if (!res.ok) {
-    const text = await res.text().catch(() => res.statusText)
-    throw new Error(`API ${res.status}: ${text}`)
+    let message = res.statusText
+    try {
+      const data = await res.json()
+      message = data.detail || data.message || JSON.stringify(data)
+    } catch {
+      message = await res.text().catch(() => res.statusText)
+    }
+    throw new Error(message)
   }
   if (res.status === 204) return undefined as unknown as T
   return res.json()
 }
 
 export interface PromptAnalysisRequest {
-  prompt: str
+  prompt: string
   ai_provider?: string
   openrouter_api_key?: string
+  groq_api_key?: string
   research_providers?: string[]
 }
 
@@ -48,7 +56,7 @@ export const api = {
     return request('/analyses', { method: 'POST', body: JSON.stringify(body) })
   },
 
-  createAnalysisFromPrompt(body: { prompt: string; openrouter_api_key?: string }): Promise<{ analysis_id: string; status: string; parsed_idea: IdeaInput }> {
+  createAnalysisFromPrompt(body: { prompt: string; ai_provider?: string; openrouter_api_key?: string; groq_api_key?: string }): Promise<{ analysis_id: string; status: string; parsed_idea: IdeaInput }> {
     return request('/analyses/from-prompt', { method: 'POST', body: JSON.stringify(body) })
   },
 

@@ -44,17 +44,23 @@ logger = logging.getLogger(__name__)
 # ── LLM adapter factory ───────────────────────────────────────────────────────
 
 
+from assumption_zero.llm.groq_adapter import GroqAdapter
+
+
 def build_llm_adapter(provider_override: Optional[str] = None) -> LLMAdapter:
     """Return the configured LLM adapter."""
     settings = get_settings()
-    provider = provider_override or settings.ai_provider
+    provider = (provider_override or settings.ai_provider).lower()
 
-    if provider == "beta":
-        adapter: LLMAdapter = BetaAdapter()
+    if provider == "groq":
+        adapter: LLMAdapter = GroqAdapter()
     elif provider == "openrouter":
         adapter = OpenRouterAdapter()
-        if not adapter.is_available:
-            logger.warning("OpenRouter not configured — falling back to Beta")
+    elif provider == "beta":
+        groq = GroqAdapter()
+        if groq.is_available:
+            adapter = groq
+        else:
             adapter = BetaAdapter()
     else:
         adapter = BetaAdapter()

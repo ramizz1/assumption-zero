@@ -22,7 +22,9 @@ export const HomePage: React.FC = () => {
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [customApiKey, setCustomApiKey] = useState('')
+  const [selectedProvider, setSelectedProvider] = useState<'groq' | 'openrouter'>('groq')
+  const [groqApiKey, setGroqApiKey] = useState('')
+  const [openrouterApiKey, setOpenrouterApiKey] = useState('')
   const [showJsonExample, setShowJsonExample] = useState(false)
   const [inputMode, setInputMode] = useState<'prompt' | 'form'>('prompt')
 
@@ -69,7 +71,9 @@ export const HomePage: React.FC = () => {
     try {
       const result = await api.createAnalysisFromPrompt({
         prompt: rawPromptText,
-        openrouter_api_key: customApiKey || undefined,
+        ai_provider: selectedProvider,
+        groq_api_key: selectedProvider === 'groq' ? (groqApiKey || undefined) : undefined,
+        openrouter_api_key: selectedProvider === 'openrouter' ? (openrouterApiKey || undefined) : undefined,
       })
       navigate(`/analysis/${result.analysis_id}`)
     } catch (err) {
@@ -102,8 +106,9 @@ export const HomePage: React.FC = () => {
 
       const result = await api.createAnalysis({
         idea: payload,
-        ai_provider_override: 'beta',
-        openrouter_api_key: customApiKey || undefined,
+        ai_provider_override: selectedProvider,
+        groq_api_key: selectedProvider === 'groq' ? (groqApiKey || undefined) : undefined,
+        openrouter_api_key: selectedProvider === 'openrouter' ? (openrouterApiKey || undefined) : undefined,
       })
       navigate(`/analysis/${result.analysis_id}`)
     } catch (err) {
@@ -311,30 +316,102 @@ export const HomePage: React.FC = () => {
                 </div>
               </div>
 
-              {/* OpenRouter Key */}
-              <div className="card p-6 border-gray-800">
-                <div className="flex items-center justify-between mb-2">
-                  <h2 className="section-title mb-0">🔑 OpenRouter AI Setup</h2>
-                  <a
-                    href="https://openrouter.ai/keys"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-xs text-amber-400 hover:text-amber-300 underline font-medium flex items-center gap-1"
+              {/* AI Provider & API Key Setup */}
+              <div className="card p-6 border-amber-400/20 bg-[#141419]/90">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                    <span>⚡</span> Select AI Provider & API Key
+                  </h3>
+                  <span className="text-[11px] text-amber-400/90 font-mono font-semibold">Zero-config built-in key active</span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+                  <button
+                    type="button"
+                    onClick={() => setSelectedProvider('groq')}
+                    className={`p-3.5 rounded-xl border text-left transition-all ${
+                      selectedProvider === 'groq'
+                        ? 'border-amber-400 bg-amber-400/10 text-white shadow-sm'
+                        : 'border-[#2a2a35] bg-black/40 text-gray-400 hover:text-gray-200'
+                    }`}
                   >
-                    <span>Get free key at openrouter.ai/keys</span>
-                    <span>→</span>
-                  </a>
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="font-bold text-sm text-white flex items-center gap-1.5">
+                        <span>🚀</span> Groq (Llama 3.3)
+                      </span>
+                      <span className="text-[10px] font-extrabold bg-amber-400/20 text-amber-300 px-2 py-0.5 rounded-full border border-amber-400/30">RECOMMENDED</span>
+                    </div>
+                    <p className="text-xs text-gray-400 leading-snug">
+                      200,000 free tokens/day (~20 full analyses daily)
+                    </p>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setSelectedProvider('openrouter')}
+                    className={`p-3.5 rounded-xl border text-left transition-all ${
+                      selectedProvider === 'openrouter'
+                        ? 'border-amber-400 bg-amber-400/10 text-white shadow-sm'
+                        : 'border-[#2a2a35] bg-black/40 text-gray-400 hover:text-gray-200'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="font-bold text-sm text-white flex items-center gap-1.5">
+                        <span>🌐</span> OpenRouter
+                      </span>
+                      <span className="text-[10px] font-bold bg-blue-400/20 text-blue-300 px-2 py-0.5 rounded-full border border-blue-400/30">200+ MODELS</span>
+                    </div>
+                    <p className="text-xs text-gray-400 leading-snug">
+                      Access Gemma, Llama & DeepSeek open models
+                    </p>
+                  </button>
                 </div>
-                <div>
-                  <input
-                    id="openrouter-key-prompt"
-                    type="password"
-                    className="input-field font-mono text-sm"
-                    placeholder="sk-or-v1-... (optional, leave blank for built-in key)"
-                    value={customApiKey}
-                    onChange={(e) => setCustomApiKey(e.target.value)}
-                  />
-                </div>
+
+                {selectedProvider === 'groq' ? (
+                  <div>
+                    <div className="flex items-center justify-between mb-1.5">
+                      <label className="text-xs font-semibold text-gray-300">Custom Groq API Key (Optional)</label>
+                      <a
+                        href="https://console.groq.com/keys"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs text-amber-400 hover:text-amber-300 underline font-semibold flex items-center gap-1"
+                      >
+                        <span>🔑 Get Free Groq Key (console.groq.com/keys)</span>
+                        <span>→</span>
+                      </a>
+                    </div>
+                    <input
+                      type="password"
+                      className="input-field font-mono text-xs"
+                      placeholder="gsk_... (optional, leave blank for built-in key)"
+                      value={groqApiKey}
+                      onChange={(e) => setGroqApiKey(e.target.value)}
+                    />
+                  </div>
+                ) : (
+                  <div>
+                    <div className="flex items-center justify-between mb-1.5">
+                      <label className="text-xs font-semibold text-gray-300">Custom OpenRouter API Key (Optional)</label>
+                      <a
+                        href="https://openrouter.ai/keys"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs text-amber-400 hover:text-amber-300 underline font-semibold flex items-center gap-1"
+                      >
+                        <span>🔑 Get Free OpenRouter Key (openrouter.ai/keys)</span>
+                        <span>→</span>
+                      </a>
+                    </div>
+                    <input
+                      type="password"
+                      className="input-field font-mono text-xs"
+                      placeholder="sk-or-v1-... (optional, leave blank for built-in key)"
+                      value={openrouterApiKey}
+                      onChange={(e) => setOpenrouterApiKey(e.target.value)}
+                    />
+                  </div>
+                )}
               </div>
 
               <div className="flex items-center gap-4 pt-2">
@@ -480,30 +557,102 @@ export const HomePage: React.FC = () => {
                 </div>
               </div>
 
-              {/* OpenRouter Key */}
-              <div className="card p-6 border-amber-400/30">
-                <div className="flex items-center justify-between mb-2">
-                  <h2 className="section-title mb-0">🔑 OpenRouter AI Setup</h2>
-                  <a
-                    href="https://openrouter.ai/keys"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-xs text-amber-400 hover:text-amber-300 underline font-medium flex items-center gap-1"
+              {/* AI Provider & API Key Setup */}
+              <div className="card p-6 border-amber-400/20 bg-[#141419]/90">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                    <span>⚡</span> Select AI Provider & API Key
+                  </h3>
+                  <span className="text-[11px] text-amber-400/90 font-mono font-semibold">Zero-config built-in key active</span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+                  <button
+                    type="button"
+                    onClick={() => setSelectedProvider('groq')}
+                    className={`p-3.5 rounded-xl border text-left transition-all ${
+                      selectedProvider === 'groq'
+                        ? 'border-amber-400 bg-amber-400/10 text-white shadow-sm'
+                        : 'border-[#2a2a35] bg-black/40 text-gray-400 hover:text-gray-200'
+                    }`}
                   >
-                    <span>Get free key at openrouter.ai/keys</span>
-                    <span>→</span>
-                  </a>
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="font-bold text-sm text-white flex items-center gap-1.5">
+                        <span>🚀</span> Groq (Llama 3.3)
+                      </span>
+                      <span className="text-[10px] font-extrabold bg-amber-400/20 text-amber-300 px-2 py-0.5 rounded-full border border-amber-400/30">RECOMMENDED</span>
+                    </div>
+                    <p className="text-xs text-gray-400 leading-snug">
+                      200,000 free tokens/day (~20 full analyses daily)
+                    </p>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setSelectedProvider('openrouter')}
+                    className={`p-3.5 rounded-xl border text-left transition-all ${
+                      selectedProvider === 'openrouter'
+                        ? 'border-amber-400 bg-amber-400/10 text-white shadow-sm'
+                        : 'border-[#2a2a35] bg-black/40 text-gray-400 hover:text-gray-200'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="font-bold text-sm text-white flex items-center gap-1.5">
+                        <span>🌐</span> OpenRouter
+                      </span>
+                      <span className="text-[10px] font-bold bg-blue-400/20 text-blue-300 px-2 py-0.5 rounded-full border border-blue-400/30">200+ MODELS</span>
+                    </div>
+                    <p className="text-xs text-gray-400 leading-snug">
+                      Access Gemma, Llama & DeepSeek open models
+                    </p>
+                  </button>
                 </div>
-                <div>
-                  <input
-                    id="openrouter-key-form"
-                    type="password"
-                    className="input-field font-mono text-sm"
-                    placeholder="sk-or-v1-..."
-                    value={customApiKey}
-                    onChange={(e) => setCustomApiKey(e.target.value)}
-                  />
-                </div>
+
+                {selectedProvider === 'groq' ? (
+                  <div>
+                    <div className="flex items-center justify-between mb-1.5">
+                      <label className="text-xs font-semibold text-gray-300">Custom Groq API Key (Optional)</label>
+                      <a
+                        href="https://console.groq.com/keys"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs text-amber-400 hover:text-amber-300 underline font-semibold flex items-center gap-1"
+                      >
+                        <span>🔑 Get Free Groq Key (console.groq.com/keys)</span>
+                        <span>→</span>
+                      </a>
+                    </div>
+                    <input
+                      type="password"
+                      className="input-field font-mono text-xs"
+                      placeholder="gsk_... (optional, leave blank for built-in key)"
+                      value={groqApiKey}
+                      onChange={(e) => setGroqApiKey(e.target.value)}
+                    />
+                  </div>
+                ) : (
+                  <div>
+                    <div className="flex items-center justify-between mb-1.5">
+                      <label className="text-xs font-semibold text-gray-300">Custom OpenRouter API Key (Optional)</label>
+                      <a
+                        href="https://openrouter.ai/keys"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs text-amber-400 hover:text-amber-300 underline font-semibold flex items-center gap-1"
+                      >
+                        <span>🔑 Get Free OpenRouter Key (openrouter.ai/keys)</span>
+                        <span>→</span>
+                      </a>
+                    </div>
+                    <input
+                      type="password"
+                      className="input-field font-mono text-xs"
+                      placeholder="sk-or-v1-... (optional, leave blank for built-in key)"
+                      value={openrouterApiKey}
+                      onChange={(e) => setOpenrouterApiKey(e.target.value)}
+                    />
+                  </div>
+                )}
               </div>
 
               {/* Submit */}

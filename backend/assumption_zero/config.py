@@ -32,10 +32,13 @@ class Settings(BaseSettings):
 
     # ── Assumption Zero Beta / OpenRouter ────────────────────────
     # OpenRouter routes to 200+ open models via a single API.
-    # The built-in key works out of the box; set your own for higher limits.
-    # https://openrouter.ai
-    openrouter_api_key: Optional[str] = None   # leave blank to use built-in key
+    openrouter_api_key: Optional[str] = None
     openrouter_model: str = "google/gemma-4-26b-a4b-it:free"
+
+    # ── Groq (Ultra-fast Llama 3.3 models) ──────────────────────
+    # https://console.groq.com/keys
+    groq_api_key: Optional[str] = None
+    groq_model: str = "llama-3.3-70b-versatile"
 
     # ── Ollama (local models) ────────────────────────────────────
     ollama_base_url: str = "http://localhost:11434"

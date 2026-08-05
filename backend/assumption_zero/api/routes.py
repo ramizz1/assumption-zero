@@ -122,6 +122,9 @@ async def create_analysis_from_prompt_endpoint(
     background_tasks: BackgroundTasks,
 ) -> dict:
     """Analyze a startup idea from a single freeform text prompt."""
+    if body.groq_api_key:
+        import os
+        os.environ["GROQ_API_KEY"] = body.groq_api_key
     if body.openrouter_api_key:
         import os
         os.environ["OPENROUTER_API_KEY"] = body.openrouter_api_key
