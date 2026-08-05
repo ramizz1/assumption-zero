@@ -91,3 +91,15 @@ def test_markdown_export_contains_experiments(sample_idea, sample_evidence, samp
     md = _export_markdown(result)
     assert "Validation Experiments" in md
     assert "Experiment 1" in md
+
+
+def test_html_export_structure(sample_idea, sample_evidence, sample_perspectives):
+    from assumption_zero.cli import _export_html
+    result = _make_result(sample_idea, sample_evidence, sample_perspectives)
+    html = _export_html(result)
+    assert "<!DOCTYPE html>" in html
+    assert sample_idea.name in html
+    assert "Executive Verdict" in html
+    assert "Opportunity Score Breakdown" in html
+    assert DISCLAIMER in html
+

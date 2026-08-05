@@ -1,6 +1,6 @@
 """
 Assumption Zero CLI — MVP Validation Engine
-Anthropic Claude-inspired warm aesthetic interface.
+Anthropic Claude-inspired warm aesthetic interface with HTML export.
 """
 from __future__ import annotations
 
@@ -39,7 +39,7 @@ if hasattr(sys.stderr, "reconfigure"):
 THEME = Theme(
     {
         "a0.accent":  "bold #D97706",       # Claude terracotta / warm amber
-        "a0.muted":   "bright_white",       # high-contrast secondary text (no grey)
+        "a0.muted":   "bright_white",       # high-contrast secondary text
         "a0.good":    "bold green",         # high score / positive
         "a0.warn":    "bold #D97706",       # warm amber warning status
         "a0.bad":     "bold red",           # low score / danger
@@ -484,6 +484,15 @@ def _print_report(result) -> None:
 
     _print_disclaimer()
 
+    # Auto-generate report.html in local directory for user
+    try:
+        html_content = _export_html(result)
+        report_path = Path("report.html")
+        report_path.write_text(html_content, encoding="utf-8")
+        console.print(f"  [bold green]✓ Standalone HTML Report generated:[/] [bold cyan]{report_path.resolve()}[/]\n")
+    except Exception:
+        pass
+
 
 # ── Export Markdown ───────────────────────────────────────────────────────────
 
@@ -567,6 +576,365 @@ def _export_markdown(result) -> str:
         f"*{DISCLAIMER}*",
     ]
     return "\n".join(lines)
+
+
+# ── Export HTML (Claude Anthropic Styled) ──────────────────────────────────────
+
+
+def _export_html(result) -> str:
+    score = result.opportunity_score
+    score_val = score.total if score else 0.0
+    rec_val = result.recommendation.value if result.recommendation else "Unknown"
+    conf_val = result.evidence_confidence.value.upper() if result.evidence_confidence else "UNKNOWN"
+
+    score_color = "#10B981" if score_val >= 65 else "#D97706" if score_val >= 45 else "#EF4444"
+    rec_bg = "#10B98122" if rec_val == "Build" else "#D9770622" if rec_val in ("Test First", "Pivot") else "#EF444422"
+    rec_color = "#10B981" if rec_val == "Build" else "#D97706" if rec_val in ("Test First", "Pivot") else "#EF4444"
+
+    conf_bg = "#10B98122" if conf_val == "HIGH" else "#D9770622" if conf_val == "MEDIUM" else "#EF444422"
+    conf_color = "#10B981" if conf_val == "HIGH" else "#D97706" if conf_val == "MEDIUM" else "#EF4444"
+
+    # Score breakdown rows
+    score_rows = ""
+    if score and score.dimensions:
+        for dim in score.dimensions:
+            dim_col = "#10B981" if dim.raw_score >= 65 else "#D97706" if dim.raw_score >= 45 else "#EF4444"
+            dim_conf = dim.confidence.value.upper()
+            dim_conf_col = "#10B981" if dim_conf == "HIGH" else "#D97706" if dim_conf == "MEDIUM" else "#EF4444"
+            score_rows += f"""
+            <tr>
+                <td><strong>{dim.display_name}</strong></td>
+                <td style="text-align: right; color: {dim_col}; font-weight: bold;">{dim.raw_score:.0f} / 100</td>
+                <td>
+                    <div class="progress-bg">
+                        <div class="progress-bar" style="width: {dim.raw_score}%; background: {dim_col};"></div>
+                    </div>
+                </td>
+                <td style="text-align: right;">{dim.weight}%</td>
+                <td style="text-align: center;"><span class="badge" style="background: {dim_conf_col}22; color: {dim_conf_col};">{dim_conf}</span></td>
+            </tr>
+            """
+
+    # Competitors
+    comp_html = ""
+    if result.competitors:
+        for c in result.competitors:
+            comp_html += f"""
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">{c.name}</span>
+                    <span class="badge" style="background: #3B82F622; color: #60A5FA;">{c.competitor_type.value}</span>
+                </div>
+                <p style="color: #94A3B8; font-size: 0.95rem; margin-top: 0.5rem;">{c.description}</p>
+            </div>
+            """
+
+    # AI Perspectives
+    persp_html = ""
+    for p in result.perspectives:
+        p_col = "#38BDF8" if "market" in p.perspective_name.value else "#E879F9" if "skeptick" in p.perspective_name.value or "investor" in p.perspective_name.value else "#4ADE80"
+        p_rec_col = "#10B981" if p.recommendation.value == "Build" else "#D97706" if p.recommendation.value in ("Test First", "Pivot") else "#EF4444"
+
+        findings_li = "".join(f"<li>{f.strip('§')}</li>" for f in p.key_findings if not (f.startswith("§") and f.endswith("§")))
+        risks_li = "".join(f"<li>{r}</li>" for r in p.risks)
+        opps_li = "".join(f"<li>{o}</li>" for o in p.opportunities)
+
+        persp_html += f"""
+        <div class="card" style="border-top: 4px solid {p_col};">
+            <div class="card-header">
+                <span class="card-title" style="color: {p_col};">{p.perspective_display.upper()}</span>
+                <div>
+                    <span class="badge" style="background: {p_rec_col}22; color: {p_rec_col};">Verdict: {p.recommendation.value}</span>
+                    <span class="badge" style="background: #1E293B; color: #94A3B8;">Model: {p.model_id}</span>
+                </div>
+            </div>
+            <p style="margin-top: 1rem; font-size: 1rem; line-height: 1.6;">{p.summary}</p>
+
+            {"<div style='margin-top: 1rem;'><strong style='color: #60A5FA;'>Key Findings:</strong><ul>" + findings_li + "</ul></div>" if findings_li else ""}
+            {"<div style='margin-top: 1rem;'><strong style='color: #F87171;'>Identified Risks:</strong><ul>" + risks_li + "</ul></div>" if risks_li else ""}
+            {"<div style='margin-top: 1rem;'><strong style='color: #4ADE80;'>Strategic Opportunities:</strong><ul>" + opps_li + "</ul></div>" if opps_li else ""}
+        </div>
+        """
+
+    # Validation Experiments
+    exp_html = ""
+    if result.experiments:
+        for i, exp in enumerate(result.experiments, 1):
+            exp_html += f"""
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title" style="color: #D97706;">Experiment {i}: {exp.title}</span>
+                    <div>
+                        <span class="badge" style="background: #D9770622; color: #D97706;">Cost: {exp.estimated_cost_range}</span>
+                        <span class="badge" style="background: #38BDF822; color: #38BDF8;">Time: {exp.estimated_time}</span>
+                    </div>
+                </div>
+                <div style="margin-top: 1rem; display: grid; gap: 0.75rem;">
+                    <div><strong style="color: #F8FAFC;">Assumption Tested:</strong> <span style="color: #CBD5E1;">{exp.assumption_tested}</span></div>
+                    <div><strong style="color: #F8FAFC;">Why It Matters:</strong> <span style="color: #CBD5E1;">{exp.why_it_matters}</span></div>
+                    <div><strong style="color: #F8FAFC;">Procedure:</strong> <span style="color: #CBD5E1;">{exp.procedure}</span></div>
+                    <div style="background: #064E3B44; padding: 0.75rem; border-radius: 6px; border-left: 3px solid #10B981;">
+                        <strong style="color: #34D399;">Success Threshold:</strong> {exp.success_threshold}
+                    </div>
+                    <div style="background: #7F1D1D44; padding: 0.75rem; border-radius: 6px; border-left: 3px solid #EF4444;">
+                        <strong style="color: #F87171;">Failure Threshold:</strong> {exp.failure_threshold}
+                    </div>
+                </div>
+            </div>
+            """
+
+    # Next steps
+    next_steps_html = ""
+    next_steps = [
+        "Conduct 5 discovery interviews with target segment customers before writing code.",
+        "Create a lean landing page to measure conversion interest and sign-up intent.",
+        "Manually deliver core value to 3 early users to validate willingness to pay.",
+        "Allocate a 1-week budget ($0-$200) to test riskiest distribution channel.",
+        "Define primary success metric (retention, revenue, NPS) and measure from Day 1.",
+    ]
+    for idx, st in enumerate(next_steps, 1):
+        next_steps_html += f"""
+        <div class="card" style="display: flex; gap: 1rem; align-items: center;">
+            <div style="background: #D97706; color: #FFF; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; flex-shrink: 0;">{idx}</div>
+            <div style="color: #F8FAFC; font-size: 1rem;">{st}</div>
+        </div>
+        """
+
+    html = f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assumption Zero — {result.idea_input.name} Validation Report</title>
+    <style>
+        :root {{
+            --bg-color: #0F172A;
+            --card-bg: #1E293B;
+            --accent-color: #D97706;
+            --text-main: #F8FAFC;
+            --text-sub: #94A3B8;
+            --border-color: #334155;
+        }}
+        * {{ box-sizing: border-box; margin: 0; padding: 0; }}
+        body {{
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            padding: 2rem 1rem;
+        }}
+        .container {{
+            max-width: 1000px;
+            margin: 0 auto;
+        }}
+        header {{
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 1.5rem;
+            margin-bottom: 2rem;
+        }}
+        .logo {{
+            color: var(--accent-color);
+            font-size: 0.9rem;
+            font-weight: bold;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }}
+        h1 {{
+            font-size: 2.2rem;
+            margin: 0.5rem 0;
+            color: #FFF;
+        }}
+        .tagline {{
+            color: var(--text-sub);
+            font-size: 1.05rem;
+        }}
+        .disclaimer-box {{
+            background: #D9770615;
+            border-left: 4px solid var(--accent-color);
+            padding: 1rem 1.25rem;
+            border-radius: 6px;
+            margin-bottom: 2rem;
+            color: #CBD5E1;
+            font-size: 0.95rem;
+        }}
+        .section-title {{
+            font-size: 1.4rem;
+            color: var(--accent-color);
+            margin: 2.5rem 0 1rem 0;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }}
+        .verdict-card {{
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }}
+        .score-display {{
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }}
+        .score-number {{
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: {score_color};
+            line-height: 1;
+        }}
+        .progress-bg {{
+            background: #334155;
+            height: 14px;
+            border-radius: 7px;
+            overflow: hidden;
+            flex-grow: 1;
+        }}
+        .progress-bar {{
+            height: 100%;
+            border-radius: 7px;
+            transition: width 0.4s ease;
+        }}
+        .badge {{
+            display: inline-block;
+            padding: 0.35rem 0.85rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-right: 0.5rem;
+        }}
+        .grid {{
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.25rem;
+            margin-bottom: 1.5rem;
+        }}
+        .card {{
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }}
+        .card-header {{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }}
+        .card-title {{
+            font-size: 1.15rem;
+            font-weight: 700;
+        }}
+        table {{
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+            background: var(--card-bg);
+            border-radius: 8px;
+            overflow: hidden;
+        }}
+        th, td {{
+            padding: 0.9rem 1.25rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }}
+        th {{
+            background: #0F172A;
+            color: var(--accent-color);
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+        }}
+        ul {{
+            margin-left: 1.25rem;
+            margin-top: 0.5rem;
+            color: #CBD5E1;
+        }}
+        li {{
+            margin-bottom: 0.35rem;
+        }}
+        footer {{
+            margin-top: 4rem;
+            text-align: center;
+            color: var(--text-sub);
+            font-size: 0.9rem;
+            border-top: 1px solid var(--border-color);
+            padding-top: 2rem;
+        }}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">✦ Assumption Zero — MVP Validation Engine</div>
+            <h1>{result.idea_input.name}</h1>
+            <div class="tagline">{result.idea_input.description}</div>
+        </header>
+
+        <div class="disclaimer-box">
+            <strong>Decision Support Notice:</strong> {DISCLAIMER}
+        </div>
+
+        <div class="section-title">Executive Verdict</div>
+        <div class="verdict-card">
+            <div class="score-display">
+                <div class="score-number">{score_val:.0f}</div>
+                <div style="flex-grow: 1;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                        <span style="font-weight: bold; color: var(--text-main);">Opportunity Score</span>
+                        <span style="color: {score_color}; font-weight: bold;">{score_val:.0f} / 100</span>
+                    </div>
+                    <div class="progress-bg">
+                        <div class="progress-bar" style="width: {score_val}%; background: {score_color};"></div>
+                    </div>
+                </div>
+            </div>
+            <div style="margin-bottom: 1rem;">
+                <span class="badge" style="background: {rec_bg}; color: {rec_color}; font-size: 1rem;">Recommendation: {rec_val}</span>
+                <span class="badge" style="background: {conf_bg}; color: {conf_color}; font-size: 1rem;">Evidence Confidence: {conf_val}</span>
+            </div>
+            {"<div style='margin-top: 1.25rem; padding: 1rem; background: #7F1D1D33; border-left: 4px solid #EF4444; border-radius: 6px;'><strong style='color: #F87171;'>Critical Assumption Risk:</strong> <span style='color: #F8FAFC;'>" + result.most_dangerous_assumption + "</span></div>" if result.most_dangerous_assumption else ""}
+        </div>
+
+        <div class="section-title">Opportunity Score Breakdown</div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Dimension</th>
+                    <th style="text-align: right;">Score</th>
+                    <th>Visual Bar</th>
+                    <th style="text-align: right;">Weight</th>
+                    <th style="text-align: center;">Confidence</th>
+                </tr>
+            </thead>
+            <tbody>
+                {score_rows}
+            </tbody>
+        </table>
+
+        <div class="section-title">AI Strategic Perspectives</div>
+        {persp_html}
+
+        {"<div class='section-title'>Identified Competitors</div><div class='grid'>" + comp_html + "</div>" if comp_html else ""}
+
+        <div class="section-title">Actionable Next Steps</div>
+        <div style="display: grid; gap: 0.75rem; margin-bottom: 2rem;">
+            {next_steps_html}
+        </div>
+
+        {"<div class='section-title'>Validation Experiments</div>" + exp_html if exp_html else ""}
+
+        <footer>
+            Generated by Assumption Zero v{__version__} &bull; Open-Source MVP Validation Engine
+        </footer>
+    </div>
+</body>
+</html>
+"""
+    return html
 
 
 # ── Interactive Form ──────────────────────────────────────────────────────────
@@ -867,10 +1235,10 @@ def export(
     analysis_id: Optional[str] = typer.Argument(
         None, help="Analysis ID, short ID, or index (1, 2, ...). Omit for latest."
     ),
-    format: str = typer.Option("markdown", "--format", "-f", help="markdown or json"),
+    format: str = typer.Option("markdown", "--format", "-f", help="markdown, json, or html"),
     output: Optional[Path] = typer.Option(None, "--output", "-o", help="Output file path"),
 ) -> None:
-    """Export an analysis as Markdown or JSON."""
+    """Export an analysis as Markdown, JSON, or HTML."""
     target_id = analysis_id or "1"
 
     async def _get():
@@ -885,6 +1253,8 @@ def export(
     fmt = format.lower()
     if fmt == "json":
         content = result.model_dump_json(indent=2)
+    elif fmt == "html":
+        content = _export_html(result)
     else:
         content = _export_markdown(result)
 
