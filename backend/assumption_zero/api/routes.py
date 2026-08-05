@@ -126,8 +126,16 @@ async def create_analysis_from_prompt_endpoint(
         import os
         os.environ["OPENROUTER_API_KEY"] = body.openrouter_api_key
 
-    llm = build_llm_adapter(body.ai_provider)
-    parsed_idea = await llm.parse_raw_prompt(body.prompt)
+    try:
+        llm = build_llm_adapter(body.ai_provider)
+        parsed_idea = await llm.parse_raw_prompt(body.prompt)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+    except RuntimeError as exc:
+        raise HTTPException(status_code=429, detail=f"No AI tokens available: {exc}")
+    except Exception as exc:
+        logger.error("Error creating analysis from prompt: %s", exc)
+        raise HTTPException(status_code=500, detail=f"Failed to process prompt: {exc}")
 
     analysis_id = await create_analysis(
         idea=parsed_idea,

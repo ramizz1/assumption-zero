@@ -184,8 +184,23 @@ export const HomePage: React.FC = () => {
       <main className="flex-1 px-6 py-10">
         <div className="max-w-4xl mx-auto">
           {error && (
-            <div className="mb-6 p-4 bg-red-400/10 border border-red-500/30 rounded-lg text-sm text-red-400">
-              {error}
+            <div className="mb-6 p-4 sm:p-5 bg-red-500/10 border border-red-500/30 rounded-xl text-red-300 flex items-start gap-3">
+              <span className="text-xl leading-none mt-0.5">⚠️</span>
+              <div className="flex-1">
+                <h4 className="font-bold text-red-400 text-sm mb-1">
+                  {error.includes('gibberish')
+                    ? 'Invalid Startup Idea Prompt'
+                    : error.includes('402') || error.includes('429') || error.includes('quota') || error.includes('token') || error.includes('credit')
+                    ? 'No AI Tokens Available Today (Quota / Rate Limit Exceeded)'
+                    : 'Analysis Error'}
+                </h4>
+                <p className="text-xs text-red-300/90 leading-relaxed">{error}</p>
+                {(error.includes('402') || error.includes('429') || error.includes('quota') || error.includes('token') || error.includes('credit')) && (
+                  <p className="text-xs text-amber-300/90 mt-2 bg-amber-400/10 border border-amber-400/20 p-2.5 rounded-lg">
+                    💡 <strong>How to fix:</strong> Provide your personal OpenRouter key below under <em>"Custom OpenRouter API Key"</em> or set <code className="bg-black/50 px-1 py-0.5 rounded text-amber-200">OPENROUTER_API_KEY</code> in backend <code className="bg-black/50 px-1 py-0.5 rounded text-amber-200">.env</code>.
+                  </p>
+                )}
+              </div>
             </div>
           )}
 

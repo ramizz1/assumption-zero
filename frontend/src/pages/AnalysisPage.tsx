@@ -25,9 +25,14 @@ export default function AnalysisPage() {
       <main className="flex-1 px-4 py-8">
         {error ? (
           <div className="max-w-2xl mx-auto text-center mt-16">
-            <div className="card p-8">
-              <p className="text-red-400 text-lg mb-4">Analysis Error</p>
-              <p className="text-gray-400 text-sm mb-6">{error}</p>
+            <div className="card p-8 border-red-500/30">
+              <div className="text-3xl mb-3">⚠️</div>
+              <p className="text-red-400 font-bold text-lg mb-2">
+                {error.includes('402') || error.includes('429') || error.includes('quota') || error.includes('token') || error.includes('credit')
+                  ? 'No AI Tokens Available Today (Quota / Rate Limit Exceeded)'
+                  : 'Analysis Error'}
+              </p>
+              <p className="text-gray-300 text-sm mb-6 max-w-lg mx-auto leading-relaxed">{error}</p>
               <Link to="/" className="btn-primary">← Start New Analysis</Link>
             </div>
           </div>
@@ -40,9 +45,19 @@ export default function AnalysisPage() {
           </div>
         ) : data.status === 'failed' ? (
           <div className="max-w-2xl mx-auto text-center mt-16">
-            <div className="card p-8">
-              <p className="text-red-400 text-lg mb-4">Analysis Failed</p>
-              <p className="text-gray-400 text-sm mb-6">{data.error_message}</p>
+            <div className="card p-8 border-red-500/30">
+              <div className="text-3xl mb-3">⚠️</div>
+              <p className="text-red-400 font-bold text-lg mb-2">
+                {data.error_message?.includes('402') || data.error_message?.includes('429') || data.error_message?.includes('quota') || data.error_message?.includes('token') || data.error_message?.includes('credit')
+                  ? 'No AI Tokens Available Today (Quota Exceeded)'
+                  : 'Analysis Failed'}
+              </p>
+              <p className="text-gray-300 text-sm mb-6 max-w-lg mx-auto leading-relaxed">{data.error_message}</p>
+              {(data.error_message?.includes('402') || data.error_message?.includes('429') || data.error_message?.includes('quota') || data.error_message?.includes('token')) && (
+                <div className="mb-6 p-3 bg-amber-400/10 border border-amber-400/20 rounded-lg text-xs text-amber-300 text-left max-w-lg mx-auto">
+                  💡 <strong>Tip:</strong> Provide your own free OpenRouter key in the homepage field or set <code className="bg-black/50 px-1 py-0.5 rounded text-amber-200">OPENROUTER_API_KEY</code> in backend <code className="bg-black/50 px-1 py-0.5 rounded text-amber-200">.env</code>.
+                </div>
+              )}
               <Link to="/" className="btn-primary">← Start New Analysis</Link>
             </div>
           </div>
