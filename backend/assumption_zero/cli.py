@@ -115,8 +115,20 @@ def _perspective_color(name: str) -> str:
 
 def _print_splash() -> None:
     console.print()
-    console.print(f"[bold #D97706]✦ ASSUMPTION ZERO[/]  [bold cyan]v{__version__}[/]  |  [bright_white]{TAGLINE}[/]")
-    console.print(Rule(style="#D97706"))
+    banner_text = (
+        f"[bold #D97706]✦ A S S U M P T I O N   Z E R O[/]   [bold cyan]v{__version__}[/]\n"
+        f"[bold white]{TAGLINE}[/]\n\n"
+        f"[bold cyan]Multi-Source Live Research[/]  [bright_white]•[/]  [bold green]3 AI Perspectives[/]  [bright_white]•[/]  [bold #D97706]Deterministic Scoring[/]\n"
+        f"[bright_white]GitHub:[/] [bold cyan]https://github.com/ramizz1/assumption-zero[/]"
+    )
+    console.print(
+        Panel(
+            banner_text,
+            border_style="#D97706",
+            box=box.ROUNDED,
+            padding=(1, 3),
+        )
+    )
     console.print()
 
 
