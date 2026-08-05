@@ -104,14 +104,20 @@ def build_analysis_prompt(
 
 ## Your Task ({perspective_name.replace("_", " ").title()})
 
-Analyze this idea from your assigned perspective using ONLY the evidence provided above.
-Evaluate the business model, pricing strategy, customer willingness to pay, unit economics (CAC vs LTV), and monetization risks thoroughly in key_findings and risks.
+Analyze this idea from your assigned perspective using the evidence provided above and the user's detailed specification.
+Evaluate the business model, pricing strategy, customer willingness to pay, unit economics (CAC vs LTV), TAM/SAM/SOM estimates, competitive moats, trust & safety rules, and 90-day launch roadmap thoroughly in key_findings, risks, and opportunities.
 
-CRITICAL RULES:
+EXHAUSTIVE ANALYSIS REQUIREMENTS:
+1. **Business Model & Unit Economics**: Evaluate monetization streams (premium listings, VIP badges, boost fees, store subscriptions, banner ads) and pricing power.
+2. **TAM/SAM/SOM Calculation**: Provide explicit market size formulas, conservative vs optimistic scenarios in local currency (AZN/USD).
+3. **Go-to-Market Strategy**: Provide 90-day launch milestones for acquiring the first 100, 1,000, 10,000, and 50,000 active users.
+4. **Competitive Matrix**: Profile top competitors ({idea.known_competitors or 'Tap.az, Lalafo, Facebook Marketplace'}) with strengths, weaknesses, and defensible moats.
+5. **Trust, Safety & Legal**: Outline identity verification, fraud detection, and legal compliance considerations.
+
+CRITICAL CITATION & FACTUAL RULES:
 1. Only cite evidence IDs from the list above (e.g. [E001]). Never cite IDs not in the list.
-2. If you lack evidence for a claim, write "Insufficient evidence" — never invent facts.
-3. Evaluate the business model viability explicitly in your key findings & risks.
-4. Base every factual claim on a cited evidence ID.
+2. Base every factual claim on a cited evidence ID or user prompt specification.
+3. If evidence is missing for a specific market statistic, state "Requires customer discovery validation".
 
 Respond with a JSON object matching EXACTLY this schema:
 {{
