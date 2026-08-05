@@ -224,7 +224,23 @@ def _run_analysis_sync(idea, is_demo: bool = False):
     return asyncio.run(_run())
 
 
-# ── Report Renderer ───────────────────────────────────────────────────────────
+def _clean_summary(text: str) -> str:
+    """Format summary for terminal rendering, cleaning broken markdown tables into clean bullet points."""
+    if not text:
+        return ""
+    lines = text.splitlines()
+    clean_lines = []
+    for line in lines:
+        stripped = line.strip()
+        if stripped.startswith("|") and ("---" in stripped or "|-" in stripped):
+            continue
+        if stripped.startswith("|"):
+            cells = [c.strip() for c in stripped.split("|") if c.strip()]
+            if cells:
+                clean_lines.append("  • " + " — ".join(cells))
+            continue
+        clean_lines.append(line)
+    return "\n".join(clean_lines).strip()
 
 
 def _print_report(result) -> None:
@@ -395,9 +411,10 @@ def _print_report(result) -> None:
                 f"  - [white]{o}[/]" for o in p.opportunities
             )
 
+        clean_sum = _clean_summary(p.summary)
         body_text = (
             f"  [bold white]Verdict:[/] [{rec_c}]{p.recommendation.value}[/]   [bright_white](Model: {p.model_id})[/]\n\n"
-            f"  [white]{p.summary}[/]"
+            f"  [white]{clean_sum}[/]"
             f"{findings_text}"
             f"{risks_text}"
             f"{opps_text}"
