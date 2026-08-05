@@ -230,8 +230,15 @@ class OpenRouterAdapter(LLMAdapter):
                     resp = await client.post(url, json=payload)
                     if resp.status_code == 200:
                         data = resp.json()
-                        content = data["choices"][0]["message"]["content"]
-                        return content
+                        if "choices" in data and len(data["choices"]) > 0:
+                            content = data["choices"][0]["message"]["content"]
+                            if content:
+                                return content
+                        if "error" in data:
+                            err_msg = data["error"].get("message", str(data["error"]))
+                            logger.warning("OpenRouter model %s error payload: %s", model_name, err_msg)
+                            last_error = RuntimeError(f"OpenRouter model {model_name} error: {err_msg}")
+                            continue
                     elif resp.status_code == 401:
                         raise RuntimeError(
                             "OpenRouter API key is invalid or unauthorized (HTTP 401). "
