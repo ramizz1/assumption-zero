@@ -736,9 +736,19 @@ def analyze(
 
 @app.command()
 def prompt(
-    text: str = typer.Argument(..., help="Single natural language text prompt describing your startup idea")
+    text: Optional[str] = typer.Argument(None, help="Single natural language text prompt describing your startup idea")
 ) -> None:
     """Analyze a startup idea from a single freeform text prompt."""
+    if not text:
+        _print_splash()
+        _print_section("1-Prompt Quick Mode", "⚡")
+        console.print(
+            "  [a0.muted]Describe your startup idea in plain English (product name, problem, customer, pricing, budget, etc.):[/]\n"
+        )
+        text = Prompt.ask("  [a0.accent]›[/] [a0.label]Startup Idea Prompt[/]", console=console).strip()
+        if not text:
+            console.print("  [a0.bad]✗ Prompt cannot be empty.[/]")
+            raise typer.Exit(1)
     analyze(file=None, prompt=text)
 
 
