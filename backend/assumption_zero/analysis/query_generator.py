@@ -57,6 +57,7 @@ def generate_queries(idea: IdeaInput) -> List[Dict[str, str]]:
     queries: List[Dict[str, str]] = []
 
     # ── Direct competitors ────────────────────────────────────────
+    queries.append({"query": f"{name} {geography} app marketplace", "type": "competitor"})
     queries.append({"query": f"best apps for {problem}", "type": "competitor"})
     queries.append({"query": f"top alternatives to {name}", "type": "competitor"})
 

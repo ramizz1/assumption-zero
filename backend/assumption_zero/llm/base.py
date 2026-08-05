@@ -181,17 +181,58 @@ class LLMAdapter(ABC):
     async def parse_raw_prompt(self, raw_text: str) -> IdeaInput:
         """
         Parse a single natural language text prompt into a structured IdeaInput.
+        Uses intelligent pattern extraction for name, geography, competitors, and problem.
         """
-        lines = [line.strip() for line in raw_text.splitlines() if line.strip()]
-        first_line = lines[0] if lines else raw_text[:50]
-        words = first_line.split()
-        name = " ".join(words[:4]) if words else "New Idea"
+        import re
+
+        text = raw_text.strip()
+
+        # 1. Extract Name (look for **Name**, "Name", 'Name', or keywords after 'for', 'called', 'named')
+        name = ""
+        bold_matches = re.findall(r"\*\*([^*]{2,35})\*\*", text)
+        if bold_matches:
+            for bm in bold_matches:
+                if not bm.lower().startswith(("product", "core", "business", "current", "required", "competit", "summary")):
+                    name = bm.strip()
+                    break
+
+        if not name:
+            for_matches = re.findall(r"(?:for|called|named|app|platform|service|project)\s+([A-Z0-9\u0400-\u04FF\u0100-\u017F][A-Za-z0-9\.\-\_\u0400-\u04FF\u0100-\u017F]{2,25})", text, re.IGNORECASE)
+            if for_matches:
+                name = for_matches[0].strip()
+
+        if not name:
+            clean_first = re.sub(r"^(act as a|create a|analyze|please analyze|i want to build|build a|design a)\s+.*?\s+(?:for|on|about)\s+", "", text.splitlines()[0], flags=re.IGNORECASE)
+            clean_words = clean_first.strip("#* ").split()
+            name = " ".join(clean_words[:3]) if clean_words else "New Idea"
+
+        # 2. Extract Geography
+        geography = "global"
+        geo_keywords = ["Azerbaijan", "Azerbaijani", "United States", "US", "UK", "Europe", "Turkey", "Germany", "India", "Canada"]
+        for g in geo_keywords:
+            if g.lower() in text.lower():
+                geography = "Azerbaijan" if g.lower() in ("azerbaijan", "azerbaijani") else g
+                break
+
+        # 3. Extract Competitors mentioned in text
+        comps_found = []
+        for comp_name in ["Tap.az", "Lalafo", "Turbo.az", "Bina.az", "Facebook Marketplace", "Instagram", "Otter.ai", "Fireflies.ai", "Stylebook", "Whering"]:
+            if comp_name.lower() in text.lower():
+                comps_found.append(comp_name)
+
+        known_competitors = ", ".join(comps_found) if comps_found else None
+
+        # 4. Extract Description & Problem
+        paragraphs = [p.strip() for p in text.split("\n\n") if p.strip() and not p.strip().startswith(("#", "Act as", "Create a"))]
+        desc = paragraphs[0][:300] if paragraphs else text[:300]
+        prob = paragraphs[1][:400] if len(paragraphs) > 1 else desc
 
         return IdeaInput(
-            name=name[:100],
-            description=raw_text[:300],
-            problem=raw_text[:500],
-            target_customer="Target users & buyers",
-            geography="global",
-            additional_context=raw_text,
+            name=name[:60],
+            description=desc,
+            problem=prob,
+            target_customer=f"Users and buyers in {geography}",
+            geography=geography,
+            known_competitors=known_competitors,
+            additional_context=text[:3000],
         )
