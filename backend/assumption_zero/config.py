@@ -38,7 +38,7 @@ class Settings(BaseSettings):
     # ── Groq (Ultra-fast Llama 3.3 models) ──────────────────────
     # https://console.groq.com/keys
     groq_api_key: Optional[str] = None
-    groq_model: str = "llama-3.3-70b-versatile"
+    groq_model: str = "openai/gpt-oss-120b"
 
     # ── Ollama (local models) ────────────────────────────────────
     ollama_base_url: str = "http://localhost:11434"

@@ -25,13 +25,13 @@ from assumption_zero.schemas import EvidenceItem, IdeaInput, PerspectiveName
 logger = logging.getLogger(__name__)
 
 _GROQ_BASE = "https://api.groq.com/openai/v1"
-_DEFAULT_MODEL = "llama-3.3-70b-versatile"
+_DEFAULT_MODEL = "openai/gpt-oss-120b"
 _FALLBACK_MODELS = [
+    "openai/gpt-oss-120b",
     "llama-3.3-70b-versatile",
-    "llama3-70b-8192",
+    "openai/gpt-oss-20b",
     "llama-3.1-8b-instant",
-    "mixtral-8x7b-32768",
-    "gemma2-9b-it",
+    "qwen/qwen3.6-27b",
 ]
 
 
