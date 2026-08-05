@@ -623,9 +623,9 @@ def _ask_idea():
     competitors = ask("Known competitors", "Otter.ai, Fireflies.ai")
 
     _print_section("Strategic Insights", "⚡")
-    advantage = ask("Unfair advantage / Moat", "Full technical ownership (Nuxt+Django+Flutter built), local market knowledge")
-    assumptions = ask("Core assumption to test", "Sellers will switch if chat response rate is 2x faster than tap.az")
-    context = ask("Additional context", "Web (Nuxt) + Mobile (Flutter) backed by Django REST API")
+    advantage = ask("Unfair advantage / Moat", "Proprietary algorithm, direct distribution channel with industry partners")
+    assumptions = ask("Core assumption to test", "Target customers will pay for on-device privacy over cloud alternatives")
+    context = ask("Additional context", "Web app + Mobile client backed by REST API")
 
     return IdeaInput(
         name=name,
@@ -663,9 +663,9 @@ def guide() -> None:
         "   [a0.muted]Bad:[/] 'Making it easier for buyers and sellers.'\n\n"
         "[bold white]2. Specific Target Customer & Location[/]\n"
         "   Identify exact demographics, region, and segment.\n"
-        "   [a0.muted]Good:[/] 'B2B SMBs in Azerbaijan with 5-20 employees.'\n\n"
+        "   [a0.muted]Good:[/] 'Solo law practice attorneys in the US with 1-20 employees.'\n\n"
         "[bold white]3. Real Competitors & Existing Alternatives[/]\n"
-        "   List direct competitors (e.g. tap.az, lalafo) and indirect alternatives (Excel, WhatsApp).\n\n"
+        "   List direct competitors (e.g. Otter.ai, Fireflies.ai) and indirect alternatives (Excel, WhatsApp).\n\n"
         "[bold white]4. Realistic Budget & Founder Skills[/]\n"
         "   State your technical skills and runway so the AI can evaluate Founder/Project Fit accurately.\n"
     )
