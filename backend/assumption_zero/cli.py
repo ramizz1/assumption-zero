@@ -604,16 +604,19 @@ def _ask_idea():
     customer = ask("Target customer", "Solo practitioners and small law firms (1-20 attorneys)", required=True)
     geography = ask("Target geography", "United States", required=True)
 
-    _print_section("AI Key Setup", "🔑")
-    console.print(
-        "  [a0.muted]Get a free OpenRouter key at:[/] [a0.info]https://openrouter.ai/keys[/]\n"
-        "  [a0.muted]Press Enter to use built-in Assumption Zero Beta key.[/]\n"
-    )
-    user_key = ask("OpenRouter API Key", "sk-or-v1-...")
-    if user_key:
-        import os
-        os.environ["OPENROUTER_API_KEY"] = user_key
-        console.print("  [a0.good]✓ Using custom OpenRouter API key[/]\n")
+    import os
+    if os.getenv("OPENROUTER_API_KEY"):
+        console.print("  [a0.good]✓ Using OpenRouter API key from environment[/]\n")
+    else:
+        _print_section("AI Key Setup", "🔑")
+        console.print(
+            "  [a0.muted]Get a free OpenRouter key at:[/] [a0.info]https://openrouter.ai/keys[/]\n"
+            "  [a0.muted]Press Enter to use built-in Assumption Zero Beta key.[/]\n"
+        )
+        user_key = ask("OpenRouter API Key", "sk-or-v1-...")
+        if user_key:
+            os.environ["OPENROUTER_API_KEY"] = user_key
+            console.print("  [a0.good]✓ Using custom OpenRouter API key[/]\n")
 
     _print_section("Business Details", "📋")
     model = ask("Business model", "SaaS subscription per seat")

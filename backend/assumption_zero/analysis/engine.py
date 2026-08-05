@@ -74,18 +74,49 @@ def _assign_evidence_ids(items: List[EvidenceItem]) -> List[EvidenceItem]:
     return unique
 
 
+def _clean_competitor_name(title: str) -> str:
+    """Extract a clean brand name from search result title, stripping forum headers."""
+    name = title.strip()
+    for prefix in ("[GitHub]", "[HN]", "[Reddit r/", "[Wikipedia]", "[News -", "Web ("):
+        if name.startswith(prefix):
+            name = name.split("]", 1)[-1].strip() if "]" in name else name
+            break
+
+    # Handle Show HN / Launch HN
+    if "Show HN:" in name:
+        name = name.split("Show HN:", 1)[-1].strip()
+    elif "Launch HN:" in name:
+        name = name.split("Launch HN:", 1)[-1].strip()
+
+    # Split by separator (-, |, –, :) to get brand name
+    for sep in (" – ", " - ", " | ", ": "):
+        if sep in name:
+            candidate = name.split(sep)[0].strip()
+            if 2 <= len(candidate) <= 35:
+                name = candidate
+                break
+
+    # If name looks like a long sentence, skip or truncate
+    words = name.split()
+    if len(words) > 5 or name.lower().startswith(("as a", "the ", "i ", "how ", "why ", "cost-effective")):
+        return ""
+
+    return name.strip()
+
+
 def _extract_competitors_from_evidence(evidence: List[EvidenceItem], idea: Optional[IdeaInput] = None) -> List[Competitor]:
     """
     Parse competitor information from evidence items and user-declared competitors.
     Returns Competitor objects that will be merged.
     """
     competitors: List[Competitor] = []
+    IGNORE_COMPETITOR_WORDS = {"idk", "none", "no", "n/a", "unknown", "nothing", "no idea", "dont know", "don't know", "na"}
 
     # 1. Include user-specified competitors directly
     if idea and idea.known_competitors:
         for raw_comp in idea.known_competitors.split(","):
             cname = raw_comp.strip()
-            if not cname:
+            if not cname or cname.lower() in IGNORE_COMPETITOR_WORDS:
                 continue
             matching_ev = [
                 e.evidence_id for e in evidence
@@ -105,8 +136,8 @@ def _extract_competitors_from_evidence(evidence: List[EvidenceItem], idea: Optio
                     description=desc,
                     target_user=f"Target customers in {idea.geography}",
                     pricing_evidence="See evidence items for fee structure details",
-                    strengths=["Established market brand & local user base"],
-                    weaknesses=["High fees or slow manual workflows reported"],
+                    strengths=["Established market brand & user base"],
+                    weaknesses=["High pricing or feature gaps reported"],
                     complaints=[],
                     differentiation=[f"Differentiation required vs {cname}"],
                     evidence_ids=matching_ev[:5],
@@ -119,11 +150,9 @@ def _extract_competitors_from_evidence(evidence: List[EvidenceItem], idea: Optio
         if item.evidence_type not in (EvidenceType.COMPETITOR, EvidenceType.OSS_ALTERNATIVE):
             continue
 
-        name = item.title.strip()
-        for prefix in ("[GitHub]", "[HN]", "[Reddit r/", "[Wikipedia]", "[News -"):
-            if name.startswith(prefix):
-                name = name.split("]", 1)[-1].strip() if "]" in name else name
-                break
+        clean_name = _clean_competitor_name(item.title)
+        if not clean_name or clean_name.lower() in IGNORE_COMPETITOR_WORDS:
+            continue
 
         comp_type = (
             CompetitorType.INDIRECT
@@ -133,7 +162,7 @@ def _extract_competitors_from_evidence(evidence: List[EvidenceItem], idea: Optio
 
         competitors.append(
             Competitor(
-                name=name[:80],
+                name=clean_name[:50],
                 url=item.url if not item.url.startswith("demo://") else "",
                 competitor_type=comp_type,
                 description=item.passage[:300],

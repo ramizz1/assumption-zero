@@ -11,6 +11,8 @@ from typing import Dict, List
 
 from assumption_zero.schemas import IdeaInput
 
+IGNORE_COMPETITOR_WORDS = {"idk", "none", "no", "n/a", "unknown", "nothing", "no idea", "dont know", "don't know", "na"}
+
 QUERY_TYPES = [
     "competitor",
     "oss_alternative",
@@ -55,17 +57,21 @@ def generate_queries(idea: IdeaInput) -> List[Dict[str, str]]:
     queries: List[Dict[str, str]] = []
 
     # ── Direct competitors ────────────────────────────────────────
-    queries.append({"query": f"{name} competitors alternatives", "type": "competitor"})
-    queries.append({"query": f"best software for {problem}", "type": "competitor"})
+    queries.append({"query": f"best apps for {problem}", "type": "competitor"})
+    queries.append({"query": f"top alternatives to {name}", "type": "competitor"})
 
-    if known_comps:
-        comps = [c.strip() for c in known_comps.split(",") if c.strip()]
-        for comp in comps[:4]:
-            queries.append({"query": f"{comp} {geography} marketplace", "type": "competitor"})
-            queries.append({"query": f"{comp} pricing features reviews", "type": "pricing"})
-            queries.append({"query": f"{comp} alternatives complaints", "type": "complaint"})
+    valid_comps = [
+        c.strip() for c in known_comps.split(",")
+        if c.strip() and c.strip().lower() not in IGNORE_COMPETITOR_WORDS
+    ]
+
+    if valid_comps:
+        for comp in valid_comps[:4]:
+            queries.append({"query": f"{comp} software features pricing", "type": "competitor"})
+            queries.append({"query": f"{comp} alternatives reviews", "type": "pricing"})
     else:
-        queries.append({"query": f"{problem} competitors {geography}", "type": "competitor"})
+        queries.append({"query": f"top tools for {problem}", "type": "competitor"})
+        queries.append({"query": f"apps like {name} {problem}", "type": "competitor"})
 
     # ── Open-source alternatives ──────────────────────────────────
     queries.append({"query": f"open source {name} github", "type": "oss_alternative"})
@@ -73,14 +79,14 @@ def generate_queries(idea: IdeaInput) -> List[Dict[str, str]]:
 
     # ── Customer complaints ───────────────────────────────────────
     queries.append({"query": f"{customer} complaints {problem}", "type": "complaint"})
-    queries.append({"query": f"alternatives to {name}", "type": "complaint"})
+    queries.append({"query": f"{problem} frustration app store reviews", "type": "complaint"})
 
     # ── Demand indicators ─────────────────────────────────────────
     queries.append({"query": f"demand for {problem} {geography}", "type": "demand"})
-    queries.append({"query": f"{customer} need help {problem}", "type": "demand"})
+    queries.append({"query": f"{customer} looking for {problem} app", "type": "demand"})
 
     # ── Pricing evidence ──────────────────────────────────────────
-    queries.append({"query": f"{problem} software pricing comparison", "type": "pricing"})
+    queries.append({"query": f"{problem} subscription pricing comparison", "type": "pricing"})
     if model:
         queries.append({"query": f"{model} pricing {customer}", "type": "pricing"})
 
@@ -94,15 +100,15 @@ def generate_queries(idea: IdeaInput) -> List[Dict[str, str]]:
     queries.append({"query": f"{problem} market {geography}", "type": "geographic"})
 
     # ── Regulatory concerns ───────────────────────────────────────
-    queries.append({"query": f"{problem} regulations compliance {geography}", "type": "regulatory"})
+    queries.append({"query": f"{problem} regulations data privacy {geography}", "type": "regulatory"})
 
     # ── Failed products ───────────────────────────────────────────
     queries.append({"query": f"failed {problem} startups", "type": "failed_product"})
 
     # ── Common failure reasons ────────────────────────────────────
-    queries.append({"query": f"why {customer} don't buy {problem} software", "type": "failure_reason"})
+    queries.append({"query": f"why {customer} don't pay for {problem}", "type": "failure_reason"})
 
     # ── Distribution channels ─────────────────────────────────────
-    queries.append({"query": f"sell {problem} software to {customer}", "type": "distribution"})
+    queries.append({"query": f"customer acquisition for {problem} app", "type": "distribution"})
 
     return queries
