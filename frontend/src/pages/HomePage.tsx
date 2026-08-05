@@ -22,7 +22,7 @@ export const HomePage: React.FC = () => {
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [selectedProvider, setSelectedProvider] = useState<'groq' | 'openrouter'>('groq')
+  const [selectedProvider, setSelectedProvider] = useState<'groq' | 'openrouter' | 'hybrid'>('hybrid')
   const [groqApiKey, setGroqApiKey] = useState('')
   const [openrouterApiKey, setOpenrouterApiKey] = useState('')
   const [showJsonExample, setShowJsonExample] = useState(false)
@@ -320,29 +320,49 @@ export const HomePage: React.FC = () => {
               <div className="card p-6 border-amber-400/20 bg-[#141419]/90">
                 <div className="flex items-center justify-between mb-3">
                   <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                    <span>⚡</span> Select AI Provider & API Key
+                    <span>⚡</span> Select AI Engine & API Keys
                   </h3>
-                  <span className="text-[11px] text-amber-400/90 font-mono font-semibold">Zero-config built-in key active</span>
+                  <span className="text-[11px] text-amber-400/90 font-mono font-semibold">Zero-Config Load Balancing Active</span>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
+                  <button
+                    type="button"
+                    onClick={() => setSelectedProvider('hybrid')}
+                    className={`p-3 rounded-xl border text-left transition-all ${
+                      selectedProvider === 'hybrid'
+                        ? 'border-amber-400 bg-amber-400/10 text-white shadow-sm ring-1 ring-amber-400/50'
+                        : 'border-[#2a2a35] bg-black/40 text-gray-400 hover:text-gray-200'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="font-bold text-xs text-white flex items-center gap-1">
+                        <span>⚡</span> Smart Dual Engine
+                      </span>
+                      <span className="text-[9px] font-extrabold bg-amber-400/20 text-amber-300 px-1.5 py-0.5 rounded-full border border-amber-400/30">BEST</span>
+                    </div>
+                    <p className="text-[11px] text-gray-400 leading-tight">
+                      Groq + OpenRouter load-balancing & auto-failover
+                    </p>
+                  </button>
+
                   <button
                     type="button"
                     onClick={() => setSelectedProvider('groq')}
-                    className={`p-3.5 rounded-xl border text-left transition-all ${
+                    className={`p-3 rounded-xl border text-left transition-all ${
                       selectedProvider === 'groq'
                         ? 'border-amber-400 bg-amber-400/10 text-white shadow-sm'
                         : 'border-[#2a2a35] bg-black/40 text-gray-400 hover:text-gray-200'
                     }`}
                   >
                     <div className="flex items-center justify-between mb-1">
-                      <span className="font-bold text-sm text-white flex items-center gap-1.5">
-                        <span>🚀</span> Groq (Llama 3.3)
+                      <span className="font-bold text-xs text-white flex items-center gap-1">
+                        <span>🚀</span> Groq Only
                       </span>
-                      <span className="text-[10px] font-extrabold bg-amber-400/20 text-amber-300 px-2 py-0.5 rounded-full border border-amber-400/30">RECOMMENDED</span>
+                      <span className="text-[9px] font-extrabold bg-amber-400/20 text-amber-300 px-1.5 py-0.5 rounded-full border border-amber-400/30">FASTEST</span>
                     </div>
-                    <p className="text-xs text-gray-400 leading-snug">
-                      200,000 free tokens/day (~20 full analyses daily)
+                    <p className="text-[11px] text-gray-400 leading-tight">
+                      200,000 free tokens/day (~20 full analyses)
                     </p>
                   </button>
 
@@ -367,7 +387,42 @@ export const HomePage: React.FC = () => {
                   </button>
                 </div>
 
-                {selectedProvider === 'groq' ? (
+                {selectedProvider === 'hybrid' && (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <div className="flex items-center justify-between mb-1">
+                        <label className="text-[11px] font-semibold text-gray-300">Groq API Key (Optional)</label>
+                        <a href="https://console.groq.com/keys" target="_blank" rel="noopener noreferrer" className="text-[11px] text-amber-400 hover:underline">
+                          Get Key →
+                        </a>
+                      </div>
+                      <input
+                        type="password"
+                        className="input-field font-mono text-xs"
+                        placeholder="gsk_... (leave blank for built-in)"
+                        value={groqApiKey}
+                        onChange={(e) => setGroqApiKey(e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <div className="flex items-center justify-between mb-1">
+                        <label className="text-[11px] font-semibold text-gray-300">OpenRouter API Key (Optional)</label>
+                        <a href="https://openrouter.ai/keys" target="_blank" rel="noopener noreferrer" className="text-[11px] text-amber-400 hover:underline">
+                          Get Key →
+                        </a>
+                      </div>
+                      <input
+                        type="password"
+                        className="input-field font-mono text-xs"
+                        placeholder="sk-or-v1-... (leave blank for built-in)"
+                        value={openrouterApiKey}
+                        onChange={(e) => setOpenrouterApiKey(e.target.value)}
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {selectedProvider === 'groq' && (
                   <div>
                     <div className="flex items-center justify-between mb-1.5">
                       <label className="text-xs font-semibold text-gray-300">Custom Groq API Key (Optional)</label>
@@ -389,7 +444,9 @@ export const HomePage: React.FC = () => {
                       onChange={(e) => setGroqApiKey(e.target.value)}
                     />
                   </div>
-                ) : (
+                )}
+
+                {selectedProvider === 'openrouter' && (
                   <div>
                     <div className="flex items-center justify-between mb-1.5">
                       <label className="text-xs font-semibold text-gray-300">Custom OpenRouter API Key (Optional)</label>

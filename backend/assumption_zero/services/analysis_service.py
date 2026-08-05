@@ -45,6 +45,7 @@ logger = logging.getLogger(__name__)
 
 
 from assumption_zero.llm.groq_adapter import GroqAdapter
+from assumption_zero.llm.hybrid_adapter import HybridLLMAdapter
 
 
 def build_llm_adapter(provider_override: Optional[str] = None) -> LLMAdapter:
@@ -52,14 +53,28 @@ def build_llm_adapter(provider_override: Optional[str] = None) -> LLMAdapter:
     settings = get_settings()
     provider = (provider_override or settings.ai_provider).lower()
 
-    if provider == "groq":
-        adapter: LLMAdapter = GroqAdapter()
-    elif provider == "openrouter":
-        adapter = OpenRouterAdapter()
-    elif provider == "beta":
-        groq = GroqAdapter()
-        if groq.is_available:
+    groq = GroqAdapter()
+    openrouter = OpenRouterAdapter()
+
+    if provider in ("hybrid", "auto", "dual"):
+        adapter: LLMAdapter = HybridLLMAdapter(groq, openrouter)
+    elif provider == "groq":
+        if openrouter.is_available:
+            adapter = HybridLLMAdapter(groq, openrouter)
+        else:
             adapter = groq
+    elif provider == "openrouter":
+        if groq.is_available:
+            adapter = HybridLLMAdapter(groq, openrouter)
+        else:
+            adapter = openrouter
+    elif provider == "beta":
+        if groq.is_available and openrouter.is_available:
+            adapter = HybridLLMAdapter(groq, openrouter)
+        elif groq.is_available:
+            adapter = groq
+        elif openrouter.is_available:
+            adapter = openrouter
         else:
             adapter = BetaAdapter()
     else:
