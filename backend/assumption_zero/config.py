@@ -8,9 +8,14 @@ from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
+from pathlib import Path
+
+ROOT_ENV = Path(__file__).resolve().parent.parent.parent / ".env"
+LOCAL_ENV = Path(".env")
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
-        env_file=".env",
+        env_file=(str(ROOT_ENV), str(LOCAL_ENV)),
         env_file_encoding="utf-8",
         extra="ignore",
     )

@@ -176,7 +176,13 @@ class OpenRouterAdapter(LLMAdapter):
         self._settings = get_settings()
 
     def _api_key(self) -> str:
-        return self._settings.openrouter_api_key or _BUILTIN_OPENROUTER_KEY
+        import os
+        key = (
+            os.getenv("OPENROUTER_API_KEY")
+            or self._settings.openrouter_api_key
+            or "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"
+        )
+        return key.strip()
 
     def _model(self) -> str:
         return self._settings.openrouter_model or _DEFAULT_MODEL
