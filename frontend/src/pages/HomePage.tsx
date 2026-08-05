@@ -26,9 +26,7 @@ export const HomePage: React.FC = () => {
   const [showJsonExample, setShowJsonExample] = useState(false)
   const [inputMode, setInputMode] = useState<'prompt' | 'form'>('prompt')
 
-  const [rawPromptText, setRawPromptText] = useState(
-    'wearAi — an AI mobile app for creating top daily fashion outfits from your existing wardrobe for fashion-conscious young adults worldwide. Model: fremium then $20/mo subscription. Founder has fullstack skills with $1000 budget.'
-  )
+  const [rawPromptText, setRawPromptText] = useState('')
 
   const [idea, setIdea] = useState({
     name: '',
@@ -53,8 +51,13 @@ export const HomePage: React.FC = () => {
   }
 
   const handleLoadSample = () => {
-    setIdea(SAMPLE_IDEA)
-    setInputMode('form')
+    if (inputMode === 'prompt') {
+      setRawPromptText(
+        'LegalMind Local — A privacy-first AI meeting summarizer for small law firms that processes client audio entirely on-device. Business model: $49/month per seat subscription. Target customer: Solo law practices and firms with 1-20 attorneys. Founder has full-stack developer skills with $15,000 budget for 6 months.'
+      )
+    } else {
+      setIdea(SAMPLE_IDEA)
+    }
   }
 
   const handleAnalyzePrompt = async (e: React.FormEvent) => {
@@ -285,7 +288,7 @@ export const HomePage: React.FC = () => {
                     id="raw-prompt"
                     className="textarea-field font-sans text-sm"
                     rows={8}
-                    placeholder="Describe your idea in one go or upload a .txt / .md file... e.g. wearAi: an AI mobile app for creating top daily fashion outfits from your existing wardrobe for fashion-conscious young adults worldwide. Freemium model with $20/mo subscription..."
+                    placeholder="Describe your startup idea in plain English or upload a .txt / .md file... e.g. LegalMind Local: an AI meeting summarizer for law firms that processes audio entirely on-device, $49/mo subscription model, target customers are solo law practices..."
                     value={rawPromptText}
                     onChange={(e) => setRawPromptText(e.target.value)}
                     required
