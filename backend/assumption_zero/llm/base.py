@@ -96,6 +96,8 @@ def build_analysis_prompt(
 **Founder Skills:** {idea.founder_skills or 'Not specified'}
 **Budget:** {idea.budget or 'Not specified'}
 **Known Competitors:** {idea.known_competitors or 'Not specified'}
+**Unfair Advantage / Moat:** {getattr(idea, 'unfair_advantage', None) or 'Not specified'}
+**Core Unvalidated Assumptions:** {getattr(idea, 'key_assumptions', None) or 'Not specified'}
 **Additional Context:** {idea.additional_context or 'None'}
 
 ## Collected Evidence

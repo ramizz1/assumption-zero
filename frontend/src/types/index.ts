@@ -34,6 +34,8 @@ export interface IdeaInput {
   founder_skills?: string
   budget?: string
   known_competitors?: string
+  unfair_advantage?: string
+  key_assumptions?: string
   additional_context?: string
 }
 

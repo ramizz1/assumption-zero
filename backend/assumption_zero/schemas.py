@@ -129,6 +129,8 @@ class IdeaInput(BaseModel):
     founder_skills: Optional[str] = Field(None, max_length=1000)
     budget: Optional[str] = Field(None, max_length=200, description="Available runway or budget")
     known_competitors: Optional[str] = Field(None, max_length=500)
+    unfair_advantage: Optional[str] = Field(None, max_length=1000, description="Unique advantage, distribution channel, or IP")
+    key_assumptions: Optional[str] = Field(None, max_length=1000, description="1-2 core assumptions that must be true for success")
     additional_context: Optional[str] = Field(None, max_length=3000)
 
 

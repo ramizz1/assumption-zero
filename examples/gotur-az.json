@@ -9,5 +9,7 @@
   "founder_skills": "Full-stack developer with experience in Vue/Nuxt.js, Python/Django REST API, and Flutter mobile development",
   "budget": "$5,000 budget with 6 months runway",
   "known_competitors": "tap.az, lalafo.az, boss.az, Facebook Marketplace Azerbaijan",
+  "unfair_advantage": "Full technical ownership (Nuxt+Django+Flutter codebase built), local market knowledge, and zero reliance on expensive agency outsourcing",
+  "key_assumptions": "Sellers will list on Gotur.az if chat response rate is 2x faster than tap.az and basic listings remain 100% free",
   "additional_context": "Unified Django REST backend serving both Nuxt 3 web frontend and Flutter mobile apps. Integrated with local payment gateways (ePUL, MilliÖN) and Cloudflare R2 image storage."
 }

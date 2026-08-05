@@ -604,12 +604,9 @@ def _ask_idea():
     customer = ask("Target customer", "Individual sellers and buyers in Azerbaijan", required=True)
     geography = ask("Target geography", "Azerbaijan", required=True)
 
-    _print_section("Business Details", "📋")
-    model = ask("Business model", "Marketplace with boost listing packages")
-    price = ask("Expected price", "Free basic, $5/boost package")
-    skills = ask("Founder skills", "Full-stack dev (Nuxt + Django + Flutter)")
-    budget = ask("Available budget / runway", "$5,000 for 6 months")
-    competitors = ask("Known competitors", "tap.az, lalafo.az")
+    _print_section("Strategic Insights", "⚡")
+    advantage = ask("Unfair advantage / Moat", "Full technical ownership (Nuxt+Django+Flutter built), local market knowledge")
+    assumptions = ask("Core assumption to test", "Sellers will switch if chat response rate is 2x faster than tap.az")
     context = ask("Additional context", "Web (Nuxt) + Mobile (Flutter) backed by Django REST API")
 
     return IdeaInput(
@@ -623,6 +620,8 @@ def _ask_idea():
         founder_skills=skills or None,
         budget=budget or None,
         known_competitors=competitors or None,
+        unfair_advantage=advantage or None,
+        key_assumptions=assumptions or None,
         additional_context=context or None,
     )
 
