@@ -479,6 +479,94 @@ def _print_report(result) -> None:
                 console.print(f"    [a0.muted]{pos.perspective}:[/]  [white]{pos.position}[/]")
             console.print()
 
+    # ── 9. Decision Intelligence ──────────────────────────────────
+    _print_section("Decision Intelligence", "◈")
+
+    # ── Most Dangerous Assumptions across all 3 perspectives ──────
+    if result.perspectives:
+        console.print("[a0.label]☠  Most Dangerous Assumptions[/]")
+        for p in result.perspectives:
+            pcol = _perspective_color(p.perspective_name.value)
+            icon = _perspective_icon(p.perspective_name.value)
+            console.print(
+                f"  [{pcol}]{icon} {p.perspective_display}:[/]  "
+                f"[white]{p.most_dangerous_assumption}[/]"
+            )
+        console.print()
+
+    # ── Evidence Quality Breakdown ────────────────────────────────
+    if result.evidence:
+        from assumption_zero.schemas import EvidenceType, ReliabilityLevel
+
+        type_counts: dict[str, int] = {}
+        source_counts: dict[str, int] = {}
+        high_rel = 0
+        for e in result.evidence:
+            t = e.evidence_type.value.replace("_", " ").title()
+            type_counts[t] = type_counts.get(t, 0) + 1
+            src = e.source_name.split()[0]  # first word of source name
+            source_counts[src] = source_counts.get(src, 0) + 1
+            if e.reliability == ReliabilityLevel.HIGH:
+                high_rel += 1
+
+        n = len(result.evidence)
+        quality_pct = int(high_rel / n * 100) if n else 0
+
+        console.print(f"[a0.label]📊  Evidence Quality  ({n} items collected)[/]")
+        qual_bar = _score_bar(float(quality_pct))
+        console.print(f"  High-reliability evidence: {qual_bar}")
+        console.print()
+
+        # Source breakdown table
+        src_table = Table(box=box.MINIMAL, show_header=True, pad_edge=False)
+        src_table.add_column("Source", style="a0.info", min_width=20)
+        src_table.add_column("Items", style="a0.muted", justify="right", min_width=6)
+        src_table.add_column("Type", style="white", min_width=22)
+        for src, count in sorted(source_counts.items(), key=lambda x: -x[1])[:8]:
+            # find dominant evidence type for this source
+            dom = max(
+                type_counts.items(),
+                key=lambda kv: sum(
+                    1 for e in result.evidence
+                    if e.source_name.startswith(src) and e.evidence_type.value.replace("_", " ").title() == kv[0]
+                ),
+            )[0] if type_counts else "—"
+            src_table.add_row(src, str(count), dom)
+        console.print(src_table)
+        console.print()
+
+    # ── Evidence Type Mix ─────────────────────────────────────────
+    if result.evidence:
+        console.print("[a0.label]🔬  Evidence Type Distribution[/]")
+        ev_type_counts: dict[str, int] = {}
+        for e in result.evidence:
+            k = e.evidence_type.value.replace("_", " ").title()
+            ev_type_counts[k] = ev_type_counts.get(k, 0) + 1
+        for ev_type, count in sorted(ev_type_counts.items(), key=lambda x: -x[1]):
+            bar_filled = min(20, int(count / len(result.evidence) * 20))
+            bar = "█" * bar_filled + "░" * (20 - bar_filled)
+            console.print(f"  [a0.muted]{ev_type:<22}[/] [a0.accent]{bar}[/] [white]{count}[/]")
+        console.print()
+
+    # ── Immediate Next Steps ──────────────────────────────────────
+    console.print("[a0.label]⚡  Immediate Next Steps[/]")
+    next_steps = [
+        "Run 5 customer discovery interviews with your exact target customer segment — do it before writing code.",
+        "Create a simple landing page and drive 50 targeted visitors to measure real sign-up intent.",
+        "Manually deliver the core value proposition to 3 early users to validate willingness to pay.",
+        "Set up a 1-week experiment budget ($0–200) to test your riskiest distribution channel assumption.",
+        "Define your success metric: revenue, active users, or NPS — pick one and instrument it from Day 1.",
+    ]
+    if result.perspectives:
+        # Inject the most dangerous assumption from the builder as a step
+        for p in result.perspectives:
+            if "builder" in p.perspective_name.value:
+                next_steps.insert(0, f"Scope check: {p.most_dangerous_assumption}")
+                break
+    for i, step in enumerate(next_steps[:5], 1):
+        console.print(f"  [a0.accent]{i}.[/] [white]{step}[/]")
+    console.print()
+
     # ── 7. Validation Experiments ─────────────────────────────────
     if result.experiments:
         _print_section(f"Validation Experiments  ({len(result.experiments)})", "◈")
@@ -512,17 +600,6 @@ def _print_report(result) -> None:
         for m in result.missing_information:
             console.print(f"  [a0.warn]•[/]  [white]{m}[/]")
 
-    # ── 9. Sources ────────────────────────────────────────────────
-    if result.evidence:
-        _print_section(f"Sources  ({len(result.evidence)})", "◈")
-        for e in result.evidence[:12]:
-            console.print(
-                f"  [a0.muted][{e.evidence_id}][/]  "
-                f"[a0.info]{e.title[:65]}[/]\n"
-                f"           [white]{e.url[:80]}[/]"
-            )
-        if len(result.evidence) > 12:
-            console.print(f"  [a0.muted]  … and {len(result.evidence) - 12} more[/]")
 
     _print_disclaimer()
 
