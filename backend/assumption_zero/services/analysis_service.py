@@ -16,7 +16,6 @@ from assumption_zero.config import get_settings
 from assumption_zero.llm.base import LLMAdapter
 from assumption_zero.llm.beta_adapter import BetaAdapter
 from assumption_zero.llm.mock_adapter import MockAdapter
-from assumption_zero.llm.ollama_adapter import OllamaAdapter
 from assumption_zero.llm.openrouter_adapter import OpenRouterAdapter
 from assumption_zero.research.base import ResearchProvider
 from assumption_zero.research.github_provider import GitHubProvider
@@ -57,13 +56,8 @@ def build_llm_adapter(provider_override: Optional[str] = None) -> LLMAdapter:
         if not adapter.is_available:
             logger.warning("OpenRouter not configured — falling back to Beta")
             adapter = BetaAdapter()
-    elif provider == "ollama":
-        adapter = OllamaAdapter()
-        if not adapter.is_available:
-            logger.warning("Ollama not available — falling back to Beta")
-            adapter = BetaAdapter()
     else:
-        adapter = MockAdapter()
+        adapter = BetaAdapter()
 
     logger.info("LLM adapter: %s", adapter.model_id)
     return adapter
