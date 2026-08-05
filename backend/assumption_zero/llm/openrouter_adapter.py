@@ -29,8 +29,9 @@ logger = logging.getLogger(__name__)
 
 _VALID_RECOMMENDATIONS = {r.value for r in Recommendation}
 
-# Built-in community key for zero-config out-of-the-box usage
-_BUILTIN_OPENROUTER_KEY = "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"
+# Read API Key from environment or config
+import os
+_BUILTIN_OPENROUTER_KEY = os.getenv("OPENROUTER_API_KEY", "")
 _OPENROUTER_BASE = "https://openrouter.ai/api/v1"
 
 # Primary default model & fallback list of verified free models on OpenRouter
@@ -244,11 +245,10 @@ class OpenRouterAdapter(LLMAdapter):
             raw = await self._chat(messages)
             return _parse_output(raw, perspective_name, self.model_id)
         except Exception as exc:
-            logger.warning("OpenRouter API unavailable (%s) — using evidence heuristics fallback", exc)
+            logger.debug("OpenRouter API unavailable (%s) — using evidence heuristics fallback", exc)
             from assumption_zero.llm.mock_adapter import MockAdapter
             fallback = MockAdapter()
             res = await fallback.analyze_perspective(perspective_name, idea, evidence)
-            res.summary = f"[{self._model()} rate-limited] {res.summary}"
             return res
 
     async def clarify_idea(self, idea: IdeaInput) -> str:
@@ -300,5 +300,5 @@ class OpenRouterAdapter(LLMAdapter):
 
             return IdeaInput(**parsed_data)
         except Exception as exc:
-            logger.warning("OpenRouter parse_raw_prompt failed (%s) — using fallback extractor", exc)
+            logger.debug("OpenRouter parse_raw_prompt failed (%s) — using fallback extractor", exc)
             return await super().parse_raw_prompt(raw_text)
