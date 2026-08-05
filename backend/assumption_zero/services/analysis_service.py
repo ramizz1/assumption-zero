@@ -35,6 +35,8 @@ from assumption_zero.schemas import (
 )
 import assumption_zero.storage as store
 
+from assumption_zero.research.web_search_provider import WebSearchProvider
+
 logger = logging.getLogger(__name__)
 
 
@@ -73,6 +75,7 @@ def build_research_providers(
 ) -> List[ResearchProvider]:
     """Return all enabled research providers."""
     all_providers: List[ResearchProvider] = [
+        WebSearchProvider(),
         GitHubProvider(),
         HackerNewsProvider(),
         WikipediaProvider(),

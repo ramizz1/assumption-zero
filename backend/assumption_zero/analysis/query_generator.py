@@ -57,11 +57,15 @@ def generate_queries(idea: IdeaInput) -> List[Dict[str, str]]:
     # ── Direct competitors ────────────────────────────────────────
     queries.append({"query": f"{name} competitors alternatives", "type": "competitor"})
     queries.append({"query": f"best software for {problem}", "type": "competitor"})
+
     if known_comps:
-        for comp in known_comps.split(",")[:3]:
-            comp_clean = comp.strip()
-            if comp_clean:
-                queries.append({"query": f"{comp_clean} pricing features reviews", "type": "competitor"})
+        comps = [c.strip() for c in known_comps.split(",") if c.strip()]
+        for comp in comps[:4]:
+            queries.append({"query": f"{comp} {geography} marketplace", "type": "competitor"})
+            queries.append({"query": f"{comp} pricing features reviews", "type": "pricing"})
+            queries.append({"query": f"{comp} alternatives complaints", "type": "complaint"})
+    else:
+        queries.append({"query": f"{problem} competitors {geography}", "type": "competitor"})
 
     # ── Open-source alternatives ──────────────────────────────────
     queries.append({"query": f"open source {name} github", "type": "oss_alternative"})
@@ -69,7 +73,7 @@ def generate_queries(idea: IdeaInput) -> List[Dict[str, str]]:
 
     # ── Customer complaints ───────────────────────────────────────
     queries.append({"query": f"{customer} complaints {problem}", "type": "complaint"})
-    queries.append({"query": f"alternatives to {name} reddit", "type": "complaint"})
+    queries.append({"query": f"alternatives to {name}", "type": "complaint"})
 
     # ── Demand indicators ─────────────────────────────────────────
     queries.append({"query": f"demand for {problem} {geography}", "type": "demand"})
