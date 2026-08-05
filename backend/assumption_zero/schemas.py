@@ -111,15 +111,30 @@ import re
 
 
 def is_gibberish(text: str) -> bool:
-    """Check if text appears to be random keystrokes or gibberish."""
+    """Check if text appears to be random keystrokes, gibberish, or generic non-ideas."""
     s = text.strip()
-    if not s or len(s) < 3:
+    if not s or len(s) < 4:
+        return True
+
+    lower = s.lower().strip("!?.#* \t\n")
+    non_idea_words = {
+        "idk", "unknown", "nothing", "test", "none", "n/a", "na", "no", "asdf",
+        "foo", "bar", "qwerty", "whatever", "stuff", "thing", "something", "abc",
+        "xyz", "123", "hello", "hi", "bye", "temp", "tmp", "demo", "sample",
+    }
+    if lower in non_idea_words:
         return True
 
     words = [w for w in re.split(r"\s+", s) if len(w) > 0]
+    if len(words) == 1 and lower in non_idea_words:
+        return True
+
+    if len(words) <= 2 and len(s) < 12 and lower in non_idea_words:
+        return True
+
     vowels = set("aeiouyAEIOUYаеëиоуыэюяАЕЁИОУЫЭЮЯəöğıüƏÖĞIÜ")
 
-    if len(words) == 1 and len(s) >= 7:
+    if len(words) == 1 and len(s) >= 6:
         vowel_count = sum(1 for c in s if c in vowels)
         if vowel_count / len(s) < 0.12:
             return True

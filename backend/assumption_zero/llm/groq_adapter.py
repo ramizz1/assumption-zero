@@ -110,10 +110,12 @@ class GroqAdapter(LLMAdapter):
                             "Please check your GROQ_API_KEY at https://console.groq.com/keys"
                         )
                     elif resp.status_code in (402, 429):
-                        raise RuntimeError(
-                            f"Groq API quota or rate limit exceeded (HTTP {resp.status_code}). "
-                            "Please check your limit or balance at https://console.groq.com"
+                        logger.debug("Groq model %s rate limited (HTTP %s) — trying fallback model...", model_name, resp.status_code)
+                        last_error = RuntimeError(
+                            f"Groq API quota or rate limit exceeded on {model_name} (HTTP {resp.status_code}). "
+                            "Please check your limit at https://console.groq.com"
                         )
+                        continue
                     else:
                         error_msg = f"HTTP {resp.status_code} for {model_name}: {resp.text[:150]}"
                         logger.debug("Groq model %s failed: %s", model_name, error_msg)
