@@ -328,6 +328,34 @@ class AnalysisEngine:
             idea, evidence, provider_errors
         )
 
+        if not perspectives:
+            err = provider_errors[0] if provider_errors else "AI perspective analysis failed."
+            logger.error("Analysis failed: no perspectives generated. Error: %s", err)
+            return AnalysisResult(
+                analysis_id=analysis_id,
+                status=AnalysisStatus.FAILED,
+                stage=AnalysisStage.COMPLETE,
+                created_at=datetime.utcnow(),
+                idea_input=idea,
+                interpreted_idea=interpreted_idea,
+                evidence=evidence,
+                competitors=competitors,
+                perspectives=[],
+                opportunity_score=None,
+                evidence_confidence=None,
+                recommendation=None,
+                most_dangerous_assumption="",
+                strongest_supporting="",
+                strongest_contradicting="",
+                missing_information=[],
+                experiments=[],
+                disagreements=[],
+                models_used=[],
+                provider_errors=provider_errors,
+                error_message=err,
+                is_demo=is_demo,
+            )
+
         # ── Stage 6: Validate citations ───────────────────────────
         await _progress(AnalysisStage.CHECKING_CITATIONS)
         perspectives = validate_citations(perspectives, evidence)

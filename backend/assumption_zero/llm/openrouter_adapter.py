@@ -180,7 +180,7 @@ class OpenRouterAdapter(LLMAdapter):
         key = (
             os.getenv("OPENROUTER_API_KEY")
             or self._settings.openrouter_api_key
-            or "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"
+            or ""
         )
         return key.strip()
 
@@ -193,11 +193,16 @@ class OpenRouterAdapter(LLMAdapter):
 
     @property
     def is_available(self) -> bool:
-        return True
+        return bool(self._api_key())
 
     def _headers(self) -> Dict[str, str]:
+        api_key = self._api_key()
+        if not api_key:
+            raise RuntimeError(
+                "OpenRouter API key is missing. Please set OPENROUTER_API_KEY in your .env file or environment."
+            )
         return {
-            "Authorization": f"Bearer {self._api_key()}",
+            "Authorization": f"Bearer {api_key}",
             "Content-Type": "application/json",
             "HTTP-Referer": "https://assumption-zero.dev",
             "X-Title": "Assumption Zero",
@@ -227,12 +232,24 @@ class OpenRouterAdapter(LLMAdapter):
                         data = resp.json()
                         content = data["choices"][0]["message"]["content"]
                         return content
+                    elif resp.status_code == 401:
+                        raise RuntimeError(
+                            "OpenRouter API key is invalid or unauthorized (HTTP 401). "
+                            "Please check your OPENROUTER_API_KEY at https://openrouter.ai/keys"
+                        )
+                    elif resp.status_code in (402, 429):
+                        raise RuntimeError(
+                            f"OpenRouter API quota or rate limit exceeded (HTTP {resp.status_code}). "
+                            "You are out of credits or rate limited. Please check your credit balance at https://openrouter.ai/credits"
+                        )
                     else:
                         error_msg = f"HTTP {resp.status_code} for {model_name}: {resp.text[:150]}"
-                        logger.debug("OpenRouter model %s failed: %s", model_name, error_msg)
+                        logger.warning("OpenRouter model %s failed: %s", model_name, error_msg)
                         last_error = RuntimeError(error_msg)
+                except RuntimeError:
+                    raise
                 except Exception as exc:
-                    logger.debug("OpenRouter model %s exception: %s", model_name, exc)
+                    logger.warning("OpenRouter model %s exception: %s", model_name, exc)
                     last_error = exc
 
         raise RuntimeError(f"All OpenRouter models failed. Last error: {last_error}")
@@ -247,15 +264,8 @@ class OpenRouterAdapter(LLMAdapter):
             {"role": "system", "content": PERSPECTIVE_SYSTEM_PROMPTS[perspective_name]},
             {"role": "user", "content": build_analysis_prompt(perspective_name.value, idea, evidence)},
         ]
-        try:
-            raw = await self._chat(messages)
-            return _parse_output(raw, perspective_name, self.model_id)
-        except Exception as exc:
-            logger.debug("OpenRouter API unavailable (%s) — using evidence heuristics fallback", exc)
-            from assumption_zero.llm.mock_adapter import MockAdapter
-            fallback = MockAdapter()
-            res = await fallback.analyze_perspective(perspective_name, idea, evidence)
-            return res
+        raw = await self._chat(messages)
+        return _parse_output(raw, perspective_name, self.model_id)
 
     async def clarify_idea(self, idea: IdeaInput) -> str:
         prompt = (

@@ -107,17 +107,44 @@ class CompetitorType(str, Enum):
 # Idea Input
 # ─────────────────────────────────────────────────────────────────────────────
 
+import re
+
+
+def is_gibberish(text: str) -> bool:
+    """Check if text appears to be random keystrokes or gibberish."""
+    s = text.strip()
+    if not s or len(s) < 3:
+        return True
+
+    words = [w for w in re.split(r"\s+", s) if len(w) > 0]
+    vowels = set("aeiouyAEIOUYаеëиоуыэюяАЕЁИОУЫЭЮЯəöğıüƏÖĞIÜ")
+
+    if len(words) == 1 and len(s) >= 7:
+        vowel_count = sum(1 for c in s if c in vowels)
+        if vowel_count / len(s) < 0.12:
+            return True
+
+    if len(words) <= 2:
+        for w in words:
+            if len(w) >= 6:
+                v_count = sum(1 for c in w if c in vowels)
+                if v_count / len(w) < 0.12:
+                    return True
+
+    return False
+
+
 class IdeaInput(BaseModel):
     """The user's startup or MVP idea. problem, target_customer, and geography are required."""
 
     name: str = Field(..., min_length=1, max_length=200, description="Product or idea name")
     description: str = Field(..., min_length=1, max_length=2000, description="Brief description")
     problem: str = Field(
-        ..., min_length=10, max_length=2000,
+        ..., min_length=5, max_length=2000,
         description="Required: What problem does this solve?"
     )
     target_customer: str = Field(
-        ..., min_length=5, max_length=500,
+        ..., min_length=3, max_length=500,
         description="Required: Who is this for?"
     )
     geography: str = Field(
@@ -132,6 +159,16 @@ class IdeaInput(BaseModel):
     unfair_advantage: Optional[str] = Field(None, max_length=1000, description="Unique advantage, distribution channel, or IP")
     key_assumptions: Optional[str] = Field(None, max_length=1000, description="1-2 core assumptions that must be true for success")
     additional_context: Optional[str] = Field(None, max_length=3000)
+
+    @field_validator("name", "description", "problem")
+    @classmethod
+    def validate_not_gibberish(cls, v: str) -> str:
+        if is_gibberish(v):
+            raise ValueError(
+                f"Invalid startup prompt '{v[:30]}': The input text appears to be random characters or gibberish. "
+                "Please enter a clear product or business idea."
+            )
+        return v
 
 
 # ─────────────────────────────────────────────────────────────────────────────

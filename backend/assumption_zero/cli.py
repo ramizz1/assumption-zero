@@ -1066,51 +1066,59 @@ def analyze(
     """
     _print_splash()
 
-    if file:
-        if not file.exists():
-            err_console.print(f"File not found: {file}")
-            raise typer.Exit(1)
-        raw_content = file.read_text(encoding="utf-8").strip()
-        try:
-            data = json.loads(raw_content)
-            from assumption_zero.schemas import IdeaInput
-            idea = IdeaInput(**data)
-            console.print(
-                f"[bright_white]Loaded from[/] [bold cyan]{file}[/]\n"
-                f"  [bold white]Idea:[/] [bold #D97706]{idea.name}[/]"
-            )
-        except Exception:
-            # Fall back smoothly if the file is text/markdown instead of JSON!
-            console.print(f"[bright_white]Loaded text prompt from[/] [bold cyan]{file}[/]")
-            console.print("[bright_white]Parsing idea details with AI...[/]")
+    try:
+        if file:
+            if not file.exists():
+                err_console.print(f"File not found: {file}")
+                raise typer.Exit(1)
+            raw_content = file.read_text(encoding="utf-8").strip()
+            try:
+                data = json.loads(raw_content)
+                from assumption_zero.schemas import IdeaInput
+                idea = IdeaInput(**data)
+                console.print(
+                    f"[bright_white]Loaded from[/] [bold cyan]{file}[/]\n"
+                    f"  [bold white]Idea:[/] [bold #D97706]{idea.name}[/]"
+                )
+            except Exception:
+                # Fall back smoothly if the file is text/markdown instead of JSON!
+                console.print(f"[bright_white]Loaded text prompt from[/] [bold cyan]{file}[/]")
+                console.print("[bright_white]Parsing idea details with AI...[/]")
+                from assumption_zero.services.analysis_service import build_llm_adapter
+                llm = build_llm_adapter()
+                idea = asyncio.run(llm.parse_raw_prompt(raw_content))
+                console.print(f"[bold green]Extracted Idea:[/] [bold #D97706]{idea.name}[/]")
+        elif prompt:
+            console.print("[bright_white]Parsing freeform prompt using AI...[/]")
             from assumption_zero.services.analysis_service import build_llm_adapter
             llm = build_llm_adapter()
-            idea = asyncio.run(llm.parse_raw_prompt(raw_content))
+            idea = asyncio.run(llm.parse_raw_prompt(prompt))
             console.print(f"[bold green]Extracted Idea:[/] [bold #D97706]{idea.name}[/]")
-    elif prompt:
-        console.print("[bright_white]Parsing freeform prompt using AI...[/]")
-        from assumption_zero.services.analysis_service import build_llm_adapter
-        llm = build_llm_adapter()
-        idea = asyncio.run(llm.parse_raw_prompt(prompt))
-        console.print(f"[bold green]Extracted Idea:[/] [bold #D97706]{idea.name}[/]")
-    else:
-        _print_section("Idea Definition")
-        idea = _ask_idea()
+        else:
+            _print_section("Idea Definition")
+            idea = _ask_idea()
 
-    console.print()
-    console.print(
-        Panel(
-            f"  [bold white]Idea:[/]  [bold #D97706]{idea.name}[/]\n"
-            f"  [white]{idea.description}[/]\n\n"
-            f"  [bright_white]Running analysis engine...[/]",
-            border_style="#D97706",
-            box=box.ROUNDED,
-            padding=(1, 2),
+        console.print()
+        console.print(
+            Panel(
+                f"  [bold white]Idea:[/]  [bold #D97706]{idea.name}[/]\n"
+                f"  [white]{idea.description}[/]\n\n"
+                f"  [bright_white]Running analysis engine...[/]",
+                border_style="#D97706",
+                box=box.ROUNDED,
+                padding=(1, 2),
+            )
         )
-    )
-    console.print()
-    result = _run_analysis_sync(idea)
-    _print_report(result)
+        console.print()
+        result = _run_analysis_sync(idea)
+        _print_report(result)
+    except Exception as exc:
+        msg = str(exc)
+        if "gibberish" in msg.lower():
+            err_console.print(f"\n[bold red]Error: The input text appears to be random characters or gibberish. Please enter a valid product or business idea.[/]\n")
+        else:
+            err_console.print(f"\n[bold red]Error: {msg}[/]\n")
+        raise typer.Exit(1)
 
 
 @app.command()
