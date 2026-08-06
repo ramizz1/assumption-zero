@@ -47,6 +47,8 @@ logger = logging.getLogger(__name__)
 from assumption_zero.llm.groq_adapter import GroqAdapter
 from assumption_zero.llm.hybrid_adapter import HybridLLMAdapter
 from assumption_zero.llm.openai_compat_adapter import OpenAICompatAdapter
+from assumption_zero.llm.ollama_adapter import OllamaAdapter
+from assumption_zero.llm.opencode_adapter import OpencodeAdapter
 
 
 def build_llm_adapter(
@@ -58,39 +60,47 @@ def build_llm_adapter(
     """Return the configured LLM adapter.
 
     Args:
-        provider_override: Force a specific provider (openai_compat, groq, openrouter, etc.)
+        provider_override: Force a specific provider (openai_compat, groq, openrouter, ollama, opencode, etc.)
         api_key_override:  Inject an API key at runtime (skips .env for this call).
-        model_override:    Override the model name (e.g. gpt-4o, claude-3-haiku, etc.)
-        base_url_override: Override the base URL (for openai_compat with non-OpenAI endpoints).
+        model_override:    Override the model name (e.g. gpt-4o, claude-3-haiku, llama3.2, etc.)
+        base_url_override: Override the base URL (for openai_compat, ollama, or opencode endpoints).
     """
     import os
     settings = get_settings()
     provider = (provider_override or settings.ai_provider).lower()
 
     # If a custom key/model/url was provided at runtime, inject via env so adapters pick them up.
-    # We do this before constructing adapters so they see the updated values.
     if api_key_override:
         os.environ["OPENAI_COMPATIBLE_API_KEY"] = api_key_override
-        os.environ["OPENROUTER_API_KEY"] = api_key_override  # also works as openrouter key
+        os.environ["OPENROUTER_API_KEY"] = api_key_override
+        os.environ["OPENCODE_API_KEY"] = api_key_override
     if model_override:
         os.environ["OPENAI_COMPATIBLE_MODEL"] = model_override
+        os.environ["OLLAMA_MODEL"] = model_override
+        os.environ["OPENCODE_MODEL"] = model_override
     if base_url_override:
         os.environ["OPENAI_COMPATIBLE_BASE_URL"] = base_url_override
-
-    # Re-read settings after env injection (bypass lru_cache for this fresh read)
-    from assumption_zero.config import Settings
-    live_settings = Settings()
+        os.environ["OLLAMA_BASE_URL"] = base_url_override
+        os.environ["OPENCODE_BASE_URL"] = base_url_override
 
     groq = GroqAdapter()
     openrouter = OpenRouterAdapter()
 
-    # openai_compat / openai: any OpenAI-spec API (ChatGPT, Anthropic proxy, Together, vLLM…)
     if provider in ("openai_compat", "openai"):
         compat = OpenAICompatAdapter()
         if compat.is_available:
             adapter: LLMAdapter = compat
         else:
             logger.warning("openai_compat provider selected but key/URL not set — falling back to hybrid")
+            adapter = HybridLLMAdapter(groq, openrouter) if (groq.is_available and openrouter.is_available) else (groq if groq.is_available else openrouter)
+    elif provider == "ollama":
+        adapter = OllamaAdapter()
+    elif provider == "opencode":
+        opencode = OpencodeAdapter()
+        if opencode.is_available:
+            adapter = opencode
+        else:
+            logger.warning("opencode provider selected but OPENCODE_API_KEY not set — falling back to hybrid")
             adapter = HybridLLMAdapter(groq, openrouter) if (groq.is_available and openrouter.is_available) else (groq if groq.is_available else openrouter)
     elif provider in ("hybrid", "auto", "dual"):
         adapter = HybridLLMAdapter(groq, openrouter)
@@ -251,32 +261,67 @@ async def get_analysis(analysis_id: str) -> Optional[AnalysisResult]:
     )
 
 
-async def list_analyses() -> List[AnalysisListItem]:
+async def list_analyses(
+    search: Optional[str] = None,
+    status_filter: Optional[str] = None,
+    limit: int = 100,
+) -> List[AnalysisListItem]:
     """Return all analyses as list items, newest first."""
-    rows = store.list_records()
+    rows = store.list_records(limit=limit)
     items: List[AnalysisListItem] = []
 
+    search_clean = search.strip().lower() if search else None
+    status_clean = status_filter.strip().lower() if status_filter else None
+
     for row in rows:
+        row_id = row.get("id", "")
+        idea_name = row.get("idea_name", "Unknown")
+
+        if search_clean:
+            if search_clean not in row_id.lower() and search_clean not in idea_name.lower():
+                continue
+
+        row_status = row.get("status", "pending")
+        if status_clean and row_status.lower() != status_clean:
+            continue
+
         score: Optional[float] = None
         rec: Optional[Recommendation] = None
 
-        result_data = store.get_result(row["id"])
+        result_data = store.get_result(row_id)
         if result_data:
             score_obj = result_data.get("opportunity_score")
-            if score_obj:
+            if isinstance(score_obj, dict):
                 score = score_obj.get("total")
+            elif isinstance(score_obj, (int, float)):
+                score = float(score_obj)
+
             rec_val = result_data.get("recommendation")
             if rec_val:
-                rec = Recommendation(rec_val)
+                try:
+                    rec = Recommendation(rec_val)
+                except ValueError:
+                    rec = None
+
+        # Safe Enum parsing
+        try:
+            parsed_status = AnalysisStatus(row_status)
+        except ValueError:
+            parsed_status = AnalysisStatus.PENDING
+
+        try:
+            parsed_stage = AnalysisStage(row.get("stage", "clarifying_idea"))
+        except ValueError:
+            parsed_stage = AnalysisStage.CLARIFYING_IDEA
 
         items.append(
             AnalysisListItem(
-                analysis_id=row["id"],
-                status=AnalysisStatus(row.get("status", "pending")),
-                stage=AnalysisStage(row.get("stage", "clarifying_idea")),
-                created_at=_parse_dt(row.get("created_at")),
+                analysis_id=row_id,
+                status=parsed_status,
+                stage=parsed_stage,
+                created_at=_parse_dt(row.get("created_at")) or datetime.utcnow(),
                 completed_at=_parse_dt(row.get("completed_at")) if row.get("completed_at") else None,
-                idea_name=row.get("idea_name", "Unknown"),
+                idea_name=idea_name,
                 is_demo=row.get("is_demo", "false") == "true",
                 opportunity_score=score,
                 recommendation=rec,

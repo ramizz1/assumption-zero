@@ -40,6 +40,11 @@ class Settings(BaseSettings):
     groq_api_key: Optional[str] = None
     groq_model: str = "openai/gpt-oss-120b"
 
+    # ── OpenCode AI ──────────────────────────────────────────────
+    opencode_api_key: Optional[str] = None
+    opencode_base_url: str = "https://opencode.ai/api/v1"
+    opencode_model: str = "opencode/claude-3.5-sonnet"
+
     # ── Ollama (local models) ────────────────────────────────────
     ollama_base_url: str = "http://localhost:11434"
     ollama_model: str = "llama3.2"
@@ -71,7 +76,7 @@ class Settings(BaseSettings):
     @field_validator("ai_provider")
     @classmethod
     def validate_ai_provider(cls, v: str) -> str:
-        allowed = {"mock", "beta", "openrouter", "ollama", "groq", "hybrid", "auto", "dual", "openai_compat", "openai"}
+        allowed = {"mock", "beta", "openrouter", "ollama", "groq", "hybrid", "auto", "dual", "openai_compat", "openai", "opencode"}
         if v not in allowed:
             raise ValueError(f"ai_provider must be one of {allowed}, got: {v!r}")
         return v
@@ -79,7 +84,7 @@ class Settings(BaseSettings):
     def masked(self) -> dict:
         """Return a copy with secrets replaced — safe for logging."""
         d = self.model_dump()
-        for secret_key in ("openrouter_api_key", "github_token", "groq_api_key", "openai_compatible_api_key"):
+        for secret_key in ("openrouter_api_key", "github_token", "groq_api_key", "openai_compatible_api_key", "opencode_api_key"):
             if d.get(secret_key):
                 d[secret_key] = "***"
         return d

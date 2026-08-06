@@ -1089,13 +1089,15 @@ def _ask_idea():
 
 _PROVIDER_PRESETS = {
     "1": ("Built-in Beta AI (free, no key needed)",    "beta",        None,  None,                            None),
-    "2": ("OpenAI ChatGPT (your key — gpt-4o-mini)",   "openai_compat", None, "gpt-4o-mini",                 "https://api.openai.com/v1"),
-    "3": ("OpenAI ChatGPT (your key — gpt-4o)",        "openai_compat", None, "gpt-4o",                      "https://api.openai.com/v1"),
-    "4": ("Groq — llama-3.3-70b (your key)",           "groq",        None,  "llama-3.3-70b-versatile",      None),
-    "5": ("OpenRouter — 200+ models (your key)",        "openrouter",  None,  None,                            None),
-    "6": ("Together AI (your key)",                     "openai_compat", None, "meta-llama/Llama-3.3-70B-Instruct-Turbo", "https://api.together.xyz/v1"),
-    "7": ("DeepSeek (your key)",                        "openai_compat", None, "deepseek-chat",               "https://api.deepseek.com/v1"),
-    "8": ("Custom / self-hosted (any OpenAI-spec API)", "openai_compat", None,  None,                          None),
+    "2": ("Local Ollama (http://localhost:11434)",     "ollama",      None,  "llama3.2",                      "http://localhost:11434"),
+    "3": ("OpenCode AI (your key)",                    "opencode",    None,  "opencode/claude-3.5-sonnet",    "https://opencode.ai/api/v1"),
+    "4": ("OpenAI ChatGPT (your key — gpt-4o-mini)",   "openai_compat", None, "gpt-4o-mini",                 "https://api.openai.com/v1"),
+    "5": ("OpenAI ChatGPT (your key — gpt-4o)",        "openai_compat", None, "gpt-4o",                      "https://api.openai.com/v1"),
+    "6": ("Groq — llama-3.3-70b (your key)",           "groq",        None,  "llama-3.3-70b-versatile",      None),
+    "7": ("OpenRouter — 200+ models (your key)",        "openrouter",  None,  None,                            None),
+    "8": ("Together AI (your key)",                     "openai_compat", None, "meta-llama/Llama-3.3-70B-Instruct-Turbo", "https://api.together.xyz/v1"),
+    "9": ("DeepSeek (your key)",                        "openai_compat", None, "deepseek-chat",               "https://api.deepseek.com/v1"),
+    "10": ("Custom / self-hosted (any OpenAI-spec API)", "openai_compat", None,  None,                         None),
 }
 
 
@@ -1444,22 +1446,27 @@ def prompt(
 
 
 @app.command(name="list")
-def list_cmd() -> None:
+def list_cmd(
+    search: Optional[str] = typer.Option(None, "--search", "-s", help="Filter by idea name or analysis ID"),
+    status: Optional[str] = typer.Option(None, "--status", help="Filter by status: complete, pending, running, failed"),
+    limit: int = typer.Option(50, "--limit", "-n", help="Maximum items to display"),
+) -> None:
     """List all saved analyses ordered by most recent."""
     _print_splash()
 
     async def _list():
         from assumption_zero.services.analysis_service import list_analyses
-        return await list_analyses()
+        return await list_analyses(search=search, status_filter=status, limit=limit)
 
     items = asyncio.run(_list())
 
     if not items:
+        filter_msg = f" matching filter: search={search!r}, status={status!r}" if (search or status) else ""
         console.print(
             Panel(
-                "[white]No analyses yet.[/]\n"
+                f"[white]No analyses found{filter_msg}.[/]\n"
                 "Run [bold #D97706]azero analyze[/] to analyse your first idea,\n"
-                "or [bold #D97706]azero guide[/] to view idea formatting tips.",
+                "or [bold #D97706]azero config[/] to configure AI provider keys.",
                 border_style="#D97706",
                 box=box.ROUNDED,
                 padding=(0, 2),
@@ -1484,7 +1491,7 @@ def list_cmd() -> None:
     table.add_column("Created", width=17, style="bright_white")
 
     for i, item in enumerate(items, 1):
-        status_col = "bold green" if item.status.value == "complete" else "bold #D97706"
+        status_col = "bold green" if item.status.value == "complete" else ("bold red" if item.status.value == "failed" else "bold #D97706")
         score_str = (
             f"[{_score_color(item.opportunity_score)}]{item.opportunity_score:.0f}[/]"
             if item.opportunity_score is not None
@@ -1510,6 +1517,106 @@ def list_cmd() -> None:
     console.print(
         f"\n[bright_white]  Use [/][bold #D97706]azero show 1[/][bright_white] or [/][bold #D97706]azero show {items[0].analysis_id[:8]}[/][bright_white] to view report.[/]"
     )
+
+
+@app.command(name="config")
+def config_cmd() -> None:
+    """Interactive setup wizard to configure .env API keys and AI providers."""
+    _print_splash()
+    _print_section("Interactive Environment Configuration")
+
+    console.print(
+        "  [bright_white]This wizard will guide you through setting up API keys in your .env file.[/]\n"
+        "  [bright_white]Press Enter to keep current value for any setting.[/]\n"
+    )
+
+    from assumption_zero.config import ROOT_ENV, LOCAL_ENV
+
+    target_env = LOCAL_ENV if LOCAL_ENV.exists() else ROOT_ENV
+
+    existing_lines = []
+    if target_env.exists():
+        existing_lines = target_env.read_text(encoding="utf-8").splitlines()
+
+    def get_val(key_name: str) -> str:
+        for line in existing_lines:
+            if line.strip().startswith(f"{key_name}="):
+                return line.split("=", 1)[1].strip()
+        return ""
+
+    curr_provider = get_val("AI_PROVIDER") or "beta"
+    curr_openrouter = get_val("OPENROUTER_API_KEY")
+    curr_groq = get_val("GROQ_API_KEY")
+    curr_opencode = get_val("OPENCODE_API_KEY")
+    curr_ollama = get_val("OLLAMA_BASE_URL") or "http://localhost:11434"
+    curr_openai_key = get_val("OPENAI_COMPATIBLE_API_KEY")
+    curr_openai_base = get_val("OPENAI_COMPATIBLE_BASE_URL") or "https://api.openai.com/v1"
+    curr_github = get_val("GITHUB_TOKEN")
+
+    console.print(f"  [bold white]Current active provider:[/] [bold cyan]{curr_provider}[/]\n")
+
+    provider = Prompt.ask(
+        "  [bold #D97706]›[/] [bold white]Default AI Provider[/] [bright_white](beta, groq, openrouter, ollama, opencode, openai_compat, hybrid)[/]",
+        default=curr_provider,
+        console=console,
+    ).strip()
+
+    openai_key = Prompt.ask(
+        "  [bold #D97706]›[/] [bold white]OpenAI / ChatGPT API Key[/]",
+        default=curr_openai_key,
+        password=True,
+        console=console,
+    ).strip()
+
+    opencode_key = Prompt.ask(
+        "  [bold #D97706]›[/] [bold white]OpenCode AI API Key[/]",
+        default=curr_opencode,
+        password=True,
+        console=console,
+    ).strip()
+
+    groq_key = Prompt.ask(
+        "  [bold #D97706]›[/] [bold white]Groq API Key[/]",
+        default=curr_groq,
+        password=True,
+        console=console,
+    ).strip()
+
+    openrouter_key = Prompt.ask(
+        "  [bold #D97706]›[/] [bold white]OpenRouter API Key[/]",
+        default=curr_openrouter,
+        password=True,
+        console=console,
+    ).strip()
+
+    ollama_url = Prompt.ask(
+        "  [bold #D97706]›[/] [bold white]Local Ollama Base URL[/]",
+        default=curr_ollama,
+        console=console,
+    ).strip()
+
+    github_token = Prompt.ask(
+        "  [bold #D97706]›[/] [bold white]GitHub Personal Access Token (Optional)[/]",
+        default=curr_github,
+        password=True,
+        console=console,
+    ).strip()
+
+    env_content = f"""# Assumption Zero Environment Configuration
+AI_PROVIDER={provider}
+OPENAI_COMPATIBLE_API_KEY={openai_key}
+OPENAI_COMPATIBLE_BASE_URL={curr_openai_base}
+OPENCODE_API_KEY={opencode_key}
+OPENCODE_BASE_URL=https://opencode.ai/api/v1
+GROQ_API_KEY={groq_key}
+OPENROUTER_API_KEY={openrouter_key}
+OLLAMA_BASE_URL={ollama_url}
+OLLAMA_MODEL=llama3.2
+GITHUB_TOKEN={github_token}
+REQUEST_TIMEOUT=30
+"""
+    target_env.write_text(env_content, encoding="utf-8")
+    console.print(f"\n  [bold green]✓ Configuration saved to {target_env.resolve()}[/]\n")
 
 
 @app.command()

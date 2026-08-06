@@ -16,6 +16,8 @@ import PerspectivePanel from '../components/PerspectivePanel'
 import ExperimentCard from '../components/ExperimentCard'
 import CitationBadge from '../components/CitationBadge'
 
+import React, { useState } from 'react'
+
 interface Props {
   result: AnalysisResult
 }
@@ -24,9 +26,60 @@ export default function ReportView({ result }: Props) {
   const score = result.opportunity_score
   const conf = result.evidence_confidence
   const rec = result.recommendation
+  const [copied, setCopied] = useState(false)
+
+  const handleCopyMarkdown = () => {
+    const md = `# Assumption Zero — ${result.idea_input.name}\n\n` +
+      `**Opportunity Score:** ${score ? Math.round(score.total) : 'N/A'}/100\n` +
+      `**Recommendation:** ${rec || 'N/A'}\n` +
+      `**Confidence:** ${conf || 'N/A'}\n\n` +
+      `### Executive Summary\n${result.idea_input.description}\n\n` +
+      `### Problem Statement\n${result.idea_input.problem}\n\n` +
+      `### Most Dangerous Assumption\n${result.most_dangerous_assumption || 'N/A'}\n`
+    navigator.clipboard.writeText(md)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
+
+  const handleDownloadJSON = () => {
+    const blob = new Blob([JSON.stringify(result, null, 2)], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `azero-${result.idea_input.name.replace(/[^a-z0-9]/gi, '_').toLowerCase()}-${result.analysis_id.slice(0, 8)}.json`
+    a.click()
+    URL.revokeObjectURL(url)
+  }
 
   return (
     <div className="max-w-5xl mx-auto space-y-6" id="report">
+      {/* Top Bar with Exports */}
+      <div className="flex flex-wrap items-center justify-between gap-3 p-4 rounded-2xl bg-[#12131c] border border-white/10 shadow-lg backdrop-blur-xl">
+        <div className="flex items-center gap-2">
+          <Link to="/" className="text-xs font-semibold text-gray-400 hover:text-white transition-colors flex items-center gap-1">
+            ← Back to Home
+          </Link>
+          <span className="text-gray-600">|</span>
+          <span className="text-xs text-gray-400">Analysis ID: <code className="text-amber-400 font-mono">{result.analysis_id.slice(0, 8)}</code></span>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handleCopyMarkdown}
+            className="px-3 py-1.5 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 text-xs font-semibold text-gray-200 transition-all flex items-center gap-1.5"
+          >
+            <span>{copied ? '✓ Copied!' : '📋 Copy Summary'}</span>
+          </button>
+
+          <button
+            onClick={handleDownloadJSON}
+            className="px-3 py-1.5 rounded-xl border border-amber-500/30 bg-amber-500/10 hover:bg-amber-500/20 text-xs font-semibold text-amber-300 transition-all flex items-center gap-1.5"
+          >
+            <span>💾 Export JSON</span>
+          </button>
+        </div>
+      </div>
+
       {/* Disclaimer (permanent, top of report) */}
       <div className="card p-4 border-amber-500/20 bg-amber-400/5">
         <p className="text-xs text-amber-400/80 text-center">{DISCLAIMER}</p>

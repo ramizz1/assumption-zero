@@ -159,8 +159,12 @@ async def create_analysis_from_prompt_endpoint(
 
 
 @router.get("/analyses", response_model=List[AnalysisListItem])
-async def list_analyses_endpoint() -> List[AnalysisListItem]:
-    return await list_analyses()
+async def list_analyses_endpoint(
+    search: Optional[str] = None,
+    status: Optional[str] = None,
+    limit: int = 100,
+) -> List[AnalysisListItem]:
+    return await list_analyses(search=search, status_filter=status, limit=limit)
 
 
 @router.get("/analyses/{analysis_id}", response_model=AnalysisResult)

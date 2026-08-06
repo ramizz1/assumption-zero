@@ -81,12 +81,18 @@ def resolve_id(query: str) -> Optional[str]:
 
 
 def _input_path(analysis_id: str) -> Path:
-    full_id = resolve_id(analysis_id) or analysis_id
+    if len(analysis_id) >= 32 and "-" in analysis_id:
+        full_id = analysis_id
+    else:
+        full_id = resolve_id(analysis_id) or analysis_id
     return _ANALYSES_DIR / f"{full_id}_input.json"
 
 
 def _result_path(analysis_id: str) -> Path:
-    full_id = resolve_id(analysis_id) or analysis_id
+    if len(analysis_id) >= 32 and "-" in analysis_id:
+        full_id = analysis_id
+    else:
+        full_id = resolve_id(analysis_id) or analysis_id
     return _ANALYSES_DIR / f"{full_id}_result.json"
 
 

@@ -12,6 +12,9 @@ export interface AnalysisCreateRequest {
   ai_provider_override?: string
   openrouter_api_key?: string
   groq_api_key?: string
+  opencode_api_key?: string
+  openai_api_key?: string
+  ollama_base_url?: string
   research_providers?: string[]
 }
 
@@ -44,6 +47,9 @@ export interface PromptAnalysisRequest {
   ai_provider?: string
   openrouter_api_key?: string
   groq_api_key?: string
+  opencode_api_key?: string
+  openai_api_key?: string
+  ollama_base_url?: string
   research_providers?: string[]
 }
 
@@ -56,12 +62,17 @@ export const api = {
     return request('/analyses', { method: 'POST', body: JSON.stringify(body) })
   },
 
-  createAnalysisFromPrompt(body: { prompt: string; ai_provider?: string; openrouter_api_key?: string; groq_api_key?: string }): Promise<{ analysis_id: string; status: string; parsed_idea: IdeaInput }> {
+  createAnalysisFromPrompt(body: PromptAnalysisRequest): Promise<{ analysis_id: string; status: string; parsed_idea: IdeaInput }> {
     return request('/analyses/from-prompt', { method: 'POST', body: JSON.stringify(body) })
   },
 
-  listAnalyses(): Promise<AnalysisListItem[]> {
-    return request('/analyses')
+  listAnalyses(params?: { search?: string; status?: string; limit?: number }): Promise<AnalysisListItem[]> {
+    const query = new URLSearchParams()
+    if (params?.search) query.append('search', params.search)
+    if (params?.status) query.append('status', params.status)
+    if (params?.limit) query.append('limit', String(params.limit))
+    const qs = query.toString() ? `?${query.toString()}` : ''
+    return request(`/analyses${qs}`)
   },
 
   getAnalysis(id: string): Promise<AnalysisResult> {

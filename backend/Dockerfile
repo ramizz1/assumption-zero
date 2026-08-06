@@ -9,13 +9,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # Copy and install Python dependencies
 COPY pyproject.toml .
-RUN pip install --no-cache-dir -e "."
+RUN pip install --no-cache-dir .
 
 # Copy application code
 COPY assumption_zero/ assumption_zero/
 
 # Create data directory
-RUN mkdir -p /app/data
+ENV AZERO_DATA_DIR=/app/azero_data
+RUN mkdir -p /app/azero_data
 
 EXPOSE 8000
 
