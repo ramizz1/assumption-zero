@@ -46,18 +46,54 @@ logger = logging.getLogger(__name__)
 
 from assumption_zero.llm.groq_adapter import GroqAdapter
 from assumption_zero.llm.hybrid_adapter import HybridLLMAdapter
+from assumption_zero.llm.openai_compat_adapter import OpenAICompatAdapter
 
 
-def build_llm_adapter(provider_override: Optional[str] = None) -> LLMAdapter:
-    """Return the configured LLM adapter."""
+def build_llm_adapter(
+    provider_override: Optional[str] = None,
+    api_key_override: Optional[str] = None,
+    model_override: Optional[str] = None,
+    base_url_override: Optional[str] = None,
+) -> LLMAdapter:
+    """Return the configured LLM adapter.
+
+    Args:
+        provider_override: Force a specific provider (openai_compat, groq, openrouter, etc.)
+        api_key_override:  Inject an API key at runtime (skips .env for this call).
+        model_override:    Override the model name (e.g. gpt-4o, claude-3-haiku, etc.)
+        base_url_override: Override the base URL (for openai_compat with non-OpenAI endpoints).
+    """
+    import os
     settings = get_settings()
     provider = (provider_override or settings.ai_provider).lower()
+
+    # If a custom key/model/url was provided at runtime, inject via env so adapters pick them up.
+    # We do this before constructing adapters so they see the updated values.
+    if api_key_override:
+        os.environ["OPENAI_COMPATIBLE_API_KEY"] = api_key_override
+        os.environ["OPENROUTER_API_KEY"] = api_key_override  # also works as openrouter key
+    if model_override:
+        os.environ["OPENAI_COMPATIBLE_MODEL"] = model_override
+    if base_url_override:
+        os.environ["OPENAI_COMPATIBLE_BASE_URL"] = base_url_override
+
+    # Re-read settings after env injection (bypass lru_cache for this fresh read)
+    from assumption_zero.config import Settings
+    live_settings = Settings()
 
     groq = GroqAdapter()
     openrouter = OpenRouterAdapter()
 
-    if provider in ("hybrid", "auto", "dual"):
-        adapter: LLMAdapter = HybridLLMAdapter(groq, openrouter)
+    # openai_compat / openai: any OpenAI-spec API (ChatGPT, Anthropic proxy, Together, vLLM…)
+    if provider in ("openai_compat", "openai"):
+        compat = OpenAICompatAdapter()
+        if compat.is_available:
+            adapter: LLMAdapter = compat
+        else:
+            logger.warning("openai_compat provider selected but key/URL not set — falling back to hybrid")
+            adapter = HybridLLMAdapter(groq, openrouter) if (groq.is_available and openrouter.is_available) else (groq if groq.is_available else openrouter)
+    elif provider in ("hybrid", "auto", "dual"):
+        adapter = HybridLLMAdapter(groq, openrouter)
     elif provider == "groq":
         if openrouter.is_available:
             adapter = HybridLLMAdapter(groq, openrouter)
@@ -178,12 +214,24 @@ async def get_analysis(analysis_id: str) -> Optional[AnalysisResult]:
     input_data = store.get_input(analysis_id)
     if not input_data:
         return None
-    idea = IdeaInput(**input_data)
+    # Use model_construct to skip validators — data was already validated on submission.
+    # Re-validating on read causes crashes for legacy entries with short/common names.
+    try:
+        idea = IdeaInput.model_construct(**input_data)
+    except Exception:
+        idea = IdeaInput.model_construct(**{k: v for k, v in input_data.items() if v is not None})
 
-    # Full result available
+    # Full result available — patch idea_input to skip re-validation of stored names
     result_data = store.get_result(analysis_id)
     if result_data:
-        return AnalysisResult(**result_data)
+        try:
+            patched = dict(result_data)
+            idea_data = patched.get("idea_input") or input_data or {}
+            patched["idea_input"] = IdeaInput.from_storage(idea_data)
+            return AnalysisResult(**patched)
+        except Exception:
+            pass
+        return None
 
     # Still in progress — return minimal status object
     created = _parse_dt(row.get("created_at"))

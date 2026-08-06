@@ -100,6 +100,15 @@ def _rec_color(rec: str) -> str:
     }.get(rec, "bold white")
 
 
+def _status_color(status: str) -> str:
+    return {
+        "complete": "bold green",
+        "running": "bold cyan",
+        "pending": "bold #F5A623",
+        "failed": "bold red",
+    }.get(status.lower(), "bold white")
+
+
 def _conf_color(conf: str) -> str:
     return {"high": "bold green", "medium": "bold #F5A623", "low": "bold red"}.get(conf.lower(), "bold white")
 
@@ -156,13 +165,21 @@ def _print_disclaimer() -> None:
 # ── Engine Runner ─────────────────────────────────────────────────────────────
 
 
-def _build_engine_sync():
+def _build_engine_sync(
+    provider_override=None, api_key_override=None,
+    model_override=None, base_url_override=None,
+):
     from assumption_zero.analysis.engine import AnalysisEngine
     from assumption_zero.services.analysis_service import (
         build_llm_adapter,
         build_research_providers,
     )
-    llm = build_llm_adapter()
+    llm = build_llm_adapter(
+        provider_override=provider_override,
+        api_key_override=api_key_override,
+        model_override=model_override,
+        base_url_override=base_url_override,
+    )
     providers = build_research_providers()
     return AnalysisEngine(providers=providers, llm_adapter=llm)
 
@@ -180,9 +197,21 @@ STAGE_LABELS = {
 }
 
 
-def _run_analysis_sync(idea, is_demo: bool = False):
+def _run_analysis_sync(
+    idea,
+    is_demo: bool = False,
+    provider_override=None,
+    api_key_override=None,
+    model_override=None,
+    base_url_override=None,
+):
     import uuid
-    engine = _build_engine_sync()
+    engine = _build_engine_sync(
+        provider_override=provider_override,
+        api_key_override=api_key_override,
+        model_override=model_override,
+        base_url_override=base_url_override,
+    )
     analysis_id = str(uuid.uuid4())
     current_label = ["Starting engine..."]
 
@@ -999,19 +1028,31 @@ def _ask_idea():
     customer = ask("Target customer", "Solo practitioners and small law firms (1-20 attorneys)", required=True)
     geography = ask("Target geography", "United States", required=True)
 
-    import os
-    if os.getenv("OPENROUTER_API_KEY"):
-        console.print("  [bold green]Using OpenRouter API key from environment[/]\n")
+    from assumption_zero.config import get_settings
+    _settings = get_settings()
+    _has_openrouter = bool(_settings.openrouter_api_key)
+    _has_groq = bool(_settings.groq_api_key)
+
+    if _has_openrouter or _has_groq:
+        _key_info = []
+        if _has_openrouter:
+            _key_info.append("[bold cyan]OpenRouter[/]")
+        if _has_groq:
+            _key_info.append("[bold green]Groq[/]")
+        console.print(f"  [bold green]✓ API keys loaded from config:[/] {', '.join(_key_info)}\n")
     else:
         _print_section("AI Key Setup")
         console.print(
             "  [bright_white]Get a free OpenRouter key at:[/] [bold cyan]https://openrouter.ai/keys[/]\n"
-            "  [bright_white]Press Enter to use built-in Assumption Zero Beta key.[/]\n"
+            "  [bright_white]Press Enter to skip and use built-in Assumption Zero Beta key.[/]\n"
         )
         user_key = ask("OpenRouter API Key", "sk-or-v1-...")
         if user_key:
+            import os
             os.environ["OPENROUTER_API_KEY"] = user_key
             console.print("  [bold green]Using custom OpenRouter API key[/]\n")
+        else:
+            console.print("  [bright_white]Continuing with built-in Beta key.[/]\n")
 
     _print_section("Business Details")
     model = ask("Business model", "SaaS subscription per seat")
@@ -1040,6 +1081,159 @@ def _ask_idea():
         key_assumptions=assumptions or None,
         additional_context=context or None,
     )
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# AI Provider Selection (interactive)
+# ─────────────────────────────────────────────────────────────────────────────
+
+_PROVIDER_PRESETS = {
+    "1": ("Built-in Beta AI (free, no key needed)",    "beta",        None,  None,                            None),
+    "2": ("OpenAI ChatGPT (your key — gpt-4o-mini)",   "openai_compat", None, "gpt-4o-mini",                 "https://api.openai.com/v1"),
+    "3": ("OpenAI ChatGPT (your key — gpt-4o)",        "openai_compat", None, "gpt-4o",                      "https://api.openai.com/v1"),
+    "4": ("Groq — llama-3.3-70b (your key)",           "groq",        None,  "llama-3.3-70b-versatile",      None),
+    "5": ("OpenRouter — 200+ models (your key)",        "openrouter",  None,  None,                            None),
+    "6": ("Together AI (your key)",                     "openai_compat", None, "meta-llama/Llama-3.3-70B-Instruct-Turbo", "https://api.together.xyz/v1"),
+    "7": ("DeepSeek (your key)",                        "openai_compat", None, "deepseek-chat",               "https://api.deepseek.com/v1"),
+    "8": ("Custom / self-hosted (any OpenAI-spec API)", "openai_compat", None,  None,                          None),
+}
+
+
+def _ask_idea_with_key(
+    provider_override=None,
+    api_key_override=None,
+    model_override=None,
+    base_url_override=None,
+):
+    """Interactive idea wizard with AI provider selection.
+
+    Returns: (IdeaInput, provider, api_key, model, base_url)
+    """
+    from assumption_zero.config import get_settings
+    settings = get_settings()
+
+    # Check what keys are already configured
+    _has_openrouter = bool(settings.openrouter_api_key)
+    _has_groq = bool(settings.groq_api_key)
+    _has_compat = bool(settings.openai_compatible_api_key)
+    _any_key = _has_openrouter or _has_groq or _has_compat
+
+    # Collect the idea first
+    idea = _ask_idea()
+
+    # ── AI Provider Selection ─────────────────────────────────────────────────
+    # If all overrides already supplied, skip
+    if provider_override and api_key_override:
+        return idea, provider_override, api_key_override, model_override, base_url_override
+
+    _print_section("AI Provider")
+
+    if _any_key and not provider_override:
+        # Show detected keys and let user confirm or switch
+        detected = []
+        if _has_openrouter:
+            detected.append("[bold cyan]OpenRouter[/]")
+        if _has_groq:
+            detected.append("[bold green]Groq[/]")
+        if _has_compat:
+            detected.append("[bold #F5A623]Custom OpenAI-compat[/]")
+        console.print(f"  [bold green]✓ Keys detected in config:[/] {', '.join(detected)}")
+        console.print("  [bright_white]Press Enter to use them, or type a number to switch provider.[/]\n")
+
+        choice = Prompt.ask(
+            "  [bold #D97706]›[/] [bold white]Use detected keys?[/] [bright_white](Enter = yes, 1-8 = switch)[/]",
+            default="",
+            console=console,
+        ).strip()
+
+        if not choice:
+            # Use existing .env config
+            return idea, provider_override, api_key_override, model_override, base_url_override
+    else:
+        if not _any_key:
+            console.print("  [bold #D97706]No API keys found in config.[/] Choose an AI provider:\n")
+        else:
+            console.print("  [bright_white]Override AI provider:[/]\n")
+        choice = ""
+
+    # Show provider menu
+    console.print("  [bold white]Available providers:[/]")
+    for k, (label, *_) in _PROVIDER_PRESETS.items():
+        bullet = "[bold cyan]\u25b8[/]" if k == "1" else "[bright_white]\u25b8[/]"
+        console.print(f"    {bullet} [bold #D97706]{k}[/]  {label}")
+    console.print()
+
+    if not choice:
+        choice = Prompt.ask(
+            "  [bold #D97706]›[/] [bold white]Provider[/] [bright_white](1-8)[/]",
+            default="1",
+            console=console,
+        ).strip()
+
+    preset = _PROVIDER_PRESETS.get(choice)
+    if not preset:
+        console.print("  [bright_white]Invalid choice — using built-in Beta AI.[/]")
+        preset = _PROVIDER_PRESETS["1"]
+
+    label, prov, _, mdl, burl = preset
+
+    # If preset requires a key (anything except option 1), ask for it
+    needs_key = choice != "1"
+    entered_key = api_key_override or ""
+
+    if needs_key and not entered_key:
+        console.print()
+        if choice == "2" or choice == "3":
+            console.print("  [bright_white]Get your OpenAI API key at:[/] [bold cyan]https://platform.openai.com/api-keys[/]")
+        elif choice == "4":
+            console.print("  [bright_white]Get your free Groq key at:[/] [bold cyan]https://console.groq.com/keys[/]")
+        elif choice == "5":
+            console.print("  [bright_white]Get your free OpenRouter key at:[/] [bold cyan]https://openrouter.ai/keys[/]")
+        elif choice == "6":
+            console.print("  [bright_white]Get your Together AI key at:[/] [bold cyan]https://api.together.xyz/settings/api-keys[/]")
+        elif choice == "7":
+            console.print("  [bright_white]Get your DeepSeek key at:[/] [bold cyan]https://platform.deepseek.com/api-keys[/]")
+        else:
+            console.print("  [bright_white]Enter your API key for this provider.[/]")
+
+        entered_key = Prompt.ask(
+            "  [bold #D97706]›[/] [bold white]API Key[/]",
+            default="",
+            password=True,
+            console=console,
+        ).strip()
+
+        if not entered_key:
+            console.print("  [bright_white]No key entered — falling back to built-in Beta AI.[/]\n")
+            return idea, None, None, None, None
+
+    # For custom provider, ask for model and base URL
+    final_model = model_override or mdl
+    final_base_url = base_url_override or burl
+
+    if choice == "8":
+        if not final_base_url:
+            final_base_url = Prompt.ask(
+                "  [bold #D97706]›[/] [bold white]Base URL[/] [bright_white](e.g. https://api.openai.com/v1)[/]",
+                default="https://api.openai.com/v1",
+                console=console,
+            ).strip()
+        if not final_model:
+            final_model = Prompt.ask(
+                "  [bold #D97706]›[/] [bold white]Model name[/] [bright_white](e.g. gpt-4o-mini, claude-3-haiku)[/]",
+                default="gpt-4o-mini",
+                console=console,
+            ).strip()
+
+    final_key = entered_key or api_key_override or None
+    final_prov = prov if (choice != "1") else (provider_override or None)
+
+    console.print(f"\n  [bold green]✓ Provider selected:[/] [bold cyan]{label}[/]")
+    if final_model:
+        console.print(f"  [bright_white]Model:[/] [bold white]{final_model}[/]")
+    console.print()
+
+    return idea, final_prov, final_key, final_model, final_base_url
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -1077,13 +1271,58 @@ def analyze(
     prompt: Optional[str] = typer.Option(
         None, "--prompt", "-p", help="Analyze from a single freeform text prompt"
     ),
+    api_key: Optional[str] = typer.Option(
+        None, "--api-key", "-k",
+        help="Custom API key (OpenAI, Groq, OpenRouter, or any OpenAI-compatible provider). Overrides .env.",
+    ),
+    model: Optional[str] = typer.Option(
+        None, "--model", "-m",
+        help="Model name to use (e.g. gpt-4o, gpt-4o-mini, claude-3-haiku, llama-3.3-70b-versatile). Overrides .env.",
+    ),
+    provider: Optional[str] = typer.Option(
+        None, "--provider",
+        help="AI provider: openai, openrouter, groq, hybrid, or openai_compat. Overrides AI_PROVIDER in .env.",
+    ),
+    base_url: Optional[str] = typer.Option(
+        None, "--base-url",
+        help="Custom OpenAI-compatible base URL (e.g. https://api.together.xyz/v1). Used with --api-key.",
+    ),
 ) -> None:
     """
     Analyse an MVP idea interactively, from a 1-prompt text, or from a JSON or text file.
+
+    Examples:
+
+      azero analyze                                          # interactive wizard
+
+      azero analyze --prompt \"AI scheduling app for dentists\"
+
+      azero analyze --api-key sk-... --model gpt-4o         # use your ChatGPT key
+
+      azero analyze --api-key sk-... --model gpt-4o-mini --provider openai
     """
     _print_splash()
 
     try:
+        # ── Build engine with any runtime key/model overrides ──────────────────
+        _provider = provider
+        _api_key = api_key
+        _model = model
+        _base_url = base_url
+
+        # If --api-key given but no --provider, auto-detect from model name or default to openai
+        if _api_key and not _provider:
+            if _model and any(x in (_model or "") for x in ("groq", "llama", "mixtral")):
+                _provider = "groq"
+            elif _model and any(x in (_model or "") for x in ("gemma", "qwen")):
+                _provider = "openrouter"
+            else:
+                _provider = "openai_compat"
+
+        # If --provider openai and no base_url set, fill in the standard OpenAI URL
+        if _provider in ("openai", "openai_compat") and not _base_url:
+            _base_url = "https://api.openai.com/v1"
+
         if file:
             if not file.exists():
                 err_console.print(f"File not found: {file}")
@@ -1102,18 +1341,40 @@ def analyze(
                 console.print(f"[bright_white]Loaded text prompt from[/] [bold cyan]{file}[/]")
                 console.print("[bright_white]Parsing idea details with AI...[/]")
                 from assumption_zero.services.analysis_service import build_llm_adapter
-                llm = build_llm_adapter()
+                llm = build_llm_adapter(
+                    provider_override=_provider,
+                    api_key_override=_api_key,
+                    model_override=_model,
+                    base_url_override=_base_url,
+                )
                 idea = asyncio.run(llm.parse_raw_prompt(raw_content))
                 console.print(f"[bold green]Extracted Idea:[/] [bold #D97706]{idea.name}[/]")
         elif prompt:
             console.print("[bright_white]Parsing freeform prompt using AI...[/]")
             from assumption_zero.services.analysis_service import build_llm_adapter
-            llm = build_llm_adapter()
+            llm = build_llm_adapter(
+                provider_override=_provider,
+                api_key_override=_api_key,
+                model_override=_model,
+                base_url_override=_base_url,
+            )
             idea = asyncio.run(llm.parse_raw_prompt(prompt))
             console.print(f"[bold green]Extracted Idea:[/] [bold #D97706]{idea.name}[/]")
         else:
             _print_section("Idea Definition")
-            idea = _ask_idea()
+            # Pass runtime overrides into interactive flow
+            idea, _provider, _api_key, _model, _base_url = _ask_idea_with_key(
+                provider_override=_provider,
+                api_key_override=_api_key,
+                model_override=_model,
+                base_url_override=_base_url,
+            )
+
+        # Show what AI will be used
+        if _api_key or _provider:
+            _prov_label = _provider or "auto"
+            _model_label = _model or "default"
+            console.print(f"  [bold green]✓ Using provider:[/] [bold cyan]{_prov_label}[/]  model: [bold white]{_model_label}[/]\n")
 
         console.print()
         console.print(
@@ -1127,7 +1388,13 @@ def analyze(
             )
         )
         console.print()
-        result = _run_analysis_sync(idea)
+        result = _run_analysis_sync(
+            idea,
+            provider_override=_provider,
+            api_key_override=_api_key,
+            model_override=_model,
+            base_url_override=_base_url,
+        )
         _print_report(result)
     except Exception as exc:
         msg = str(exc)
@@ -1278,6 +1545,7 @@ def export(
     output: Optional[Path] = typer.Option(None, "--output", "-o", help="Output file path"),
 ) -> None:
     """Export an analysis as Markdown, JSON, or HTML."""
+    _print_splash()
     target_id = analysis_id or "1"
 
     async def _get():
@@ -1310,6 +1578,83 @@ def export(
     else:
         console.print(content)
 
+
+@app.command()
+def delete(
+    analysis_id: str = typer.Argument(..., help="Analysis ID, short ID, or index (1, 2, ...) to delete."),
+    yes: bool = typer.Option(False, "--yes", "-y", help="Skip confirmation prompt."),
+) -> None:
+    """Delete a saved analysis by ID or index."""
+    _print_splash()
+    import assumption_zero.storage as store
+
+    full_id = store.resolve_id(analysis_id)
+    if not full_id:
+        err_console.print(f"Analysis '{analysis_id}' not found.")
+        raise typer.Exit(1)
+
+    # Show what we're deleting
+    row = store.get_record(full_id)
+    idea_name = row.get("idea_name", "Unknown") if row else "Unknown"
+    console.print(f"  [bold white]Analysis:[/] [bold #D97706]{idea_name}[/]  [bright_white]({full_id[:8]})[/]")
+
+    if not yes:
+        confirm = Prompt.ask(
+            "  [bold red]Delete this analysis? This cannot be undone.[/] [bold white](yes/no)[/]",
+            console=console,
+            default="no",
+        )
+        if confirm.strip().lower() not in ("yes", "y"):
+            console.print("  [bright_white]Cancelled.[/]")
+            raise typer.Exit(0)
+
+    deleted = store.delete_record(full_id)
+    if deleted:
+        console.print(f"  [bold green]✓ Deleted analysis[/] [bold #D97706]{idea_name}[/] [bright_white]({full_id[:8]})[/]")
+    else:
+        err_console.print(f"Failed to delete '{analysis_id}'.")
+        raise typer.Exit(1)
+
+
+@app.command()
+def clean(
+    status_filter: str = typer.Option("pending,failed", "--status", "-s", help="Comma-separated statuses to remove (e.g. pending,failed)."),
+    yes: bool = typer.Option(False, "--yes", "-y", help="Skip confirmation prompt."),
+) -> None:
+    """Remove all analyses matching the given status (default: pending and failed)."""
+    _print_splash()
+    import assumption_zero.storage as store
+
+    statuses = {s.strip().lower() for s in status_filter.split(",") if s.strip()}
+    rows = store.list_records(limit=9999)
+    targets = [r for r in rows if r.get("status", "").lower() in statuses]
+
+    if not targets:
+        console.print(f"  [bright_white]No analyses with status {statuses} found.[/]")
+        return
+
+    console.print(f"  [bold white]Found[/] [bold #D97706]{len(targets)}[/] [bold white]analyses to remove:[/]")
+    for r in targets[:10]:
+        console.print(f"    - [bright_white]{r.get('idea_name', '?')[:30]}[/]  [bold cyan]{r['id'][:8]}[/]  [{_status_color(r.get('status',''))}]{r.get('status','')}[/]")
+    if len(targets) > 10:
+        console.print(f"    ... and {len(targets)-10} more")
+
+    if not yes:
+        confirm = Prompt.ask(
+            f"  [bold red]Delete all {len(targets)} entries? This cannot be undone.[/] [bold white](yes/no)[/]",
+            console=console,
+            default="no",
+        )
+        if confirm.strip().lower() not in ("yes", "y"):
+            console.print("  [bright_white]Cancelled.[/]")
+            raise typer.Exit(0)
+
+    removed = 0
+    for r in targets:
+        if store.delete_record(r["id"]):
+            removed += 1
+
+    console.print(f"  [bold green]✓ Removed {removed} analyses.[/]")
 
 @app.command()
 def version() -> None:

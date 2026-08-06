@@ -75,42 +75,86 @@ def _parse_output(raw: str, perspective_name: PerspectiveName, model_id: str) ->
 
 
 class OpenAICompatAdapter(LLMAdapter):
-    """OpenAI Chat Completions-compatible adapter."""
+    """OpenAI Chat Completions-compatible adapter.
+
+    Works with: OpenAI (ChatGPT), Anthropic (via proxy), Together AI,
+    Anyscale, LM Studio, vLLM, and any OpenAI-spec endpoint.
+
+    Configure via .env or pass at runtime via CLI flags:
+      OPENAI_COMPATIBLE_BASE_URL=https://api.openai.com/v1
+      OPENAI_COMPATIBLE_API_KEY=sk-...
+      OPENAI_COMPATIBLE_MODEL=gpt-4o-mini
+    """
+
+    # Well-known provider base URLs for convenience
+    KNOWN_PROVIDERS: dict = {
+        "openai":    "https://api.openai.com/v1",
+        "together":  "https://api.together.xyz/v1",
+        "anyscale":  "https://api.endpoints.anyscale.com/v1",
+        "deepseek":  "https://api.deepseek.com/v1",
+        "mistral":   "https://api.mistral.ai/v1",
+        "cohere":    "https://api.cohere.ai/compatibility/v1",
+    }
 
     def __init__(self) -> None:
+        import os
         self._settings = get_settings()
+        # Runtime env vars take precedence over settings (injected by build_llm_adapter)
+        self._base_url = (
+            os.environ.get("OPENAI_COMPATIBLE_BASE_URL")
+            or self._settings.openai_compatible_base_url
+            or "https://api.openai.com/v1"
+        ).rstrip("/")
+        self._api_key = (
+            os.environ.get("OPENAI_COMPATIBLE_API_KEY")
+            or self._settings.openai_compatible_api_key
+            or ""
+        ).strip()
+        self._model = (
+            os.environ.get("OPENAI_COMPATIBLE_MODEL")
+            or self._settings.openai_compatible_model
+            or "gpt-4o-mini"
+        )
 
     @property
     def model_id(self) -> str:
-        return f"openai-compat/{self._settings.openai_compatible_model}"
+        return f"openai-compat/{self._model}"
 
     @property
     def is_available(self) -> bool:
-        return bool(
-            self._settings.openai_compatible_base_url
-            and self._settings.openai_compatible_api_key
-        )
+        return bool(self._api_key and self._base_url)
 
-    def _headers(self) -> Dict[str, str]:
+    def _headers(self) -> dict:
+        if not self._api_key:
+            raise RuntimeError(
+                "No API key set for openai_compat provider. "
+                "Set OPENAI_COMPATIBLE_API_KEY in .env or pass --api-key on the CLI."
+            )
         return {
-            "Authorization": f"Bearer {self._settings.openai_compatible_api_key}",
+            "Authorization": f"Bearer {self._api_key}",
             "Content-Type": "application/json",
         }
 
     async def _chat(self, messages: List[Dict[str, str]]) -> str:
-        base = self._settings.openai_compatible_base_url.rstrip("/")
-        url = f"{base}/chat/completions"
+        url = f"{self._base_url}/chat/completions"
         payload: Dict[str, Any] = {
-            "model": self._settings.openai_compatible_model,
+            "model": self._model,
             "messages": messages,
-            "response_format": {"type": "json_object"},
             "temperature": 0.3,
         }
+        # json_object response_format not supported by all providers, skip for non-OpenAI
+        if "openai.com" in self._base_url:
+            payload["response_format"] = {"type": "json_object"}
         async with httpx.AsyncClient(
-            timeout=self._settings.request_timeout,
+            timeout=max(60.0, float(self._settings.request_timeout)),
             headers=self._headers(),
         ) as client:
             resp = await client.post(url, json=payload)
+            if resp.status_code == 401:
+                raise RuntimeError(
+                    f"API key rejected (HTTP 401) for {self._base_url}. "
+                    "Please check your --api-key or OPENAI_COMPATIBLE_API_KEY."
+                )
             resp.raise_for_status()
             data = resp.json()
             return data["choices"][0]["message"]["content"]

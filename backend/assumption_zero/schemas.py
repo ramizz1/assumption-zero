@@ -185,6 +185,13 @@ class IdeaInput(BaseModel):
             )
         return v
 
+    @classmethod
+    def from_storage(cls, data: dict) -> "IdeaInput":
+        """Deserialize from persisted storage, bypassing the gibberish validator.
+        Data was already validated at submission time — re-validating on read
+        incorrectly rejects short/common-word names that were accepted when stored."""
+        return cls.model_construct(**data)
+
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Evidence

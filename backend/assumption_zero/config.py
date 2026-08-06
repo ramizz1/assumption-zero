@@ -44,6 +44,14 @@ class Settings(BaseSettings):
     ollama_base_url: str = "http://localhost:11434"
     ollama_model: str = "llama3.2"
 
+    # ── Custom / OpenAI-Compatible Provider ──────────────────────
+    # Use this to plug in ChatGPT, Claude (via compatible proxy), Together AI,
+    # Anyscale, LM Studio, vLLM self-hosted, or any OpenAI-spec API.
+    # Set AI_PROVIDER=openai_compat to activate.
+    openai_compatible_base_url: Optional[str] = None   # e.g. https://api.openai.com/v1
+    openai_compatible_api_key: Optional[str] = None    # your API key
+    openai_compatible_model: str = "gpt-4o-mini"       # model name to pass in the request
+
     # ── Research Providers ────────────────────────────────────────
     searxng_base_url: Optional[str] = None
     github_token: Optional[str] = None
@@ -63,7 +71,7 @@ class Settings(BaseSettings):
     @field_validator("ai_provider")
     @classmethod
     def validate_ai_provider(cls, v: str) -> str:
-        allowed = {"mock", "beta", "openrouter", "ollama"}
+        allowed = {"mock", "beta", "openrouter", "ollama", "groq", "hybrid", "auto", "dual", "openai_compat", "openai"}
         if v not in allowed:
             raise ValueError(f"ai_provider must be one of {allowed}, got: {v!r}")
         return v
@@ -71,7 +79,7 @@ class Settings(BaseSettings):
     def masked(self) -> dict:
         """Return a copy with secrets replaced — safe for logging."""
         d = self.model_dump()
-        for secret_key in ("openrouter_api_key", "github_token"):
+        for secret_key in ("openrouter_api_key", "github_token", "groq_api_key", "openai_compatible_api_key"):
             if d.get(secret_key):
                 d[secret_key] = "***"
         return d
