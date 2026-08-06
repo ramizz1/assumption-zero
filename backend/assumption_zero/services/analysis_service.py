@@ -86,7 +86,7 @@ def build_llm_adapter(
     groq = GroqAdapter()
     openrouter = OpenRouterAdapter()
 
-    if provider in ("openai_compat", "openai"):
+    if provider in ("openai_compat", "openai", "custom"):
         compat = OpenAICompatAdapter()
         if compat.is_available:
             adapter: LLMAdapter = compat
@@ -183,14 +183,29 @@ async def run_analysis(
     idea: IdeaInput,
     ai_provider_override: Optional[str] = None,
     openrouter_api_key: Optional[str] = None,
+    groq_api_key: Optional[str] = None,
+    opencode_api_key: Optional[str] = None,
+    openai_api_key: Optional[str] = None,
+    custom_base_url: Optional[str] = None,
+    ollama_base_url: Optional[str] = None,
     research_providers_override: Optional[List[str]] = None,
     is_demo: bool = False,
 ) -> None:
     """Run the full analysis pipeline. Called as a FastAPI BackgroundTask."""
 
+    import os
     if openrouter_api_key:
-        import os
         os.environ["OPENROUTER_API_KEY"] = openrouter_api_key
+    if groq_api_key:
+        os.environ["GROQ_API_KEY"] = groq_api_key
+    if opencode_api_key:
+        os.environ["OPENCODE_API_KEY"] = opencode_api_key
+    if openai_api_key:
+        os.environ["OPENAI_COMPATIBLE_API_KEY"] = openai_api_key
+    if custom_base_url:
+        os.environ["OPENAI_COMPATIBLE_BASE_URL"] = custom_base_url
+    if ollama_base_url:
+        os.environ["OLLAMA_BASE_URL"] = ollama_base_url
 
     async def progress_callback(stage: AnalysisStage, desc: str) -> None:
         store.update_stage(analysis_id, "running", stage.value)

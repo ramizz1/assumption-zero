@@ -1,7 +1,9 @@
-# Assumption Zero — MVP Validation Engine
-![Screenshot](https://i.ibb.co/C3sbq4pq/Screenshot-2026-08-05-232315.png)
-**The open-source MVP validation engine.**  
-*Stress-test your idea before you build it.*
+<div align="center">
+  <img src="frontend/public/logo.png" alt="Assumption Zero Logo" width="120" />
+  <h1>Assumption Zero — MVP Validation Engine</h1>
+  <img src="https://i.ibb.co/C3sbq4pq/Screenshot-2026-08-05-232315.png" alt="Screenshot" />
+  <p><strong>The open-source MVP validation engine.</strong><br><em>Stress-test your idea before you build it.</em></p>
+</div>
 
 > [!IMPORTANT]  
 > **Disclaimer:** Assumption Zero provides decision support and risk analysis. It is not a financial prediction or a substitute for direct customer validation. Every claim is grounded in evidence retrieved from primary research sources.

@@ -109,6 +109,11 @@ async def create_analysis_endpoint(
         idea=body.idea,
         ai_provider_override=body.ai_provider,
         openrouter_api_key=body.openrouter_api_key,
+        groq_api_key=body.groq_api_key,
+        opencode_api_key=body.opencode_api_key,
+        openai_api_key=body.openai_api_key,
+        custom_base_url=body.custom_base_url,
+        ollama_base_url=body.ollama_base_url,
         research_providers_override=body.research_providers,
         is_demo=False,
     )
@@ -122,12 +127,19 @@ async def create_analysis_from_prompt_endpoint(
     background_tasks: BackgroundTasks,
 ) -> dict:
     """Analyze a startup idea from a single freeform text prompt."""
+    import os
     if body.groq_api_key:
-        import os
         os.environ["GROQ_API_KEY"] = body.groq_api_key
     if body.openrouter_api_key:
-        import os
         os.environ["OPENROUTER_API_KEY"] = body.openrouter_api_key
+    if body.opencode_api_key:
+        os.environ["OPENCODE_API_KEY"] = body.opencode_api_key
+    if body.openai_api_key:
+        os.environ["OPENAI_COMPATIBLE_API_KEY"] = body.openai_api_key
+    if body.custom_base_url:
+        os.environ["OPENAI_COMPATIBLE_BASE_URL"] = body.custom_base_url
+    if body.ollama_base_url:
+        os.environ["OLLAMA_BASE_URL"] = body.ollama_base_url
 
     try:
         llm = build_llm_adapter(body.ai_provider)
@@ -152,6 +164,11 @@ async def create_analysis_from_prompt_endpoint(
         idea=parsed_idea,
         ai_provider_override=body.ai_provider,
         openrouter_api_key=body.openrouter_api_key,
+        groq_api_key=body.groq_api_key,
+        opencode_api_key=body.opencode_api_key,
+        openai_api_key=body.openai_api_key,
+        custom_base_url=body.custom_base_url,
+        ollama_base_url=body.ollama_base_url,
         research_providers_override=body.research_providers,
         is_demo=False,
     )

@@ -9,11 +9,12 @@ import type {
 
 export interface AnalysisCreateRequest {
   idea: IdeaInput
-  ai_provider_override?: string
+  ai_provider?: string
   openrouter_api_key?: string
   groq_api_key?: string
   opencode_api_key?: string
   openai_api_key?: string
+  custom_base_url?: string
   ollama_base_url?: string
   research_providers?: string[]
 }
@@ -49,6 +50,7 @@ export interface PromptAnalysisRequest {
   groq_api_key?: string
   opencode_api_key?: string
   openai_api_key?: string
+  custom_base_url?: string
   ollama_base_url?: string
   research_providers?: string[]
 }

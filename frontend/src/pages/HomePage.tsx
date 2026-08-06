@@ -4,6 +4,17 @@ import { api } from '../lib/api'
 import SavedAnalysesModal from '../components/SavedAnalysesModal'
 import SettingsModal, { getStoredAISettings, AISettings } from '../components/SettingsModal'
 
+// SVG Icons
+const LucideGlobe = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+const LucideBrain = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 1.98-3A2.5 2.5 0 0 1 9.5 2Z"/><path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-1.98-3A2.5 2.5 0 0 0 14.5 2Z"/></svg>
+const LucideTarget = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+const LucideFlask = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10 2v7.31"/><path d="M14 9.3V11.99"/><path d="M8.5 2h7"/><path d="M14 9.3a6.5 6.5 0 1 1-4 0"/><path d="M5.52 16h12.96"/></svg>
+const LucideSparkles = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/><path d="M5 3v4"/><path d="M3 5h4"/></svg>
+const LucideCode = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+const LucideZap = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+const LucideBot = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="14" x="3" y="7" rx="2" ry="2"/><path d="M12 3v4"/><path d="M8 3h8"/><path d="M15 12v.01"/><path d="M9 12v.01"/></svg>
+const LucideCloud = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></svg>
+
 const SAMPLE_IDEA = {
   name: "LegalMind Local",
   description: "A privacy-first AI meeting summarizer that runs entirely on-device for small legal firms",
@@ -36,7 +47,6 @@ export const HomePage: React.FC = () => {
   const [groqApiKey, setGroqApiKey] = useState('')
   const [openrouterApiKey, setOpenrouterApiKey] = useState('')
   const [opencodeApiKey, setOpencodeApiKey] = useState('')
-  const [showJsonExample, setShowJsonExample] = useState(false)
   const [inputMode, setInputMode] = useState<'prompt' | 'form'>('prompt')
 
   const [rawPromptText, setRawPromptText] = useState('')
@@ -94,7 +104,8 @@ export const HomePage: React.FC = () => {
         groq_api_key: groqApiKey || aiSettings.groqKey || undefined,
         openrouter_api_key: openrouterApiKey || aiSettings.openrouterKey || undefined,
         opencode_api_key: opencodeApiKey || aiSettings.opencodeKey || undefined,
-        openai_api_key: aiSettings.openaiKey || undefined,
+        openai_api_key: activeProvider === 'custom' ? aiSettings.customKey : aiSettings.openaiKey || undefined,
+        custom_base_url: activeProvider === 'custom' ? aiSettings.customUrl : undefined,
         ollama_base_url: aiSettings.ollamaUrl || undefined,
       })
       navigate(`/analysis/${result.analysis_id}`)
@@ -129,11 +140,12 @@ export const HomePage: React.FC = () => {
 
       const result = await api.createAnalysis({
         idea: payload,
-        ai_provider_override: activeProvider,
+        ai_provider: activeProvider,
         groq_api_key: groqApiKey || aiSettings.groqKey || undefined,
         openrouter_api_key: openrouterApiKey || aiSettings.openrouterKey || undefined,
         opencode_api_key: opencodeApiKey || aiSettings.opencodeKey || undefined,
-        openai_api_key: aiSettings.openaiKey || undefined,
+        openai_api_key: activeProvider === 'custom' ? aiSettings.customKey : aiSettings.openaiKey || undefined,
+        custom_base_url: activeProvider === 'custom' ? aiSettings.customUrl : undefined,
         ollama_base_url: aiSettings.ollamaUrl || undefined,
       })
       navigate(`/analysis/${result.analysis_id}`)
@@ -169,147 +181,136 @@ export const HomePage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#090a0f] text-gray-100 selection:bg-amber-500/30 selection:text-amber-200">
-      {/* Framer-style background glow */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
-        <div className="absolute -top-[20%] left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-gradient-to-b from-amber-500/10 via-amber-600/5 to-transparent blur-[120px] rounded-full opacity-70" />
-      </div>
-
-      {/* Header */}
-      <header className="relative z-10 border-b border-white/10 px-6 py-4 bg-[#0d0e15]/80 backdrop-blur-xl">
+    <div className="min-h-screen flex flex-col bg-[#f9f9f9] verseo-grid text-gray-900 selection:bg-gray-200 selection:text-gray-900">
+      {/* Verseo Top Bar Header (Light) */}
+      <header className="relative z-20 border-b border-gray-200 px-6 py-4 bg-white/80 backdrop-blur-xl">
         <div className="max-w-6xl mx-auto flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-amber-500 to-amber-400 p-0.5 shadow-lg shadow-amber-500/20">
-              <div className="w-full h-full bg-[#0d0e15] rounded-[6px] flex items-center justify-center font-black text-amber-400 text-sm">
-                A0
-              </div>
+            <div className="w-10 h-10 rounded-xl shadow-sm border border-gray-200 overflow-hidden flex items-center justify-center bg-white">
+              <img src="/logo.png" alt="Assumption Zero Logo" className="w-full h-full object-cover" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="font-bold text-white tracking-tight">Assumption Zero</span>
-                <span className="text-[10px] font-bold text-amber-300 bg-amber-400/10 border border-amber-400/20 px-2 py-0.5 rounded-full">
+                <span className="font-display font-bold text-gray-900 tracking-tight text-base">Assumption Zero</span>
+                <span className="font-mono text-[10px] font-bold text-gray-600 bg-gray-100 border border-gray-200 px-2 py-0.5 rounded-full">
                   v0.1.0
                 </span>
               </div>
-              <p className="text-[11px] text-gray-400 hidden sm:block">
-                Open-source MVP Validation Engine · Live Market Research
+              <p className="text-[11px] font-mono text-gray-500 hidden sm:block">
+                [ OPEN-SOURCE MVP VALIDATION ENGINE ]
               </p>
             </div>
           </div>
 
           {/* Navigation Controls */}
           <div className="flex items-center gap-3">
-            {/* History Drawer Trigger */}
             <button
-              type="button"
               onClick={() => setIsHistoryOpen(true)}
-              className="px-3 py-1.5 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 hover:border-amber-500/30 text-xs font-semibold text-gray-200 transition-all flex items-center gap-1.5 shadow-sm"
+              className="px-3.5 py-1.5 rounded-xl border border-gray-200 bg-white hover:bg-gray-50 text-xs font-mono font-medium text-gray-700 transition-all flex items-center gap-2 shadow-sm"
             >
-              <span>📜 History</span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg>
+              <span>History</span>
               {historyCount !== null && (
-                <span className="px-1.5 py-0.5 rounded-md bg-amber-500/20 text-amber-300 text-[10px] font-bold">
+                <span className="px-1.5 py-0.5 rounded-md bg-gray-100 text-gray-700 text-[10px] font-bold border border-gray-200">
                   {historyCount}
                 </span>
               )}
             </button>
 
-            {/* AI Engine Settings Trigger */}
             <button
               type="button"
               onClick={() => setIsSettingsOpen(true)}
-              className="px-3 py-1.5 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 text-xs font-semibold text-gray-200 transition-all flex items-center gap-1.5"
+              className="px-3.5 py-1.5 rounded-xl border border-gray-200 bg-white hover:bg-gray-50 text-xs font-mono font-medium text-gray-700 transition-all flex items-center gap-1.5 shadow-sm"
             >
-              <span>⚙️ AI Setup</span>
-            </button>
-
-            {/* Demo Button */}
-            <button
-              type="button"
-              onClick={handleDemo}
-              disabled={loading}
-              className="px-3 py-1.5 rounded-xl border border-amber-500/30 bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 text-xs font-bold transition-all hidden md:flex items-center gap-1"
-            >
-              <span>✦ Run Demo</span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+              <span>AI Setup</span>
             </button>
 
             <a
-              href="https://github.com/ramizz1/assumption-zero"
+              href="https://github.com/ramizz1"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-xs text-gray-400 hover:text-white transition-colors ml-1 hidden sm:inline"
+              className="group flex items-center gap-2 ml-2"
+              title="Creator Profile"
             >
-              GitHub →
+              <img src="/avatar.jpg" alt="ramizz1 avatar" className="w-8 h-8 rounded-full border border-gray-200 group-hover:border-gray-400 transition-colors shadow-sm object-cover" />
             </a>
           </div>
         </div>
       </header>
 
-      {/* Hero Section */}
-      <section className="relative z-10 text-center px-6 pt-14 pb-10 border-b border-white/5">
-        <div className="max-w-3xl mx-auto space-y-4">
-          <div className="inline-flex items-center gap-2 bg-amber-400/10 border border-amber-400/20 rounded-full px-4 py-1.5 text-xs text-amber-300 shadow-sm backdrop-blur-md">
-            <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
-            <span>Multi-Source Live Research • 3 AI Perspectives • Deterministic Scoring</span>
+      {/* Verseo Hero Section */}
+      <section className="relative z-10 text-center px-6 pt-16 pb-12 border-b border-gray-200">
+        <div className="max-w-4xl mx-auto space-y-5">
+          <div className="inline-flex items-center gap-2 verseo-badge shadow-sm">
+            <span className="w-2 h-2 rounded-full bg-gray-900 animate-pulse" />
+            <span>[ ✦ MULTI-SOURCE LIVE RESEARCH · 3 AI PERSPECTIVES · DETERMINISTIC SCORING ]</span>
           </div>
 
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-tight">
-            Stress-test your idea <br />
-            <span className="bg-gradient-to-r from-amber-400 via-amber-300 to-orange-400 bg-clip-text text-transparent">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-display font-black text-gray-900 tracking-tight leading-[1.1]">
+            Stress-test your MVP idea <br />
+            <span className="text-gray-500">
               before you build it.
             </span>
           </h1>
 
-          <p className="text-base sm:text-lg text-gray-400 max-w-2xl mx-auto font-normal">
-            Assumption Zero evaluates startup ideas against primary market data, challenge moats, identify competitor complaints, and design 7-day validation experiments.
+          <p className="text-base sm:text-lg text-gray-500 max-w-2xl mx-auto font-normal leading-relaxed">
+            Assumption Zero evaluates startup ideas against primary web research, identifies competitor complaints, challenges moat assumptions, and crafts 7-day validation experiments.
           </p>
         </div>
       </section>
 
       {/* Main Content */}
-      <main className="relative z-10 flex-1 px-4 sm:px-6 py-10 max-w-5xl mx-auto w-full">
+      <main className="relative z-10 flex-1 px-4 sm:px-6 py-10 max-w-5xl mx-auto w-full space-y-12">
         {error && (
-          <div className="mb-8 p-5 bg-red-500/10 border border-red-500/30 rounded-2xl text-red-300 flex items-start gap-3 shadow-xl backdrop-blur-md">
+          <div className="p-5 bg-red-50 border border-red-200 rounded-2xl text-red-700 flex items-start gap-3 shadow-sm backdrop-blur-md">
             <span className="text-xl">⚠️</span>
             <div className="flex-1 space-y-1">
-              <h4 className="font-bold text-red-400 text-sm">
+              <h4 className="font-bold text-red-800 text-sm">
                 {error.includes('gibberish')
                   ? 'Invalid Startup Idea Prompt'
                   : error.includes('402') || error.includes('429') || error.includes('quota')
                   ? 'No AI Tokens Available (Quota Exceeded)'
                   : 'Analysis Request Failed'}
               </h4>
-              <p className="text-xs text-red-300/90 leading-relaxed">{error}</p>
+              <p className="text-xs text-red-600 leading-relaxed">{error}</p>
             </div>
           </div>
         )}
 
-        {/* Card Container */}
-        <div className="bg-[#12131b]/90 border border-white/10 rounded-3xl shadow-2xl p-6 sm:p-8 backdrop-blur-xl">
+        {/* Verseo Input Card Container */}
+        <div className="verseo-card p-6 sm:p-8 backdrop-blur-xl shadow-md">
+          {/* Corner Crosshairs */}
+          <span className="verseo-corner-tl">+</span>
+          <span className="verseo-corner-tr">+</span>
+          <span className="verseo-corner-bl">+</span>
+          <span className="verseo-corner-br">+</span>
+
           {/* Mode Switcher Tabs */}
-          <div className="flex items-center justify-between border-b border-white/10 pb-4 mb-6 flex-wrap gap-4">
-            <div className="flex bg-[#0b0c12] p-1.5 rounded-2xl border border-white/5 gap-1">
+          <div className="flex items-center justify-between border-b border-gray-200 pb-4 mb-6 flex-wrap gap-4">
+            <div className="flex bg-gray-100 p-1.5 rounded-2xl border border-gray-200 gap-1">
               <button
                 type="button"
                 onClick={() => setInputMode('prompt')}
-                className={`py-2 px-4 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
+                className={`py-2 px-4 rounded-xl text-xs font-mono font-bold transition-all flex items-center gap-2 ${
                   inputMode === 'prompt'
-                    ? 'bg-amber-500 text-black shadow-lg shadow-amber-500/20'
-                    : 'text-gray-400 hover:text-white hover:bg-white/5'
+                    ? 'bg-white text-gray-900 shadow-sm border border-gray-200'
+                    : 'text-gray-500 hover:text-gray-900 hover:bg-white/50'
                 }`}
               >
-                <span>⚡</span> 1-Prompt Natural Language
+                <LucideZap /> 1-Prompt Mode
               </button>
 
               <button
                 type="button"
                 onClick={() => setInputMode('form')}
-                className={`py-2 px-4 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
+                className={`py-2 px-4 rounded-xl text-xs font-mono font-bold transition-all flex items-center gap-2 ${
                   inputMode === 'form'
-                    ? 'bg-amber-500 text-black shadow-lg shadow-amber-500/20'
-                    : 'text-gray-400 hover:text-white hover:bg-white/5'
+                    ? 'bg-white text-gray-900 shadow-sm border border-gray-200'
+                    : 'text-gray-500 hover:text-gray-900 hover:bg-white/50'
                 }`}
               >
-                <span>📋</span> Structured Form Wizard
+                <LucideCode /> Form Wizard
               </button>
             </div>
 
@@ -317,43 +318,44 @@ export const HomePage: React.FC = () => {
             <button
               type="button"
               onClick={handleLoadSample}
-              className="text-xs text-amber-400/90 hover:text-amber-300 font-semibold px-3 py-1.5 rounded-xl border border-amber-500/20 bg-amber-500/10 hover:bg-amber-500/20 transition-colors flex items-center gap-1.5"
+              className="text-xs font-mono text-gray-600 hover:text-gray-900 font-semibold px-3 py-1.5 rounded-xl border border-gray-200 bg-gray-50 hover:bg-gray-100 transition-colors flex items-center gap-1.5"
             >
-              <span>💡</span> Load Example Idea
+              <LucideSparkles /> [ Load Sample Idea ]
             </button>
           </div>
 
-          {/* AI Provider selector pills */}
+          {/* AI Provider Selector Pills */}
           <div className="mb-6 space-y-2">
-            <div className="flex items-center justify-between text-xs text-gray-400">
-              <span className="font-semibold text-gray-300">Select AI Provider:</span>
+            <div className="flex items-center justify-between text-xs font-mono text-gray-500">
+              <span className="font-semibold text-gray-600">[ AI PROVIDER SELECTOR ]</span>
               <button
                 type="button"
                 onClick={() => setIsSettingsOpen(true)}
-                className="text-amber-400 hover:underline"
+                className="text-gray-600 hover:text-gray-900 hover:underline flex items-center gap-1"
               >
-                Configure Keys ⚙️
+                Configure Keys
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
               </button>
             </div>
-            <div className="flex flex-wrap gap-2 text-xs">
+            <div className="flex flex-wrap gap-2 text-xs font-mono">
               {[
-                { id: 'beta', label: '✦ Beta AI (Built-in)' },
-                { id: 'ollama', label: '🦙 Ollama Local' },
-                { id: 'opencode', label: '⚡ OpenCode AI' },
-                { id: 'openai_compat', label: '🤖 OpenAI ChatGPT' },
-                { id: 'groq', label: '⚡ Groq Llama 3.3' },
-                { id: 'openrouter', label: '🌐 OpenRouter' },
+                { id: 'ollama', label: 'Ollama', icon: <img src="/ollama.png" alt="Ollama" className="w-4 h-4 object-contain" /> },
+                { id: 'opencode', label: 'OpenCode', icon: <img src="/opencode.png" alt="OpenCode" className="w-4 h-4 object-contain" /> },
+                { id: 'openai_compat', label: 'OpenAI', icon: <img src="/openai.png" alt="OpenAI" className="w-4 h-4 object-contain" /> },
+                { id: 'groq', label: 'Groq (L3)', icon: <img src="/groq.png" alt="Groq" className="w-4 h-4 object-contain" /> },
+                { id: 'openrouter', label: 'OpenRouter', icon: <img src="/openrouter.png" alt="OpenRouter" className="w-4 h-4 object-contain" /> },
               ].map((p) => (
                 <button
                   key={p.id}
                   type="button"
-                  onClick={() => setSelectedProvider(p.id)}
-                  className={`px-3 py-1.5 rounded-xl border transition-all font-medium ${
-                    selectedProvider === p.id
-                      ? 'bg-amber-500/20 border-amber-500/50 text-amber-300 shadow-md ring-1 ring-amber-500/30'
-                      : 'bg-[#161824] border-white/5 text-gray-400 hover:border-white/20 hover:text-white'
+                  onClick={() => setAiSettings({ ...aiSettings, provider: p.id as any })}
+                  className={`px-3 py-1.5 rounded-xl border font-medium flex items-center gap-1.5 transition-all ${
+                    aiSettings.provider === p.id
+                      ? 'bg-gray-100 text-gray-900 border-gray-900 shadow-sm ring-1 ring-gray-900'
+                      : 'bg-white text-gray-500 border-gray-200 hover:border-gray-300 hover:text-gray-900 shadow-sm'
                   }`}
                 >
+                  {p.icon}
                   {p.label}
                 </button>
               ))}
@@ -364,10 +366,10 @@ export const HomePage: React.FC = () => {
           {inputMode === 'prompt' ? (
             <form onSubmit={handleAnalyzePrompt} className="space-y-6">
               <div className="space-y-2">
-                <label className="block text-sm font-bold text-white">
-                  Describe Your Startup or MVP Idea
+                <label className="label">
+                  Describe Your Startup or Product Idea
                 </label>
-                <p className="text-xs text-gray-400">
+                <p className="text-xs text-gray-500">
                   Describe what you're building, target audience, problem solved, pricing, or competitors in plain natural text.
                 </p>
 
@@ -376,27 +378,28 @@ export const HomePage: React.FC = () => {
                   value={rawPromptText}
                   onChange={(e) => setRawPromptText(e.target.value)}
                   placeholder="e.g. LegalMind Local — A privacy-first AI meeting summarizer for small law firms that processes audio entirely on-device. Pricing: $49/mo per seat. Target: Solo practitioners and small firms in the US..."
-                  className="w-full bg-[#0b0c12] border border-white/10 rounded-2xl p-4 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-amber-500/60 focus:ring-1 focus:ring-amber-500/30 transition-all resize-y"
+                  className="w-full bg-gray-50 border border-gray-200 rounded-2xl p-4 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-gray-400 focus:ring-1 focus:ring-gray-200 transition-all resize-y shadow-inner"
                   required
                 />
               </div>
 
               {/* Upload file helper */}
-              <div className="flex items-center justify-between text-xs text-gray-400 flex-wrap gap-2">
-                <label className="cursor-pointer hover:text-amber-400 transition-colors flex items-center gap-1.5 bg-white/5 border border-white/10 px-3 py-1.5 rounded-xl">
-                  <span>📁</span> Upload .txt or .json File
+              <div className="flex items-center justify-between text-xs font-mono text-gray-500 flex-wrap gap-2">
+                <label className="cursor-pointer hover:text-gray-900 transition-colors flex items-center gap-1.5 bg-white border border-gray-200 px-3 py-1.5 rounded-xl shadow-sm">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>
+                  Upload .txt or .json
                   <input type="file" accept=".txt,.json,.md" onChange={handleFileUpload} className="hidden" />
                 </label>
 
-                <span className="text-gray-500">{rawPromptText.length} characters</span>
+                <span className="text-gray-500">{rawPromptText.length} chars</span>
               </div>
 
               <button
                 type="submit"
                 disabled={loading || !rawPromptText.trim()}
-                className="w-full py-4 bg-gradient-to-r from-amber-500 to-amber-400 text-black font-extrabold rounded-2xl hover:from-amber-400 hover:to-amber-300 transition-all duration-200 shadow-xl shadow-amber-500/20 active:scale-[0.99] disabled:opacity-50 text-base"
+                className="btn-primary w-full py-4 text-base flex justify-center items-center gap-2"
               >
-                {loading ? 'Running AI Engine & Research Pipeline...' : '✦ Analyze MVP Idea Now'}
+                {loading ? 'Running AI Engine & Live Research...' : <><LucideSparkles /> Analyze MVP Idea Now</>}
               </button>
             </form>
           ) : (
@@ -404,106 +407,106 @@ export const HomePage: React.FC = () => {
             <form onSubmit={handleAnalyzeForm} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <label className="block text-xs font-bold text-gray-200">Idea Name *</label>
+                  <label className="label">Idea Name *</label>
                   <input
                     type="text"
                     value={idea.name}
                     onChange={update('name')}
                     placeholder="e.g. LegalMind Local"
-                    className="input-field"
+                    className="input-field shadow-inner"
                     required
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="block text-xs font-bold text-gray-200">Target Customer *</label>
+                  <label className="label">Target Customer *</label>
                   <input
                     type="text"
                     value={idea.target_customer}
                     onChange={update('target_customer')}
                     placeholder="e.g. Solo law firms (1-20 attorneys)"
-                    className="input-field"
+                    className="input-field shadow-inner"
                     required
                   />
                 </div>
               </div>
 
               <div className="space-y-1.5">
-                <label className="block text-xs font-bold text-gray-200">Short Description *</label>
+                <label className="label">Short Description *</label>
                 <input
                   type="text"
                   value={idea.description}
                   onChange={update('description')}
                   placeholder="e.g. On-device AI meeting summarizer for law practices"
-                  className="input-field"
+                  className="input-field shadow-inner"
                   required
                 />
               </div>
 
               <div className="space-y-1.5">
-                <label className="block text-xs font-bold text-gray-200">Problem Solved *</label>
+                <label className="label">Problem Solved *</label>
                 <textarea
                   rows={3}
                   value={idea.problem}
                   onChange={update('problem')}
                   placeholder="What problem does this solve? Why is current alternative broken?"
-                  className="textarea-field"
+                  className="textarea-field shadow-inner"
                   required
                 />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="space-y-1.5">
-                  <label className="block text-xs font-bold text-gray-200">Target Geography *</label>
+                  <label className="label">Target Geography *</label>
                   <input
                     type="text"
                     value={idea.geography}
                     onChange={update('geography')}
                     placeholder="e.g. United States"
-                    className="input-field"
+                    className="input-field shadow-inner"
                     required
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="block text-xs font-bold text-gray-200">Expected Pricing</label>
+                  <label className="label">Expected Pricing</label>
                   <input
                     type="text"
                     value={idea.price}
                     onChange={update('price')}
                     placeholder="e.g. $49/mo per seat"
-                    className="input-field"
+                    className="input-field shadow-inner"
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="block text-xs font-bold text-gray-200">Budget / Runway</label>
+                  <label className="label">Budget / Runway</label>
                   <input
                     type="text"
                     value={idea.budget}
                     onChange={update('budget')}
                     placeholder="e.g. $15,000 for 6 months"
-                    className="input-field"
+                    className="input-field shadow-inner"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <label className="block text-xs font-bold text-gray-200">Known Competitors</label>
+                  <label className="label">Known Competitors</label>
                   <input
                     type="text"
                     value={idea.known_competitors}
                     onChange={update('known_competitors')}
                     placeholder="e.g. Otter.ai, Fireflies.ai"
-                    className="input-field"
+                    className="input-field shadow-inner"
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="block text-xs font-bold text-gray-200">Unfair Advantage / Moat</label>
+                  <label className="label">Unfair Advantage / Moat</label>
                   <input
                     type="text"
                     value={idea.unfair_advantage}
                     onChange={update('unfair_advantage')}
                     placeholder="e.g. Local NPU acceleration engine"
-                    className="input-field"
+                    className="input-field shadow-inner"
                   />
                 </div>
               </div>
@@ -511,13 +514,108 @@ export const HomePage: React.FC = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-4 bg-gradient-to-r from-amber-500 to-amber-400 text-black font-extrabold rounded-2xl hover:from-amber-400 hover:to-amber-300 transition-all duration-200 shadow-xl shadow-amber-500/20 active:scale-[0.99] disabled:opacity-50 text-base"
+                className="btn-primary w-full py-4 text-base flex justify-center items-center gap-2"
               >
-                {loading ? 'Running AI Engine & Research Pipeline...' : '✦ Analyze MVP Idea Now'}
+                {loading ? 'Running AI Engine & Live Research...' : <><LucideSparkles /> Analyze MVP Idea Now</>}
               </button>
             </form>
           )}
         </div>
+
+        {/* Verseo Bento Grid — 4 Core Feature Cards */}
+        <section className="space-y-6 pt-4">
+          <div className="text-center space-y-2">
+            <span className="verseo-badge">[ ✦ HOW IT WORKS ]</span>
+            <h2 className="text-3xl font-display font-black text-gray-900 tracking-tight">
+              Source-backed MVP evaluation pipeline.
+            </h2>
+            <p className="text-sm text-gray-500 max-w-lg mx-auto">
+              Automated research and multi-perspectives designed to eliminate founder bias.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Bento Card 1: Live Market & Web Research */}
+            <div className="verseo-card-hover p-6 flex flex-col justify-between group">
+              <span className="verseo-corner-tl">+</span>
+              <span className="verseo-corner-tr">+</span>
+              <span className="verseo-corner-bl">+</span>
+              <span className="verseo-corner-br">+</span>
+              <div className="space-y-3">
+                <div className="w-10 h-10 rounded-xl bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-700 group-hover:bg-gray-900 group-hover:text-white transition-colors duration-300">
+                  <LucideGlobe />
+                </div>
+                <h3 className="text-lg font-display font-bold text-gray-900">Live Multi-Source Research</h3>
+                <p className="text-xs text-gray-500 leading-relaxed">
+                  Queries primary web sources across GitHub, HackerNews, Wikipedia, Reddit, and SearXNG to gather live competitor complaints, pricing models, and market demand.
+                </p>
+              </div>
+              <div className="mt-4 pt-3 border-t border-gray-100 flex items-center gap-2 font-mono text-[11px] text-gray-400">
+                <span>[ GitHub · HN · Reddit · SearXNG ]</span>
+              </div>
+            </div>
+
+            {/* Bento Card 2: 3 Independent AI Perspectives */}
+            <div className="verseo-card-hover p-6 flex flex-col justify-between group">
+              <span className="verseo-corner-tl">+</span>
+              <span className="verseo-corner-tr">+</span>
+              <span className="verseo-corner-bl">+</span>
+              <span className="verseo-corner-br">+</span>
+              <div className="space-y-3">
+                <div className="w-10 h-10 rounded-xl bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-700 group-hover:bg-gray-900 group-hover:text-white transition-colors duration-300">
+                  <LucideBrain />
+                </div>
+                <h3 className="text-lg font-display font-bold text-gray-900">3 AI Agent Perspectives</h3>
+                <p className="text-xs text-gray-500 leading-relaxed">
+                  Evaluates your idea simultaneously through three distinct lenses: <strong>Market Analyst</strong> (sizing), <strong>Skeptical VC Investor</strong> (moat risks), and <strong>Practical Builder</strong> (90-day roadmap).
+                </p>
+              </div>
+              <div className="mt-4 pt-3 border-t border-gray-100 flex items-center gap-2 font-mono text-[11px] text-gray-400">
+                <span>[ Analyst · VC Skeptic · Builder ]</span>
+              </div>
+            </div>
+
+            {/* Bento Card 3: Deterministic Opportunity Gauge */}
+            <div className="verseo-card-hover p-6 flex flex-col justify-between group">
+              <span className="verseo-corner-tl">+</span>
+              <span className="verseo-corner-tr">+</span>
+              <span className="verseo-corner-bl">+</span>
+              <span className="verseo-corner-br">+</span>
+              <div className="space-y-3">
+                <div className="w-10 h-10 rounded-xl bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-700 group-hover:bg-gray-900 group-hover:text-white transition-colors duration-300">
+                  <LucideTarget />
+                </div>
+                <h3 className="text-lg font-display font-bold text-gray-900">Deterministic Scoring Engine</h3>
+                <p className="text-xs text-gray-500 leading-relaxed">
+                  Computes an objective 0–100 opportunity score weighing execution difficulty, competitor saturation, founder skills, pricing sustainability, and evidence confidence.
+                </p>
+              </div>
+              <div className="mt-4 pt-3 border-t border-gray-100 flex items-center gap-2 font-mono text-[11px] text-gray-400">
+                <span>[ Build · Test First · Pivot · Avoid ]</span>
+              </div>
+            </div>
+
+            {/* Bento Card 4: 7-Day Validation Experiments */}
+            <div className="verseo-card-hover p-6 flex flex-col justify-between group">
+              <span className="verseo-corner-tl">+</span>
+              <span className="verseo-corner-tr">+</span>
+              <span className="verseo-corner-bl">+</span>
+              <span className="verseo-corner-br">+</span>
+              <div className="space-y-3">
+                <div className="w-10 h-10 rounded-xl bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-700 group-hover:bg-gray-900 group-hover:text-white transition-colors duration-300">
+                  <LucideFlask />
+                </div>
+                <h3 className="text-lg font-display font-bold text-gray-900">7-Day Validation Experiments</h3>
+                <p className="text-xs text-gray-500 leading-relaxed">
+                  Generates low-cost, high-velocity micro-experiments with clear success metrics so you can validate customer demand before writing code.
+                </p>
+              </div>
+              <div className="mt-4 pt-3 border-t border-gray-100 flex items-center gap-2 font-mono text-[11px] text-gray-400">
+                <span>[ Actionable Test Plans ]</span>
+              </div>
+            </div>
+          </div>
+        </section>
       </main>
 
       {/* Modals */}

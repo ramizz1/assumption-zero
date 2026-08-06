@@ -8,14 +8,16 @@
   }
 
   html {
-    font-family: 'Inter', system-ui, sans-serif;
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
     -webkit-font-smoothing: antialiased;
+    scroll-behavior: smooth;
   }
 
   body {
-    background-color: #0d0d0f;
-    color: #f1f1f3;
+    background-color: #f9f9f9;
+    color: #181818;
     min-height: 100vh;
+    overflow-x: hidden;
   }
 
   ::-webkit-scrollbar {
@@ -23,38 +25,70 @@
     height: 6px;
   }
   ::-webkit-scrollbar-track {
-    background: #111114;
+    background: #f1f1f1;
   }
   ::-webkit-scrollbar-thumb {
-    background: #2a2a35;
-    border-radius: 3px;
+    background: #d1d1d1;
+    border-radius: 9999px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: #3a3a48;
+    background: #a8a8a8;
   }
 }
 
 @layer components {
-  .card {
-    @apply bg-[#111114] border border-[#1f1f26] rounded-xl;
+  /* Verseo Blueprint Grid Background (Light Mode) */
+  .verseo-grid {
+    background-image: 
+      linear-gradient(to right, rgba(0, 0, 0, 0.04) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(0, 0, 0, 0.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+
+  /* Verseo Framer Light Card */
+  .verseo-card {
+    @apply relative bg-white border border-[#e5e5e5] rounded-2xl shadow-sm transition-all duration-300;
+  }
+
+  .verseo-card-hover {
+    @apply verseo-card hover:border-gray-400 hover:shadow-lg hover:-translate-y-1;
+  }
+
+  /* Verseo Crosshair Badge Corner Accents (Light) */
+  .verseo-corner-tl {
+    @apply absolute -top-1.5 -left-1.5 text-[#dbdce0] font-mono text-xs select-none pointer-events-none z-20;
+  }
+  .verseo-corner-tr {
+    @apply absolute -top-1.5 -right-1.5 text-[#dbdce0] font-mono text-xs select-none pointer-events-none z-20;
+  }
+  .verseo-corner-bl {
+    @apply absolute -bottom-1.5 -left-1.5 text-[#dbdce0] font-mono text-xs select-none pointer-events-none z-20;
+  }
+  .verseo-corner-br {
+    @apply absolute -bottom-1.5 -right-1.5 text-[#dbdce0] font-mono text-xs select-none pointer-events-none z-20;
+  }
+
+  /* Verseo Pill Badge (Monochrome) */
+  .verseo-badge {
+    @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono tracking-wider uppercase border border-gray-200 bg-white text-gray-700 shadow-sm;
   }
 
   .btn-primary {
-    @apply bg-white text-gray-950 font-semibold px-6 py-2.5 rounded-lg
-           hover:bg-gray-100 transition-all duration-200 active:scale-95
-           focus:outline-none focus:ring-2 focus:ring-white/50;
+    @apply bg-gray-900 text-white font-extrabold px-6 py-3.5 rounded-xl
+           hover:bg-gray-800 transition-all duration-200 shadow-md active:scale-95
+           focus:outline-none focus:ring-2 focus:ring-gray-400 text-sm tracking-tight;
   }
 
   .btn-ghost {
-    @apply border border-[#2a2a35] text-gray-300 font-medium px-6 py-2.5 rounded-lg
-           hover:border-gray-500 hover:text-white transition-all duration-200
-           active:scale-95 focus:outline-none focus:ring-2 focus:ring-gray-500/30;
+    @apply border border-gray-200 bg-white text-gray-700 font-semibold px-5 py-2.5 rounded-xl
+           hover:bg-gray-50 hover:border-gray-300 transition-all duration-200 shadow-sm
+           active:scale-95 focus:outline-none focus:ring-2 focus:ring-gray-200 text-xs;
   }
 
   .input-field {
-    @apply w-full bg-[#0d0d0f] border border-[#2a2a35] rounded-lg px-4 py-3 text-white
-           placeholder-gray-600 focus:outline-none focus:border-gray-500 transition-colors
-           text-sm;
+    @apply w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-gray-900
+           placeholder-gray-400 focus:outline-none focus:border-gray-400 focus:ring-1 focus:ring-gray-200 transition-all
+           text-sm font-sans;
   }
 
   .textarea-field {
@@ -62,20 +96,16 @@
   }
 
   .label {
-    @apply block text-sm font-medium text-gray-300 mb-1.5;
+    @apply block text-xs font-mono font-bold text-gray-600 mb-1.5 uppercase tracking-wider;
   }
 
   .badge {
-    @apply inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border;
-  }
-
-  .section-title {
-    @apply text-lg font-semibold text-white mb-4;
+    @apply inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-semibold border;
   }
 
   .citation-badge {
-    @apply inline-flex items-center px-1.5 py-0.5 rounded text-xs font-mono
-           bg-blue-400/10 text-blue-400 border border-blue-500/20
-           hover:bg-blue-400/20 transition-colors cursor-pointer;
+    @apply inline-flex items-center px-2 py-0.5 rounded-md text-xs font-mono
+           bg-gray-100 text-gray-600 border border-gray-200
+           hover:bg-gray-200 transition-all cursor-pointer shadow-sm;
   }
 }

@@ -3,56 +3,56 @@
 import type { ConfidenceLevel, Recommendation } from '../types'
 
 export function scoreColor(score: number): string {
-  if (score >= 65) return 'text-green-400'
-  if (score >= 45) return 'text-amber-400'
-  return 'text-red-400'
+  if (score >= 65) return 'text-emerald-600'
+  if (score >= 45) return 'text-amber-600'
+  return 'text-rose-600'
 }
 
 export function scoreBgColor(score: number): string {
-  if (score >= 65) return 'bg-green-400'
-  if (score >= 45) return 'bg-amber-400'
-  return 'bg-red-400'
+  if (score >= 65) return 'bg-emerald-600'
+  if (score >= 45) return 'bg-amber-600'
+  return 'bg-rose-600'
 }
 
 export function scoreBorderColor(score: number): string {
-  if (score >= 65) return 'border-green-500'
+  if (score >= 65) return 'border-emerald-500'
   if (score >= 45) return 'border-amber-500'
-  return 'border-red-500'
+  return 'border-rose-500'
 }
 
 export function recommendationColor(rec: Recommendation): string {
   const map: Record<Recommendation, string> = {
-    Build: 'text-green-400',
-    'Test First': 'text-amber-400',
-    Pivot: 'text-orange-400',
-    Avoid: 'text-red-400',
+    Build: 'text-emerald-700',
+    'Test First': 'text-amber-700',
+    Pivot: 'text-orange-700',
+    Avoid: 'text-rose-700',
   }
-  return map[rec] ?? 'text-gray-300'
+  return map[rec] ?? 'text-gray-700'
 }
 
 export function recommendationBg(rec: Recommendation): string {
   const map: Record<Recommendation, string> = {
-    Build: 'bg-green-400/10 border-green-500/30',
-    'Test First': 'bg-amber-400/10 border-amber-500/30',
-    Pivot: 'bg-orange-400/10 border-orange-500/30',
-    Avoid: 'bg-red-400/10 border-red-500/30',
+    Build: 'bg-emerald-50 border-emerald-200',
+    'Test First': 'bg-amber-50 border-amber-200',
+    Pivot: 'bg-orange-50 border-orange-200',
+    Avoid: 'bg-rose-50 border-rose-200',
   }
-  return map[rec] ?? 'bg-gray-800/50 border-gray-700'
+  return map[rec] ?? 'bg-gray-100 border-gray-200'
 }
 
 export function confidenceColor(conf: ConfidenceLevel): string {
   const map: Record<ConfidenceLevel, string> = {
-    high: 'text-green-400',
-    medium: 'text-amber-400',
-    low: 'text-red-400',
+    high: 'text-emerald-600',
+    medium: 'text-amber-600',
+    low: 'text-rose-600',
   }
-  return map[conf] ?? 'text-gray-400'
+  return map[conf] ?? 'text-gray-600'
 }
 
 export function reliabilityBadge(level: string): string {
-  if (level === 'high') return 'bg-green-400/10 text-green-300 border-green-500/20'
-  if (level === 'medium') return 'bg-amber-400/10 text-amber-300 border-amber-500/20'
-  return 'bg-red-400/10 text-red-300 border-red-500/20'
+  if (level === 'high') return 'bg-emerald-50 text-emerald-700 border-emerald-200'
+  if (level === 'medium') return 'bg-amber-50 text-amber-700 border-amber-200'
+  return 'bg-rose-50 text-rose-700 border-rose-200'
 }
 
 export function formatDate(iso?: string): string {

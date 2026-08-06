@@ -369,6 +369,10 @@ class AnalysisCreateRequest(BaseModel):
     ai_provider: Optional[str] = None  # Overrides the configured provider for this run
     openrouter_api_key: Optional[str] = None  # Custom OpenRouter API key for this run
     groq_api_key: Optional[str] = None  # Custom Groq API key for this run
+    opencode_api_key: Optional[str] = None
+    openai_api_key: Optional[str] = None
+    custom_base_url: Optional[str] = None
+    ollama_base_url: Optional[str] = None
     research_providers: Optional[List[str]] = None  # Pin specific providers; None = all enabled
 
 
@@ -377,6 +381,10 @@ class PromptAnalysisRequest(BaseModel):
     ai_provider: Optional[str] = None
     openrouter_api_key: Optional[str] = None
     groq_api_key: Optional[str] = None
+    opencode_api_key: Optional[str] = None
+    openai_api_key: Optional[str] = None
+    custom_base_url: Optional[str] = None
+    ollama_base_url: Optional[str] = None
     research_providers: Optional[List[str]] = None
 
 

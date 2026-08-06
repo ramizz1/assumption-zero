@@ -1283,7 +1283,7 @@ def analyze(
     ),
     provider: Optional[str] = typer.Option(
         None, "--provider",
-        help="AI provider: openai, openrouter, groq, hybrid, or openai_compat. Overrides AI_PROVIDER in .env.",
+        help="AI provider: openai, openrouter, groq, ollama, opencode, hybrid, or openai_compat. Overrides AI_PROVIDER in .env.",
     ),
     base_url: Optional[str] = typer.Option(
         None, "--base-url",
@@ -1762,6 +1762,20 @@ def clean(
             removed += 1
 
     console.print(f"  [bold green]✓ Removed {removed} analyses.[/]")
+
+
+@app.command()
+def serve(
+    host: str = typer.Option("127.0.0.1", "--host", "-h", help="Host address to bind backend server to"),
+    port: int = typer.Option(8000, "--port", "-p", help="Port number to listen on"),
+    reload: bool = typer.Option(False, "--reload", "-r", help="Enable auto-reload for development"),
+) -> None:
+    """Start the FastAPI REST backend server."""
+    _print_splash()
+    console.print(f"  [bold green]✓ Starting Assumption Zero API server at[/] [bold cyan]http://{host}:{port}[/]\n")
+    import uvicorn
+    uvicorn.run("assumption_zero.main:app", host=host, port=port, reload=reload)
+
 
 @app.command()
 def version() -> None:

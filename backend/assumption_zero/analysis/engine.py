@@ -29,7 +29,7 @@ from assumption_zero.analysis.confidence import calculate_evidence_confidence
 from assumption_zero.analysis.disagreement import detect_disagreements
 from assumption_zero.analysis.experiment_generator import generate_experiments
 from assumption_zero.analysis.query_generator import generate_queries
-from assumption_zero.analysis.scoring import calculate_opportunity_score
+from assumption_zero.llm.hermes_brain import run_hermes_synthesis
 from assumption_zero.llm.base import LLMAdapter, PerspectiveOutput
 from assumption_zero.research.base import ResearchProvider
 from assumption_zero.schemas import (
@@ -362,9 +362,13 @@ class AnalysisEngine:
 
         # ── Stage 7: Calculate scores ─────────────────────────────
         await _progress(AnalysisStage.CALCULATING_SCORES)
-        opportunity_score = calculate_opportunity_score(perspectives, evidence, idea)
+        
+        # Invoke Assumption Zero Master Brain
+        hermes_output = await run_hermes_synthesis(self._llm, idea, perspectives)
+        
+        opportunity_score = hermes_output.opportunity_score
+        recommendation = Recommendation(hermes_output.recommendation) if hermes_output.recommendation in [r.value for r in Recommendation] else Recommendation.TEST_FIRST
         evidence_confidence = calculate_evidence_confidence(perspectives=perspectives, evidence=evidence)
-        recommendation = _select_recommendation(perspectives)
 
         # ── Stage 8: Generate experiments ─────────────────────────
         await _progress(AnalysisStage.GENERATING_EXPERIMENTS)
@@ -372,7 +376,7 @@ class AnalysisEngine:
 
         # ── Synthesis ─────────────────────────────────────────────
         disagreements = detect_disagreements(perspectives)
-        most_dangerous = _select_most_dangerous_assumption(perspectives)
+        most_dangerous = hermes_output.most_dangerous_assumption
         strongest_sup = _find_strongest(evidence, good=True)
         strongest_con = _find_strongest(evidence, good=False)
         missing_info = _collect_missing_info(perspectives, evidence)

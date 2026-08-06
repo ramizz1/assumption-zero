@@ -12,7 +12,7 @@ export default function CitationBadge({ evidenceId, evidence }: Props) {
   if (!item) {
     return (
       <span
-        className="badge bg-red-400/10 text-red-400 border-red-500/20 font-mono text-xs"
+        className="badge bg-red-50 text-red-700 border-red-200 font-mono text-xs"
         title="Invalid citation — evidence not found"
       >
         {evidenceId} ⚠

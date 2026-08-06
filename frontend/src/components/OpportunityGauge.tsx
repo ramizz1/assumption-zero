@@ -33,7 +33,7 @@ export default function OpportunityGauge({ score, size = 140 }: Props) {
           cy="60"
           r={radius}
           fill="none"
-          stroke="#1f1f26"
+          stroke="#e5e5e5"
           strokeWidth="10"
         />
         {/* Score arc */}
