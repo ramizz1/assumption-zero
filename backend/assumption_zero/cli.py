@@ -130,7 +130,8 @@ def _print_splash() -> None:
         f"[bold #F5A623]✦ A S S U M P T I O N   Z E R O[/]   [bold cyan]v{__version__}[/]\n"
         f"[bold white]{TAGLINE}[/]\n\n"
         f"[bold cyan]Multi-Source Live Research[/]  [bright_white]•[/]  [bold green]3 AI Perspectives[/]  [bright_white]•[/]  [bold #F5A623]Deterministic Scoring[/]\n"
-        f"[bright_white]GitHub:[/] [bold cyan]https://github.com/ramizz1/assumption-zero[/]"
+        f"[bright_white]GitHub:[/] [bold cyan]https://github.com/ramizz1/assumption-zero[/]\n\n"
+        f"[bold yellow]💡 Tip:[/] Highly recommended to run [bold #D97706]'azero config'[/] first to set up API keys & providers!"
     )
     console.print(
         Panel(
@@ -411,9 +412,9 @@ def _print_report(result) -> None:
         console.print(comp_table)
 
     # ── 5. AI Perspectives ────────────────────────────────────────
-    _print_section("AI Strategic Perspectives")
+    _print_section("3 AI Strategic Perspectives (Market Analyst • Investor • Builder)")
 
-    for p in result.perspectives:
+    for idx, p in enumerate(result.perspectives):
         pcol = _perspective_color(p.perspective_name.value)
         rec_c = _rec_color(p.recommendation.value)
 
@@ -452,7 +453,7 @@ def _print_report(result) -> None:
         console.print(
             Panel(
                 body_text,
-                title=f"[{pcol}]{p.perspective_display.upper()}[/]",
+                title=f"[{pcol}]Perspective {idx + 1}/3: {p.perspective_display.upper()}[/]",
                 border_style="#D97706",
                 box=box.ROUNDED,
                 padding=(1, 2),
@@ -1088,16 +1089,14 @@ def _ask_idea():
 # ─────────────────────────────────────────────────────────────────────────────
 
 _PROVIDER_PRESETS = {
-    "1": ("Built-in Beta AI (free, no key needed)",    "beta",        None,  None,                            None),
-    "2": ("Local Ollama (http://localhost:11434)",     "ollama",      None,  "llama3.2",                      "http://localhost:11434"),
-    "3": ("OpenCode AI (your key)",                    "opencode",    None,  "opencode/claude-3.5-sonnet",    "https://opencode.ai/api/v1"),
-    "4": ("OpenAI ChatGPT (your key — gpt-4o-mini)",   "openai_compat", None, "gpt-4o-mini",                 "https://api.openai.com/v1"),
-    "5": ("OpenAI ChatGPT (your key — gpt-4o)",        "openai_compat", None, "gpt-4o",                      "https://api.openai.com/v1"),
-    "6": ("Groq — llama-3.3-70b (your key)",           "groq",        None,  "llama-3.3-70b-versatile",      None),
-    "7": ("OpenRouter — 200+ models (your key)",        "openrouter",  None,  None,                            None),
-    "8": ("Together AI (your key)",                     "openai_compat", None, "meta-llama/Llama-3.3-70B-Instruct-Turbo", "https://api.together.xyz/v1"),
-    "9": ("DeepSeek (your key)",                        "openai_compat", None, "deepseek-chat",               "https://api.deepseek.com/v1"),
-    "10": ("Custom / self-hosted (any OpenAI-spec API)", "openai_compat", None,  None,                         None),
+    "1": ("Local Ollama (http://localhost:11434)",     "ollama",      None,  "llama3.2",                      "http://localhost:11434"),
+    "2": ("OpenCode AI (your key)",                    "opencode",    None,  "opencode/claude-3.5-sonnet",    "https://opencode.ai/api/v1"),
+    "3": ("OpenAI ChatGPT (your key — gpt-4o-mini)",   "openai_compat", None, "gpt-4o-mini",                 "https://api.openai.com/v1"),
+    "4": ("OpenAI ChatGPT (your key — gpt-4o)",        "openai_compat", None, "gpt-4o",                      "https://api.openai.com/v1"),
+    "5": ("Groq — llama-3.3-70b (your key)",           "groq",        None,  "llama-3.3-70b-versatile",      None),
+    "6": ("OpenRouter — 200+ models (your key)",        "openrouter",  None,  None,                            None),
+    "7": ("Offline Mock Demo (free, instant)",          "mock",        None,  None,                            None),
+    "8": ("Custom / self-hosted (any OpenAI-spec API)", "openai_compat", None,  None,                         None),
 }
 
 
@@ -1174,27 +1173,25 @@ def _ask_idea_with_key(
 
     preset = _PROVIDER_PRESETS.get(choice)
     if not preset:
-        console.print("  [bright_white]Invalid choice — using built-in Beta AI.[/]")
+        console.print("  [bright_white]Invalid choice — using Local Ollama.[/]")
         preset = _PROVIDER_PRESETS["1"]
 
     label, prov, _, mdl, burl = preset
 
-    # If preset requires a key (anything except option 1), ask for it
-    needs_key = choice != "1"
+    # If preset requires a key (option 2, 3, 4, 5, 6, 8), ask for it
+    needs_key = choice in ("2", "3", "4", "5", "6", "8")
     entered_key = api_key_override or ""
 
     if needs_key and not entered_key:
         console.print()
-        if choice == "2" or choice == "3":
+        if choice == "2":
+            console.print("  [bright_white]Get your OpenCode key at:[/] [bold cyan]https://opencode.ai[/]")
+        elif choice == "3" or choice == "4":
             console.print("  [bright_white]Get your OpenAI API key at:[/] [bold cyan]https://platform.openai.com/api-keys[/]")
-        elif choice == "4":
-            console.print("  [bright_white]Get your free Groq key at:[/] [bold cyan]https://console.groq.com/keys[/]")
         elif choice == "5":
-            console.print("  [bright_white]Get your free OpenRouter key at:[/] [bold cyan]https://openrouter.ai/keys[/]")
+            console.print("  [bright_white]Get your free Groq key at:[/] [bold cyan]https://console.groq.com/keys[/]")
         elif choice == "6":
-            console.print("  [bright_white]Get your Together AI key at:[/] [bold cyan]https://api.together.xyz/settings/api-keys[/]")
-        elif choice == "7":
-            console.print("  [bright_white]Get your DeepSeek key at:[/] [bold cyan]https://platform.deepseek.com/api-keys[/]")
+            console.print("  [bright_white]Get your free OpenRouter key at:[/] [bold cyan]https://openrouter.ai/keys[/]")
         else:
             console.print("  [bright_white]Enter your API key for this provider.[/]")
 
@@ -1205,8 +1202,8 @@ def _ask_idea_with_key(
             console=console,
         ).strip()
 
-        if not entered_key:
-            console.print("  [bright_white]No key entered — falling back to built-in Beta AI.[/]\n")
+        if not entered_key and choice != "8":
+            console.print("  [bright_white]No key entered — falling back to local Ollama / Mock mode.[/]\n")
             return idea, None, None, None, None
 
     # For custom provider, ask for model and base URL
@@ -1307,10 +1304,10 @@ def analyze(
 
     try:
         # ── Build engine with any runtime key/model overrides ──────────────────
-        _provider = provider
-        _api_key = api_key
-        _model = model
-        _base_url = base_url
+        _provider = provider if isinstance(provider, str) else None
+        _api_key = api_key if isinstance(api_key, str) else None
+        _model = model if isinstance(model, str) else None
+        _base_url = base_url if isinstance(base_url, str) else None
 
         # If --api-key given but no --provider, auto-detect from model name or default to openai
         if _api_key and not _provider:
@@ -1442,7 +1439,7 @@ def prompt(
             console.print("  [bold red]Error: Prompt cannot be empty.[/]")
             raise typer.Exit(1)
 
-    analyze(file=None, prompt=text)
+    analyze(file=None, prompt=text, api_key=None, model=None, provider=None, base_url=None)
 
 
 @app.command(name="list")
@@ -1544,7 +1541,7 @@ def config_cmd() -> None:
                 return line.split("=", 1)[1].strip()
         return ""
 
-    curr_provider = get_val("AI_PROVIDER") or "beta"
+    curr_provider = get_val("AI_PROVIDER") or "ollama"
     curr_openrouter = get_val("OPENROUTER_API_KEY")
     curr_groq = get_val("GROQ_API_KEY")
     curr_opencode = get_val("OPENCODE_API_KEY")
@@ -1556,8 +1553,8 @@ def config_cmd() -> None:
     console.print(f"  [bold white]Current active provider:[/] [bold cyan]{curr_provider}[/]\n")
 
     provider = Prompt.ask(
-        "  [bold #D97706]›[/] [bold white]Default AI Provider[/] [bright_white](beta, groq, openrouter, ollama, opencode, openai_compat, hybrid)[/]",
-        default=curr_provider,
+        "  [bold #D97706]›[/] [bold white]Default AI Provider[/] [bright_white](ollama, opencode, openai_compat, groq, openrouter, mock, hybrid)[/]",
+        default=curr_provider if curr_provider != "beta" else "ollama",
         console=console,
     ).strip()
 

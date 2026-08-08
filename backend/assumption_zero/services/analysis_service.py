@@ -49,6 +49,9 @@ from assumption_zero.llm.hybrid_adapter import HybridLLMAdapter
 from assumption_zero.llm.openai_compat_adapter import OpenAICompatAdapter
 from assumption_zero.llm.ollama_adapter import OllamaAdapter
 from assumption_zero.llm.opencode_adapter import OpencodeAdapter
+from assumption_zero.llm.openrouter_adapter import OpenRouterAdapter
+from assumption_zero.llm.mock_adapter import MockAdapter
+from assumption_zero.llm.fallback_adapter import FallbackChainAdapter
 
 
 def build_llm_adapter(
@@ -57,76 +60,55 @@ def build_llm_adapter(
     model_override: Optional[str] = None,
     base_url_override: Optional[str] = None,
 ) -> LLMAdapter:
-    """Return the configured LLM adapter.
+    """Return the configured LLM adapter with multi-key priority fallback.
 
     Args:
-        provider_override: Force a specific provider (openai_compat, groq, openrouter, ollama, opencode, etc.)
-        api_key_override:  Inject an API key at runtime (skips .env for this call).
-        model_override:    Override the model name (e.g. gpt-4o, claude-3-haiku, llama3.2, etc.)
-        base_url_override: Override the base URL (for openai_compat, ollama, or opencode endpoints).
+        provider_override: Force a specific provider (groq, openrouter, openai_compat, opencode, ollama, mock)
+        api_key_override:  Inject an API key at runtime.
+        model_override:    Override the model name.
+        base_url_override: Override base URL.
     """
-    import os
     settings = get_settings()
     provider = (provider_override or settings.ai_provider).lower()
 
-    # If a custom key/model/url was provided at runtime, inject via env so adapters pick them up.
-    if api_key_override:
-        os.environ["OPENAI_COMPATIBLE_API_KEY"] = api_key_override
-        os.environ["OPENROUTER_API_KEY"] = api_key_override
-        os.environ["OPENCODE_API_KEY"] = api_key_override
-    if model_override:
-        os.environ["OPENAI_COMPATIBLE_MODEL"] = model_override
-        os.environ["OLLAMA_MODEL"] = model_override
-        os.environ["OPENCODE_MODEL"] = model_override
-    if base_url_override:
-        os.environ["OPENAI_COMPATIBLE_BASE_URL"] = base_url_override
-        os.environ["OLLAMA_BASE_URL"] = base_url_override
-        os.environ["OPENCODE_BASE_URL"] = base_url_override
+    # Instantiate candidate adapters with injected key/URL overrides
+    groq = GroqAdapter(api_key=api_key_override, model=model_override)
+    openrouter = OpenRouterAdapter(api_key=api_key_override, model=model_override)
+    openai_compat = OpenAICompatAdapter(api_key=api_key_override, model=model_override, base_url=base_url_override)
+    opencode = OpencodeAdapter(api_key=api_key_override, model=model_override, base_url=base_url_override)
+    ollama = OllamaAdapter(model=model_override, base_url=base_url_override)
+    mock = MockAdapter()
 
-    groq = GroqAdapter()
-    openrouter = OpenRouterAdapter()
+    # Build priority ordered list based on requested primary provider
+    candidates: List[LLMAdapter] = []
 
-    if provider in ("openai_compat", "openai", "custom"):
-        compat = OpenAICompatAdapter()
-        if compat.is_available:
-            adapter: LLMAdapter = compat
-        else:
-            logger.warning("openai_compat provider selected but key/URL not set — falling back to hybrid")
-            adapter = HybridLLMAdapter(groq, openrouter) if (groq.is_available and openrouter.is_available) else (groq if groq.is_available else openrouter)
-    elif provider == "ollama":
-        adapter = OllamaAdapter()
-    elif provider == "opencode":
-        opencode = OpencodeAdapter()
-        if opencode.is_available:
-            adapter = opencode
-        else:
-            logger.warning("opencode provider selected but OPENCODE_API_KEY not set — falling back to hybrid")
-            adapter = HybridLLMAdapter(groq, openrouter) if (groq.is_available and openrouter.is_available) else (groq if groq.is_available else openrouter)
-    elif provider in ("hybrid", "auto", "dual"):
-        adapter = HybridLLMAdapter(groq, openrouter)
-    elif provider == "groq":
-        if openrouter.is_available:
-            adapter = HybridLLMAdapter(groq, openrouter)
-        else:
-            adapter = groq
+    if provider == "groq":
+        candidates = [groq, openrouter, openai_compat, opencode, ollama, mock]
     elif provider == "openrouter":
-        if groq.is_available:
-            adapter = HybridLLMAdapter(groq, openrouter)
-        else:
-            adapter = openrouter
-    elif provider == "beta":
-        if groq.is_available and openrouter.is_available:
-            adapter = HybridLLMAdapter(groq, openrouter)
-        elif groq.is_available:
-            adapter = groq
-        elif openrouter.is_available:
-            adapter = openrouter
-        else:
-            adapter = BetaAdapter()
+        candidates = [openrouter, groq, openai_compat, opencode, ollama, mock]
+    elif provider in ("openai_compat", "openai", "custom"):
+        candidates = [openai_compat, groq, openrouter, opencode, ollama, mock]
+    elif provider == "opencode":
+        candidates = [opencode, groq, openrouter, openai_compat, ollama, mock]
+    elif provider == "ollama":
+        candidates = [ollama, groq, openrouter, openai_compat, opencode, mock]
+    elif provider == "mock":
+        candidates = [mock]
     else:
-        adapter = BetaAdapter()
+        # Default chain priority: Groq -> OpenRouter -> OpenAI -> OpenCode -> Ollama -> Mock
+        candidates = [groq, openrouter, openai_compat, opencode, ollama, mock]
 
-    logger.info("LLM adapter: %s", adapter.model_id)
+    # Filter to available adapters
+    available = [a for a in candidates if a.is_available]
+    if not available:
+        available = [mock]
+
+    if len(available) == 1:
+        adapter = available[0]
+    else:
+        adapter = FallbackChainAdapter(available)
+
+    logger.info("Built LLM adapter chain: %s (Primary: %s)", adapter.model_id, provider)
     return adapter
 
 
@@ -193,25 +175,39 @@ async def run_analysis(
 ) -> None:
     """Run the full analysis pipeline. Called as a FastAPI BackgroundTask."""
 
-    import os
-    if openrouter_api_key:
-        os.environ["OPENROUTER_API_KEY"] = openrouter_api_key
-    if groq_api_key:
-        os.environ["GROQ_API_KEY"] = groq_api_key
-    if opencode_api_key:
-        os.environ["OPENCODE_API_KEY"] = opencode_api_key
-    if openai_api_key:
-        os.environ["OPENAI_COMPATIBLE_API_KEY"] = openai_api_key
-    if custom_base_url:
-        os.environ["OPENAI_COMPATIBLE_BASE_URL"] = custom_base_url
-    if ollama_base_url:
-        os.environ["OLLAMA_BASE_URL"] = ollama_base_url
+    api_key_override = None
+    base_url_override = None
+    
+    if ai_provider_override == "groq" and groq_api_key:
+        api_key_override = groq_api_key
+    elif ai_provider_override == "openrouter" and openrouter_api_key:
+        api_key_override = openrouter_api_key
+    elif ai_provider_override == "opencode" and opencode_api_key:
+        api_key_override = opencode_api_key
+    elif ai_provider_override in ("openai", "openai_compat", "custom") and openai_api_key:
+        api_key_override = openai_api_key
+        base_url_override = custom_base_url
+    elif ai_provider_override == "ollama":
+        base_url_override = ollama_base_url
+
+    settings = get_settings()
+    if settings.ssrf_protection_enabled and base_url_override:
+        import urllib.parse
+        parsed = urllib.parse.urlparse(base_url_override)
+        hostname = parsed.hostname or ""
+        if hostname in ("localhost", "127.0.0.1", "::1", "169.254.169.254"):
+            store.fail_record(analysis_id, "Loopback and cloud metadata URLs are disabled in hosted mode.")
+            return
 
     async def progress_callback(stage: AnalysisStage, desc: str) -> None:
         store.update_stage(analysis_id, "running", stage.value)
 
     try:
-        llm = build_llm_adapter(ai_provider_override)
+        llm = build_llm_adapter(
+            provider_override=ai_provider_override,
+            api_key_override=api_key_override,
+            base_url_override=base_url_override
+        )
         providers = build_research_providers(research_providers_override)
         engine = AnalysisEngine(providers=providers, llm_adapter=llm)
 

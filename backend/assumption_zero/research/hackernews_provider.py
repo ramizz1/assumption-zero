@@ -115,6 +115,7 @@ class HackerNewsProvider(ResearchProvider):
                     evidence_id=_stable_id(story_url),
                     title=f"[HN] {title}",
                     url=story_url,
+                    evidence_origin="Hacker News",
                     source_name="Hacker News",
                     publication_date=pub_date,
                     retrieval_date=today,

@@ -197,24 +197,27 @@ class LLMAdapter(ABC):
                 "The input text appears to be random characters or gibberish. Please enter a valid product or business idea."
             )
 
-        # 1. Extract Name (look for **Name**, "Name", 'Name', or keywords after 'for', 'called', 'named')
+        # 1. Extract Name (look for **Name**, "Name", 'Name', or keywords after 'called', 'named', 'project')
         name = ""
-        bold_matches = re.findall(r"\*\*([^*]{2,35})\*\*", text)
+        bold_matches = re.findall(r"\*\*([^*]{3,35})\*\*", text)
         if bold_matches:
             for bm in bold_matches:
                 if not bm.lower().startswith(("product", "core", "business", "current", "required", "competit", "summary")):
-                    name = bm.strip()
-                    break
+                    if len(bm.strip()) >= 4:
+                        name = bm.strip()
+                        break
 
-        if not name:
-            for_matches = re.findall(r"(?:for|called|named|app|platform|service|project)\s+([A-Z0-9\u0400-\u04FF\u0100-\u017F][A-Za-z0-9\.\-\_\u0400-\u04FF\u0100-\u017F]{2,25})", text, re.IGNORECASE)
-            if for_matches:
-                name = for_matches[0].strip()
+        if not name or len(name) < 4:
+            called_matches = re.findall(r"(?:called|named|project|app|product|service)\s+([A-Z0-9\u0400-\u04FF\u0100-\u017F][A-Za-z0-9\.\-\_\u0400-\u04FF\u0100-\u017F]{3,25})", text, re.IGNORECASE)
+            if called_matches:
+                name = called_matches[0].strip()
 
-        if not name:
-            clean_first = re.sub(r"^(act as a|create a|analyze|please analyze|i want to build|build a|design a)\s+.*?\s+(?:for|on|about)\s+", "", text.splitlines()[0], flags=re.IGNORECASE)
-            clean_words = clean_first.strip("#* ").split()
-            name = " ".join(clean_words[:3]) if clean_words else "New Idea"
+        if not name or len(name) < 4:
+            clean_words = text.splitlines()[0].strip("#* ").split()
+            valid_words = [w for w in clean_words if not w.lower().startswith(("act", "create", "analyze", "please", "i", "want", "build"))]
+            name = " ".join(valid_words[:4]).strip() if valid_words else "New Startup Idea"
+            if len(name) < 4:
+                name = "New Startup Idea"
 
         # 2. Extract Geography
         geography = "global"

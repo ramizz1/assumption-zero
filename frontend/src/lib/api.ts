@@ -33,11 +33,33 @@ async function request<T>(
     let message = res.statusText
     try {
       const data = await res.json()
-      message = data.detail || data.message || JSON.stringify(data)
+      if (Array.isArray(data.detail)) {
+        message = data.detail
+          .map((d: any) => (typeof d === 'string' ? d : d.msg || JSON.stringify(d)))
+          .join(' ')
+      } else if (typeof data.detail === 'string') {
+        message = data.detail
+      } else if (data.message) {
+        message = data.message
+      } else {
+        message = JSON.stringify(data)
+      }
     } catch {
       message = await res.text().catch(() => res.statusText)
     }
-    throw new Error(message)
+
+    // Clean up Pydantic type tags & URLs
+    message = message
+      .replace(/For further information visit https:\/\/errors\.pydantic\.dev\/[^\s]+/g, '')
+      .replace(/\[type=[^\]]+\]/g, '')
+      .replace(/^\d+ validation error(s)? for [^\n:]+:\s*/gi, '')
+      .trim()
+
+    if (message.startsWith('Value error, ')) {
+      message = message.replace('Value error, ', '')
+    }
+
+    throw new Error(message || 'An unexpected error occurred.')
   }
   if (res.status === 204) return undefined as unknown as T
   return res.json()
@@ -87,5 +109,9 @@ export const api = {
 
   runDemo(): Promise<{ analysis_id: string; status: string; demo: boolean }> {
     return request('/demo', { method: 'POST' })
+  },
+
+  verifyKeys(settings: Record<string, any>): Promise<{ status: string; provider: string; message: string }> {
+    return request('/verify-keys', { method: 'POST', body: JSON.stringify(settings) })
   },
 }

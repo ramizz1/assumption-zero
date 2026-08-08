@@ -113,6 +113,7 @@ class GitHubProvider(ResearchProvider):
                     evidence_id=_stable_id(repo_url),
                     title=f"[GitHub] {repo.get('full_name', repo.get('name', 'unknown'))}",
                     url=repo_url,
+                    evidence_origin=f"GitHub - {repo.get('full_name', 'Unknown')}",
                     source_name="GitHub",
                     publication_date=None,
                     retrieval_date=today,

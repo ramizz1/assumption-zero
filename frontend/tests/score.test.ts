@@ -14,30 +14,30 @@ import type { Recommendation } from '../src/types'
 
 describe('scoreColor', () => {
   it('returns green for scores >= 65', () => {
-    expect(scoreColor(65)).toBe('text-green-400')
-    expect(scoreColor(80)).toBe('text-green-400')
-    expect(scoreColor(100)).toBe('text-green-400')
+    expect(scoreColor(65)).toBe('text-emerald-600')
+    expect(scoreColor(80)).toBe('text-emerald-600')
+    expect(scoreColor(100)).toBe('text-emerald-600')
   })
 
   it('returns amber for scores 45-64', () => {
-    expect(scoreColor(45)).toBe('text-amber-400')
-    expect(scoreColor(50)).toBe('text-amber-400')
-    expect(scoreColor(64)).toBe('text-amber-400')
+    expect(scoreColor(45)).toBe('text-amber-600')
+    expect(scoreColor(50)).toBe('text-amber-600')
+    expect(scoreColor(64)).toBe('text-amber-600')
   })
 
   it('returns red for scores < 45', () => {
-    expect(scoreColor(0)).toBe('text-red-400')
-    expect(scoreColor(30)).toBe('text-red-400')
-    expect(scoreColor(44)).toBe('text-red-400')
+    expect(scoreColor(0)).toBe('text-rose-600')
+    expect(scoreColor(30)).toBe('text-rose-600')
+    expect(scoreColor(44)).toBe('text-rose-600')
   })
 })
 
 describe('recommendationColor', () => {
   const cases: [Recommendation, string][] = [
-    ['Build', 'text-green-400'],
-    ['Test First', 'text-amber-400'],
-    ['Pivot', 'text-orange-400'],
-    ['Avoid', 'text-red-400'],
+    ['Build', 'text-emerald-700'],
+    ['Test First', 'text-amber-700'],
+    ['Pivot', 'text-orange-700'],
+    ['Avoid', 'text-rose-700'],
   ]
 
   it.each(cases)('returns correct color for %s', (rec, expected) => {
@@ -47,22 +47,22 @@ describe('recommendationColor', () => {
 
 describe('confidenceColor', () => {
   it('returns green for high confidence', () => {
-    expect(confidenceColor('high')).toBe('text-green-400')
+    expect(confidenceColor('high')).toBe('text-emerald-600')
   })
 
   it('returns amber for medium confidence', () => {
-    expect(confidenceColor('medium')).toBe('text-amber-400')
+    expect(confidenceColor('medium')).toBe('text-amber-600')
   })
 
   it('returns red for low confidence', () => {
-    expect(confidenceColor('low')).toBe('text-red-400')
+    expect(confidenceColor('low')).toBe('text-rose-600')
   })
 })
 
 describe('reliabilityBadge', () => {
   it('returns green classes for high reliability', () => {
     const cls = reliabilityBadge('high')
-    expect(cls).toContain('green')
+    expect(cls).toContain('emerald')
   })
 
   it('returns amber classes for medium reliability', () => {
@@ -72,7 +72,7 @@ describe('reliabilityBadge', () => {
 
   it('returns red classes for low reliability', () => {
     const cls = reliabilityBadge('low')
-    expect(cls).toContain('red')
+    expect(cls).toContain('rose')
   })
 })
 

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { api } from '../lib/api'
 import SavedAnalysesModal from '../components/SavedAnalysesModal'
 import SettingsModal, { getStoredAISettings, AISettings } from '../components/SettingsModal'
+import ProviderIcon from '../components/ProviderIcon'
 
 // SVG Icons
 const LucideGlobe = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
@@ -41,12 +42,7 @@ export const HomePage: React.FC = () => {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
   const [historyCount, setHistoryCount] = useState<number | null>(null)
 
-  // AI settings
   const [aiSettings, setAiSettings] = useState<AISettings>(getStoredAISettings())
-  const [selectedProvider, setSelectedProvider] = useState<string>('beta')
-  const [groqApiKey, setGroqApiKey] = useState('')
-  const [openrouterApiKey, setOpenrouterApiKey] = useState('')
-  const [opencodeApiKey, setOpencodeApiKey] = useState('')
   const [inputMode, setInputMode] = useState<'prompt' | 'form'>('prompt')
 
   const [rawPromptText, setRawPromptText] = useState('')
@@ -97,15 +93,15 @@ export const HomePage: React.FC = () => {
     setError(null)
 
     try {
-      const activeProvider = selectedProvider || aiSettings.provider
+      const provider = aiSettings.provider === 'custom' ? 'openai_compat' : aiSettings.provider
       const result = await api.createAnalysisFromPrompt({
         prompt: rawPromptText,
-        ai_provider: activeProvider,
-        groq_api_key: groqApiKey || aiSettings.groqKey || undefined,
-        openrouter_api_key: openrouterApiKey || aiSettings.openrouterKey || undefined,
-        opencode_api_key: opencodeApiKey || aiSettings.opencodeKey || undefined,
-        openai_api_key: activeProvider === 'custom' ? aiSettings.customKey : aiSettings.openaiKey || undefined,
-        custom_base_url: activeProvider === 'custom' ? aiSettings.customUrl : undefined,
+        ai_provider: provider,
+        groq_api_key: aiSettings.groqKey || undefined,
+        openrouter_api_key: aiSettings.openrouterKey || undefined,
+        opencode_api_key: aiSettings.opencodeKey || undefined,
+        openai_api_key: (provider === 'openai_compat') ? (aiSettings.customKey || aiSettings.openaiKey || undefined) : (aiSettings.openaiKey || undefined),
+        custom_base_url: (provider === 'openai_compat') ? (aiSettings.customUrl || undefined) : undefined,
         ollama_base_url: aiSettings.ollamaUrl || undefined,
       })
       navigate(`/analysis/${result.analysis_id}`)
@@ -121,7 +117,7 @@ export const HomePage: React.FC = () => {
     setError(null)
 
     try {
-      const activeProvider = selectedProvider || aiSettings.provider
+      const provider = aiSettings.provider === 'custom' ? 'openai_compat' : aiSettings.provider
       const payload = {
         name: idea.name,
         description: idea.description,
@@ -140,12 +136,12 @@ export const HomePage: React.FC = () => {
 
       const result = await api.createAnalysis({
         idea: payload,
-        ai_provider: activeProvider,
-        groq_api_key: groqApiKey || aiSettings.groqKey || undefined,
-        openrouter_api_key: openrouterApiKey || aiSettings.openrouterKey || undefined,
-        opencode_api_key: opencodeApiKey || aiSettings.opencodeKey || undefined,
-        openai_api_key: activeProvider === 'custom' ? aiSettings.customKey : aiSettings.openaiKey || undefined,
-        custom_base_url: activeProvider === 'custom' ? aiSettings.customUrl : undefined,
+        ai_provider: provider,
+        groq_api_key: aiSettings.groqKey || undefined,
+        openrouter_api_key: aiSettings.openrouterKey || undefined,
+        opencode_api_key: aiSettings.opencodeKey || undefined,
+        openai_api_key: (provider === 'openai_compat') ? (aiSettings.customKey || aiSettings.openaiKey || undefined) : (aiSettings.openaiKey || undefined),
+        custom_base_url: (provider === 'openai_compat') ? (aiSettings.customUrl || undefined) : undefined,
         ollama_base_url: aiSettings.ollamaUrl || undefined,
       })
       navigate(`/analysis/${result.analysis_id}`)
@@ -181,22 +177,22 @@ export const HomePage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#f9f9f9] verseo-grid text-gray-900 selection:bg-gray-200 selection:text-gray-900">
-      {/* Verseo Top Bar Header (Light) */}
-      <header className="relative z-20 border-b border-gray-200 px-6 py-4 bg-white/80 backdrop-blur-xl">
+    <div className="min-h-screen flex flex-col verseo-grid text-zinc-900 selection:bg-zinc-200" style={{backgroundColor: '#ffffff'}}>
+      {/* Header */}
+      <header className="relative z-20 border-b px-6 py-4" style={{borderColor: '#e4e4e7', backgroundColor: 'rgba(255,255,255,0.92)', backdropFilter: 'blur(20px)'}}>
         <div className="max-w-6xl mx-auto flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl shadow-sm border border-gray-200 overflow-hidden flex items-center justify-center bg-white">
+            <div className="w-10 h-10 rounded-xl border overflow-hidden flex items-center justify-center" style={{borderColor: '#e4e4e7', backgroundColor: '#f4f4f5'}}>
               <img src="/logo.png" alt="Assumption Zero Logo" className="w-full h-full object-cover" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="font-display font-bold text-gray-900 tracking-tight text-base">Assumption Zero</span>
-                <span className="font-mono text-[10px] font-bold text-gray-600 bg-gray-100 border border-gray-200 px-2 py-0.5 rounded-full">
+                <span className="font-display font-bold tracking-tight text-base" style={{color: '#18181b'}}>Assumption Zero</span>
+                <span className="font-mono text-[10px] font-bold px-2 py-0.5 rounded-full" style={{color: '#52525b', backgroundColor: '#f4f4f5', border: '1px solid #e4e4e7'}}>
                   v0.1.0
                 </span>
               </div>
-              <p className="text-[11px] font-mono text-gray-500 hidden sm:block">
+              <p className="text-[11px] font-mono hidden sm:block" style={{color: '#a1a1aa'}}>
                 [ OPEN-SOURCE MVP VALIDATION ENGINE ]
               </p>
             </div>
@@ -206,12 +202,13 @@ export const HomePage: React.FC = () => {
           <div className="flex items-center gap-3">
             <button
               onClick={() => setIsHistoryOpen(true)}
-              className="px-3.5 py-1.5 rounded-xl border border-gray-200 bg-white hover:bg-gray-50 text-xs font-mono font-medium text-gray-700 transition-all flex items-center gap-2 shadow-sm"
+              className="px-3.5 py-1.5 rounded-xl border text-xs font-mono font-medium transition-all flex items-center gap-2 shadow-sm hover:bg-zinc-50"
+              style={{borderColor: '#e4e4e7', backgroundColor: '#fafafa', color: '#52525b'}}
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg>
               <span>History</span>
               {historyCount !== null && (
-                <span className="px-1.5 py-0.5 rounded-md bg-gray-100 text-gray-700 text-[10px] font-bold border border-gray-200">
+                <span className="px-1.5 py-0.5 rounded-md text-[10px] font-bold" style={{backgroundColor: '#f4f4f5', color: '#52525b', border: '1px solid #e4e4e7'}}>
                   {historyCount}
                 </span>
               )}
@@ -220,41 +217,36 @@ export const HomePage: React.FC = () => {
             <button
               type="button"
               onClick={() => setIsSettingsOpen(true)}
-              className="px-3.5 py-1.5 rounded-xl border border-gray-200 bg-white hover:bg-gray-50 text-xs font-mono font-medium text-gray-700 transition-all flex items-center gap-1.5 shadow-sm"
+              className="px-3.5 py-1.5 rounded-xl border text-xs font-mono font-medium transition-all flex items-center gap-1.5 shadow-sm hover:bg-zinc-50"
+              style={{borderColor: '#e4e4e7', backgroundColor: '#fafafa', color: '#52525b'}}
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
               <span>AI Setup</span>
             </button>
 
-            <a
-              href="https://github.com/ramizz1"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group flex items-center gap-2 ml-2"
-              title="Creator Profile"
-            >
-              <img src="/avatar.jpg" alt="ramizz1 avatar" className="w-8 h-8 rounded-full border border-gray-200 group-hover:border-gray-400 transition-colors shadow-sm object-cover" />
-            </a>
+            <div className="flex items-center gap-2 ml-2" title="Creator Profile">
+              <img src="/avatar.jpg" alt="Avatar" className="w-8 h-8 rounded-full border object-cover" style={{borderColor: '#e4e4e7'}} />
+            </div>
           </div>
         </div>
       </header>
 
-      {/* Verseo Hero Section */}
-      <section className="relative z-10 text-center px-6 pt-16 pb-12 border-b border-gray-200">
+      {/* Hero Section */}
+      <section className="relative z-10 text-center px-6 pt-16 pb-12 border-b" style={{borderColor: '#e4e4e7'}}>
         <div className="max-w-4xl mx-auto space-y-5">
           <div className="inline-flex items-center gap-2 verseo-badge shadow-sm">
-            <span className="w-2 h-2 rounded-full bg-gray-900 animate-pulse" />
+            <span className="w-2 h-2 rounded-full animate-pulse" style={{backgroundColor: '#18181b'}} />
             <span>[ ✦ MULTI-SOURCE LIVE RESEARCH · 3 AI PERSPECTIVES · DETERMINISTIC SCORING ]</span>
           </div>
 
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-display font-black text-gray-900 tracking-tight leading-[1.1]">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-display font-black tracking-tight leading-[1.1]" style={{color: '#09090b'}}>
             Stress-test your MVP idea <br />
-            <span className="text-gray-500">
+            <span style={{color: '#52525b'}}>
               before you build it.
             </span>
           </h1>
 
-          <p className="text-base sm:text-lg text-gray-500 max-w-2xl mx-auto font-normal leading-relaxed">
+          <p className="text-base sm:text-lg max-w-2xl mx-auto font-normal leading-relaxed" style={{color: '#71717a'}}>
             Assumption Zero evaluates startup ideas against primary web research, identifies competitor complaints, challenges moat assumptions, and crafts 7-day validation experiments.
           </p>
         </div>
@@ -326,12 +318,13 @@ export const HomePage: React.FC = () => {
 
           {/* AI Provider Selector Pills */}
           <div className="mb-6 space-y-2">
-            <div className="flex items-center justify-between text-xs font-mono text-gray-500">
-              <span className="font-semibold text-gray-600">[ AI PROVIDER SELECTOR ]</span>
+            <div className="flex items-center justify-between text-xs font-mono" style={{color: '#71717a'}}>
+              <span className="font-semibold">[ AI PROVIDER ]</span>
               <button
                 type="button"
                 onClick={() => setIsSettingsOpen(true)}
-                className="text-gray-600 hover:text-gray-900 hover:underline flex items-center gap-1"
+                className="hover:underline flex items-center gap-1"
+                style={{color: '#52525b'}}
               >
                 Configure Keys
                 <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
@@ -339,26 +332,32 @@ export const HomePage: React.FC = () => {
             </div>
             <div className="flex flex-wrap gap-2 text-xs font-mono">
               {[
-                { id: 'ollama', label: 'Ollama', icon: <img src="/ollama.png" alt="Ollama" className="w-4 h-4 object-contain" /> },
-                { id: 'opencode', label: 'OpenCode', icon: <img src="/opencode.png" alt="OpenCode" className="w-4 h-4 object-contain" /> },
-                { id: 'openai_compat', label: 'OpenAI', icon: <img src="/openai.png" alt="OpenAI" className="w-4 h-4 object-contain" /> },
-                { id: 'groq', label: 'Groq (L3)', icon: <img src="/groq.png" alt="Groq" className="w-4 h-4 object-contain" /> },
-                { id: 'openrouter', label: 'OpenRouter', icon: <img src="/openrouter.png" alt="OpenRouter" className="w-4 h-4 object-contain" /> },
-              ].map((p) => (
-                <button
-                  key={p.id}
-                  type="button"
-                  onClick={() => setAiSettings({ ...aiSettings, provider: p.id as any })}
-                  className={`px-3 py-1.5 rounded-xl border font-medium flex items-center gap-1.5 transition-all ${
-                    aiSettings.provider === p.id
-                      ? 'bg-gray-100 text-gray-900 border-gray-900 shadow-sm ring-1 ring-gray-900'
-                      : 'bg-white text-gray-500 border-gray-200 hover:border-gray-300 hover:text-gray-900 shadow-sm'
-                  }`}
-                >
-                  {p.icon}
-                  {p.label}
-                </button>
-              ))}
+                { id: 'ollama', label: 'Ollama' },
+                { id: 'opencode', label: 'OpenCode' },
+                { id: 'openai_compat', label: 'OpenAI' },
+                { id: 'groq', label: 'Groq (L3)' },
+                { id: 'openrouter', label: 'OpenRouter' },
+                { id: 'custom', label: 'Custom' },
+              ].map((p) => {
+                const isActive = aiSettings.provider === p.id
+                return (
+                  <button
+                    key={p.id}
+                    type="button"
+                    onClick={() => setAiSettings({ ...aiSettings, provider: p.id as AISettings['provider'] })}
+                    className="px-3 py-1.5 rounded-xl border font-medium flex items-center gap-2 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                    style={{
+                      background: isActive ? '#18181b' : '#fafafa',
+                      borderColor: isActive ? '#18181b' : '#e4e4e7',
+                      color: isActive ? '#ffffff' : '#71717a',
+                      boxShadow: isActive ? '0 2px 8px rgba(0,0,0,0.15)' : 'none',
+                    }}
+                  >
+                    <ProviderIcon id={p.id} isActive={isActive} size="sm" />
+                    {p.label}
+                  </button>
+                )
+              })}
             </div>
           </div>
 

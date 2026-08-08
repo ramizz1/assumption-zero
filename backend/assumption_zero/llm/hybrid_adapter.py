@@ -52,28 +52,33 @@ class HybridLLMAdapter(LLMAdapter):
         - Market Analyst & Practical Builder -> Groq (ultra-fast inference)
         Falls back to the other provider if rate limited or unavailable.
         """
-        primary_adapter: LLMAdapter
-        fallback_adapter: LLMAdapter
+        groq_ok = self.groq.is_available
+        openrouter_ok = self.openrouter.is_available
 
-        if perspective_name == PerspectiveName.SKEPTICAL_INVESTOR and self.openrouter.is_available:
-            primary_adapter = self.openrouter
-            fallback_adapter = self.groq
-        elif self.groq.is_available:
-            primary_adapter = self.groq
-            fallback_adapter = self.openrouter
-        elif self.openrouter.is_available:
-            primary_adapter = self.openrouter
-            fallback_adapter = self.groq
-        else:
+        if not groq_ok and not openrouter_ok:
             raise RuntimeError(
                 "No active AI providers available. Please set GROQ_API_KEY (console.groq.com/keys) "
                 "or OPENROUTER_API_KEY (openrouter.ai/keys)."
             )
 
+        # Assign primary and fallback based on perspective + availability
+        if perspective_name == PerspectiveName.SKEPTICAL_INVESTOR and openrouter_ok:
+            primary_adapter: LLMAdapter = self.openrouter
+            fallback_adapter: LLMAdapter = self.groq if groq_ok else self.openrouter
+        elif groq_ok:
+            primary_adapter = self.groq
+            fallback_adapter = self.openrouter if openrouter_ok else self.groq
+        else:
+            primary_adapter = self.openrouter
+            fallback_adapter = self.openrouter  # only one available
+
         try:
             logger.info("Running perspective %s on primary provider %s", perspective_name.value, primary_adapter.model_id)
             return await primary_adapter.analyze_perspective(perspective_name, idea, evidence)
         except Exception as primary_exc:
+            if fallback_adapter is primary_adapter:
+                # No real fallback available
+                raise
             logger.warning(
                 "Primary provider %s failed for %s (%s). Attempting automatic failover to %s...",
                 primary_adapter.model_id,

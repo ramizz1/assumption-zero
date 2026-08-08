@@ -8,12 +8,12 @@ interface Props {
 
 export default function ScoreBreakdown({ score }: Props) {
   return (
-    <div id="score-breakdown" className="card p-5">
+    <div id="score-breakdown" className="verseo-card p-5">
       <h2 className="section-title">Score Breakdown</h2>
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
-            <tr className="text-left text-gray-500 border-b border-[#1f1f26]">
+            <tr className="text-left text-zinc-500 border-b border-zinc-200">
               <th className="pb-3 font-medium">Dimension</th>
               <th className="pb-3 font-medium text-right">Raw</th>
               <th className="pb-3 font-medium text-right">Weight</th>
@@ -21,10 +21,10 @@ export default function ScoreBreakdown({ score }: Props) {
               <th className="pb-3 font-medium text-center">Confidence</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-[#1a1a22]">
+          <tbody className="divide-y divide-zinc-100">
             {score.dimensions.map((dim) => (
-              <tr key={dim.dimension} className="hover:bg-white/[0.02]">
-                <td className="py-3 text-gray-200 font-medium pr-4">
+              <tr key={dim.dimension} className="hover:bg-zinc-50">
+                <td className="py-3 text-zinc-700 font-medium pr-4">
                   {dim.display_name}
                   {dim.missing_information.length > 0 && (
                     <span
@@ -53,8 +53,8 @@ export default function ScoreBreakdown({ score }: Props) {
             ))}
           </tbody>
           <tfoot>
-            <tr className="border-t-2 border-[#2a2a35]">
-              <td className="pt-3 font-bold text-white">TOTAL</td>
+            <tr className="border-t-2 border-zinc-200">
+              <td className="pt-3 font-bold text-zinc-900">TOTAL</td>
               <td />
               <td />
               <td className={`pt-3 text-right font-bold text-lg font-mono ${scoreColor(score.total)}`}>

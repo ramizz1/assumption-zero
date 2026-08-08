@@ -29,7 +29,7 @@ from assumption_zero.analysis.confidence import calculate_evidence_confidence
 from assumption_zero.analysis.disagreement import detect_disagreements
 from assumption_zero.analysis.experiment_generator import generate_experiments
 from assumption_zero.analysis.query_generator import generate_queries
-from assumption_zero.llm.hermes_brain import run_hermes_synthesis
+from assumption_zero.analysis.scoring import calculate_opportunity_score
 from assumption_zero.llm.base import LLMAdapter, PerspectiveOutput
 from assumption_zero.research.base import ResearchProvider
 from assumption_zero.schemas import (
@@ -183,13 +183,20 @@ def _extract_competitors_from_evidence(evidence: List[EvidenceItem], idea: Optio
     return competitors
 
 
-def _select_recommendation(perspectives: List[AnalysisPerspective]) -> Recommendation:
-    """Majority vote across perspectives. Tie → Test First."""
+def _select_recommendation(perspectives: List[AnalysisPerspective], confidence: ConfidenceLevel) -> Recommendation:
+    """Majority vote across perspectives. Tie → Test First.
+    Downgrade Build to Test First if evidence confidence is low.
+    """
     if not perspectives:
         return Recommendation.TEST_FIRST
     counts = Counter(p.recommendation.value for p in perspectives)
     most_common = counts.most_common(1)[0][0]
-    return Recommendation(most_common)
+    rec = Recommendation(most_common)
+    
+    if rec == Recommendation.BUILD and confidence == ConfidenceLevel.LOW:
+        return Recommendation.TEST_FIRST
+        
+    return rec
 
 
 def _select_most_dangerous_assumption(perspectives: List[AnalysisPerspective]) -> str:
@@ -247,7 +254,7 @@ def _collect_missing_info(
     if not any(e.evidence_type == EvidenceType.REGULATORY for e in evidence):
         missing.append("No regulatory/compliance evidence found for this geography")
 
-    return list(dict.fromkeys(missing))  # deduplicate
+    return list(dict.fromkeys(missing))
 
 
 class AnalysisEngine:
@@ -363,12 +370,9 @@ class AnalysisEngine:
         # ── Stage 7: Calculate scores ─────────────────────────────
         await _progress(AnalysisStage.CALCULATING_SCORES)
         
-        # Invoke Assumption Zero Master Brain
-        hermes_output = await run_hermes_synthesis(self._llm, idea, perspectives)
-        
-        opportunity_score = hermes_output.opportunity_score
-        recommendation = Recommendation(hermes_output.recommendation) if hermes_output.recommendation in [r.value for r in Recommendation] else Recommendation.TEST_FIRST
+        opportunity_score = calculate_opportunity_score(perspectives, evidence, idea)
         evidence_confidence = calculate_evidence_confidence(perspectives=perspectives, evidence=evidence)
+        recommendation = _select_recommendation(perspectives, evidence_confidence)
 
         # ── Stage 8: Generate experiments ─────────────────────────
         await _progress(AnalysisStage.GENERATING_EXPERIMENTS)
@@ -376,7 +380,7 @@ class AnalysisEngine:
 
         # ── Synthesis ─────────────────────────────────────────────
         disagreements = detect_disagreements(perspectives)
-        most_dangerous = hermes_output.most_dangerous_assumption
+        most_dangerous = _select_most_dangerous_assumption(perspectives)
         strongest_sup = _find_strongest(evidence, good=True)
         strongest_con = _find_strongest(evidence, good=False)
         missing_info = _collect_missing_info(perspectives, evidence)

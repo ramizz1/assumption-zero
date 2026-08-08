@@ -45,12 +45,13 @@ def _read_all() -> list[dict]:
 
 
 def _write_all(rows: list[dict]) -> None:
-    """Overwrite the CSV with the given rows."""
     _ensure_dirs()
-    with _CSV_PATH.open("w", newline="", encoding="utf-8") as f:
+    tmp_path = _CSV_PATH.with_suffix(".csv.tmp")
+    with tmp_path.open("w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=CSV_FIELDS)
         writer.writeheader()
         writer.writerows(rows)
+    os.replace(tmp_path, _CSV_PATH)
 
 
 def resolve_id(query: str) -> Optional[str]:
@@ -141,10 +142,12 @@ def update_stage(analysis_id: str, status: str, stage: str) -> None:
 def complete_record(analysis_id: str, result_dict: dict) -> None:
     """Mark analysis complete and write the result JSON."""
     full_id = resolve_id(analysis_id) or analysis_id
-    _result_path(full_id).write_text(
+    tmp_path = _result_path(full_id).with_suffix(".json.tmp")
+    tmp_path.write_text(
         json.dumps(result_dict, ensure_ascii=False, default=str, indent=2),
         encoding="utf-8",
     )
+    os.replace(tmp_path, _result_path(full_id))
     rows = _read_all()
     for row in rows:
         if row["id"] == full_id:

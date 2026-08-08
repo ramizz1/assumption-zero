@@ -101,12 +101,21 @@ Assumption Zero includes built-in Beta AI access out-of-the-box. For higher rate
    OPENROUTER_API_KEY=sk-or-v1-your-key-here
    ```
 
+> [!TIP]
+> **Highly Recommended First Step for CLI**: Run `azero config` immediately after installation! The interactive wizard will set up your AI provider API keys (Groq, OpenRouter, OpenAI, OpenCode, Ollama) and automatically enable smart multi-key failover.
+
 ---
 
 ## CLI Usage (`azero`)
 
+> [!IMPORTANT]
+> **First Run**: Highly recommended to execute `azero config` first to configure API keys and active AI provider.
+
 ```bash
-# Interactive analysis (prompts for idea details & API key)
+# 🔑 Recommended First Step: Interactively configure API keys & AI providers
+azero config
+
+# Interactive analysis (prompts for idea details & provider selection)
 azero analyze
 
 # Analyze an idea from a structured JSON file

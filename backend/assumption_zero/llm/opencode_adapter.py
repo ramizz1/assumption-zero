@@ -33,12 +33,16 @@ class OpencodeAdapter(LLMAdapter):
     Adapter for OpenCode AI API endpoint.
     """
 
-    def __init__(self) -> None:
+    def __init__(self, api_key: str = None, model: str = None, base_url: str = None, **kwargs) -> None:
         self._settings = get_settings()
+        self._api_key_override = api_key
+        self._model_override = model
+        self._base_url_override = base_url
 
     def _api_key(self) -> str:
         key = (
-            os.getenv("OPENCODE_API_KEY")
+            self._api_key_override
+            or os.getenv("OPENCODE_API_KEY")
             or getattr(self._settings, "opencode_api_key", None)
             or ""
         )
@@ -46,7 +50,8 @@ class OpencodeAdapter(LLMAdapter):
 
     def _base_url(self) -> str:
         url = (
-            os.getenv("OPENCODE_BASE_URL")
+            self._base_url_override
+            or os.getenv("OPENCODE_BASE_URL")
             or getattr(self._settings, "opencode_base_url", None)
             or _DEFAULT_BASE_URL
         )
@@ -54,7 +59,8 @@ class OpencodeAdapter(LLMAdapter):
 
     def _model(self) -> str:
         return (
-            os.getenv("OPENCODE_MODEL")
+            self._model_override
+            or os.getenv("OPENCODE_MODEL")
             or getattr(self._settings, "opencode_model", None)
             or _DEFAULT_MODEL
         )

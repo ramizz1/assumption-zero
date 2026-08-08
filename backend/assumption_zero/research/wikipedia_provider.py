@@ -137,6 +137,7 @@ class WikipediaProvider(ResearchProvider):
                     evidence_id=_stable_id(page_url),
                     title=f"[Wikipedia] {summary.get('title', title)}",
                     url=page_url,
+                    evidence_origin="Wikipedia",
                     source_name="Wikipedia",
                     publication_date=None,
                     retrieval_date=today,

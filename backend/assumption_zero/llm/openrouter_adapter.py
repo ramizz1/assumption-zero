@@ -172,20 +172,23 @@ class OpenRouterAdapter(LLMAdapter):
     support if a model is unavailable.
     """
 
-    def __init__(self) -> None:
+    def __init__(self, api_key: str = None, model: str = None, **kwargs) -> None:
         self._settings = get_settings()
+        self._api_key_override = api_key
+        self._model_override = model
 
     def _api_key(self) -> str:
         import os
         key = (
-            os.getenv("OPENROUTER_API_KEY")
+            self._api_key_override
+            or os.getenv("OPENROUTER_API_KEY")
             or self._settings.openrouter_api_key
             or ""
         )
         return key.strip()
 
     def _model(self) -> str:
-        return self._settings.openrouter_model or _DEFAULT_MODEL
+        return self._model_override or self._settings.openrouter_model or _DEFAULT_MODEL
 
     @property
     def model_id(self) -> str:

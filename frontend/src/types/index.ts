@@ -43,6 +43,7 @@ export interface EvidenceItem {
   evidence_id: string
   title: string
   url: string
+  evidence_origin: string
   source_name: string
   publication_date?: string
   retrieval_date: string

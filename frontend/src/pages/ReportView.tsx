@@ -39,13 +39,26 @@ export default function ReportView() {
     return () => clearTimeout(interval)
   }, [id])
 
+  const score = result?.opportunity_score?.total
+  useEffect(() => {
+    if (result && result.status !== 'running' && result.status !== 'pending' && !confettiFired && score !== undefined && score >= 70) {
+      confetti({
+        particleCount: 150,
+        spread: 80,
+        origin: { y: 0.6 },
+        colors: ['#181818', '#e5e5e5', '#a3a3a3'] // monochromatic confetti!
+      })
+      setConfettiFired(true)
+    }
+  }, [result, score, confettiFired])
+
   if (error) {
     return (
       <div className="min-h-screen bg-[#f9f9f9] text-gray-900 flex items-center justify-center p-4">
-        <div className="verseo-card p-6 max-w-lg w-full text-center">
-          <p className="text-red-600 font-medium mb-4">{error}</p>
-          <Link to="/" className="btn-ghost inline-block">Return Home</Link>
-        </div>
+        <div className="p-4 text-center bg-white">
+        <p className="text-red-600 font-medium mb-4">{error}</p>
+        <Link to="/" className="btn-ghost inline-block">Return Home</Link>
+      </div>
       </div>
     )
   }
@@ -70,21 +83,10 @@ export default function ReportView() {
     )
   }
 
-  const score = result.opportunity_score?.total
   const rec = result.recommendation
   const conf = result.evidence_confidence
 
-  useEffect(() => {
-    if (result && result.status !== 'running' && result.status !== 'pending' && !confettiFired && score !== undefined && score >= 70) {
-      confetti({
-        particleCount: 150,
-        spread: 80,
-        origin: { y: 0.6 },
-        colors: ['#181818', '#e5e5e5', '#a3a3a3'] // monochromatic confetti!
-      })
-      setConfettiFired(true)
-    }
-  }, [result, score, confettiFired])
+
 
   const handleCopyMarkdown = () => {
     if (!result) return
@@ -107,7 +109,7 @@ export default function ReportView() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f9f9f9] verseo-grid text-gray-900 pb-20 selection:bg-gray-200" id="report">
+    <div className="min-h-screen bg-white verseo-grid text-gray-900 pb-20 selection:bg-gray-100" id="report">
       <div className="max-w-5xl mx-auto space-y-6 pt-8 px-4 sm:px-6">
         
         {/* Top Bar with Exports */}
@@ -230,14 +232,16 @@ export default function ReportView() {
                       <span className="text-[10px] font-mono font-bold bg-gray-100 text-gray-600 px-2 py-0.5 rounded border border-gray-200">
                         [{ev.evidence_id}] {ev.evidence_type.toUpperCase()}
                       </span>
-                      <a href={ev.url} target="_blank" rel="noreferrer" className="text-gray-400 hover:text-gray-900 transition-colors" title="View Source">
-                        ↗
-                      </a>
+                      {ev.url && !ev.url.startsWith('demo://') && (
+                        <a href={ev.url} target="_blank" rel="noreferrer" className="text-gray-400 hover:text-gray-900 transition-colors text-xs" title="View Source">
+                          [Link]
+                        </a>
+                      )}
                     </div>
                     <h5 className="font-bold text-sm text-gray-900 mb-2 line-clamp-2 leading-tight">{ev.title}</h5>
                     <p className="text-xs text-gray-500 mb-3 line-clamp-3 leading-relaxed bg-gray-50 p-2.5 rounded-xl border border-gray-100 italic">"{ev.passage}"</p>
                     <div className="flex items-center gap-2">
-                      <span className="text-[10px] font-mono text-gray-400 uppercase">{ev.source_name}</span>
+                      <span className="text-[10px] font-mono text-gray-400 uppercase">{ev.evidence_origin || ev.source_name}</span>
                       <span className="text-[10px] text-gray-300">•</span>
                       <span className="text-[10px] font-mono text-gray-400">Score: {ev.relevance_score.toFixed(1)}</span>
                     </div>

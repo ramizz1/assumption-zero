@@ -24,6 +24,7 @@ class Settings(BaseSettings):
     app_name: str = "Assumption Zero"
     app_version: str = "0.1.0"
     debug: bool = False
+    ssrf_protection_enabled: bool = False
 
     # ── AI Providers ──────────────────────────────────────────────
     # Selects which adapter to use as the primary provider.
@@ -38,7 +39,7 @@ class Settings(BaseSettings):
     # ── Groq (Ultra-fast Llama 3.3 models) ──────────────────────
     # https://console.groq.com/keys
     groq_api_key: Optional[str] = None
-    groq_model: str = "openai/gpt-oss-120b"
+    groq_model: str = "llama-3.3-70b-versatile"
 
     # ── OpenCode AI ──────────────────────────────────────────────
     opencode_api_key: Optional[str] = None

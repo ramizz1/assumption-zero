@@ -35,12 +35,15 @@ class OllamaAdapter(LLMAdapter):
     Attempts OpenAI-compatible /v1/chat/completions endpoint first, falling back to /api/chat.
     """
 
-    def __init__(self) -> None:
+    def __init__(self, model: str = None, base_url: str = None, **kwargs) -> None:
         self._settings = get_settings()
+        self._model_override = model
+        self._base_url_override = base_url
 
     def _base_url(self) -> str:
         url = (
-            os.getenv("OLLAMA_BASE_URL")
+            self._base_url_override
+            or os.getenv("OLLAMA_BASE_URL")
             or self._settings.ollama_base_url
             or _DEFAULT_BASE_URL
         )
@@ -48,7 +51,8 @@ class OllamaAdapter(LLMAdapter):
 
     def _model(self) -> str:
         return (
-            os.getenv("OLLAMA_MODEL")
+            self._model_override
+            or os.getenv("OLLAMA_MODEL")
             or self._settings.ollama_model
             or _DEFAULT_MODEL
         )

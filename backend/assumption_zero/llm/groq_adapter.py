@@ -25,12 +25,12 @@ from assumption_zero.schemas import EvidenceItem, IdeaInput, PerspectiveName
 logger = logging.getLogger(__name__)
 
 _GROQ_BASE = "https://api.groq.com/openai/v1"
-_DEFAULT_MODEL = "openai/gpt-oss-120b"
+_DEFAULT_MODEL = "llama-3.3-70b-versatile"
 _FALLBACK_MODELS = [
-    "openai/gpt-oss-120b",
     "llama-3.3-70b-versatile",
-    "openai/gpt-oss-20b",
+    "llama-3.1-70b-versatile",
     "llama-3.1-8b-instant",
+    "gemma2-9b-it",
 ]
 
 
@@ -39,19 +39,22 @@ class GroqAdapter(LLMAdapter):
     Groq adapter for ultra-fast Llama 3.3 inference.
     """
 
-    def __init__(self) -> None:
+    def __init__(self, api_key: str = None, model: str = None, **kwargs) -> None:
         self._settings = get_settings()
+        self._api_key_override = api_key
+        self._model_override = model
 
     def _api_key(self) -> str:
         key = (
-            os.getenv("GROQ_API_KEY")
+            self._api_key_override
+            or os.getenv("GROQ_API_KEY")
             or self._settings.groq_api_key
             or ""
         )
         return key.strip()
 
     def _model(self) -> str:
-        return self._settings.groq_model or _DEFAULT_MODEL
+        return self._model_override or self._settings.groq_model or _DEFAULT_MODEL
 
     @property
     def model_id(self) -> str:

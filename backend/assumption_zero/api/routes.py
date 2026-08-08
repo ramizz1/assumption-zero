@@ -13,7 +13,7 @@ from __future__ import annotations
 
 import json
 import logging
-from typing import List
+from typing import List, Optional
 
 from fastapi import APIRouter, BackgroundTasks, HTTPException, Request, status
 from fastapi.responses import JSONResponse
@@ -90,6 +90,79 @@ async def health() -> HealthResponse:
     )
 
 
+@router.post("/verify-keys", response_model=dict)
+async def verify_keys_endpoint(body: dict) -> dict:
+    """Verify if the selected AI provider credentials/endpoints are valid."""
+    provider = body.get("provider", "mock")
+    groq_api_key = body.get("groqKey") or body.get("groq_api_key")
+    openrouter_api_key = body.get("openrouterKey") or body.get("openrouter_api_key")
+    opencode_api_key = body.get("opencodeKey") or body.get("opencode_api_key")
+    openai_api_key = body.get("openaiKey") or body.get("openai_api_key")
+    ollama_base_url = body.get("ollamaUrl") or body.get("ollama_base_url")
+    custom_base_url = body.get("customUrl") or body.get("custom_base_url")
+
+    api_key_override = None
+    base_url_override = None
+    if provider == "groq":
+        api_key_override = groq_api_key
+    elif provider == "openrouter":
+        api_key_override = openrouter_api_key
+    elif provider == "opencode":
+        api_key_override = opencode_api_key
+    elif provider in ("openai", "openai_compat", "custom"):
+        api_key_override = openai_api_key
+        base_url_override = custom_base_url
+    elif provider == "ollama":
+        base_url_override = ollama_base_url
+
+    # Require explicit API key for providers that require authentication
+    key_required_providers = ("groq", "openrouter", "opencode", "openai", "openai_compat", "custom")
+    settings = get_settings()
+
+    if provider in key_required_providers:
+        env_key = None
+        if provider == "groq":
+            env_key = settings.groq_api_key
+        elif provider == "openrouter":
+            env_key = settings.openrouter_api_key
+        elif provider == "opencode":
+            env_key = settings.opencode_api_key
+        elif provider in ("openai", "openai_compat", "custom"):
+            env_key = settings.openai_compatible_api_key
+
+        effective_key = api_key_override or env_key
+        if not effective_key or not effective_key.strip():
+            raise HTTPException(
+                status_code=400,
+                detail=f"API key is missing for {provider.upper()}. Please enter your API key before testing connection.",
+            )
+
+    try:
+        llm = build_llm_adapter(
+            provider_override=provider,
+            api_key_override=api_key_override,
+            base_url_override=base_url_override,
+        )
+        if provider in key_required_providers and not llm.is_available:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Invalid API key or endpoint for {provider.upper()}.",
+            )
+
+        return {
+            "status": "ok",
+            "provider": provider,
+            "message": f"Successfully connected to {provider.upper()} adapter!",
+        }
+    except HTTPException:
+        raise
+    except Exception as exc:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Connection verification failed for {provider}: {exc}",
+        )
+
+
 @router.post("/analyses", response_model=dict, status_code=status.HTTP_202_ACCEPTED)
 async def create_analysis_endpoint(
     request: Request,
@@ -127,22 +200,38 @@ async def create_analysis_from_prompt_endpoint(
     background_tasks: BackgroundTasks,
 ) -> dict:
     """Analyze a startup idea from a single freeform text prompt."""
-    import os
-    if body.groq_api_key:
-        os.environ["GROQ_API_KEY"] = body.groq_api_key
-    if body.openrouter_api_key:
-        os.environ["OPENROUTER_API_KEY"] = body.openrouter_api_key
-    if body.opencode_api_key:
-        os.environ["OPENCODE_API_KEY"] = body.opencode_api_key
-    if body.openai_api_key:
-        os.environ["OPENAI_COMPATIBLE_API_KEY"] = body.openai_api_key
-    if body.custom_base_url:
-        os.environ["OPENAI_COMPATIBLE_BASE_URL"] = body.custom_base_url
-    if body.ollama_base_url:
-        os.environ["OLLAMA_BASE_URL"] = body.ollama_base_url
+    
+    # Provider-specific key resolution based on requested ai_provider
+    api_key_override = None
+    base_url_override = None
+    if body.ai_provider == "groq" and body.groq_api_key:
+        api_key_override = body.groq_api_key
+    elif body.ai_provider == "openrouter" and body.openrouter_api_key:
+        api_key_override = body.openrouter_api_key
+    elif body.ai_provider == "opencode" and body.opencode_api_key:
+        api_key_override = body.opencode_api_key
+    elif body.ai_provider in ("openai", "openai_compat", "custom") and body.openai_api_key:
+        api_key_override = body.openai_api_key
+        base_url_override = body.custom_base_url
+    elif body.ai_provider == "ollama":
+        base_url_override = body.ollama_base_url
+
+    # SSRF Protection
+    from assumption_zero.config import get_settings
+    settings = get_settings()
+    if settings.ssrf_protection_enabled and base_url_override:
+        import urllib.parse
+        parsed = urllib.parse.urlparse(base_url_override)
+        hostname = parsed.hostname or ""
+        if hostname in ("localhost", "127.0.0.1", "::1", "169.254.169.254"):
+            raise HTTPException(status_code=400, detail="Loopback and cloud metadata URLs are disabled in hosted mode.")
 
     try:
-        llm = build_llm_adapter(body.ai_provider)
+        llm = build_llm_adapter(
+            provider_override=body.ai_provider,
+            api_key_override=api_key_override,
+            base_url_override=base_url_override
+        )
         parsed_idea = await llm.parse_raw_prompt(body.prompt)
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc))

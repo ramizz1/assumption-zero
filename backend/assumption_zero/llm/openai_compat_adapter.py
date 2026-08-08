@@ -96,22 +96,24 @@ class OpenAICompatAdapter(LLMAdapter):
         "cohere":    "https://api.cohere.ai/compatibility/v1",
     }
 
-    def __init__(self) -> None:
+    def __init__(self, api_key: str = None, model: str = None, base_url: str = None, **kwargs) -> None:
         import os
         self._settings = get_settings()
-        # Runtime env vars take precedence over settings (injected by build_llm_adapter)
         self._base_url = (
-            os.environ.get("OPENAI_COMPATIBLE_BASE_URL")
+            base_url
+            or os.environ.get("OPENAI_COMPATIBLE_BASE_URL")
             or self._settings.openai_compatible_base_url
             or "https://api.openai.com/v1"
         ).rstrip("/")
         self._api_key = (
-            os.environ.get("OPENAI_COMPATIBLE_API_KEY")
+            api_key
+            or os.environ.get("OPENAI_COMPATIBLE_API_KEY")
             or self._settings.openai_compatible_api_key
             or ""
         ).strip()
         self._model = (
-            os.environ.get("OPENAI_COMPATIBLE_MODEL")
+            model
+            or os.environ.get("OPENAI_COMPATIBLE_MODEL")
             or self._settings.openai_compatible_model
             or "gpt-4o-mini"
         )

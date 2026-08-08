@@ -1,8 +1,9 @@
 """
-Assumption Zero Beta AI — the built-in AI provider.
+Assumption Zero Beta AI.
 
-Routes to OpenRouter's free open-weight models using a built-in key.
-No user configuration required — works out of the box.
+This provider previously offered a built-in free key, but this is removed
+for the open-source version to prevent credential abuse.
+It now acts as an alias to OpenRouterAdapter and requires user configuration.
 """
 from __future__ import annotations
 
@@ -15,9 +16,8 @@ from assumption_zero.schemas import EvidenceItem, IdeaInput, PerspectiveName
 class BetaAdapter(OpenRouterAdapter):
     """
     Assumption Zero Beta AI.
-
-    The default built-in AI provider. No API key required from the user.
-    Powered by open-weight models via OpenRouter (openrouter.ai).
+    
+    Requires a user-configured OPENROUTER_API_KEY.
     """
 
     @property
@@ -26,7 +26,7 @@ class BetaAdapter(OpenRouterAdapter):
 
     @property
     def is_available(self) -> bool:
-        return True  # Always available — built-in key
+        return super().is_available
 
     async def analyze_perspective(
         self,

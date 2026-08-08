@@ -203,6 +203,7 @@ class EvidenceItem(BaseModel):
     evidence_id: str  # E001, E002, etc. — stable identifier
     title: str
     url: str  # Use demo:// URIs for fixture data; never fabricate real URLs
+    evidence_origin: str = "Unknown"  # e.g. 'Reddit - r/startups' or 'GitHub - assumption-zero'
     source_name: str
     publication_date: Optional[date] = None
     retrieval_date: date

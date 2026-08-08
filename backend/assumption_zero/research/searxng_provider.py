@@ -139,6 +139,7 @@ class SearXNGProvider(ResearchProvider):
                     evidence_id=_stable_id(result_url),
                     title=result.get("title", "Untitled"),
                     url=result_url,
+                    evidence_origin=f"SearXNG - {result.get('engine', 'web')}",
                     source_name=f"SearXNG / {result.get('engine', 'web')}",
                     publication_date=None,
                     retrieval_date=today,
