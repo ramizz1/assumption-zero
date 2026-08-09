@@ -1,0 +1,39 @@
+name: Feature request
+description: Propose a focused improvement
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Founder or developer problem
+      description: What problem should this solve, and for whom?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed outcome
+      description: Describe the smallest useful result, not only an implementation.
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Evidence and research
+        - Competitor intelligence
+        - Scoring and analysis
+        - Validation experiments
+        - Web interface
+        - CLI
+        - Provider support
+        - Documentation
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Examples or supporting evidence
+      description: Add concrete examples, links, screenshots, or workflows if available.

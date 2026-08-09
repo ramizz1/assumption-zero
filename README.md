@@ -1,236 +1,258 @@
 <div align="center">
-  <img src="frontend/public/logo.png" alt="Assumption Zero Logo" width="120" />
-  <h1>Assumption Zero — MVP Validation Engine</h1>
-  <img src="https://i.ibb.co/C3sbq4pq/Screenshot-2026-08-05-232315.png" alt="Screenshot" />
-  <p><strong>The open-source MVP validation engine.</strong><br><em>Stress-test your idea before you build it.</em></p>
+  <a href="https://github.com/ramizz1/assumption-zero">
+    <img src="frontend/public/logo.png" alt="Assumption Zero" width="104" />
+  </a>
+
+  <h1>Assumption Zero</h1>
+
+  <p><strong>Evidence-first startup validation for founders who would rather learn than guess.</strong></p>
+  <p>Discover real competitors, challenge the riskiest assumptions, score the opportunity, and leave with experiments you can run before building.</p>
+
+  <p>
+    <a href="https://github.com/ramizz1/assumption-zero/actions/workflows/ci.yml"><img src="https://github.com/ramizz1/assumption-zero/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
+    <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-b7f429?labelColor=18181b" alt="MIT License" /></a>
+    <img src="https://img.shields.io/badge/Python-3.12%2B-3776AB?logo=python&logoColor=white" alt="Python 3.12+" />
+    <img src="https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=111827" alt="React 18" />
+    <img src="https://img.shields.io/badge/CLI%20%2B%20Web-parity-b7f429?labelColor=18181b" alt="CLI and Web parity" />
+  </p>
+
+  <p>
+    <a href="#quick-start"><strong>Quick start</strong></a> ·
+    <a href="#how-it-works"><strong>How it works</strong></a> ·
+    <a href="#cli--web-parity"><strong>CLI</strong></a> ·
+    <a href="#opportunity-score"><strong>Scoring</strong></a> ·
+    <a href="CONTRIBUTING.md"><strong>Contribute</strong></a>
+  </p>
 </div>
 
-> [!IMPORTANT]  
-> **Disclaimer:** Assumption Zero provides decision support and risk analysis. It is not a financial prediction or a substitute for direct customer validation. Every claim is grounded in evidence retrieved from primary research sources.
+<p align="center">
+  <img src="docs/assets/demo.gif" alt="Assumption Zero product tour: describe an idea, collect evidence, verify competitors, score the opportunity, and generate a validation experiment" width="100%" />
+</p>
 
----
-
-## Overview
-
-Assumption Zero is an open-source validation engine designed to stress-test startup and product ideas before writing code. It combines live multi-source research with multiple independent AI analysis perspectives to calculate a deterministic **Opportunity Score (0–100)** and generate actionable validation experiments.
-
----
-
-## Features & Capabilities
-
-- 🔍 **Multi-Source Primary Research**  
-  Retrieves live evidence from 7 sources: Live Web Search, News & Media, Arxiv Papers, GitHub Repositories, Hacker News, Reddit, and Wikipedia.
-  
-- 🧠 **Multi-Perspective AI Evaluation**  
-  Evaluates ideas across 3 distinct perspectives:
-  - **Market Analyst**: TAM, demand signals, monetization & pricing power.
-  - **Skeptical Investor**: Competitive moats, switching costs, CAC & fatal failure modes.
-  - **Practical Builder**: 90-day execution roadmap, tech stack risks & trust compliance.
-
-- 📊 **Deterministic Scoring Engine**  
-  Calculates a 0–100 Opportunity Score across 7 weighted dimensions using pure Python math rather than subjective AI score generation.
-
-- 🛡️ **Citation & Hallucinated Evidence Filtering**  
-  Cross-references AI citations against verified evidence items. Hallucinated or non-existent source references are flagged and rejected automatically.
-
-- ⚡ **Decision Intelligence & Next Steps**  
-  Identifies critical assumption risks per perspective, measures evidence quality metrics, and generates 5 immediate, prioritized validation actions.
-
-- 💻 **Formal, High-Legibility CLI & Modern Web UI**  
-  Includes a formal, clean CLI (`azero`) optimized for clarity and enterprise reporting, as well as a full React/TypeScript web app.
-
----
-
-## Opportunity Score Breakdown
-
-The Opportunity Score is calculated deterministically across 7 dimensions:
-
-| Dimension | Weight | Description |
-|---|:---:|---|
-| **Problem Evidence** | **20%** | Real customer pain signals and existing workarounds |
-| **Demand Signals** | **20%** | Active search volume, market growth, purchase intent |
-| **Competitive Gap** | **15%** | Differentiation vs existing market competitors |
-| **Distribution Feasibility** | **15%** | Go-to-market channels & CAC efficiency |
-| **Unit Economics** | **15%** | Margins, willingness to pay & pricing viability |
-| **Founder / Project Fit** | **10%** | Technical skills and runway alignment |
-| **Legal & Operational Risk** | **5%** | Regulatory, compliance & data privacy risks |
-
----
-
-## Quick Start
-
-### Prerequisites
-
-- **Python 3.12+**
-- **Node.js 20+** (for web frontend)
-
-### Installation
-
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/ramizz1/assumption-zero.git
-   cd assumption-zero
-   ```
-
-2. **Setup the Python backend:**
-   ```bash
-   cd backend
-   python -m venv .venv
-   .venv\Scripts\activate      # On Windows
-   # source .venv/bin/activate # On Linux/macOS
-   pip install -e "."
-   ```
-
-3. **Configure Environment:**
-   Copy `.env.example` to `.env` in the root directory:
-   ```bash
-   cp .env.example .env
-   ```
-
----
-
-## OpenRouter API Key Setup
-
-Assumption Zero works without an AI key by running a clearly labelled, deterministic baseline over collected evidence. For deeper qualitative perspectives, configure your own **OpenRouter API Key** (or another supported provider):
-
-1. Visit **[https://openrouter.ai/keys](https://openrouter.ai/keys)**
-2. Sign in with GitHub or Google (free, no credit card required)
-3. Click **Create Key** and copy your `sk-or-v1-...` key
-4. Add it to your `.env` file or export it in your shell:
-   ```env
-   OPENROUTER_API_KEY=sk-or-v1-your-key-here
-   ```
-
-> [!TIP]
-> **Highly Recommended First Step for CLI**: Run `azero config` immediately after installation! The interactive wizard will set up your AI provider API keys (Groq, OpenRouter, OpenAI, OpenCode, Ollama) and automatically enable smart multi-key failover.
-
----
-
-## CLI Usage (`azero`)
+<p align="center"><sub>A guided tour using a real saved analysis. The same engine powers the web interface and the <code>azero</code> CLI.</sub></p>
 
 > [!IMPORTANT]
-> **First Run**: Highly recommended to execute `azero config` first to configure API keys and active AI provider.
+> Assumption Zero is decision support—not a prediction, investment recommendation, or substitute for speaking with customers. Claims are grounded in collected evidence and uncertainty remains visible.
 
-```bash
-# 🔑 Recommended First Step: Interactively configure API keys & AI providers
-azero config
+## Why Assumption Zero?
 
-# Interactive analysis (prompts for idea details & provider selection)
-azero analyze
+Most idea validators turn a polished prompt into a polished opinion. Assumption Zero separates the jobs:
 
-# Analyze an idea from a structured JSON file
-azero analyze --file examples/sample-idea.json
+- **Research providers collect evidence** from the live web, news, arXiv, GitHub, Hacker News, Reddit, and Wikipedia.
+- **AI perspectives interpret the evidence** as a market analyst, skeptical investor, and practical builder.
+- **Python computes the score** with explicit weights instead of asking a model to invent one.
+- **Citation validation rejects unsupported claims** and competitor candidates that are not backed by their cited evidence.
+- **Experiments turn uncertainty into action** with success criteria, failure criteria, cost, and time estimates.
 
-# Analyze from a freeform text prompt
-azero prompt "A privacy-first AI meeting summarizer for law firms"
+### What you get
 
-# Pin the same live research providers used by the web pipeline (repeat -r)
-azero analyze --prompt "AI scheduling for dentists" -r "Web Search" -r GitHub
+| Output | What it answers |
+|---|---|
+| Evidence-backed competitor map | Who already solves this problem, and how directly? |
+| Opportunity Score | How strong is the opportunity across seven inspectable dimensions? |
+| Three independent perspectives | What would an analyst, investor, and builder challenge? |
+| Unit-economics stress test | What happens when price, CAC, cost, or churn changes? |
+| Validation experiments | What is the cheapest useful test to run next? |
+| Exportable report | How can the evidence and decision be shared with a team? |
 
-# Run the same real example available from the web home page
-azero demo
+## How it works
 
-# Re-run the web report's adjustable unit-economics stress test
-azero simulate 1 --cac 120 --variable-cost 8 --fixed-costs 900 --churn 4
-
-# Check an AI-provider configuration before starting an analysis
-azero verify-provider openrouter --api-key sk-or-v1-your-key
-
-# View step-by-step idea formulation guide
-azero guide
-
-# List all saved analyses
-azero list
-
-# Display full report for an analysis ID (or latest)
-azero show 1
-
-# Export report as Markdown or JSON
-azero export 1 --format markdown --output report.md
-
-# Display system configuration and version info
-azero version
+```mermaid
+flowchart LR
+    A[Describe the idea] --> B[Collect live evidence]
+    B --> C[Verify competitors and citations]
+    C --> D[Run 3 AI perspectives]
+    D --> E[Compute deterministic score]
+    E --> F[Generate validation experiments]
 ```
 
-The CLI and web interface use the same analysis engine and the same root
-`azero_data` history. Analyses started from either interface appear in both
-`azero list` and the web **History** view.
+The engine preserves the evidence trail throughout the report, so a reader can distinguish a sourced claim from an inference and an inference from a missing signal.
 
----
+## Quick start
 
-## Web Interface
+### Requirements
 
-### 1. Launch FastAPI Backend API (Port 8000)
+- Python 3.12+
+- Node.js 20+ for the web interface
+- An AI-provider key is optional; without one, Assumption Zero runs its labeled deterministic baseline over collected evidence
+
+### 1. Install the engine
+
+```bash
+git clone https://github.com/ramizz1/assumption-zero.git
+cd assumption-zero/backend
+python -m venv .venv
+```
+
+Activate the environment:
+
+```powershell
+# Windows PowerShell
+.venv\Scripts\Activate.ps1
+pip install -e ".[dev]"
+```
+
+```bash
+# macOS / Linux
+source .venv/bin/activate
+pip install -e ".[dev]"
+```
+
+### 2. Run your first analysis
+
+```bash
+azero config
+azero demo
+```
+
+Or start with your own idea:
+
+```bash
+azero prompt "A privacy-first AI meeting summarizer for small law firms"
+```
+
+### 3. Launch the web interface
+
+Terminal one:
+
 ```bash
 cd backend
-.venv\Scripts\uvicorn assumption_zero.main:app --reload --port 8000
+.venv/Scripts/uvicorn assumption_zero.main:app --reload --port 8000
 ```
 
-### 2. Launch Vite/React Web Frontend (Port 5173)
+On macOS or Linux, use `.venv/bin/uvicorn` instead.
+
+Terminal two:
+
 ```bash
 cd frontend
-npm install
+npm ci
 npm run dev
 ```
 
-Open **`http://localhost:5173`** in your browser.
+Open [http://localhost:5173](http://localhost:5173).
 
-### Publishing safely
+> [!TIP]
+> If Windows reports `WinError 10013` on port 8000, another process or Windows port reservation is blocking it. Try `--port 8010`, then set `VITE_API_BASE_URL=http://localhost:8010` for the frontend.
 
-Before exposing Assumption Zero on a public domain:
+## AI providers
 
-- Serve it only over HTTPS because users may supply their own AI-provider keys.
-- Set `SSRF_PROTECTION_ENABLED=true` so custom provider URLs cannot target services on the host's private network.
-- Set `CORS_ORIGINS` to a JSON array containing only your real frontend origin.
-- Put rate limiting at the reverse proxy or hosting layer; live research and AI calls can be expensive.
-- Persist `azero_data` on a protected volume and decide how long user analyses should be retained.
-- Never commit `.env`; the repository ignores it and `.env.example` contains placeholders only.
+Use `azero config` for the interactive setup. Supported configurations include OpenRouter, Groq, OpenAI-compatible endpoints, OpenCode, Ollama, and the no-key deterministic baseline.
 
----
-
-## Architecture & Project Structure
-
+```bash
+azero verify-provider openrouter --api-key sk-or-v1-your-key
+azero analyze --provider ollama --model llama3.1
 ```
+
+Keep secrets in your local `.env`; never commit API keys. See [.env.example](.env.example) for available settings.
+
+## CLI + Web parity
+
+Both interfaces use the same engine and the same root `azero_data` history. An analysis started in either interface appears in both `azero list` and the web **History** view.
+
+| Goal | CLI |
+|---|---|
+| Configure AI providers | `azero config` |
+| Run a guided example | `azero demo` |
+| Analyze natural language | `azero prompt "your idea"` |
+| Analyze structured input | `azero analyze --file examples/sample-idea.json` |
+| Choose research sources | `azero analyze -r "Web Search" -r GitHub` |
+| Inspect saved work | `azero list` / `azero show 1` |
+| Stress-test economics | `azero simulate 1 --cac 120 --churn 4` |
+| Export a report | `azero export 1 --format markdown --output report.md` |
+| Verify provider settings | `azero verify-provider openrouter` |
+
+Run `azero --help` or `azero <command> --help` for every option.
+
+## Opportunity Score
+
+The Opportunity Score is deterministic and inspectable:
+
+| Dimension | Weight | Signal |
+|---|---:|---|
+| Problem Evidence | 20% | Customer pain and current workarounds |
+| Demand Signals | 20% | Market activity and purchase intent |
+| Competitive Gap | 15% | Differentiation and market saturation |
+| Distribution Feasibility | 15% | Reachability and likely acquisition efficiency |
+| Unit Economics | 15% | Margin, pricing, payback, and retention assumptions |
+| Founder / Project Fit | 10% | Skills, runway, and execution fit |
+| Legal & Operational Risk | 5% | Compliance, privacy, and operational exposure |
+
+AI does not directly choose the final score. It produces structured evidence-aware analysis; the scoring engine applies explicit rules and weights.
+
+## Research and accuracy model
+
+Assumption Zero treats model output as a candidate—not a fact:
+
+1. Research providers collect and normalize evidence.
+2. AI responses cite evidence IDs from that collection.
+3. Citation validation rejects missing or fabricated references.
+4. Discovered competitors are accepted only when their cited evidence supports the name.
+5. Conflicts, gaps, confidence, and missing information remain visible in the report.
+
+This design reduces hallucination risk, but it cannot eliminate incomplete search results, stale source material, provider errors, or ambiguous evidence.
+
+## Architecture
+
+```text
 assumption-zero/
 ├── backend/
 │   ├── assumption_zero/
-│   │   ├── analysis/        # Core scoring engine, citation validator & orchestrator
-│   │   ├── api/             # FastAPI REST endpoints
-│   │   ├── llm/             # OpenRouter, Gemini, Ollama & Mock adapters
-│   │   ├── research/        # Web Search, Arxiv, GitHub, HN, Reddit, Wiki providers
-│   │   ├── cli.py           # Formal Typer CLI (azero command)
-│   │   ├── main.py          # FastAPI application entry point
-│   │   └── schemas.py       # Pydantic data models
-│   └── tests/               # Backend Pytest suite
+│   │   ├── analysis/       # orchestration, scoring, citation validation
+│   │   ├── api/            # FastAPI endpoints
+│   │   ├── llm/            # model adapters and structured responses
+│   │   ├── research/       # live evidence providers
+│   │   └── cli.py          # Typer CLI
+│   └── tests/
 ├── frontend/
-│   ├── src/                 # React components, hooks, design tokens & pages
-│   └── vite.config.ts       # Vite build configuration
-├── examples/                # Sample input JSONs
-├── README.md
-└── LICENSE
+│   └── src/                # React, TypeScript, reports, simulators
+├── docs/assets/            # repository media
+├── examples/
+└── .github/workflows/      # continuous integration
 ```
 
----
+## Development
 
-## Testing
-
-Run the automated backend test suite:
+Run the backend suite:
 
 ```bash
 cd backend
-.venv\Scripts\python -m pytest -q
+.venv/Scripts/python -m pytest -q
 ```
 
-Run the complete frontend quality gate:
+Run the frontend quality gate:
 
 ```bash
 cd frontend
 npm run check
 ```
 
----
+## Deploy safely
+
+Before exposing Assumption Zero publicly:
+
+- Serve it over HTTPS because users may supply their own provider keys.
+- Set `SSRF_PROTECTION_ENABLED=true` for custom provider URLs.
+- Restrict `CORS_ORIGINS` to the real frontend origin.
+- Add rate limiting at the proxy or hosting layer.
+- Persist `azero_data` on a protected volume and define a retention policy.
+- Keep `.env` and generated private reports out of version control.
+
+See [SECURITY.md](SECURITY.md) for vulnerability reporting.
+
+## Contributing
+
+Contributions that improve evidence quality, research coverage, scoring transparency, provider support, accessibility, or founder workflows are welcome. Start with [CONTRIBUTING.md](CONTRIBUTING.md), or open a feature request if you want to discuss an idea first.
+
+## Repository artwork
+
+The GitHub-ready social preview is available at [docs/assets/social-preview.jpg](docs/assets/social-preview.jpg). It is **1280×640**, uses a solid background, and is under 1 MB as recommended by GitHub.
 
 ## License
 
-This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.  
-GitHub Repository: **[https://github.com/ramizz1/assumption-zero](https://github.com/ramizz1/assumption-zero)**
+Released under the [MIT License](LICENSE).
+
+<div align="center">
+  <p><strong>If Assumption Zero helps you avoid building the wrong thing, consider starring the repository.</strong></p>
+  <a href="https://github.com/ramizz1/assumption-zero">⭐ Star Assumption Zero</a>
+</div>
