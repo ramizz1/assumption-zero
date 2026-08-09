@@ -1,5 +1,6 @@
 /** Inline citation badge that links to the evidence source */
 import type { EvidenceItem } from '../types'
+import { safeExternalUrl } from '../lib/utils'
 
 interface Props {
   evidenceId: string
@@ -20,9 +21,15 @@ export default function CitationBadge({ evidenceId, evidence }: Props) {
     )
   }
 
+  const href = item.url.startsWith('demo://') ? '#evidence' : safeExternalUrl(item.url)
+
+  if (!href) {
+    return <span className="citation-badge" title="Source URL is unavailable">{evidenceId}</span>
+  }
+
   return (
     <a
-      href={item.url.startsWith('demo://') ? '#sources' : item.url}
+      href={href}
       target={item.url.startsWith('demo://') ? '_self' : '_blank'}
       rel="noopener noreferrer"
       className="citation-badge"

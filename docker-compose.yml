@@ -9,7 +9,7 @@ services:
       - ./azero_data:/app/azero_data
     environment:
       - AZERO_DATA_DIR=/app/azero_data
-      - AI_PROVIDER=${AI_PROVIDER:-beta}
+      - AI_PROVIDER=${AI_PROVIDER:-auto}
       - OPENROUTER_API_KEY=${OPENROUTER_API_KEY:-}
       - OPENROUTER_MODEL=${OPENROUTER_MODEL:-google/gemma-4-26b-a4b-it:free}
       - GROQ_API_KEY=${GROQ_API_KEY:-}
@@ -25,6 +25,8 @@ services:
       - SEARXNG_BASE_URL=${SEARXNG_BASE_URL:-}
       - GITHUB_TOKEN=${GITHUB_TOKEN:-}
       - DEBUG=${DEBUG:-false}
+      - SSRF_PROTECTION_ENABLED=${SSRF_PROTECTION_ENABLED:-false}
+      - CORS_ORIGINS=${CORS_ORIGINS:-["http://localhost:5173","http://localhost:3000"]}
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/api/health"]

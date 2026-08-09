@@ -10,7 +10,8 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
-    "lint": "eslint src --ext ts,tsx"
+    "lint": "tsc --noEmit",
+    "check": "npm run lint && npm test && npm run build"
   },
   "dependencies": {
     "@types/canvas-confetti": "^1.9.0",

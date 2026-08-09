@@ -35,6 +35,19 @@ export const ProviderIcon: React.FC<ProviderIconProps> = ({
     )
   }
 
+  if (id === 'auto' || id === 'beta') {
+    return (
+      <span
+        className={`inline-flex items-center justify-center shrink-0 font-black ${config.container} ${
+          isActive ? 'bg-white text-gray-900 shadow-sm ring-1 ring-black/10' : 'bg-gray-100 text-gray-700 border border-gray-200'
+        } ${className}`}
+        aria-hidden="true"
+      >
+        <span className={config.text}>A0</span>
+      </span>
+    )
+  }
+
   const srcMap: Record<string, string> = {
     ollama: '/ollama.png',
     opencode: '/opencode.png',

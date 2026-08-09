@@ -8,11 +8,9 @@ from __future__ import annotations
 
 from datetime import date, datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional
-import uuid
+from typing import Dict, List, Optional
 
 from pydantic import BaseModel, Field, field_validator
-
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Enumerations
@@ -376,9 +374,23 @@ class AnalysisCreateRequest(BaseModel):
     ollama_base_url: Optional[str] = None
     research_providers: Optional[List[str]] = None  # Pin specific providers; None = all enabled
 
+    @field_validator("ai_provider")
+    @classmethod
+    def validate_requested_provider(cls, value: Optional[str]) -> Optional[str]:
+        if value is None:
+            return None
+        normalized = value.strip().lower()
+        allowed = {
+            "auto", "beta", "mock", "groq", "openrouter", "opencode",
+            "openai", "openai_compat", "custom", "ollama", "hybrid", "dual",
+        }
+        if normalized not in allowed:
+            raise ValueError(f"Unsupported AI provider: {value!r}")
+        return normalized
+
 
 class PromptAnalysisRequest(BaseModel):
-    prompt: str
+    prompt: str = Field(..., min_length=1, max_length=5000)
     ai_provider: Optional[str] = None
     openrouter_api_key: Optional[str] = None
     groq_api_key: Optional[str] = None
@@ -387,6 +399,22 @@ class PromptAnalysisRequest(BaseModel):
     custom_base_url: Optional[str] = None
     ollama_base_url: Optional[str] = None
     research_providers: Optional[List[str]] = None
+
+    @field_validator("prompt")
+    @classmethod
+    def validate_prompt(cls, value: str) -> str:
+        normalized = value.strip()
+        if len(normalized) < 20 or is_gibberish(normalized):
+            raise ValueError(
+                "The startup idea appears too vague or like gibberish. Describe the customer, "
+                "their problem, and the proposed solution."
+            )
+        return normalized
+
+    @field_validator("ai_provider")
+    @classmethod
+    def validate_requested_provider(cls, value: Optional[str]) -> Optional[str]:
+        return AnalysisCreateRequest.validate_requested_provider(value)
 
 
 class AnalysisListItem(BaseModel):

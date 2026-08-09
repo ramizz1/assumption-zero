@@ -91,7 +91,7 @@ The Opportunity Score is calculated deterministically across 7 dimensions:
 
 ## OpenRouter API Key Setup
 
-Assumption Zero includes built-in Beta AI access out-of-the-box. For higher rate limits and custom model selection, use your own **OpenRouter API Key**:
+Assumption Zero works without an AI key by running a clearly labelled, deterministic baseline over collected evidence. For deeper qualitative perspectives, configure your own **OpenRouter API Key** (or another supported provider):
 
 1. Visit **[https://openrouter.ai/keys](https://openrouter.ai/keys)**
 2. Sign in with GitHub or Google (free, no credit card required)
@@ -159,6 +159,17 @@ npm run dev
 
 Open **`http://localhost:5173`** in your browser.
 
+### Publishing safely
+
+Before exposing Assumption Zero on a public domain:
+
+- Serve it only over HTTPS because users may supply their own AI-provider keys.
+- Set `SSRF_PROTECTION_ENABLED=true` so custom provider URLs cannot target services on the host's private network.
+- Set `CORS_ORIGINS` to a JSON array containing only your real frontend origin.
+- Put rate limiting at the reverse proxy or hosting layer; live research and AI calls can be expensive.
+- Persist `azero_data` on a protected volume and decide how long user analyses should be retained.
+- Never commit `.env`; the repository ignores it and `.env.example` contains placeholders only.
+
 ---
 
 ## Architecture & Project Structure
@@ -191,7 +202,14 @@ Run the automated backend test suite:
 
 ```bash
 cd backend
-.venv\Scripts\pytest backend/tests
+.venv\Scripts\python -m pytest -q
+```
+
+Run the complete frontend quality gate:
+
+```bash
+cd frontend
+npm run check
 ```
 
 ---

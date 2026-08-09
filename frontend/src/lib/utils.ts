@@ -68,6 +68,16 @@ export function formatDate(iso?: string): string {
   }
 }
 
+export function safeExternalUrl(value?: string): string | null {
+  if (!value) return null
+  try {
+    const url = new URL(value)
+    return url.protocol === 'https:' || url.protocol === 'http:' ? url.toString() : null
+  } catch {
+    return null
+  }
+}
+
 export function stageLabel(stage: string): string {
   const labels: Record<string, string> = {
     clarifying_idea: 'Clarifying Idea',

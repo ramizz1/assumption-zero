@@ -115,3 +115,15 @@
 
   .section-title { @apply text-2xl font-bold tracking-tight; }
 }
+
+@media print {
+  @page { margin: 14mm; }
+  body, #root, #report { background: #fff !important; }
+  header, button, input[type='search'] { display: none !important; }
+  .verseo-grid { background-image: none !important; }
+  .verseo-card {
+    break-inside: avoid;
+    box-shadow: none !important;
+  }
+  a { color: #111827 !important; text-decoration: none !important; }
+}

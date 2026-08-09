@@ -1,17 +1,44 @@
 """Application configuration loaded from environment variables."""
 from __future__ import annotations
 
+import ipaddress
+import socket
 from functools import lru_cache
+from pathlib import Path
 from typing import Optional
+from urllib.parse import urlparse
 
 from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-
-from pathlib import Path
-
 ROOT_ENV = Path(__file__).resolve().parent.parent.parent / ".env"
 LOCAL_ENV = Path(".env")
+
+
+def is_public_http_url(value: str) -> bool:
+    """Return whether a URL resolves only to public HTTP(S) addresses."""
+    try:
+        parsed = urlparse(value)
+        if parsed.scheme not in {"http", "https"} or not parsed.hostname:
+            return False
+        if parsed.username or parsed.password:
+            return False
+
+        hostname = parsed.hostname.rstrip(".").lower()
+        if hostname == "localhost" or hostname.endswith((".localhost", ".local")):
+            return False
+
+        try:
+            addresses = [ipaddress.ip_address(hostname)]
+        except ValueError:
+            port = parsed.port or (443 if parsed.scheme == "https" else 80)
+            addresses = {
+                ipaddress.ip_address(item[4][0])
+                for item in socket.getaddrinfo(hostname, port, type=socket.SOCK_STREAM)
+            }
+        return bool(addresses) and all(address.is_global for address in addresses)
+    except (OSError, ValueError):
+        return False
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
@@ -28,8 +55,8 @@ class Settings(BaseSettings):
 
     # ── AI Providers ──────────────────────────────────────────────
     # Selects which adapter to use as the primary provider.
-    # "beta" = Assumption Zero Beta AI (built-in, no key needed)
-    ai_provider: str = "beta"
+    # "auto" = first configured provider, then the deterministic evidence baseline
+    ai_provider: str = "auto"
 
     # ── Assumption Zero Beta / OpenRouter ────────────────────────
     # OpenRouter routes to 200+ open models via a single API.
@@ -73,6 +100,24 @@ class Settings(BaseSettings):
     max_idea_length: int = 5000
     max_evidence_items: int = 50
     max_search_results_per_query: int = 10
+
+    @field_validator("debug", "ssrf_protection_enabled", mode="before")
+    @classmethod
+    def parse_environment_mode_as_bool(cls, value: object) -> object:
+        """Accept common deployment-mode values without crashing at import time.
+
+        Some hosts expose ``DEBUG=release`` or ``DEBUG=production`` instead of a
+        conventional boolean. Treat production-like modes as false and
+        development-like modes as true while leaving normal booleans to
+        Pydantic.
+        """
+        if isinstance(value, str):
+            normalized = value.strip().lower()
+            if normalized in {"release", "production", "prod", "off", "disabled"}:
+                return False
+            if normalized in {"development", "develop", "dev", "debug", "on", "enabled"}:
+                return True
+        return value
 
     @field_validator("ai_provider")
     @classmethod

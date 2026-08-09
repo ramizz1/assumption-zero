@@ -11,15 +11,13 @@ Routes:
 """
 from __future__ import annotations
 
-import json
 import logging
 from typing import List, Optional
 
-from fastapi import APIRouter, BackgroundTasks, HTTPException, Request, status
-from fastapi.responses import JSONResponse
+from fastapi import APIRouter, BackgroundTasks, HTTPException, Query, Request, status
 
 from assumption_zero import __version__
-from assumption_zero.config import get_settings
+from assumption_zero.config import get_settings, is_public_http_url
 from assumption_zero.research.github_provider import GitHubProvider
 from assumption_zero.research.hackernews_provider import HackerNewsProvider
 from assumption_zero.research.reddit_provider import RedditProvider
@@ -119,6 +117,13 @@ async def verify_keys_endpoint(body: dict) -> dict:
     key_required_providers = ("groq", "openrouter", "opencode", "openai", "openai_compat", "custom")
     settings = get_settings()
 
+    if settings.ssrf_protection_enabled and base_url_override:
+        if not is_public_http_url(base_url_override):
+            raise HTTPException(
+                status_code=400,
+                detail="Only public HTTP(S) provider URLs are allowed in hosted mode.",
+            )
+
     if provider in key_required_providers:
         env_key = None
         if provider == "groq":
@@ -152,7 +157,10 @@ async def verify_keys_endpoint(body: dict) -> dict:
         return {
             "status": "ok",
             "provider": provider,
-            "message": f"Successfully connected to {provider.upper()} adapter!",
+            "message": (
+                f"Successfully validated {provider.upper()} configuration. "
+                "Live connectivity is confirmed when an analysis starts."
+            ),
         }
     except HTTPException:
         raise
@@ -220,11 +228,11 @@ async def create_analysis_from_prompt_endpoint(
     from assumption_zero.config import get_settings
     settings = get_settings()
     if settings.ssrf_protection_enabled and base_url_override:
-        import urllib.parse
-        parsed = urllib.parse.urlparse(base_url_override)
-        hostname = parsed.hostname or ""
-        if hostname in ("localhost", "127.0.0.1", "::1", "169.254.169.254"):
-            raise HTTPException(status_code=400, detail="Loopback and cloud metadata URLs are disabled in hosted mode.")
+        if not is_public_http_url(base_url_override):
+            raise HTTPException(
+                status_code=400,
+                detail="Only public HTTP(S) provider URLs are allowed in hosted mode.",
+            )
 
     try:
         llm = build_llm_adapter(
@@ -268,7 +276,7 @@ async def create_analysis_from_prompt_endpoint(
 async def list_analyses_endpoint(
     search: Optional[str] = None,
     status: Optional[str] = None,
-    limit: int = 100,
+    limit: int = Query(default=100, ge=1, le=100),
 ) -> List[AnalysisListItem]:
     return await list_analyses(search=search, status_filter=status, limit=limit)
 

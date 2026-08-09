@@ -1,6 +1,7 @@
 /** Competitor card component */
 import type { Competitor, EvidenceItem } from '../types'
 import CitationBadge from './CitationBadge'
+import { safeExternalUrl } from '../lib/utils'
 
 interface Props {
   competitor: Competitor
@@ -11,6 +12,7 @@ const LucideDollarSign = () => <svg xmlns="http://www.w3.org/2000/svg" width="14
 
 export default function CompetitorCard({ competitor, evidence }: Props) {
   const isOss = competitor.competitor_type === 'indirect'
+  const competitorUrl = safeExternalUrl(competitor.url)
 
   return (
     <div className="verseo-card p-6 bg-white hover:border-gray-400 hover:shadow-lg transition-all duration-300 relative overflow-hidden">
@@ -33,9 +35,9 @@ export default function CompetitorCard({ competitor, evidence }: Props) {
               {isOss ? 'indirect' : 'direct'}
             </span>
           </div>
-          {competitor.url && !competitor.url.startsWith('demo://') && (
+          {competitorUrl && (
             <a
-              href={competitor.url}
+              href={competitorUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="text-xs font-mono text-gray-500 hover:text-gray-900 hover:underline inline-block"

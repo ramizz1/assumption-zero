@@ -3,9 +3,10 @@ FastAPI endpoint tests.
 """
 from __future__ import annotations
 
+from unittest.mock import AsyncMock, patch
+
 import pytest
 from fastapi.testclient import TestClient
-from unittest.mock import AsyncMock, patch
 
 from assumption_zero.main import app
 
@@ -98,3 +99,28 @@ def test_input_too_long_rejected(client):
     }
     resp = client.post("/api/analyses", json=body)
     assert resp.status_code == 422
+
+
+def test_prompt_length_and_provider_are_bounded(client):
+    too_long = client.post("/api/analyses/from-prompt", json={"prompt": "idea " * 1200})
+    assert too_long.status_code == 422
+
+    invalid_provider = client.post(
+        "/api/analyses",
+        json={
+            "ai_provider": "unknown-provider",
+            "idea": {
+                "name": "BoundedProduct",
+                "description": "A concrete product description",
+                "problem": "A concrete customer problem that needs solving",
+                "target_customer": "Small teams",
+                "geography": "US",
+            },
+        },
+    )
+    assert invalid_provider.status_code == 422
+
+
+def test_analysis_list_limit_is_bounded(client):
+    assert client.get("/api/analyses?limit=0").status_code == 422
+    assert client.get("/api/analyses?limit=101").status_code == 422

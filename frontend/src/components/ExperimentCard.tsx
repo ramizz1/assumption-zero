@@ -16,7 +16,7 @@ export default function ExperimentCard({ experiment, index }: Props) {
       
       <div className="flex items-start gap-4 mb-5 border-b border-gray-100 pb-4">
         <div className="w-8 h-8 rounded-full bg-gray-50 border border-gray-200 flex items-center justify-center shrink-0 shadow-sm mt-1">
-          <span className="text-xs font-mono font-bold text-gray-900">{index}</span>
+          <span className="text-xs font-mono font-bold text-gray-900">{index + 1}</span>
         </div>
         <div>
           <h3 className="font-display font-bold text-gray-900 tracking-tight text-lg leading-tight">{experiment.title}</h3>

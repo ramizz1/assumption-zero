@@ -4,6 +4,7 @@ import { api } from '../lib/api'
 import SavedAnalysesModal from '../components/SavedAnalysesModal'
 import SettingsModal, { getStoredAISettings, AISettings } from '../components/SettingsModal'
 import ProviderIcon from '../components/ProviderIcon'
+import { assessFormReadiness, assessPromptReadiness, type ReadinessResult } from '../lib/readiness'
 
 // SVG Icons
 const LucideGlobe = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
@@ -15,6 +16,47 @@ const LucideCode = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" heig
 const LucideZap = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
 const LucideBot = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="14" x="3" y="7" rx="2" ry="2"/><path d="M12 3v4"/><path d="M8 3h8"/><path d="M15 12v.01"/><path d="M9 12v.01"/></svg>
 const LucideCloud = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></svg>
+
+const ReadinessPanel = ({ readiness }: { readiness: ReadinessResult }) => {
+  const missing = readiness.checks.filter((check) => !check.complete)
+  const tone = readiness.score >= 80 ? 'emerald' : readiness.score >= 60 ? 'amber' : 'zinc'
+  const colors = {
+    emerald: 'bg-emerald-50 border-emerald-200 text-emerald-900',
+    amber: 'bg-amber-50 border-amber-200 text-amber-900',
+    zinc: 'bg-zinc-50 border-zinc-200 text-zinc-800',
+  }[tone]
+
+  return (
+    <div className={`rounded-2xl border p-4 ${colors}`} aria-live="polite">
+      <div className="flex items-center justify-between gap-3 mb-3">
+        <div>
+          <p className="text-xs font-mono font-bold uppercase tracking-wider">Idea brief strength</p>
+          <p className="text-[11px] opacity-70 mt-0.5">Better context produces more useful research and experiments.</p>
+        </div>
+        <span className="text-lg font-black tabular-nums">{readiness.score}%</span>
+      </div>
+      <div className="h-1.5 rounded-full bg-white/80 overflow-hidden border border-black/5 mb-3">
+        <div className="h-full bg-current transition-all duration-300" style={{ width: `${readiness.score}%` }} />
+      </div>
+      <div className="flex flex-wrap gap-2">
+        {readiness.checks.map((check) => (
+          <span
+            key={check.id}
+            title={check.complete ? `${check.label} included` : check.hint}
+            className={`text-[10px] font-mono font-bold px-2 py-1 rounded-lg border ${
+              check.complete ? 'bg-white/80 border-current/10' : 'bg-white border-dashed border-current/30 opacity-70'
+            }`}
+          >
+            {check.complete ? '✓' : '+'} {check.label}
+          </span>
+        ))}
+      </div>
+      {missing.length > 0 && (
+        <p className="text-[11px] mt-3 leading-relaxed"><strong>Best next improvement:</strong> {missing[0].hint}</p>
+      )}
+    </div>
+  )
+}
 
 const SAMPLE_IDEA = {
   name: "LegalMind Local",
@@ -41,6 +83,7 @@ export const HomePage: React.FC = () => {
   const [isHistoryOpen, setIsHistoryOpen] = useState(false)
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
   const [historyCount, setHistoryCount] = useState<number | null>(null)
+  const [backendStatus, setBackendStatus] = useState<'checking' | 'online' | 'offline'>('checking')
 
   const [aiSettings, setAiSettings] = useState<AISettings>(getStoredAISettings())
   const [inputMode, setInputMode] = useState<'prompt' | 'form'>('prompt')
@@ -68,6 +111,18 @@ export const HomePage: React.FC = () => {
     api.listAnalyses().then((items) => {
       setHistoryCount(items.length)
     }).catch(() => {})
+    let active = true
+    const checkBackend = () => {
+      api.health()
+        .then(() => active && setBackendStatus('online'))
+        .catch(() => active && setBackendStatus('offline'))
+    }
+    checkBackend()
+    const healthInterval = window.setInterval(checkBackend, 15_000)
+    return () => {
+      active = false
+      window.clearInterval(healthInterval)
+    }
   }, [])
 
   const update = (field: keyof typeof idea) => (
@@ -176,6 +231,10 @@ export const HomePage: React.FC = () => {
     reader.readAsText(file)
   }
 
+  const readiness = inputMode === 'prompt'
+    ? assessPromptReadiness(rawPromptText)
+    : assessFormReadiness(idea)
+
   return (
     <div className="min-h-screen flex flex-col verseo-grid text-zinc-900 selection:bg-zinc-200" style={{backgroundColor: '#ffffff'}}>
       {/* Header */}
@@ -200,6 +259,19 @@ export const HomePage: React.FC = () => {
 
           {/* Navigation Controls */}
           <div className="flex items-center gap-3">
+            <span
+              className={`hidden md:inline-flex items-center gap-1.5 text-[10px] font-mono font-bold px-2 py-1 rounded-full border ${
+                backendStatus === 'online'
+                  ? 'text-emerald-700 bg-emerald-50 border-emerald-200'
+                  : backendStatus === 'offline'
+                  ? 'text-red-700 bg-red-50 border-red-200'
+                  : 'text-zinc-500 bg-zinc-50 border-zinc-200'
+              }`}
+              title={backendStatus === 'offline' ? 'The API is unreachable. Start the backend before analyzing.' : 'Backend status'}
+            >
+              <span className={`w-1.5 h-1.5 rounded-full ${backendStatus === 'online' ? 'bg-emerald-500' : backendStatus === 'offline' ? 'bg-red-500' : 'bg-zinc-400 animate-pulse'}`} />
+              API {backendStatus}
+            </span>
             <button
               onClick={() => setIsHistoryOpen(true)}
               className="px-3.5 py-1.5 rounded-xl border text-xs font-mono font-medium transition-all flex items-center gap-2 shadow-sm hover:bg-zinc-50"
@@ -332,6 +404,7 @@ export const HomePage: React.FC = () => {
             </div>
             <div className="flex flex-wrap gap-2 text-xs font-mono">
               {[
+                { id: 'auto', label: 'Auto' },
                 { id: 'ollama', label: 'Ollama' },
                 { id: 'opencode', label: 'OpenCode' },
                 { id: 'openai_compat', label: 'OpenAI' },
@@ -379,6 +452,8 @@ export const HomePage: React.FC = () => {
                   placeholder="e.g. LegalMind Local — A privacy-first AI meeting summarizer for small law firms that processes audio entirely on-device. Pricing: $49/mo per seat. Target: Solo practitioners and small firms in the US..."
                   className="w-full bg-gray-50 border border-gray-200 rounded-2xl p-4 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-gray-400 focus:ring-1 focus:ring-gray-200 transition-all resize-y shadow-inner"
                   required
+                  minLength={20}
+                  maxLength={5000}
                 />
               </div>
 
@@ -390,16 +465,23 @@ export const HomePage: React.FC = () => {
                   <input type="file" accept=".txt,.json,.md" onChange={handleFileUpload} className="hidden" />
                 </label>
 
-                <span className="text-gray-500">{rawPromptText.length} chars</span>
+                <span className="text-gray-500">{rawPromptText.length.toLocaleString()} / 5,000 chars</span>
               </div>
 
-              <button
-                type="submit"
-                disabled={loading || !rawPromptText.trim()}
-                className="btn-primary w-full py-4 text-base flex justify-center items-center gap-2"
-              >
-                {loading ? 'Running AI Engine & Live Research...' : <><LucideSparkles /> Analyze MVP Idea Now</>}
-              </button>
+              <ReadinessPanel readiness={readiness} />
+
+              <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto] gap-3">
+                <button
+                  type="submit"
+                  disabled={loading || rawPromptText.trim().length < 20 || backendStatus === 'offline'}
+                  className="btn-primary w-full py-4 text-base flex justify-center items-center gap-2"
+                >
+                  {loading ? 'Running AI Engine & Live Research...' : <><LucideSparkles /> Analyze MVP Idea Now</>}
+                </button>
+                <button type="button" onClick={handleDemo} disabled={loading || backendStatus === 'offline'} className="btn-ghost px-5 py-4">
+                  Run example
+                </button>
+              </div>
             </form>
           ) : (
             /* Mode 2: Detailed Form */
@@ -510,13 +592,69 @@ export const HomePage: React.FC = () => {
                 </div>
               </div>
 
-              <button
-                type="submit"
-                disabled={loading}
-                className="btn-primary w-full py-4 text-base flex justify-center items-center gap-2"
-              >
-                {loading ? 'Running AI Engine & Live Research...' : <><LucideSparkles /> Analyze MVP Idea Now</>}
-              </button>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label className="label">Business Model</label>
+                  <input
+                    type="text"
+                    value={idea.business_model}
+                    onChange={update('business_model')}
+                    placeholder="e.g. Per-seat SaaS subscription"
+                    className="input-field shadow-inner"
+                    maxLength={500}
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="label">Founder / Team Fit</label>
+                  <input
+                    type="text"
+                    value={idea.founder_skills}
+                    onChange={update('founder_skills')}
+                    placeholder="e.g. Full-stack engineer, 5 years in legal tech"
+                    className="input-field shadow-inner"
+                    maxLength={1000}
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="label">Critical Assumptions</label>
+                <textarea
+                  rows={2}
+                  value={idea.key_assumptions}
+                  onChange={update('key_assumptions')}
+                  placeholder="What must be true for this idea to work?"
+                  className="textarea-field shadow-inner"
+                  maxLength={1000}
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="label">Additional Context</label>
+                <textarea
+                  rows={3}
+                  value={idea.additional_context}
+                  onChange={update('additional_context')}
+                  placeholder="Existing traction, planned channels, constraints, research, or customer conversations"
+                  className="textarea-field shadow-inner"
+                  maxLength={3000}
+                />
+              </div>
+
+              <ReadinessPanel readiness={readiness} />
+
+              <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto] gap-3">
+                <button
+                  type="submit"
+                  disabled={loading || backendStatus === 'offline'}
+                  className="btn-primary w-full py-4 text-base flex justify-center items-center gap-2"
+                >
+                  {loading ? 'Running AI Engine & Live Research...' : <><LucideSparkles /> Analyze MVP Idea Now</>}
+                </button>
+                <button type="button" onClick={handleDemo} disabled={loading || backendStatus === 'offline'} className="btn-ghost px-5 py-4">
+                  Run example
+                </button>
+              </div>
             </form>
           )}
         </div>

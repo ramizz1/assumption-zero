@@ -9,9 +9,15 @@ export default function AnalysisPage() {
   const { id } = useParams<{ id: string }>()
   const { data, error } = useAnalysis(id ?? null)
   const [showToast, setShowToast] = useState(false)
+  const [toastMessage, setToastMessage] = useState('Link copied!')
 
-  const handleShare = () => {
-    navigator.clipboard.writeText(window.location.href)
+  const handleShare = async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href)
+      setToastMessage('Link copied!')
+    } catch {
+      setToastMessage('Clipboard access was blocked')
+    }
     setShowToast(true)
     setTimeout(() => setShowToast(false), 3000)
   }
@@ -20,9 +26,9 @@ export default function AnalysisPage() {
     <div className="min-h-screen flex flex-col relative bg-white">
       {/* Toast Notification */}
       {showToast && (
-        <div className="fixed top-20 left-1/2 transform -translate-x-1/2 bg-zinc-900 text-white px-4 py-2 rounded-full shadow-lg text-sm font-bold z-50 animate-in slide-in-from-top-2 fade-in flex items-center gap-2">
+        <div role="status" className="fixed top-20 left-1/2 transform -translate-x-1/2 bg-zinc-900 text-white px-4 py-2 rounded-full shadow-lg text-sm font-bold z-50 animate-in slide-in-from-top-2 fade-in flex items-center gap-2">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-          Link Copied!
+          {toastMessage}
         </div>
       )}
 
@@ -85,7 +91,7 @@ export default function AnalysisPage() {
             </div>
           </div>
         ) : data.status === 'complete' ? (
-          <ReportView />
+          <ReportView initialResult={data} />
         ) : (
           <ProgressView result={data} />
         )}

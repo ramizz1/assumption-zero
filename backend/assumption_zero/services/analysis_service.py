@@ -11,32 +11,30 @@ import uuid
 from datetime import datetime
 from typing import List, Optional
 
+import assumption_zero.storage as store
 from assumption_zero.analysis.engine import AnalysisEngine
-from assumption_zero.config import get_settings
+from assumption_zero.config import get_settings, is_public_http_url
 from assumption_zero.llm.base import LLMAdapter
-from assumption_zero.llm.beta_adapter import BetaAdapter
 from assumption_zero.llm.mock_adapter import MockAdapter
 from assumption_zero.llm.openrouter_adapter import OpenRouterAdapter
+from assumption_zero.research.arxiv_provider import ArxivProvider
 from assumption_zero.research.base import ResearchProvider
 from assumption_zero.research.github_provider import GitHubProvider
 from assumption_zero.research.hackernews_provider import HackerNewsProvider
+from assumption_zero.research.news_provider import NewsSearchProvider
 from assumption_zero.research.reddit_provider import RedditProvider
 from assumption_zero.research.searxng_provider import SearXNGProvider
+from assumption_zero.research.web_search_provider import WebSearchProvider
 from assumption_zero.research.wikipedia_provider import WikipediaProvider
 from assumption_zero.schemas import (
+    STAGE_DESCRIPTIONS,
     AnalysisListItem,
     AnalysisResult,
     AnalysisStage,
     AnalysisStatus,
     IdeaInput,
     Recommendation,
-    STAGE_DESCRIPTIONS,
 )
-import assumption_zero.storage as store
-
-from assumption_zero.research.web_search_provider import WebSearchProvider
-from assumption_zero.research.news_provider import NewsSearchProvider
-from assumption_zero.research.arxiv_provider import ArxivProvider
 
 logger = logging.getLogger(__name__)
 
@@ -44,14 +42,11 @@ logger = logging.getLogger(__name__)
 # ── LLM adapter factory ───────────────────────────────────────────────────────
 
 
-from assumption_zero.llm.groq_adapter import GroqAdapter
-from assumption_zero.llm.hybrid_adapter import HybridLLMAdapter
-from assumption_zero.llm.openai_compat_adapter import OpenAICompatAdapter
-from assumption_zero.llm.ollama_adapter import OllamaAdapter
-from assumption_zero.llm.opencode_adapter import OpencodeAdapter
-from assumption_zero.llm.openrouter_adapter import OpenRouterAdapter
-from assumption_zero.llm.mock_adapter import MockAdapter
 from assumption_zero.llm.fallback_adapter import FallbackChainAdapter
+from assumption_zero.llm.groq_adapter import GroqAdapter
+from assumption_zero.llm.ollama_adapter import OllamaAdapter
+from assumption_zero.llm.openai_compat_adapter import OpenAICompatAdapter
+from assumption_zero.llm.opencode_adapter import OpencodeAdapter
 
 
 def build_llm_adapter(
@@ -192,11 +187,11 @@ async def run_analysis(
 
     settings = get_settings()
     if settings.ssrf_protection_enabled and base_url_override:
-        import urllib.parse
-        parsed = urllib.parse.urlparse(base_url_override)
-        hostname = parsed.hostname or ""
-        if hostname in ("localhost", "127.0.0.1", "::1", "169.254.169.254"):
-            store.fail_record(analysis_id, "Loopback and cloud metadata URLs are disabled in hosted mode.")
+        if not is_public_http_url(base_url_override):
+            store.fail_record(
+                analysis_id,
+                "Only public HTTP(S) provider URLs are allowed in hosted mode.",
+            )
             return
 
     async def progress_callback(stage: AnalysisStage, desc: str) -> None:

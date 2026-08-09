@@ -2,6 +2,7 @@
  * Tests for citation badge rendering logic.
  */
 import { describe, it, expect } from 'vitest'
+import { safeExternalUrl } from '../src/lib/utils'
 
 // Test the citation lookup logic (pure function, no React rendering needed)
 function findEvidence(evidenceId: string, evidence: Array<{ evidence_id: string; url: string }>) {
@@ -42,5 +43,11 @@ describe('Citation URL handling', () => {
     const isExternal = (url: string) => url.startsWith('https://') || url.startsWith('http://')
     expect(isExternal('https://github.com/repo')).toBe(true)
     expect(isExternal('demo://fixture')).toBe(false)
+  })
+
+  it('blocks unsafe or malformed source URLs', () => {
+    expect(safeExternalUrl('javascript:alert(1)')).toBeNull()
+    expect(safeExternalUrl('demo://fixture')).toBeNull()
+    expect(safeExternalUrl('https://example.com/source')).toBe('https://example.com/source')
   })
 })

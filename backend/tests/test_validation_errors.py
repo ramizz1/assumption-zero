@@ -2,6 +2,8 @@
 Tests for clean validation error handling in FastAPI backend.
 """
 from fastapi.testclient import TestClient
+
+from assumption_zero.config import Settings, is_public_http_url
 from assumption_zero.main import app, clean_error_message
 
 client = TestClient(app)
@@ -56,3 +58,15 @@ def test_verify_keys_missing_key_returns_400():
     assert response.status_code == 400
     data = response.json()
     assert "API key is missing" in data["detail"]
+
+
+def test_release_debug_value_does_not_break_startup():
+    settings = Settings(_env_file=None, debug="release")
+    assert settings.debug is False
+
+
+def test_ssrf_url_filter_blocks_local_and_non_http_targets():
+    assert is_public_http_url("http://127.0.0.1:11434") is False
+    assert is_public_http_url("http://169.254.169.254/latest/meta-data") is False
+    assert is_public_http_url("file:///etc/passwd") is False
+    assert is_public_http_url("https://8.8.8.8") is True

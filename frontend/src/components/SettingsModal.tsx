@@ -17,7 +17,7 @@ interface Props {
 }
 
 export interface AISettings {
-  provider: 'beta' | 'groq' | 'openrouter' | 'hybrid' | 'openai_compat' | 'ollama' | 'opencode' | 'custom'
+  provider: 'auto' | 'beta' | 'groq' | 'openrouter' | 'hybrid' | 'openai_compat' | 'ollama' | 'opencode' | 'custom'
   groqKey: string
   openrouterKey: string
   opencodeKey: string
@@ -30,16 +30,8 @@ export interface AISettings {
 const STORAGE_KEY = 'azero_ai_settings'
 
 export const getStoredAISettings = (): AISettings => {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY)
-    if (raw) {
-      return JSON.parse(raw)
-    }
-  } catch {
-    // fallback
-  }
-  return {
-    provider: 'beta',
+  const defaults: AISettings = {
+    provider: 'auto',
     groqKey: '',
     openrouterKey: '',
     opencodeKey: '',
@@ -48,6 +40,20 @@ export const getStoredAISettings = (): AISettings => {
     customKey: '',
     customUrl: 'http://localhost:8000/v1',
   }
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY)
+    if (raw) {
+      const stored = JSON.parse(raw) as Partial<AISettings>
+      return {
+        ...defaults,
+        ...stored,
+        provider: stored.provider === 'beta' ? 'auto' : (stored.provider || defaults.provider),
+      }
+    }
+  } catch {
+    // fallback
+  }
+  return defaults
 }
 
 export const SettingsModal: React.FC<Props> = ({ isOpen, onClose, onSave }) => {
@@ -150,7 +156,7 @@ export const SettingsModal: React.FC<Props> = ({ isOpen, onClose, onSave }) => {
               disabled={testing}
               className="px-3 py-1.5 rounded-lg border border-gray-300 bg-white hover:bg-gray-100 text-xs font-mono font-bold text-gray-800 transition-all flex items-center gap-1.5 shadow-xs"
             >
-              {testing ? '⚡ Testing...' : '⚡ Test Connection'}
+              {testing ? '⚡ Validating...' : '⚡ Validate Setup'}
             </button>
           </div>
 
@@ -174,6 +180,7 @@ export const SettingsModal: React.FC<Props> = ({ isOpen, onClose, onSave }) => {
             </label>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs font-mono">
               {[
+                { id: 'auto', label: 'Auto' },
                 { id: 'ollama', label: 'Ollama' },
                 { id: 'opencode', label: 'OpenCode' },
                 { id: 'openai_compat', label: 'OpenAI' },
@@ -199,6 +206,11 @@ export const SettingsModal: React.FC<Props> = ({ isOpen, onClose, onSave }) => {
                 )
               })}
             </div>
+            {settings.provider === 'auto' && (
+              <p className="text-[11px] text-gray-500 leading-relaxed">
+                Uses the first configured provider. Without a key, Assumption Zero runs a clearly labelled evidence-based baseline analysis.
+              </p>
+            )}
           </div>
 
           {/* Conditional Input Fields */}

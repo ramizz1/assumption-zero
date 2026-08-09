@@ -4,8 +4,7 @@ OpenRouter LLM adapter.
 OpenRouter provides access to 200+ models via a single OpenAI-compatible API.
 https://openrouter.ai
 
-By default this adapter uses the built-in Assumption Zero Beta key.
-Users can override with their own OPENROUTER_API_KEY in .env.
+This adapter requires an OPENROUTER_API_KEY supplied in configuration or at runtime.
 """
 from __future__ import annotations
 
@@ -29,9 +28,6 @@ logger = logging.getLogger(__name__)
 
 _VALID_RECOMMENDATIONS = {r.value for r in Recommendation}
 
-# Read API Key from environment or config
-import os
-_BUILTIN_OPENROUTER_KEY = os.getenv("OPENROUTER_API_KEY", "")
 _OPENROUTER_BASE = "https://openrouter.ai/api/v1"
 
 # Primary default model & fallback list of verified free models on OpenRouter
@@ -168,8 +164,8 @@ class OpenRouterAdapter(LLMAdapter):
     """
     OpenRouter adapter.
 
-    Uses built-in key and automatically tries active free models with fallback
-    support if a model is unavailable.
+    Uses the configured key and automatically tries active free models with
+    fallback support if a model is unavailable.
     """
 
     def __init__(self, api_key: str = None, model: str = None, **kwargs) -> None:
