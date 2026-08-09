@@ -7,6 +7,7 @@ Each query is formatted to be search-engine-friendly (short phrases, no paragrap
 from __future__ import annotations
 
 import re
+from datetime import date
 from typing import Dict, List
 
 from assumption_zero.schemas import IdeaInput
@@ -53,6 +54,7 @@ def generate_queries(idea: IdeaInput) -> List[Dict[str, str]]:
     geography = idea.geography or "global"
     model = idea.business_model or ""
     known_comps = idea.known_competitors or ""
+    current_year = date.today().year
 
     queries: List[Dict[str, str]] = []
 
@@ -60,7 +62,9 @@ def generate_queries(idea: IdeaInput) -> List[Dict[str, str]]:
     # Use specific problem domain + name, never hardcode "app marketplace"
     queries.append({"query": f"{name} competitors {problem[:30]}", "type": "competitor"})
     queries.append({"query": f"best tools for {problem}", "type": "competitor"})
-    queries.append({"query": f"top alternatives to {name}", "type": "competitor"})
+    queries.append({"query": f"{customer[:30]} {problem[:35]} software vendors", "type": "competitor"})
+    queries.append({"query": f"{problem[:35]} software alternatives comparison", "type": "competitor"})
+    queries.append({"query": f"how {customer[:30]} currently solve {problem[:30]}", "type": "manual_workflow"})
 
     valid_comps = [
         c.strip() for c in known_comps.split(",")
@@ -71,8 +75,9 @@ def generate_queries(idea: IdeaInput) -> List[Dict[str, str]]:
         for comp in valid_comps[:4]:
             queries.append({"query": f"{comp} software features pricing", "type": "competitor"})
             queries.append({"query": f"{comp} vs {name} comparison", "type": "pricing"})
+            queries.append({"query": f"{comp} customer complaints limitations", "type": "complaint"})
     else:
-        queries.append({"query": f"top {problem[:40]} software 2024", "type": "competitor"})
+        queries.append({"query": f"top {problem[:40]} software {current_year}", "type": "competitor"})
         queries.append({"query": f"SaaS tools for {problem[:40]}", "type": "competitor"})
 
     # ── Open-source alternatives ──────────────────────────────────
@@ -96,7 +101,7 @@ def generate_queries(idea: IdeaInput) -> List[Dict[str, str]]:
     queries.append({"query": f"how {customer[:30]} manually does {problem[:30]}", "type": "manual_workflow"})
 
     # ── Market direction ──────────────────────────────────────────
-    queries.append({"query": f"{problem[:40]} industry trends 2024", "type": "market_direction"})
+    queries.append({"query": f"{problem[:40]} industry trends {current_year}", "type": "market_direction"})
 
     # ── Geographic relevance ──────────────────────────────────────
     if geography and geography != "global":
@@ -114,4 +119,13 @@ def generate_queries(idea: IdeaInput) -> List[Dict[str, str]]:
     # ── Distribution channels ─────────────────────────────────────
     queries.append({"query": f"how to acquire {customer[:30]} customers {problem[:25]}", "type": "distribution"})
 
-    return queries
+    # Keep provider work bounded when different templates collapse to the same
+    # short phrase for sparse idea inputs.
+    unique: List[Dict[str, str]] = []
+    seen: set[tuple[str, str]] = set()
+    for item in queries:
+        key = (item["query"].casefold().strip(), item["type"])
+        if key not in seen:
+            seen.add(key)
+            unique.append(item)
+    return unique

@@ -168,7 +168,7 @@ def _print_disclaimer() -> None:
 
 def _build_engine_sync(
     provider_override=None, api_key_override=None,
-    model_override=None, base_url_override=None,
+    model_override=None, base_url_override=None, research_providers=None,
 ):
     from assumption_zero.analysis.engine import AnalysisEngine
     from assumption_zero.services.analysis_service import (
@@ -181,7 +181,7 @@ def _build_engine_sync(
         model_override=model_override,
         base_url_override=base_url_override,
     )
-    providers = build_research_providers()
+    providers = build_research_providers(research_providers)
     return AnalysisEngine(providers=providers, llm_adapter=llm)
 
 
@@ -205,21 +205,31 @@ def _run_analysis_sync(
     api_key_override=None,
     model_override=None,
     base_url_override=None,
+    research_providers=None,
 ):
     import uuid
+    import assumption_zero.storage as store
     engine = _build_engine_sync(
         provider_override=provider_override,
         api_key_override=api_key_override,
         model_override=model_override,
         base_url_override=base_url_override,
+        research_providers=research_providers,
     )
     analysis_id = str(uuid.uuid4())
+    store.create_record(
+        analysis_id=analysis_id,
+        idea_name=idea.name or "Unnamed Idea",
+        input_data=idea.model_dump(mode="json"),
+        is_demo=is_demo,
+    )
     current_label = ["Starting engine..."]
 
     async def _run():
         async def on_progress(stage, desc):
             label, step = STAGE_LABELS.get(stage.value, (desc, "•"))
             current_label[0] = f"[{step}] {label}..."
+            store.update_stage(analysis_id, "running", stage.value)
 
         with Progress(
             SpinnerColumn(spinner_name="dots", style="bold #D97706"),
@@ -249,9 +259,16 @@ def _run_analysis_sync(
                     await watcher
                 except asyncio.CancelledError:
                     pass
+        store.complete_record(analysis_id, result.model_dump(mode="json"))
+        if result.status.value == "failed":
+            store.fail_record(analysis_id, result.error_message or "Analysis failed")
         return result
 
-    return asyncio.run(_run())
+    try:
+        return asyncio.run(_run())
+    except Exception as exc:
+        store.fail_record(analysis_id, str(exc))
+        raise
 
 
 def _clean_summary(text: str) -> str:
@@ -351,6 +368,24 @@ def _print_report(result) -> None:
         console.print(table)
 
     # ── 3. Evidence ───────────────────────────────────────────────
+    from assumption_zero.analysis.unit_economics import calculate_unit_economics, extract_price
+    monthly_price = max(1.0, extract_price(result.idea_input.price))
+    default_economics = calculate_unit_economics(
+        monthly_price,
+        max(10.0, round(monthly_price * 3)),
+        max(1.0, round(monthly_price * 0.15)),
+        500.0,
+        5.0,
+    )
+    _print_section("Unit Economics Stress Test")
+    console.print(
+        f"  [bold white]Health:[/] [bold cyan]{default_economics.health}[/]   "
+        f"[bold white]Break-even:[/] [white]{default_economics.breakeven_customers or 'Not reachable'} customers[/]   "
+        f"[bold white]CAC payback:[/] [white]{f'{default_economics.payback_months:.1f} months' if default_economics.payback_months is not None else 'Not reachable'}[/]   "
+        f"[bold white]LTV:CAC:[/] [white]{f'{default_economics.ltv_to_cac:.1f}x' if default_economics.ltv_to_cac is not None else 'Unknown'}[/]"
+    )
+    console.print("  [bright_white]Adjust inputs with: azero simulate <analysis-id>[/]\n")
+
     _print_section("Evidence Collected")
 
     ev_count = len(result.evidence)
@@ -388,6 +423,30 @@ def _print_report(result) -> None:
         )
 
     # ── 4. Competitors ────────────────────────────────────────────
+    if result.evidence:
+        evidence_table = Table(
+            box=box.SIMPLE,
+            show_header=True,
+            header_style="bold #D97706",
+            show_edge=False,
+            padding=(0, 1),
+        )
+        evidence_table.add_column("ID", width=7, style="bold cyan")
+        evidence_table.add_column("Type", width=15)
+        evidence_table.add_column("Source", width=18)
+        evidence_table.add_column("Rel", width=5, justify="right")
+        evidence_table.add_column("Evidence")
+        for item in result.evidence:
+            title = item.title[:70] + "..." if len(item.title) > 70 else item.title
+            evidence_table.add_row(
+                item.evidence_id,
+                item.evidence_type.value,
+                item.source_name[:18],
+                f"{item.relevance_score:.1f}",
+                f"[white]{title}[/]\n[bright_white]{item.url}[/]",
+            )
+        console.print(evidence_table)
+
     if result.competitors:
         _print_section(f"Competitors ({len(result.competitors)} Identified)")
 
@@ -400,6 +459,8 @@ def _print_report(result) -> None:
         )
         comp_table.add_column("Name", min_width=20, style="bold white")
         comp_table.add_column("Type", width=14, style="bright_white")
+        comp_table.add_column("Conf", width=8)
+        comp_table.add_column("Evidence", width=16, style="cyan")
         comp_table.add_column("Description")
 
         for comp in result.competitors[:10]:
@@ -407,9 +468,36 @@ def _print_report(result) -> None:
             comp_table.add_row(
                 comp.name[:28],
                 comp.competitor_type.value,
+                comp.confidence.value,
+                ", ".join(comp.evidence_ids) or "unverified",
                 f"[white]{desc}[/]",
             )
         console.print(comp_table)
+
+        for comp in result.competitors[:10]:
+            details = []
+            if comp.pricing_evidence:
+                details.append(f"[bold white]Pricing:[/] [white]{comp.pricing_evidence}[/]")
+            if comp.strengths:
+                details.append("[bold green]Strengths:[/] " + "; ".join(comp.strengths))
+            if comp.weaknesses:
+                details.append("[bold #D97706]Weaknesses:[/] " + "; ".join(comp.weaknesses))
+            if comp.complaints:
+                details.append("[bold red]Complaints:[/] " + "; ".join(comp.complaints))
+            if comp.differentiation:
+                details.append("[bold cyan]Differentiation hypotheses:[/] " + "; ".join(comp.differentiation))
+            if not comp.evidence_ids:
+                details.append("[bold #D97706]User-reported candidate; independent verification required.[/]")
+            if details:
+                console.print(
+                    Panel(
+                        "\n".join(details),
+                        title=f"[bold white]{comp.name} intelligence[/]",
+                        border_style="#D97706",
+                        box=box.ROUNDED,
+                        padding=(0, 1),
+                    )
+                )
 
     # ── 5. AI Perspectives ────────────────────────────────────────
     _print_section("3 AI Strategic Perspectives (Market Analyst • Investor • Builder)")
@@ -573,8 +661,18 @@ def _export_markdown(result) -> str:
         lines.append(f"**Evidence Confidence:** {result.evidence_confidence.value.upper()}")
     if result.recommendation:
         lines.append(f"**Recommendation:** {result.recommendation.value}")
+    lines.append(f"**Analysis Mode:** {', '.join(result.models_used) or 'Evidence baseline'}")
     if result.most_dangerous_assumption:
         lines.append(f"**Most Dangerous Assumption:** {result.most_dangerous_assumption}")
+
+    lines += [
+        "",
+        "## Evidence Balance",
+        "",
+        f"**Strongest support:** {result.strongest_supporting or 'Insufficient evidence'}",
+        "",
+        f"**Strongest contradiction:** {result.strongest_contradicting or 'Insufficient evidence'}",
+    ]
 
     lines += ["", "## Score Breakdown", ""]
     if result.opportunity_score:
@@ -592,7 +690,20 @@ def _export_markdown(result) -> str:
 
     lines += ["", "## Competitors", ""]
     for comp in result.competitors:
-        lines.append(f"- **{comp.name}** ({comp.competitor_type.value}) — {comp.description[:120]}")
+        citations = ", ".join(f"[{eid}]" for eid in comp.evidence_ids) or "Unverified user input"
+        lines += [
+            f"### {comp.name}",
+            f"- **Type:** {comp.competitor_type.value}",
+            f"- **Confidence:** {comp.confidence.value}",
+            f"- **Evidence:** {citations}",
+            f"- **Description:** {comp.description}",
+            f"- **Pricing:** {comp.pricing_evidence or 'Not established'}",
+            f"- **Strengths:** {'; '.join(comp.strengths) or 'Not established'}",
+            f"- **Weaknesses:** {'; '.join(comp.weaknesses) or 'Not established'}",
+            f"- **Complaints:** {'; '.join(comp.complaints) or 'Not established'}",
+            f"- **Differentiation hypotheses:** {'; '.join(comp.differentiation) or 'None recorded'}",
+            "",
+        ]
 
     lines += ["", "## AI Perspectives", ""]
     for p in result.perspectives:
@@ -609,6 +720,18 @@ def _export_markdown(result) -> str:
         if p.opportunities:
             lines += ["", "**Opportunities:**"] + [f"- {o}" for o in p.opportunities]
         lines.append("")
+
+    if result.disagreements:
+        lines += ["## Perspective Disagreements", ""]
+        for disagreement in result.disagreements:
+            lines.append(f"### {disagreement.topic}")
+            for position in disagreement.positions:
+                lines.append(f"- **{position.perspective}:** {position.position}")
+            if disagreement.stronger_position:
+                lines.append(f"- **Stronger position:** {disagreement.stronger_position}")
+            if disagreement.requires_human_research:
+                lines.append("- **Requires direct human research:** Yes")
+            lines.append("")
 
     lines += ["", "## Validation Experiments", ""]
     for i, exp in enumerate(result.experiments, 1):
@@ -680,15 +803,46 @@ def _export_html(result) -> str:
     comp_html = ""
     if result.competitors:
         for c in result.competitors:
+            strengths = "".join(f"<li>{item}</li>" for item in c.strengths)
+            weaknesses = "".join(f"<li>{item}</li>" for item in c.weaknesses)
+            complaints = "".join(f"<li>{item}</li>" for item in c.complaints)
+            differentiation = "".join(f"<li>{item}</li>" for item in c.differentiation)
+            evidence_ids = ", ".join(c.evidence_ids) or "Unverified user input"
+            pricing_html = (
+                f'<p style="margin-top: .65rem;"><strong>Pricing:</strong> {c.pricing_evidence}</p>'
+                if c.pricing_evidence else ""
+            )
             comp_html += f"""
             <div class="card">
                 <div class="card-header">
                     <span class="card-title">{c.name}</span>
-                    <span class="badge" style="background: #3B82F622; color: #60A5FA;">{c.competitor_type.value}</span>
+                    <div>
+                        <span class="badge" style="background: #3B82F622; color: #60A5FA;">{c.competitor_type.value}</span>
+                        <span class="badge" style="background: #D9770622; color: #F5A623;">{c.confidence.value} confidence</span>
+                    </div>
                 </div>
                 <p style="color: #94A3B8; font-size: 0.95rem; margin-top: 0.5rem;">{c.description}</p>
+                <p style="color: #94A3B8; font-size: 0.82rem; margin-top: 0.75rem;"><strong>Evidence:</strong> {evidence_ids}</p>
+                {pricing_html}
+                {"<div style='margin-top: .75rem;'><strong style='color:#4ADE80;'>Strengths</strong><ul>" + strengths + "</ul></div>" if strengths else ""}
+                {"<div style='margin-top: .75rem;'><strong style='color:#F5A623;'>Weaknesses</strong><ul>" + weaknesses + "</ul></div>" if weaknesses else ""}
+                {"<div style='margin-top: .75rem;'><strong style='color:#F87171;'>Complaints</strong><ul>" + complaints + "</ul></div>" if complaints else ""}
+                {"<div style='margin-top: .75rem;'><strong style='color:#60A5FA;'>Differentiation hypotheses</strong><ul>" + differentiation + "</ul></div>" if differentiation else ""}
             </div>
             """
+
+    evidence_html = ""
+    for item in result.evidence:
+        evidence_html += f"""
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">[{item.evidence_id}] {item.title}</span>
+                <span class="badge" style="background:#3B82F622;color:#60A5FA;">{item.evidence_type.value}</span>
+            </div>
+            <p style="color:#CBD5E1;">{item.passage}</p>
+            <p style="color:#94A3B8;font-size:.82rem;margin-top:.75rem;">{item.source_name} · relevance {item.relevance_score:.1f} · <a href="{item.url}" style="color:#60A5FA;">source</a></p>
+        </div>
+        """
 
     # AI Perspectives
     persp_html = ""
@@ -980,6 +1134,8 @@ def _export_html(result) -> str:
         {persp_html}
 
         {"<div class='section-title'>Identified Competitors</div><div class='grid'>" + comp_html + "</div>" if comp_html else ""}
+
+        {"<div class='section-title'>Cited Sources</div>" + evidence_html if evidence_html else ""}
 
         <div class="section-title">Actionable Next Steps</div>
         <div style="display: grid; gap: 0.75rem; margin-bottom: 2rem;">
@@ -1286,6 +1442,10 @@ def analyze(
         None, "--base-url",
         help="Custom OpenAI-compatible base URL (e.g. https://api.together.xyz/v1). Used with --api-key.",
     ),
+    research_provider: Optional[list[str]] = typer.Option(
+        None, "--research-provider", "-r",
+        help="Use a specific research provider; repeat for multiple providers (for example: -r 'Web Search' -r GitHub).",
+    ),
 ) -> None:
     """
     Analyse an MVP idea interactively, from a 1-prompt text, or from a JSON or text file.
@@ -1308,6 +1468,7 @@ def analyze(
         _api_key = api_key if isinstance(api_key, str) else None
         _model = model if isinstance(model, str) else None
         _base_url = base_url if isinstance(base_url, str) else None
+        _research_providers = research_provider if isinstance(research_provider, list) else None
 
         # If --api-key given but no --provider, auto-detect from model name or default to openai
         if _api_key and not _provider:
@@ -1393,6 +1554,7 @@ def analyze(
             api_key_override=_api_key,
             model_override=_model,
             base_url_override=_base_url,
+            research_providers=_research_providers,
         )
         _print_report(result)
     except Exception as exc:
@@ -1408,6 +1570,13 @@ def analyze(
 def prompt(
     text: Optional[str] = typer.Argument(None, help="Single natural language text prompt describing your startup idea"),
     file: Optional[Path] = typer.Option(None, "--file", "-f", help="Path to a text or markdown file containing your idea prompt"),
+    api_key: Optional[str] = typer.Option(None, "--api-key", "-k", help="Runtime AI provider API key."),
+    model: Optional[str] = typer.Option(None, "--model", "-m", help="Runtime model override."),
+    provider: Optional[str] = typer.Option(None, "--provider", help="AI provider override."),
+    base_url: Optional[str] = typer.Option(None, "--base-url", help="Custom or local AI provider base URL."),
+    research_provider: Optional[list[str]] = typer.Option(
+        None, "--research-provider", "-r", help="Research provider to use; repeat for multiple providers."
+    ),
 ) -> None:
     """Analyze a startup idea from a freeform text prompt or text/markdown file."""
     if file:
@@ -1439,14 +1608,160 @@ def prompt(
             console.print("  [bold red]Error: Prompt cannot be empty.[/]")
             raise typer.Exit(1)
 
-    analyze(file=None, prompt=text, api_key=None, model=None, provider=None, base_url=None)
+    analyze(
+        file=None,
+        prompt=text,
+        api_key=api_key,
+        model=model,
+        provider=provider,
+        base_url=base_url,
+        research_provider=research_provider,
+    )
+
+
+@app.command()
+def demo(
+    provider: Optional[str] = typer.Option(None, "--provider", help="AI provider override."),
+    api_key: Optional[str] = typer.Option(None, "--api-key", "-k", help="Runtime provider API key."),
+    model: Optional[str] = typer.Option(None, "--model", "-m", help="Runtime model override."),
+    base_url: Optional[str] = typer.Option(None, "--base-url", help="Custom or local provider base URL."),
+    research_provider: Optional[list[str]] = typer.Option(
+        None, "--research-provider", "-r", help="Research provider to use; repeat for multiple providers."
+    ),
+) -> None:
+    """Run the same real example analysis available from the web home page."""
+    from assumption_zero.demo import DEMO_IDEA
+
+    _print_splash()
+    console.print(
+        Panel(
+            f"[bold white]Example:[/] [bold #D97706]{DEMO_IDEA.name}[/]\n[white]{DEMO_IDEA.description}[/]",
+            border_style="#D97706",
+            box=box.ROUNDED,
+            padding=(1, 2),
+        )
+    )
+    result = _run_analysis_sync(
+        DEMO_IDEA,
+        is_demo=True,
+        provider_override=provider,
+        api_key_override=api_key,
+        model_override=model,
+        base_url_override=base_url,
+        research_providers=research_provider,
+    )
+    _print_report(result)
+
+
+@app.command()
+def simulate(
+    analysis_id: Optional[str] = typer.Argument(
+        None, help="Saved analysis ID, short ID, or index. Omit for the latest analysis."
+    ),
+    price: Optional[float] = typer.Option(None, "--price", help="Monthly customer price in USD."),
+    cac: Optional[float] = typer.Option(None, "--cac", help="Customer acquisition cost in USD."),
+    variable_cost: Optional[float] = typer.Option(
+        None, "--variable-cost", help="Variable monthly cost per customer in USD."
+    ),
+    fixed_costs: float = typer.Option(500.0, "--fixed-costs", help="Monthly fixed costs in USD."),
+    churn: float = typer.Option(5.0, "--churn", help="Monthly customer churn percentage."),
+) -> None:
+    """Run the web report's adjustable unit-economics stress test in the terminal."""
+    from assumption_zero.analysis.unit_economics import calculate_unit_economics, extract_price
+    from assumption_zero.services.analysis_service import get_analysis
+
+    result = asyncio.run(get_analysis(analysis_id or "1"))
+    if not result and price is None:
+        err_console.print("No saved analysis found. Supply an analysis ID or --price.")
+        raise typer.Exit(1)
+
+    monthly_price = max(1.0, price if price is not None else extract_price(result.idea_input.price))
+    effective_cac = cac if cac is not None else max(10.0, round(monthly_price * 3))
+    effective_variable = (
+        variable_cost if variable_cost is not None else max(1.0, round(monthly_price * 0.15))
+    )
+    economics = calculate_unit_economics(
+        monthly_price, effective_cac, effective_variable, fixed_costs, churn
+    )
+
+    _print_splash()
+    _print_section("Unit Economics Stress Test")
+    table = Table(box=box.SIMPLE, show_header=False, show_edge=False, padding=(0, 2))
+    table.add_column(style="bold white", width=30)
+    table.add_column(style="bold cyan")
+    table.add_row("Health", economics.health)
+    table.add_row("Monthly price", f"${economics.monthly_price:,.2f}")
+    table.add_row("Gross margin / customer", f"${economics.gross_margin_per_customer:,.2f}")
+    table.add_row("Monthly contribution", f"${economics.monthly_contribution:,.2f}")
+    table.add_row(
+        "Break-even customers",
+        str(economics.breakeven_customers) if economics.breakeven_customers is not None else "Not reachable",
+    )
+    table.add_row(
+        "CAC payback",
+        f"{economics.payback_months:.1f} months" if economics.payback_months is not None else "Not reachable",
+    )
+    table.add_row(
+        "Estimated LTV",
+        f"${economics.estimated_ltv:,.2f}" if economics.estimated_ltv is not None else "Unknown",
+    )
+    table.add_row(
+        "LTV : CAC",
+        f"{economics.ltv_to_cac:.1f}x" if economics.ltv_to_cac is not None else "Unknown",
+    )
+    console.print(table)
+    console.print("\n[bright_white]Directional model only; validate every input with real customer data.[/]")
+
+
+@app.command(name="verify-provider")
+def verify_provider(
+    provider: str = typer.Argument(..., help="Provider name: ollama, opencode, openai_compat, groq, or openrouter."),
+    api_key: Optional[str] = typer.Option(None, "--api-key", "-k", help="Runtime provider API key."),
+    model: Optional[str] = typer.Option(None, "--model", "-m", help="Runtime model override."),
+    base_url: Optional[str] = typer.Option(None, "--base-url", help="Custom or local provider base URL."),
+) -> None:
+    """Validate provider configuration like the web settings connection check."""
+    from assumption_zero.config import get_settings, is_public_http_url
+    from assumption_zero.services.analysis_service import build_llm_adapter
+
+    settings = get_settings()
+    normalized_provider = provider.casefold().strip()
+    configured_keys = {
+        "groq": settings.groq_api_key,
+        "openrouter": settings.openrouter_api_key,
+        "opencode": settings.opencode_api_key,
+        "openai": settings.openai_compatible_api_key,
+        "openai_compat": settings.openai_compatible_api_key,
+        "custom": settings.openai_compatible_api_key,
+    }
+    if normalized_provider in configured_keys and not (api_key or configured_keys[normalized_provider]):
+        err_console.print(f"API key is missing for {provider.upper()}.")
+        raise typer.Exit(1)
+    if settings.ssrf_protection_enabled and base_url and not is_public_http_url(base_url):
+        err_console.print("Only public HTTP(S) provider URLs are allowed in hosted mode.")
+        raise typer.Exit(1)
+    adapter = build_llm_adapter(
+        provider_override=provider,
+        api_key_override=api_key,
+        model_override=model,
+        base_url_override=base_url,
+    )
+    if not adapter.is_available:
+        err_console.print(f"Provider {provider!r} is not configured or available.")
+        raise typer.Exit(1)
+    console.print(
+        f"[bold green]Configuration accepted.[/] Provider: [bold cyan]{provider}[/]  Model: [bold white]{adapter.model_id}[/]\n"
+        "[bright_white]Live connectivity is confirmed when an analysis starts.[/]"
+    )
 
 
 @app.command(name="list")
 def list_cmd(
     search: Optional[str] = typer.Option(None, "--search", "-s", help="Filter by idea name or analysis ID"),
-    status: Optional[str] = typer.Option(None, "--status", help="Filter by status: complete, pending, running, failed"),
-    limit: int = typer.Option(50, "--limit", "-n", help="Maximum items to display"),
+    status: Optional[str] = typer.Option(
+        None, "--status", help="Filter by run status or verdict: complete, pending, failed, build, test_first, pivot, avoid"
+    ),
+    limit: int = typer.Option(50, "--limit", "-n", min=1, max=100, help="Maximum items to display"),
 ) -> None:
     """List all saved analyses ordered by most recent."""
     _print_splash()

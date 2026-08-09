@@ -124,6 +124,18 @@ azero analyze --file examples/sample-idea.json
 # Analyze from a freeform text prompt
 azero prompt "A privacy-first AI meeting summarizer for law firms"
 
+# Pin the same live research providers used by the web pipeline (repeat -r)
+azero analyze --prompt "AI scheduling for dentists" -r "Web Search" -r GitHub
+
+# Run the same real example available from the web home page
+azero demo
+
+# Re-run the web report's adjustable unit-economics stress test
+azero simulate 1 --cac 120 --variable-cost 8 --fixed-costs 900 --churn 4
+
+# Check an AI-provider configuration before starting an analysis
+azero verify-provider openrouter --api-key sk-or-v1-your-key
+
 # View step-by-step idea formulation guide
 azero guide
 
@@ -139,6 +151,10 @@ azero export 1 --format markdown --output report.md
 # Display system configuration and version info
 azero version
 ```
+
+The CLI and web interface use the same analysis engine and the same root
+`azero_data` history. Analyses started from either interface appear in both
+`azero list` and the web **History** view.
 
 ---
 

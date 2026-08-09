@@ -155,6 +155,7 @@ def _parse_output(raw: str, perspective_name: PerspectiveName, model_id: str) ->
         recommendation=Recommendation(rec),
         dimension_scores=data.get("dimension_scores", {}),
         cited_evidence_ids=data.get("cited_evidence_ids", []),
+        competitors=data.get("competitors", []),
         most_dangerous_assumption=data.get("most_dangerous_assumption", ""),
         reasoning=data.get("reasoning", ""),
     )

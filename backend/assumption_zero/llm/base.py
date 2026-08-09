@@ -6,14 +6,38 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import Dict, List
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field, field_validator
 
 from assumption_zero.schemas import (
     EvidenceItem,
     IdeaInput,
+    CompetitorType,
     PerspectiveName,
     Recommendation,
 )
+
+
+class DiscoveredCompetitor(BaseModel):
+    """A compact, evidence-grounded competitor proposed by an AI perspective."""
+
+    name: str = Field(min_length=2, max_length=80)
+    competitor_type: CompetitorType = CompetitorType.DIRECT
+    description: str = Field(default="", max_length=500)
+    target_user: str = Field(default="", max_length=200)
+    pricing_evidence: str | None = Field(default=None, max_length=300)
+    strengths: List[str] = Field(default_factory=list)
+    weaknesses: List[str] = Field(default_factory=list)
+    complaints: List[str] = Field(default_factory=list)
+    differentiation: List[str] = Field(default_factory=list)
+    evidence_ids: List[str] = Field(default_factory=list)
+
+    @field_validator("competitor_type", mode="before")
+    @classmethod
+    def normalize_competitor_type(cls, value: object) -> CompetitorType:
+        normalized = str(value or "direct").casefold().strip()
+        if normalized in {"indirect", "substitute", "alternative", "open_source", "oss", "manual", "status_quo"}:
+            return CompetitorType.INDIRECT
+        return CompetitorType.DIRECT
 
 
 class PerspectiveOutput(BaseModel):
@@ -30,6 +54,21 @@ class PerspectiveOutput(BaseModel):
     cited_evidence_ids: List[str]
     most_dangerous_assumption: str
     reasoning: str  # Chain-of-thought; not shown to end-users by default
+    competitors: List[DiscoveredCompetitor] = Field(default_factory=list)
+
+    @field_validator("competitors", mode="before")
+    @classmethod
+    def discard_malformed_competitors(cls, value: object) -> List[DiscoveredCompetitor]:
+        """One malformed AI candidate must not invalidate the full perspective."""
+        if not isinstance(value, list):
+            return []
+        valid: List[DiscoveredCompetitor] = []
+        for item in value[:20]:
+            try:
+                valid.append(DiscoveredCompetitor.model_validate(item))
+            except (TypeError, ValueError):
+                continue
+        return valid
 
 
 # System prompt templates injected before each perspective prompt
@@ -72,7 +111,17 @@ def build_analysis_prompt(
     evidence: List[EvidenceItem],
 ) -> str:
     """Build the user-facing analysis prompt with evidence injected (compacted for fast, low-token inference)."""
-    compact_evidence = evidence[:25]
+    # Do not let general market results crowd competitor evidence out of the
+    # model context. Keep a balanced, deterministic evidence selection.
+    priority_types = {"competitor", "oss_alternative", "pricing", "complaint"}
+    priority = [e for e in evidence if e.evidence_type.value in priority_types]
+    compact_evidence = priority[:24]
+    selected_ids = {e.evidence_id for e in compact_evidence}
+    compact_evidence.extend(
+        e for e in evidence
+        if e.evidence_id not in selected_ids
+    )
+    compact_evidence = compact_evidence[:40]
     evidence_block = "\n".join(
         f"[{e.evidence_id}] {e.title[:90]}\n"
         f"  Source: {e.source_name} | Type: {e.evidence_type.value}\n"
@@ -113,6 +162,13 @@ EXHAUSTIVE ANALYSIS REQUIREMENTS:
 4. **Competitive Matrix**: Profile top competitors ({idea.known_competitors or 'existing alternatives in this space'}) with strengths, weaknesses, and defensible moats.
 5. **Trust, Safety & Legal**: Outline data security, identity verification, and legal compliance considerations specific to this product.
 
+COMPETITOR DISCOVERY REQUIREMENTS:
+1. Identify direct products, indirect substitutes, open-source alternatives, and the status-quo/manual workflow when the evidence names them.
+2. Add a competitor only when at least one cited evidence item explicitly names that product or service. Never invent a company, URL, feature, price, or market share.
+3. Every competitor must include its supporting `evidence_ids`. Omit unsupported known competitors instead of treating user input as independent proof.
+4. Use `direct` when it solves substantially the same job for the same buyer; use `indirect` for substitutes, open-source tools, platforms, or manual workflows.
+5. For unknown attributes use an empty string/list. Potential differentiation must be labelled as a hypothesis unless directly supported by evidence.
+
 CRITICAL CITATION & FACTUAL RULES:
 1. Only cite evidence IDs from the list above (e.g. [E001]). Never cite IDs not in the list.
 2. Base every factual claim on a cited evidence ID or user prompt specification.
@@ -135,6 +191,20 @@ Respond with a JSON object matching EXACTLY this schema:
     "legal_operational_risk": 0-100
   }},
   "cited_evidence_ids": ["E001", "E002"],
+  "competitors": [
+    {{
+      "name": "Evidence-backed product name",
+      "competitor_type": "direct | indirect",
+      "description": "What it does, grounded in the cited evidence",
+      "target_user": "Evidence-backed target user or empty string",
+      "pricing_evidence": "Evidence-backed price or null",
+      "strengths": ["Evidence-backed strength"],
+      "weaknesses": ["Evidence-backed weakness"],
+      "complaints": ["Evidence-backed complaint"],
+      "differentiation": ["Hypothesis: a testable gap the startup could validate"],
+      "evidence_ids": ["E001"]
+    }}
+  ],
   "most_dangerous_assumption": "The single most dangerous unvalidated assumption",
   "reasoning": "Step-by-step reasoning that led to your scores"
 }}

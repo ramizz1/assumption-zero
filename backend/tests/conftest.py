@@ -17,6 +17,20 @@ from assumption_zero.schemas import (
 )
 
 
+@pytest.fixture(autouse=True)
+def isolated_storage(tmp_path, monkeypatch):
+    """Never let API/CLI tests write into a developer's real saved analyses."""
+    import assumption_zero.storage as store
+
+    root = tmp_path / "azero_data"
+    monkeypatch.setattr(store, "_STORAGE_ROOT", root)
+    monkeypatch.setattr(store, "_CSV_PATH", root / "analyses.csv")
+    monkeypatch.setattr(store, "_ANALYSES_DIR", root / "analyses")
+    monkeypatch.setattr(store, "_LEGACY_STORAGE_ROOT", tmp_path / "legacy_azero_data")
+    monkeypatch.setattr(store, "_migration_checked", False)
+    return root
+
+
 @pytest.fixture
 def sample_idea() -> IdeaInput:
     return IdeaInput(

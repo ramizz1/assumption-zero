@@ -67,6 +67,29 @@ export default function CompetitorCard({ competitor, evidence }: Props) {
         </p>
       )}
 
+      {(competitor.strengths.length > 0 || competitor.weaknesses.length > 0 || competitor.complaints.length > 0) && (
+        <div className="grid gap-3 sm:grid-cols-3 mt-4 pt-4 border-t border-gray-100">
+          {[
+            ['Strengths', competitor.strengths, 'text-emerald-700'],
+            ['Weaknesses', competitor.weaknesses, 'text-amber-700'],
+            ['Customer complaints', competitor.complaints, 'text-red-700'],
+          ].map(([label, items, color]) => (
+            (items as string[]).length > 0 && (
+              <div key={label as string}>
+                <p className={`text-[10px] font-bold uppercase tracking-wider mb-1.5 ${color as string}`}>
+                  {label as string}
+                </p>
+                <ul className="space-y-1">
+                  {(items as string[]).slice(0, 3).map((item, index) => (
+                    <li key={index} className="text-xs text-gray-600 leading-snug">• {item}</li>
+                  ))}
+                </ul>
+              </div>
+            )
+          ))}
+        </div>
+      )}
+
       {competitor.differentiation.length > 0 && (
         <div className="mt-4 pt-4 border-t border-gray-100">
           <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wider mb-2">
@@ -90,6 +113,12 @@ export default function CompetitorCard({ competitor, evidence }: Props) {
             <CitationBadge key={id} evidenceId={id} evidence={evidence} />
           ))}
         </div>
+      )}
+
+      {competitor.evidence_ids.length === 0 && (
+        <p className="text-[10px] text-amber-700 mt-4 pt-3 border-t border-gray-100">
+          User-reported candidate — independent verification is still required.
+        </p>
       )}
     </div>
   )

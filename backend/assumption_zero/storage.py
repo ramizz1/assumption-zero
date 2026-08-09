@@ -15,14 +15,19 @@ from __future__ import annotations
 import csv
 import json
 import os
+import shutil
 from datetime import datetime
 from pathlib import Path
 from typing import Optional
 
 # Storage root — next to wherever the process runs
-_STORAGE_ROOT = Path(os.environ.get("AZERO_DATA_DIR", "./azero_data"))
+_PROJECT_ROOT = Path(__file__).resolve().parents[2]
+_configured_root = Path(os.environ.get("AZERO_DATA_DIR", str(_PROJECT_ROOT / "azero_data"))).expanduser()
+_STORAGE_ROOT = _configured_root if _configured_root.is_absolute() else _PROJECT_ROOT / _configured_root
 _CSV_PATH = _STORAGE_ROOT / "analyses.csv"
 _ANALYSES_DIR = _STORAGE_ROOT / "analyses"
+_LEGACY_STORAGE_ROOT = _PROJECT_ROOT / "backend" / "azero_data"
+_migration_checked = False
 
 CSV_FIELDS = [
     "id", "status", "stage",
@@ -34,10 +39,54 @@ CSV_FIELDS = [
 def _ensure_dirs() -> None:
     _STORAGE_ROOT.mkdir(parents=True, exist_ok=True)
     _ANALYSES_DIR.mkdir(parents=True, exist_ok=True)
+    _migrate_legacy_storage()
+
+
+def _migrate_legacy_storage() -> None:
+    """Merge the former backend-relative store once, without overwriting files."""
+    global _migration_checked
+    if _migration_checked:
+        return
+    _migration_checked = True
+
+    legacy_csv = _LEGACY_STORAGE_ROOT / "analyses.csv"
+    legacy_analyses = _LEGACY_STORAGE_ROOT / "analyses"
+    try:
+        if _LEGACY_STORAGE_ROOT.resolve() == _STORAGE_ROOT.resolve() or not legacy_csv.exists():
+            return
+        current_rows = []
+        if _CSV_PATH.exists():
+            with _CSV_PATH.open(newline="", encoding="utf-8") as handle:
+                current_rows = list(csv.DictReader(handle))
+        with legacy_csv.open(newline="", encoding="utf-8") as handle:
+            legacy_rows = list(csv.DictReader(handle))
+
+        seen = {row.get("id") for row in current_rows}
+        added = [row for row in legacy_rows if row.get("id") and row.get("id") not in seen]
+        if added:
+            merged = current_rows + added
+            merged.sort(key=lambda row: row.get("created_at", ""), reverse=True)
+            tmp_path = _CSV_PATH.with_suffix(".csv.migration.tmp")
+            with tmp_path.open("w", newline="", encoding="utf-8") as handle:
+                writer = csv.DictWriter(handle, fieldnames=CSV_FIELDS)
+                writer.writeheader()
+                writer.writerows(merged)
+            os.replace(tmp_path, _CSV_PATH)
+
+        if legacy_analyses.exists():
+            for source in legacy_analyses.glob("*.json"):
+                target = _ANALYSES_DIR / source.name
+                if not target.exists():
+                    shutil.copy2(source, target)
+    except (OSError, csv.Error):
+        # A storage migration must never prevent the app from starting. The
+        # untouched legacy directory remains a recoverable copy.
+        return
 
 
 def _read_all() -> list[dict]:
     """Read all rows from the CSV. Returns [] if file doesn't exist."""
+    _ensure_dirs()
     if not _CSV_PATH.exists():
         return []
     with _CSV_PATH.open(newline="", encoding="utf-8") as f:

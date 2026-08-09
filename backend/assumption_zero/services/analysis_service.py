@@ -214,6 +214,8 @@ async def run_analysis(
         )
 
         store.complete_record(analysis_id, result.model_dump(mode="json"))
+        if result.status == AnalysisStatus.FAILED:
+            store.fail_record(analysis_id, result.error_message or "Analysis failed")
         logger.info("Analysis %s complete", analysis_id)
 
     except Exception as exc:
@@ -288,9 +290,6 @@ async def list_analyses(
                 continue
 
         row_status = row.get("status", "pending")
-        if status_clean and row_status.lower() != status_clean:
-            continue
-
         score: Optional[float] = None
         rec: Optional[Recommendation] = None
 
@@ -308,6 +307,15 @@ async def list_analyses(
                     rec = Recommendation(rec_val)
                 except ValueError:
                     rec = None
+
+        if status_clean:
+            normalized_filter = status_clean.replace(" ", "_")
+            normalized_rec = rec.value.lower().replace(" ", "_") if rec else None
+            if normalized_filter in {"build", "test_first", "pivot", "avoid"}:
+                if normalized_rec != normalized_filter:
+                    continue
+            elif row_status.lower() != normalized_filter:
+                continue
 
         # Safe Enum parsing
         try:

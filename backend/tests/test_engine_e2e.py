@@ -1,7 +1,12 @@
 import pytest
+from datetime import date, datetime
+
 from assumption_zero.analysis.engine import AnalysisEngine
-from assumption_zero.schemas import IdeaInput, AnalysisStage, AnalysisStatus, Recommendation
-from assumption_zero.llm.base import LLMAdapter, PerspectiveOutput
+from assumption_zero.schemas import (
+    IdeaInput, AnalysisStage, AnalysisStatus, Recommendation,
+    EvidenceItem, EvidenceType, ReliabilityLevel,
+)
+from assumption_zero.llm.base import DiscoveredCompetitor, LLMAdapter, PerspectiveOutput
 from assumption_zero.research.base import ResearchProvider
 
 class MockAdapter(LLMAdapter):
@@ -50,6 +55,43 @@ class MockProvider(ResearchProvider):
     async def search(self, query, query_type, idea, max_results):
         return []
 
+
+class CompetitorProvider(MockProvider):
+    async def search(self, query, query_type, idea, max_results):
+        if query_type != "competitor":
+            return []
+        return [
+            EvidenceItem(
+                evidence_id="provider-id",
+                title="Otter.ai meeting assistant",
+                url="https://otter.ai/product",
+                evidence_origin="Test research",
+                source_name="Test research",
+                retrieval_date=date.today(),
+                passage="Otter.ai provides automated meeting transcription and summaries.",
+                search_query=query,
+                evidence_type=EvidenceType.COMPETITOR,
+                reliability=ReliabilityLevel.MEDIUM,
+                relevance_score=0.9,
+                retrieval_timestamp=datetime.utcnow(),
+            )
+        ]
+
+
+class CompetitorAIAdapter(MockAdapter):
+    async def analyze_perspective(self, perspective_name, idea, evidence):
+        output = await super().analyze_perspective(perspective_name, idea, evidence)
+        output.competitors = [
+            DiscoveredCompetitor(
+                name="Otter.ai",
+                description="Automated meeting transcription and summaries.",
+                competitor_type="direct",
+                differentiation=["Legal review and compliance workflow"],
+                evidence_ids=["E001"],
+            )
+        ]
+        return output
+
 @pytest.mark.asyncio
 async def test_engine_end_to_end():
     idea = IdeaInput(
@@ -89,3 +131,30 @@ async def test_engine_end_to_end():
     serialized = result.model_dump(mode="json")
     assert isinstance(serialized, dict)
     assert serialized["status"] == "complete"
+
+
+@pytest.mark.asyncio
+async def test_ai_competitor_survives_grounded_end_to_end_pipeline():
+    idea = IdeaInput(
+        name="Legal Meeting Briefs",
+        description="Meeting transcription and summaries for legal teams.",
+        problem="Small law firms lose time preparing meeting notes.",
+        target_customer="Small law firms",
+        geography="United States",
+    )
+    engine = AnalysisEngine(
+        providers=[CompetitorProvider()],
+        llm_adapter=CompetitorAIAdapter(),
+    )
+
+    result = await engine.run(idea, "competitor-test")
+
+    assert len(result.competitors) == 1
+    competitor = result.competitors[0]
+    assert competitor.name == "Otter.ai"
+    assert competitor.url == "https://otter.ai/product"
+    assert competitor.evidence_ids == ["E001"]
+    assert competitor.differentiation == [
+        "Hypothesis: Legal review and compliance workflow"
+    ]
+    assert result.model_dump(mode="json")["competitors"][0]["confidence"] == "medium"

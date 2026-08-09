@@ -60,6 +60,30 @@ export function generateMarkdownReport(result: AnalysisResult): string {
     )
   })
 
+  lines.push('## Evidence-grounded competitors', '')
+  if (result.competitors.length === 0) {
+    lines.push('- None verified in this research run', '')
+  } else {
+    result.competitors.forEach((competitor) => {
+      const citations = competitor.evidence_ids.length
+        ? competitor.evidence_ids.map((id) => `[${id}]`).join(', ')
+        : 'Unverified user input'
+      lines.push(
+        `### ${competitor.name}`,
+        '',
+        `- Type: ${competitor.competitor_type}`,
+        `- Confidence: ${competitor.confidence}`,
+        `- Evidence: ${citations}`,
+        `- Description: ${competitor.description}`,
+        `- Strengths: ${competitor.strengths.join('; ') || 'Not established'}`,
+        `- Weaknesses: ${competitor.weaknesses.join('; ') || 'Not established'}`,
+        `- Complaints: ${competitor.complaints.join('; ') || 'Not established'}`,
+        `- Differentiation hypotheses: ${competitor.differentiation.join('; ') || 'None recorded'}`,
+        '',
+      )
+    })
+  }
+
   lines.push('## Validation experiments', '')
   result.experiments.forEach((experiment, index) => {
     lines.push(

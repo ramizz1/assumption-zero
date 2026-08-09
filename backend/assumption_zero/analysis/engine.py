@@ -19,9 +19,11 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import re
 from collections import Counter
 from datetime import datetime
 from typing import Any, Callable, Dict, List, Optional, Awaitable
+from urllib.parse import urlparse
 
 from assumption_zero.analysis.citation_validator import validate_citations
 from assumption_zero.analysis.competitor_merger import merge_competitors
@@ -30,7 +32,7 @@ from assumption_zero.analysis.disagreement import detect_disagreements
 from assumption_zero.analysis.experiment_generator import generate_experiments
 from assumption_zero.analysis.query_generator import generate_queries
 from assumption_zero.analysis.scoring import calculate_opportunity_score
-from assumption_zero.llm.base import LLMAdapter, PerspectiveOutput
+from assumption_zero.llm.base import DiscoveredCompetitor, LLMAdapter, PerspectiveOutput
 from assumption_zero.research.base import ResearchProvider
 from assumption_zero.schemas import (
     AnalysisPerspective,
@@ -74,9 +76,51 @@ def _assign_evidence_ids(items: List[EvidenceItem]) -> List[EvidenceItem]:
     return unique
 
 
-def _clean_competitor_name(title: str) -> str:
+IGNORE_COMPETITOR_WORDS = {
+    "idk", "none", "no", "n/a", "unknown", "nothing", "no idea",
+    "dont know", "don't know", "na",
+}
+
+_AGGREGATOR_HOSTS = {
+    "alternativeto.net", "capterra.com", "crunchbase.com", "duckduckgo.com",
+    "facebook.com", "g2.com", "github.com", "linkedin.com", "medium.com",
+    "producthunt.com", "reddit.com", "techcrunch.com", "wikipedia.org",
+    "x.com", "youtube.com",
+}
+
+_GENERIC_COMPETITOR_TITLES = (
+    "best ", "top ", "alternatives", "competitors", "comparison", "review",
+    "software for", "tools for", "how to", "what is", "why ", "guide to",
+)
+
+
+def _normalized_name(value: str) -> str:
+    """Normalize a product name for conservative equality and mention checks."""
+    normalized = re.sub(r"[^a-z0-9]+", " ", value.casefold()).strip()
+    words = normalized.split()
+    if words and words[-1] in {"ai", "app", "com", "io", "inc", "llc", "ltd", "corp"}:
+        words.pop()
+    return " ".join(words)
+
+
+def _brand_from_url(url: str) -> str:
+    """Return a plausible brand from an official product URL, never an aggregator."""
+    try:
+        host = (urlparse(url).hostname or "").casefold().removeprefix("www.")
+    except ValueError:
+        return ""
+    if not host or any(host == item or host.endswith(f".{item}") for item in _AGGREGATOR_HOSTS):
+        return ""
+    label = host.split(".")[0]
+    if len(label) < 2 or label in {"app", "blog", "docs", "help", "news"}:
+        return ""
+    return " ".join(part.capitalize() for part in label.split("-") if part)
+
+
+def _clean_competitor_name(title: str, url: str = "") -> str:
     """Extract a clean brand name from search result title, stripping forum headers."""
-    name = title.strip()
+    original = title.strip()
+    name = re.sub(r"^\[[^\]]+\]\s*", "", original).strip()
     for prefix in ("[GitHub]", "[HN]", "[Reddit r/", "[Wikipedia]", "[News -", "Web ("):
         if name.startswith(prefix):
             name = name.split("]", 1)[-1].strip() if "]" in name else name
@@ -96,12 +140,32 @@ def _clean_competitor_name(title: str) -> str:
                 name = candidate
                 break
 
-    # Filter out raw GitHub repo paths (User/Repo) or junk names
+    # Prefer the official domain when a web result title is a snippet rather
+    # than a product name (for example: "[otter.ai] AI meeting notes...").
+    domain_brand = _brand_from_url(url)
+    bracket_match = re.match(r"^\[([^\]]+)\]", original)
+    if domain_brand:
+        actual_host = (urlparse(url).hostname or "").casefold().removeprefix("www.")
+        bracket_is_official = False
+        if bracket_match:
+            bracket_host = bracket_match.group(1).casefold().removeprefix("www.")
+            bracket_is_official = bracket_host == actual_host
+        title_starts_with_brand = _normalized_name(name).startswith(_normalized_name(domain_brand))
+        if bracket_is_official or title_starts_with_brand:
+            name = domain_brand
+
+    # Filter out raw repository paths, listicles, questions, and junk names.
     if "/" in name or name.startswith(("-", "http", "www", "Skip to")):
         return ""
 
     words = name.split()
-    if len(words) > 4 or name.lower().startswith(("as a", "the ", "i ", "how ", "why ", "cost-effective", "show hn", "launch hn", "nicehash")):
+    lowered = name.casefold()
+    if (
+        len(words) > 4
+        or (words and words[0].isdigit())
+        or lowered.startswith(("as a", "the ", "i ", "cost-effective", "show hn", "launch hn"))
+        or any(pattern in lowered for pattern in _GENERIC_COMPETITOR_TITLES)
+    ):
         return ""
 
     return name.strip()
@@ -113,38 +177,41 @@ def _extract_competitors_from_evidence(evidence: List[EvidenceItem], idea: Optio
     Returns Competitor objects that will be merged.
     """
     competitors: List[Competitor] = []
-    IGNORE_COMPETITOR_WORDS = {"idk", "none", "no", "n/a", "unknown", "nothing", "no idea", "dont know", "don't know", "na"}
-
     # 1. Include user-specified competitors directly
     if idea and idea.known_competitors:
         for raw_comp in idea.known_competitors.split(","):
             cname = raw_comp.strip()
             if not cname or cname.lower() in IGNORE_COMPETITOR_WORDS:
                 continue
-            matching_ev = [
-                e.evidence_id for e in evidence
-                if cname.lower() in e.title.lower() or cname.lower() in e.passage.lower() or cname.lower() in e.search_query.lower()
-            ]
-            matching_passages = [
-                e.passage for e in evidence
-                if cname.lower() in e.title.lower() or cname.lower() in e.passage.lower()
-            ]
-            desc = matching_passages[0][:300] if matching_passages else f"Direct competitor in {idea.geography} for {idea.name}"
+            matching_items = [e for e in evidence if _evidence_mentions(cname, e)]
+            matching_ev = [e.evidence_id for e in matching_items]
+            matching_passages = [e.passage for e in matching_items]
+            desc = (
+                matching_passages[0][:300]
+                if matching_passages
+                else "User-supplied competitor; independent evidence was not found in this research run."
+            )
+            independent_sources = {e.source_name for e in matching_items}
+            confidence = (
+                ConfidenceLevel.HIGH if len(independent_sources) >= 2
+                else ConfidenceLevel.MEDIUM if matching_items
+                else ConfidenceLevel.LOW
+            )
 
             competitors.append(
                 Competitor(
                     name=cname,
-                    url=f"https://{cname}" if "." in cname and not cname.startswith("http") else "",
+                    url=next((e.url for e in matching_items if not e.url.startswith("demo://")), ""),
                     competitor_type=CompetitorType.DIRECT,
                     description=desc,
-                    target_user=f"Target customers in {idea.geography}",
-                    pricing_evidence="See evidence items for fee structure details",
-                    strengths=["Established market brand & user base"],
-                    weaknesses=["High pricing or feature gaps reported"],
+                    target_user="Not established in collected evidence",
+                    pricing_evidence=None,
+                    strengths=[],
+                    weaknesses=[],
                     complaints=[],
-                    differentiation=[f"Differentiation required vs {cname}"],
+                    differentiation=[f"Hypothesis: validate a meaningful switching reason versus {cname}"],
                     evidence_ids=matching_ev[:5],
-                    confidence=ConfidenceLevel.HIGH,
+                    confidence=confidence,
                 )
             )
 
@@ -153,8 +220,10 @@ def _extract_competitors_from_evidence(evidence: List[EvidenceItem], idea: Optio
         if item.evidence_type not in (EvidenceType.COMPETITOR, EvidenceType.OSS_ALTERNATIVE):
             continue
 
-        clean_name = _clean_competitor_name(item.title)
+        clean_name = _clean_competitor_name(item.title, item.url)
         if not clean_name or clean_name.lower() in IGNORE_COMPETITOR_WORDS:
+            continue
+        if idea and _normalized_name(clean_name) == _normalized_name(idea.name):
             continue
 
         comp_type = (
@@ -169,18 +238,86 @@ def _extract_competitors_from_evidence(evidence: List[EvidenceItem], idea: Optio
                 url=item.url if not item.url.startswith("demo://") else "",
                 competitor_type=comp_type,
                 description=item.passage[:300],
-                target_user="Market users",
+                target_user="Not established in collected evidence",
                 pricing_evidence=None,
                 strengths=[],
                 weaknesses=[],
                 complaints=[],
-                differentiation=["Differentiation evidence collected"],
+                differentiation=[],
                 evidence_ids=[item.evidence_id],
                 confidence=ConfidenceLevel.MEDIUM,
             )
         )
 
     return competitors
+
+
+def _evidence_mentions(name: str, item: EvidenceItem) -> bool:
+    """Return whether an evidence item actually names the candidate product."""
+    needle = _normalized_name(name)
+    if len(needle) < 2:
+        return False
+    haystack = _normalized_name(
+        f"{item.title} {item.passage} {urlparse(item.url).hostname or ''}"
+    )
+    return bool(re.search(rf"(?<![a-z0-9]){re.escape(needle)}(?![a-z0-9])", haystack))
+
+
+def _validated_ai_competitors(
+    candidates: List[DiscoveredCompetitor],
+    evidence: List[EvidenceItem],
+    idea: IdeaInput,
+) -> List[Competitor]:
+    """Accept AI competitors only when cited evidence explicitly names them."""
+    by_id = {item.evidence_id: item for item in evidence}
+    accepted: List[Competitor] = []
+
+    for candidate in candidates:
+        if _normalized_name(candidate.name) == _normalized_name(idea.name):
+            continue
+        cited_items = [
+            by_id[eid] for eid in dict.fromkeys(candidate.evidence_ids)
+            if eid in by_id and _evidence_mentions(candidate.name, by_id[eid])
+        ]
+        if not cited_items:
+            logger.info("Rejected unsupported AI competitor: %s", candidate.name)
+            continue
+
+        source_count = len({item.source_name for item in cited_items})
+        confidence = ConfidenceLevel.HIGH if source_count >= 2 else ConfidenceLevel.MEDIUM
+        pricing_markers = (
+            re.findall(r"(?:[$€£]\s?\d+(?:[.,]\d+)?)|(?:\b\d+(?:[.,]\d+)?\s?%\b)", candidate.pricing_evidence or "")
+            + re.findall(r"\b(?:free|freemium|custom pricing)\b", candidate.pricing_evidence or "", re.I)
+        )
+        cited_pricing_text = " ".join(item.passage for item in cited_items).casefold()
+        pricing_supported = bool(candidate.pricing_evidence) and (
+            any(item.evidence_type == EvidenceType.PRICING for item in cited_items)
+            or any(marker.casefold().replace(" ", "") in cited_pricing_text.replace(" ", "") for marker in pricing_markers)
+        )
+        differentiation = [
+            value if value.casefold().startswith("hypothesis:") else f"Hypothesis: {value}"
+            for value in candidate.differentiation[:4]
+            if value.strip()
+        ]
+
+        accepted.append(
+            Competitor(
+                name=candidate.name.strip(),
+                url=next((item.url for item in cited_items if not item.url.startswith("demo://")), ""),
+                competitor_type=candidate.competitor_type,
+                description=(candidate.description or cited_items[0].passage)[:500],
+                target_user=candidate.target_user or "Not established in collected evidence",
+                pricing_evidence=candidate.pricing_evidence if pricing_supported else None,
+                strengths=candidate.strengths[:5],
+                weaknesses=candidate.weaknesses[:5],
+                complaints=candidate.complaints[:5],
+                differentiation=differentiation,
+                evidence_ids=[item.evidence_id for item in cited_items],
+                confidence=confidence,
+            )
+        )
+
+    return accepted
 
 
 def _select_recommendation(perspectives: List[AnalysisPerspective], confidence: ConfidenceLevel) -> Recommendation:
@@ -235,6 +372,7 @@ def _find_strongest(
 def _collect_missing_info(
     perspectives: List[AnalysisPerspective],
     evidence: List[EvidenceItem],
+    competitors: Optional[List[Competitor]] = None,
 ) -> List[str]:
     missing: List[str] = []
 
@@ -253,6 +391,12 @@ def _collect_missing_info(
         missing.append("No direct demand signal evidence found")
     if not any(e.evidence_type == EvidenceType.REGULATORY for e in evidence):
         missing.append("No regulatory/compliance evidence found for this geography")
+    if not competitors:
+        missing.append("No evidence-grounded competitors found; run targeted customer and category research")
+    elif not any(competitor.evidence_ids for competitor in competitors):
+        missing.append("Competitors are user-supplied but not independently verified by collected evidence")
+    elif len({eid for competitor in competitors for eid in competitor.evidence_ids}) < 2:
+        missing.append("Competitor coverage relies on a single evidence item; verify with another independent source")
 
     return list(dict.fromkeys(missing))
 
@@ -331,8 +475,19 @@ class AnalysisEngine:
 
         # ── Stage 5: Run AI perspectives ──────────────────────────
         await _progress(AnalysisStage.RUNNING_PERSPECTIVES)
-        perspectives, models_used = await self._run_perspectives(
+        perspectives, models_used, ai_competitor_candidates = await self._run_perspectives(
             idea, evidence, provider_errors
+        )
+
+        # AI adds semantic extraction (names buried in passages), but every
+        # candidate passes a deterministic evidence-name check before display.
+        ai_competitors = _validated_ai_competitors(
+            ai_competitor_candidates, evidence, idea
+        )
+        competitors = merge_competitors(competitors + ai_competitors)[:20]
+        logger.info(
+            "Competitor profile complete: %d verified/declared entries (%d AI-supported)",
+            len(competitors), len(ai_competitors),
         )
 
         if not perspectives:
@@ -383,7 +538,7 @@ class AnalysisEngine:
         most_dangerous = _select_most_dangerous_assumption(perspectives)
         strongest_sup = _find_strongest(evidence, good=True)
         strongest_con = _find_strongest(evidence, good=False)
-        missing_info = _collect_missing_info(perspectives, evidence)
+        missing_info = _collect_missing_info(perspectives, evidence, competitors)
 
         await _progress(AnalysisStage.COMPLETE)
 
@@ -469,7 +624,7 @@ class AnalysisEngine:
         idea: IdeaInput,
         evidence: List[EvidenceItem],
         errors: List[str],
-    ) -> tuple[List[AnalysisPerspective], List[str]]:
+    ) -> tuple[List[AnalysisPerspective], List[str], List[DiscoveredCompetitor]]:
         """Run three independent perspective analyses."""
         perspective_names = [
             PerspectiveName.MARKET_ANALYST,
@@ -485,10 +640,12 @@ class AnalysisEngine:
 
         perspectives: List[AnalysisPerspective] = []
         models_used: List[str] = []
+        competitor_candidates: List[DiscoveredCompetitor] = []
 
         for name, output in zip(perspective_names, outputs):
             if output is None:
                 continue
+            competitor_candidates.extend(output.competitors)
             perspectives.append(
                 AnalysisPerspective(
                     perspective_name=name,
@@ -508,7 +665,7 @@ class AnalysisEngine:
             if output.model_id not in models_used:
                 models_used.append(output.model_id)
 
-        return perspectives, models_used
+        return perspectives, models_used, competitor_candidates
 
     async def _safe_perspective(
         self,

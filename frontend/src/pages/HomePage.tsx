@@ -236,11 +236,14 @@ export const HomePage: React.FC = () => {
     : assessFormReadiness(idea)
 
   return (
-    <div className="min-h-screen flex flex-col verseo-grid text-zinc-900 selection:bg-zinc-200" style={{backgroundColor: '#ffffff'}}>
+    <div className="min-h-screen flex flex-col verseo-grid motion-scene text-zinc-900 selection:bg-zinc-200" style={{backgroundColor: '#ffffff'}}>
+      <div className="ambient-shape ambient-shape-one" aria-hidden="true" />
+      <div className="ambient-shape ambient-shape-two" aria-hidden="true" />
+      <div className="ambient-ring ambient-ring-one" aria-hidden="true" />
       {/* Header */}
-      <header className="relative z-20 border-b px-6 py-4" style={{borderColor: '#e4e4e7', backgroundColor: 'rgba(255,255,255,0.92)', backdropFilter: 'blur(20px)'}}>
+      <header className="glass-nav relative z-20 border-b px-4 sm:px-6 py-4" style={{borderColor: '#e4e4e7', backgroundColor: 'rgba(255,255,255,0.88)', backdropFilter: 'blur(20px)'}}>
         <div className="max-w-6xl mx-auto flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             <div className="w-10 h-10 rounded-xl border overflow-hidden flex items-center justify-center" style={{borderColor: '#e4e4e7', backgroundColor: '#f4f4f5'}}>
               <img src="/logo.png" alt="Assumption Zero Logo" className="w-full h-full object-cover" />
             </div>
@@ -274,11 +277,11 @@ export const HomePage: React.FC = () => {
             </span>
             <button
               onClick={() => setIsHistoryOpen(true)}
-              className="px-3.5 py-1.5 rounded-xl border text-xs font-mono font-medium transition-all flex items-center gap-2 shadow-sm hover:bg-zinc-50"
+              className="nav-action-3d px-3.5 py-1.5 rounded-xl border text-xs font-mono font-medium transition-all flex items-center gap-2 shadow-sm hover:bg-zinc-50"
               style={{borderColor: '#e4e4e7', backgroundColor: '#fafafa', color: '#52525b'}}
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg>
-              <span>History</span>
+              <span className="hidden sm:inline">History</span>
               {historyCount !== null && (
                 <span className="px-1.5 py-0.5 rounded-md text-[10px] font-bold" style={{backgroundColor: '#f4f4f5', color: '#52525b', border: '1px solid #e4e4e7'}}>
                   {historyCount}
@@ -289,22 +292,33 @@ export const HomePage: React.FC = () => {
             <button
               type="button"
               onClick={() => setIsSettingsOpen(true)}
-              className="px-3.5 py-1.5 rounded-xl border text-xs font-mono font-medium transition-all flex items-center gap-1.5 shadow-sm hover:bg-zinc-50"
+              className="nav-action-3d px-3.5 py-1.5 rounded-xl border text-xs font-mono font-medium transition-all flex items-center gap-1.5 shadow-sm hover:bg-zinc-50"
               style={{borderColor: '#e4e4e7', backgroundColor: '#fafafa', color: '#52525b'}}
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-              <span>AI Setup</span>
+              <span className="hidden sm:inline">AI Setup</span>
             </button>
 
-            <div className="flex items-center gap-2 ml-2" title="Creator Profile">
-              <img src="/avatar.jpg" alt="Avatar" className="w-8 h-8 rounded-full border object-cover" style={{borderColor: '#e4e4e7'}} />
-            </div>
+            <a
+              href="https://github.com/ramizz1"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="creator-link flex items-center gap-2 ml-1 rounded-full p-1 pr-1.5"
+              title="Open @ramizz1 on GitHub"
+              aria-label="Open creator Ramiz on GitHub"
+            >
+              <svg className="hidden lg:block" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .7a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2.3c-3.3.7-4-1.4-4-1.4-.5-1.4-1.3-1.8-1.3-1.8-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1.1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.8-1.6-2.6-.3-5.4-1.3-5.4-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.7 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.4 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .7Z"/></svg>
+              <span className="hidden xl:inline text-[11px] font-mono font-semibold">@ramizz1</span>
+              <img src="/avatar.jpg" alt="Ramiz GitHub profile" className="creator-avatar w-8 h-8 rounded-full border object-cover" style={{borderColor: '#e4e4e7'}} />
+            </a>
           </div>
         </div>
       </header>
 
       {/* Hero Section */}
-      <section className="relative z-10 text-center px-6 pt-16 pb-12 border-b" style={{borderColor: '#e4e4e7'}}>
+      <section className="hero-depth relative z-10 text-center px-6 pt-16 pb-12 border-b" style={{borderColor: '#e4e4e7'}}>
+        <div className="hero-orbit hero-orbit-left" aria-hidden="true">✦</div>
+        <div className="hero-orbit hero-orbit-right" aria-hidden="true">+</div>
         <div className="max-w-4xl mx-auto space-y-5">
           <div className="inline-flex items-center gap-2 verseo-badge shadow-sm">
             <span className="w-2 h-2 rounded-full animate-pulse" style={{backgroundColor: '#18181b'}} />
@@ -343,7 +357,7 @@ export const HomePage: React.FC = () => {
         )}
 
         {/* Verseo Input Card Container */}
-        <div className="verseo-card p-6 sm:p-8 backdrop-blur-xl shadow-md">
+        <div className="verseo-card depth-panel p-6 sm:p-8 backdrop-blur-xl shadow-md">
           {/* Corner Crosshairs */}
           <span className="verseo-corner-tl">+</span>
           <span className="verseo-corner-tr">+</span>

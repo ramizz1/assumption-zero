@@ -11,6 +11,9 @@ from assumption_zero.schemas import (
     AnalysisResult,
     AnalysisStage,
     AnalysisStatus,
+    Competitor,
+    CompetitorType,
+    ConfidenceLevel,
     Recommendation,
 )
 
@@ -103,3 +106,30 @@ def test_html_export_structure(sample_idea, sample_evidence, sample_perspectives
     assert "Opportunity Score Breakdown" in html
     assert DISCLAIMER in html
 
+
+def test_exports_include_full_competitor_intelligence(sample_idea, sample_evidence, sample_perspectives):
+    from assumption_zero.cli import _export_html
+
+    result = _make_result(sample_idea, sample_evidence, sample_perspectives)
+    result.competitors = [
+        Competitor(
+            name="VerifiedCo",
+            url="https://example.com/verified",
+            competitor_type=CompetitorType.DIRECT,
+            description="Evidence-grounded competitor",
+            target_user="Small teams",
+            pricing_evidence="$49/month [E002]",
+            strengths=["Strong distribution"],
+            weaknesses=["High price"],
+            complaints=["Complex setup"],
+            differentiation=["Hypothesis: simpler onboarding"],
+            evidence_ids=["E002"],
+            confidence=ConfidenceLevel.HIGH,
+        )
+    ]
+
+    markdown = _export_markdown(result)
+    html = _export_html(result)
+    for expected in ("VerifiedCo", "Strong distribution", "Complex setup", "E002", "high"):
+        assert expected in markdown
+        assert expected in html
