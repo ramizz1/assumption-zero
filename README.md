@@ -26,10 +26,10 @@
 </div>
 
 <p align="center">
-  <img src="docs/assets/demo.gif" alt="Assumption Zero product tour: describe an idea, collect evidence, verify competitors, score the opportunity, and generate a validation experiment" width="100%" />
+  <img src="docs/assets/interfaces.png" alt="Assumption Zero web interface and command-line interface" width="100%" />
 </p>
 
-<p align="center"><sub>A guided tour using a real saved analysis. The same engine powers the web interface and the <code>azero</code> CLI.</sub></p>
+<p align="center"><sub>The real web and CLI interfaces. Both use the same analysis engine and shared history.</sub></p>
 
 > [!IMPORTANT]
 > Assumption Zero is decision support—not a prediction, investment recommendation, or substitute for speaking with customers. Claims are grounded in collected evidence and uncertainty remains visible.
