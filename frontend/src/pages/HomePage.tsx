@@ -309,7 +309,15 @@ export const HomePage: React.FC = () => {
             >
               <svg className="hidden lg:block" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .7a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2.3c-3.3.7-4-1.4-4-1.4-.5-1.4-1.3-1.8-1.3-1.8-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1.1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.8-1.6-2.6-.3-5.4-1.3-5.4-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.7 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.4 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .7Z"/></svg>
               <span className="hidden xl:inline text-[11px] font-mono font-semibold">@ramizz1</span>
-              <img src="/avatar.jpg" alt="Ramiz GitHub profile" className="creator-avatar w-8 h-8 rounded-full border object-cover" style={{borderColor: '#e4e4e7'}} />
+              <img
+                src="https://github.com/ramizz1.png?size=96"
+                alt="@ramizz1 GitHub avatar"
+                className="creator-avatar w-8 h-8 rounded-full border object-cover"
+                style={{borderColor: '#e4e4e7'}}
+                onError={(event) => {
+                  event.currentTarget.src = '/avatar.jpg'
+                }}
+              />
             </a>
           </div>
         </div>
