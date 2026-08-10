@@ -4,7 +4,7 @@ import { api } from '../lib/api'
 import type { AnalysisResult } from '../types'
 import confetti from 'canvas-confetti'
 import OpportunityGauge from '../components/OpportunityGauge'
-import PerspectivePanel from '../components/PerspectivePanel'
+import PerspectiveExplorer from '../components/PerspectiveExplorer'
 import CompetitorCard from '../components/CompetitorCard'
 import ExperimentCard from '../components/ExperimentCard'
 import ProgressView from './ProgressView'
@@ -100,10 +100,12 @@ export default function ReportView({ initialResult }: Props) {
   const rec = result.recommendation
   const conf = result.evidence_confidence
   const normalizedEvidenceQuery = evidenceQuery.trim().toLowerCase()
-  const usesBaselineModel = result.models_used.some((model) => {
+  const baselineModels = result.models_used.filter((model) => {
     const normalized = model.toLowerCase()
     return normalized.includes('mock') || normalized.includes('evidence engine') || normalized.includes('template')
   })
+  const generativeModels = result.models_used.filter((model) => !baselineModels.includes(model))
+  const usesBaselineModel = baselineModels.length > 0
   const filteredEvidence = result.evidence.filter((item) => !normalizedEvidenceQuery || [
     item.title, item.passage, item.evidence_type, item.evidence_origin, item.source_name,
   ].some((value) => value.toLowerCase().includes(normalizedEvidenceQuery)))
@@ -184,14 +186,24 @@ export default function ReportView({ initialResult }: Props) {
           <p className="text-xs text-gray-500 text-center uppercase tracking-wider font-mono font-medium">{DISCLAIMER}</p>
         </div>
 
-        {usesBaselineModel && (
-          <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-amber-900">
-            <p className="text-xs font-bold uppercase tracking-wider mb-1">Evidence baseline mode</p>
-            <p className="text-xs leading-relaxed">
-              This report used deterministic analysis over collected evidence without a configured generative AI provider. Scores and experiments remain useful, but qualitative perspective depth improves when you configure a provider.
-            </p>
+        <div className={`rounded-2xl border p-4 ${generativeModels.length > 0 ? 'border-emerald-200 bg-emerald-50 text-emerald-950' : 'border-amber-200 bg-amber-50 text-amber-950'}`}>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-wider mb-1">
+                {generativeModels.length > 0 ? 'Generative AI used' : 'No generative AI API was used'}
+              </p>
+              <p className="text-xs leading-relaxed">
+                {generativeModels.length > 0
+                  ? `Models that produced this report: ${generativeModels.join(', ')}.`
+                  : 'This report was produced by deterministic analysis over collected evidence.'}
+                {usesBaselineModel && generativeModels.length > 0 ? ` Baseline fallback also contributed: ${baselineModels.join(', ')}.` : ''}
+              </p>
+            </div>
+            <span className="shrink-0 rounded-xl border border-current/15 bg-white/60 px-3 py-2 text-[10px] font-mono font-bold">
+              {result.models_used.join(' · ') || 'No model completed'}
+            </span>
           </div>
-        )}
+        </div>
 
         {/* 1. Executive Verdict */}
         <section id="verdict" className="verseo-card p-6 sm:p-8">
@@ -277,14 +289,13 @@ export default function ReportView({ initialResult }: Props) {
 
         {result.founder_toolkit && <FounderToolkit toolkit={result.founder_toolkit} />}
 
-        {/* 2. AI Perspectives (Bento Grid) */}
+        {/* 2. AI Perspectives */}
         <section id="perspectives" className="space-y-4">
-          <h2 className="section-title text-gray-900 font-display font-black tracking-tight"><span className="text-gray-400">03 /</span> AI Perspectives</h2>
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {result.perspectives.map((p) => (
-              <PerspectivePanel key={p.perspective_name} perspective={p} evidence={result.evidence} />
-            ))}
+          <div>
+            <h2 className="section-title text-gray-900 font-display font-black tracking-tight"><span className="text-gray-400">03 /</span> AI Perspectives</h2>
+            <p className="text-xs text-gray-500 mt-1">Compare each independent view without scrolling through every analysis at once.</p>
           </div>
+          <PerspectiveExplorer perspectives={result.perspectives} evidence={result.evidence} />
         </section>
 
         {/* 3. Competitor Intelligence */}

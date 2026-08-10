@@ -312,16 +312,16 @@ class MockAdapter(LLMAdapter):
                 f"{len(set(item.source_name for item in regional))} sources. Global evidence is excluded from local demand claims."
             )
             findings = [
-                "В§LOCAL DEMAND & BUYER DENSITYВ§",
+                "§LOCAL DEMAND & BUYER DENSITY§",
                 f"Regional demand or pain signals collected: {len(demand_local)}. Confirm with at least 10 local buyer interviews.",
                 f"Target customer for local sampling: {idea.target_customer} in {loc}.",
-                "В§LOCAL PRICING & PURCHASING POWERВ§",
+                "§LOCAL PRICING & PURCHASING POWER§",
                 f"Local pricing evidence items: {len(pricing_local)}; planned pricing is {price_model}.",
                 f"Run price-sensitivity interviews in {idea.currency or 'the local currency'} before fixing tiers.",
-                "В§REGULATION & LOCALIZATIONВ§",
+                "§REGULATION & LOCALIZATION§",
                 f"Local regulatory evidence items: {len(regulatory_local)}.",
                 f"Validate language, trust, payment, privacy, and procurement requirements in {idea.market_language or loc}.",
-                "В§REGION-SPECIFIC DISTRIBUTIONВ§",
+                "§REGION-SPECIFIC DISTRIBUTION§",
                 f"Local distribution evidence items: {len(distribution_local)}.",
                 f"Test locally trusted channels rather than assuming global acquisition tactics transfer to {loc}.",
             ]
@@ -374,15 +374,15 @@ class MockAdapter(LLMAdapter):
                 "The next decision should depend on observed workflows and meaningful commitments from qualified buyers."
             )
             findings = [
-                "В§CURRENT WORKFLOW & PAIN FREQUENCYВ§",
+                "§CURRENT WORKFLOW & PAIN FREQUENCY§",
                 f"Interview 10-15 people matching {idea.target_customer}; ask about the last real occurrence of the problem.",
                 "Record frequency, current workaround, time cost, financial cost, and consequences of doing nothing.",
-                "В§BUYING PROCESS & WILLINGNESS TO PAYВ§",
+                "§BUYING PROCESS & WILLINGNESS TO PAY§",
                 "Separate the user, champion, budget owner, security reviewer, and final approver.",
                 f"Ask for a paid pilot or equivalent commitment around {price_model}; compliments do not count as validation.",
-                "В§SWITCHING TRIGGERS & OBJECTIONSВ§",
+                "§SWITCHING TRIGGERS & OBJECTIONS§",
                 f"Test why a buyer would leave {comps}, what proof they require, and which integration or trust concern blocks adoption.",
-                "В§DISPROVING TESTВ§",
+                "§DISPROVING TEST§",
                 "Pass when at least 7 of 10 confirm urgent recurring pain and 3 make a meaningful commitment; pivot after two failed cohorts.",
             ]
             risks = [

@@ -123,7 +123,7 @@ export const SettingsModal: React.FC<Props> = ({ isOpen, onClose, onSave }) => {
                 AI Provider API Keys & Settings
               </h2>
               <p className="text-xs text-gray-500 font-mono">
-                Configure your API keys & server endpoints (stored locally in browser)
+                Browser-only keys for analysis requests; this does not edit the server .env
               </p>
             </div>
           </div>
@@ -208,7 +208,7 @@ export const SettingsModal: React.FC<Props> = ({ isOpen, onClose, onSave }) => {
             </div>
             {settings.provider === 'auto' && (
               <p className="text-[11px] text-gray-500 leading-relaxed">
-                Uses the first configured provider. Without a key, Assumption Zero runs a clearly labelled evidence-based baseline analysis.
+                Uses your first browser key (Groq first), then configured server providers. Without a working AI, Assumption Zero runs a clearly labelled evidence baseline.
               </p>
             )}
           </div>

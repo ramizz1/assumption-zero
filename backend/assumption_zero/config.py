@@ -55,7 +55,8 @@ class Settings(BaseSettings):
 
     # ── AI Providers ──────────────────────────────────────────────
     # Selects which adapter to use as the primary provider.
-    # "auto" = first configured provider, then the deterministic evidence baseline
+    # "auto" = runtime/browser key first, then configured providers, then the
+    # explicitly labelled deterministic evidence baseline
     ai_provider: str = "auto"
 
     # ── Assumption Zero Beta / OpenRouter ────────────────────────

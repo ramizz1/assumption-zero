@@ -28,8 +28,10 @@ from assumption_zero.schemas import (
     AnalysisCreateRequest,
     AnalysisListItem,
     AnalysisResult,
+    DemoAnalysisRequest,
     HealthResponse,
     PromptAnalysisRequest,
+    ResearchDepth,
 )
 from assumption_zero.services.analysis_service import (
     build_llm_adapter,
@@ -52,6 +54,56 @@ def _available_providers() -> List[str]:
     if sx.is_available:
         providers.append(sx)
     return [p.name for p in providers if p.is_available]
+
+
+ProviderRequest = AnalysisCreateRequest | DemoAnalysisRequest | PromptAnalysisRequest
+
+
+def _llm_options(body: ProviderRequest) -> tuple[Optional[str], Optional[str], Optional[str]]:
+    """Resolve the provider and only the credential that belongs to it.
+
+    In Auto mode, a runtime/browser key takes priority over server-side
+    discovery so a key entered by the user is never silently ignored.
+    """
+    provider = body.ai_provider
+    if provider in (None, "auto"):
+        if body.groq_api_key:
+            provider = "groq"
+        elif body.openrouter_api_key:
+            provider = "openrouter"
+        elif body.opencode_api_key:
+            provider = "opencode"
+        elif body.openai_api_key:
+            provider = "openai_compat"
+
+    api_key = None
+    base_url = None
+    if provider == "groq":
+        api_key = body.groq_api_key
+    elif provider == "openrouter":
+        api_key = body.openrouter_api_key
+    elif provider == "opencode":
+        api_key = body.opencode_api_key
+    elif provider in ("openai", "openai_compat", "custom"):
+        api_key = body.openai_api_key
+        base_url = body.custom_base_url
+    elif provider == "ollama":
+        base_url = body.ollama_base_url
+    return provider, api_key, base_url
+
+
+def _validate_selected_provider(body: ProviderRequest) -> Optional[str]:
+    """Reject an unconfigured explicit provider before starting a long research run."""
+    provider, api_key, base_url = _llm_options(body)
+    try:
+        build_llm_adapter(
+            provider_override=provider,
+            api_key_override=api_key,
+            base_url_override=base_url,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    return provider
 
 
 @router.get("/health", response_model=HealthResponse)
@@ -156,9 +208,10 @@ async def create_analysis_endpoint(
     background_tasks: BackgroundTasks,
 ) -> dict:
     """Start a new analysis. Returns immediately with analysis_id; poll GET /analyses/{id}."""
+    provider = _validate_selected_provider(body)
     analysis_id = await create_analysis(
         idea=body.idea,
-        ai_provider_override=body.ai_provider,
+        ai_provider_override=provider,
         research_providers_override=body.research_providers,
         is_demo=False,
     )
@@ -166,7 +219,7 @@ async def create_analysis_endpoint(
         run_analysis,
         analysis_id=analysis_id,
         idea=body.idea,
-        ai_provider_override=body.ai_provider,
+        ai_provider_override=provider,
         openrouter_api_key=body.openrouter_api_key,
         groq_api_key=body.groq_api_key,
         opencode_api_key=body.opencode_api_key,
@@ -188,20 +241,7 @@ async def create_analysis_from_prompt_endpoint(
 ) -> dict:
     """Analyze a startup idea from a single freeform text prompt."""
     
-    # Provider-specific key resolution based on requested ai_provider
-    api_key_override = None
-    base_url_override = None
-    if body.ai_provider == "groq" and body.groq_api_key:
-        api_key_override = body.groq_api_key
-    elif body.ai_provider == "openrouter" and body.openrouter_api_key:
-        api_key_override = body.openrouter_api_key
-    elif body.ai_provider == "opencode" and body.opencode_api_key:
-        api_key_override = body.opencode_api_key
-    elif body.ai_provider in ("openai", "openai_compat", "custom") and body.openai_api_key:
-        api_key_override = body.openai_api_key
-        base_url_override = body.custom_base_url
-    elif body.ai_provider == "ollama":
-        base_url_override = body.ollama_base_url
+    provider, api_key_override, base_url_override = _llm_options(body)
 
     # SSRF Protection
     from assumption_zero.config import get_settings
@@ -215,7 +255,7 @@ async def create_analysis_from_prompt_endpoint(
 
     try:
         llm = build_llm_adapter(
-            provider_override=body.ai_provider,
+            provider_override=provider,
             api_key_override=api_key_override,
             base_url_override=base_url_override
         )
@@ -230,7 +270,7 @@ async def create_analysis_from_prompt_endpoint(
 
     analysis_id = await create_analysis(
         idea=parsed_idea,
-        ai_provider_override=body.ai_provider,
+        ai_provider_override=provider,
         research_providers_override=body.research_providers,
         is_demo=False,
     )
@@ -238,7 +278,7 @@ async def create_analysis_from_prompt_endpoint(
         run_analysis,
         analysis_id=analysis_id,
         idea=parsed_idea,
-        ai_provider_override=body.ai_provider,
+        ai_provider_override=provider,
         openrouter_api_key=body.openrouter_api_key,
         groq_api_key=body.groq_api_key,
         opencode_api_key=body.opencode_api_key,
@@ -277,19 +317,34 @@ async def delete_analysis_endpoint(analysis_id: str) -> None:
 
 
 @router.post("/demo", response_model=dict, status_code=status.HTTP_202_ACCEPTED)
-async def demo_endpoint(background_tasks: BackgroundTasks) -> dict:
+async def demo_endpoint(
+    background_tasks: BackgroundTasks,
+    body: Optional[DemoAnalysisRequest] = None,
+) -> dict:
     """
     Start a demo analysis using the example idea (LegalMind Local).
     Runs through the REAL research and AI pipeline — no fake data.
     """
+    provider = _validate_selected_provider(body) if body else None
     analysis_id = await create_analysis(
         idea=DEMO_IDEA,
+        ai_provider_override=provider,
+        research_providers_override=body.research_providers if body else None,
         is_demo=True,
     )
     background_tasks.add_task(
         run_analysis,
         analysis_id=analysis_id,
         idea=DEMO_IDEA,
+        ai_provider_override=provider,
+        openrouter_api_key=body.openrouter_api_key if body else None,
+        groq_api_key=body.groq_api_key if body else None,
+        opencode_api_key=body.opencode_api_key if body else None,
+        openai_api_key=body.openai_api_key if body else None,
+        custom_base_url=body.custom_base_url if body else None,
+        ollama_base_url=body.ollama_base_url if body else None,
+        research_providers_override=body.research_providers if body else None,
+        research_depth=body.research_depth if body else ResearchDepth.DEEP,
         is_demo=True,
     )
     return {"analysis_id": analysis_id, "status": "pending", "demo": True}

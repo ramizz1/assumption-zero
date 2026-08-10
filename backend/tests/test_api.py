@@ -67,12 +67,28 @@ def test_list_analyses_returns_list(client):
 
 
 def test_demo_endpoint_returns_id(client):
-    with patch("assumption_zero.api.routes.run_analysis", new_callable=AsyncMock):
-        resp = client.post("/api/demo")
+    with patch("assumption_zero.api.routes.run_analysis", new_callable=AsyncMock) as run:
+        resp = client.post("/api/demo", json={
+            "ai_provider": "groq",
+            "groq_api_key": "test-groq-key",
+        })
     assert resp.status_code == 202
     data = resp.json()
     assert "analysis_id" in data
     assert data.get("demo") is True
+    assert run.await_args.kwargs["ai_provider_override"] == "groq"
+    assert run.await_args.kwargs["groq_api_key"] == "test-groq-key"
+
+
+def test_demo_auto_uses_browser_groq_key(client):
+    with patch("assumption_zero.api.routes.run_analysis", new_callable=AsyncMock) as run:
+        resp = client.post("/api/demo", json={
+            "ai_provider": "auto",
+            "groq_api_key": "browser-groq-key",
+        })
+    assert resp.status_code == 202
+    assert run.await_args.kwargs["ai_provider_override"] == "groq"
+    assert run.await_args.kwargs["groq_api_key"] == "browser-groq-key"
 
 
 def test_create_analysis_invalid_input(client):

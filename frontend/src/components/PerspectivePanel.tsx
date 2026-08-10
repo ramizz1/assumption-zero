@@ -31,12 +31,19 @@ const perspectiveGlow: Record<string, string> = {
   practical_builder: 'border-emerald-200 hover:border-emerald-400',
 }
 
+const sectionHeading = (value: string) => {
+  const normalized = value.split('В§').join('§').trim()
+  return normalized.startsWith('§') && normalized.endsWith('§')
+    ? normalized.slice(1, -1).trim()
+    : null
+}
+
 export default function PerspectivePanel({ perspective, evidence }: Props) {
   const icon = perspectiveIcon[perspective.perspective_name] ?? <LucideBot />
   const glow = perspectiveGlow[perspective.perspective_name] ?? 'border-gray-200'
 
   return (
-    <div className={`verseo-card p-6 border ${glow} relative overflow-hidden bg-white`}>
+    <article className={`verseo-card p-5 sm:p-6 border ${glow} relative overflow-hidden bg-white`}>
       <span className="verseo-corner-tl">+</span>
       <span className="verseo-corner-tr">+</span>
       <span className="verseo-corner-bl">+</span>
@@ -62,64 +69,72 @@ export default function PerspectivePanel({ perspective, evidence }: Props) {
         </span>
       </div>
 
-      <p className="text-sm text-gray-600 leading-relaxed mb-5">{perspective.summary}</p>
+      <p className="text-sm text-gray-600 leading-relaxed mb-5 max-w-4xl">{perspective.summary}</p>
 
-      {perspective.key_findings.length > 0 && (
-        <div className="mb-4">
-          <h4 className="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-2">
-            Key Findings
-          </h4>
-          <ul className="space-y-2">
-            {perspective.key_findings.map((finding, i) => (
-              <li key={i} className="text-xs text-gray-700 flex items-start gap-2.5 bg-gray-50 p-2.5 rounded-xl border border-gray-100">
-                <span className="text-blue-500 font-bold shrink-0">▸</span>
-                <span className="leading-normal">{finding}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
+      <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1.35fr)_minmax(280px,0.65fr)] gap-5">
+        {perspective.key_findings.length > 0 && (
+          <div>
+            <h4 className="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-3">
+              Key Findings
+            </h4>
+            <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              {perspective.key_findings.map((finding, i) => {
+                const heading = sectionHeading(finding)
 
-      {perspective.risks.length > 0 && (
-        <div className="mb-4">
-          <h4 className="text-[11px] font-bold text-rose-500 uppercase tracking-wider mb-2">
-            Critical Risks
-          </h4>
-          <ul className="space-y-2">
-            {perspective.risks.map((risk, i) => (
-              <li key={i} className="text-xs text-rose-900 flex items-start gap-2.5 bg-rose-50 p-2.5 rounded-xl border border-rose-100">
-                <span className="text-rose-500 shrink-0 font-bold">↓</span>
-                <span className="leading-normal">{risk}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
+                return heading ? (
+                  <li key={i} className="sm:col-span-2 mt-2 first:mt-0 pt-2 first:pt-0 border-t first:border-t-0 border-gray-200 text-[10px] font-bold text-gray-500 uppercase tracking-widest">
+                    {heading}
+                  </li>
+                ) : (
+                  <li key={i} className="text-xs text-gray-700 flex items-start gap-2.5 bg-gray-50 p-2.5 rounded-xl border border-gray-100">
+                    <span className="text-blue-500 font-bold shrink-0">▸</span>
+                    <span className="leading-normal">{finding}</span>
+                  </li>
+                )
+              })}
+            </ul>
+          </div>
+        )}
 
-      {perspective.opportunities.length > 0 && (
-        <div className="mb-4">
-          <h4 className="text-[11px] font-bold text-emerald-600 uppercase tracking-wider mb-2">
-            Growth Opportunities
-          </h4>
-          <ul className="space-y-2">
-            {perspective.opportunities.map((opp, i) => (
-              <li key={i} className="text-xs text-emerald-900 flex items-start gap-2.5 bg-emerald-50 p-2.5 rounded-xl border border-emerald-100">
-                <span className="text-emerald-500 shrink-0 font-bold">↑</span>
-                <span className="leading-normal">{opp}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
+        <div className="space-y-4">
+          {perspective.risks.length > 0 && (
+            <div>
+              <h4 className="text-[11px] font-bold text-rose-500 uppercase tracking-wider mb-2">Critical Risks</h4>
+              <ul className="space-y-2">
+                {perspective.risks.map((risk, i) => (
+                  <li key={i} className="text-xs text-rose-900 flex items-start gap-2.5 bg-rose-50 p-2.5 rounded-xl border border-rose-100">
+                    <span className="text-rose-500 shrink-0 font-bold">↓</span>
+                    <span className="leading-normal">{risk}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
 
-      {perspective.most_dangerous_assumption && (
-        <div className="mt-4 p-3.5 bg-amber-50 border border-amber-200 rounded-xl">
-          <p className="text-[10px] text-amber-600 font-bold uppercase tracking-widest mb-1 flex items-center gap-1">
-            <span>⚠️</span> Most Dangerous Assumption
-          </p>
-          <p className="text-xs font-medium text-amber-900 leading-relaxed">{perspective.most_dangerous_assumption}</p>
+          {perspective.opportunities.length > 0 && (
+            <div>
+              <h4 className="text-[11px] font-bold text-emerald-600 uppercase tracking-wider mb-2">Growth Opportunities</h4>
+              <ul className="space-y-2">
+                {perspective.opportunities.map((opp, i) => (
+                  <li key={i} className="text-xs text-emerald-900 flex items-start gap-2.5 bg-emerald-50 p-2.5 rounded-xl border border-emerald-100">
+                    <span className="text-emerald-500 shrink-0 font-bold">↑</span>
+                    <span className="leading-normal">{opp}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {perspective.most_dangerous_assumption && (
+            <div className="p-3.5 bg-amber-50 border border-amber-200 rounded-xl">
+              <p className="text-[10px] text-amber-600 font-bold uppercase tracking-widest mb-1 flex items-center gap-1">
+                <span>⚠️</span> Most Dangerous Assumption
+              </p>
+              <p className="text-xs font-medium text-amber-900 leading-relaxed">{perspective.most_dangerous_assumption}</p>
+            </div>
+          )}
         </div>
-      )}
+      </div>
 
       {perspective.cited_evidence_ids.length > 0 && (
         <div className="flex flex-wrap items-center gap-1.5 mt-4 pt-3 border-t border-gray-100">
@@ -129,6 +144,6 @@ export default function PerspectivePanel({ perspective, evidence }: Props) {
           ))}
         </div>
       )}
-    </div>
+    </article>
   )
 }

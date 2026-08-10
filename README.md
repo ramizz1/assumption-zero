@@ -153,6 +153,10 @@ azero analyze --provider ollama --model llama3.1
 
 Keep secrets in your local `.env`; never commit API keys. See [.env.example](.env.example) for available settings.
 
+Keys entered in the web settings are intentionally stored only in that browser and sent with each analysis request. They do not modify the backend `.env`. Use `.env` for a server-wide or CLI key; use the web settings for a per-browser key. In `Auto` mode, a key supplied by the browser takes priority, starting with Groq.
+
+Without a working generative-AI provider, the clearly labelled **Assumption Zero Evidence Engine** can still collect live public search results. It generates deterministic queries, runs the enabled research providers in parallel, normalizes and deduplicates their result snippets, assigns evidence IDs, and applies fixed scoring rules. It does not generate new facts or semantically reason over full sources like an LLM; its qualitative text is template-based and should be treated as a research baseline.
+
 ## CLI + Web parity
 
 Both interfaces use the same engine, founder-toolkit generator, and root `azero_data` history. An analysis started in either interface appears in both `azero list` and the web **History** view.

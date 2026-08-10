@@ -28,6 +28,12 @@ def test_build_all_llm_adapters():
         assert hasattr(adapter, "analyze_perspective")
 
 
+def test_explicit_provider_never_silently_falls_back_to_mock(monkeypatch):
+    monkeypatch.setattr(GroqAdapter, "is_available", property(lambda self: False))
+    with pytest.raises(ValueError, match="groq.*not configured"):
+        build_llm_adapter(provider_override="groq", api_key_override="")
+
+
 @pytest.mark.asyncio
 async def test_mock_adapter_parse_prompt():
     adapter = MockAdapter()

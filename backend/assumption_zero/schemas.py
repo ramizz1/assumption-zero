@@ -471,6 +471,25 @@ class AnalysisCreateRequest(BaseModel):
         return normalized
 
 
+class DemoAnalysisRequest(BaseModel):
+    """Provider options for running the canonical example idea."""
+
+    ai_provider: Optional[str] = None
+    openrouter_api_key: Optional[str] = None
+    groq_api_key: Optional[str] = None
+    opencode_api_key: Optional[str] = None
+    openai_api_key: Optional[str] = None
+    custom_base_url: Optional[str] = None
+    ollama_base_url: Optional[str] = None
+    research_providers: Optional[List[str]] = None
+    research_depth: ResearchDepth = ResearchDepth.DEEP
+
+    @field_validator("ai_provider")
+    @classmethod
+    def validate_requested_provider(cls, value: Optional[str]) -> Optional[str]:
+        return AnalysisCreateRequest.validate_requested_provider(value)
+
+
 class PromptAnalysisRequest(BaseModel):
     prompt: str = Field(..., min_length=1, max_length=5000)
     ai_provider: Optional[str] = None

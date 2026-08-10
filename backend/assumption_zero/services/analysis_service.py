@@ -56,7 +56,10 @@ def build_llm_adapter(
     model_override: Optional[str] = None,
     base_url_override: Optional[str] = None,
 ) -> LLMAdapter:
-    """Return the configured LLM adapter with multi-key priority fallback.
+    """Return the configured LLM adapter.
+
+    Explicit providers are strict. ``auto`` may try multiple configured AI
+    providers and finally return the labeled deterministic evidence baseline.
 
     Args:
         provider_override: Force a specific provider (groq, openrouter, openai_compat, opencode, ollama, mock)
@@ -75,19 +78,21 @@ def build_llm_adapter(
     ollama = OllamaAdapter(model=model_override, base_url=base_url_override)
     mock = MockAdapter()
 
-    # Build priority ordered list based on requested primary provider
+    # An explicitly selected provider is strict: never disguise a failed AI
+    # request as a successful deterministic baseline report. Automatic mode is
+    # the only mode that may move between providers and finally use MockAdapter.
     candidates: List[LLMAdapter] = []
 
     if provider == "groq":
-        candidates = [groq, openrouter, openai_compat, opencode, ollama, mock]
+        candidates = [groq]
     elif provider == "openrouter":
-        candidates = [openrouter, groq, openai_compat, opencode, ollama, mock]
+        candidates = [openrouter]
     elif provider in ("openai_compat", "openai", "custom"):
-        candidates = [openai_compat, groq, openrouter, opencode, ollama, mock]
+        candidates = [openai_compat]
     elif provider == "opencode":
-        candidates = [opencode, groq, openrouter, openai_compat, ollama, mock]
+        candidates = [opencode]
     elif provider == "ollama":
-        candidates = [ollama, groq, openrouter, openai_compat, opencode, mock]
+        candidates = [ollama]
     elif provider == "mock":
         candidates = [mock]
     else:
@@ -97,7 +102,10 @@ def build_llm_adapter(
     # Filter to available adapters
     available = [a for a in candidates if a.is_available]
     if not available:
-        available = [mock]
+        raise ValueError(
+            f"AI provider '{provider}' is not configured. Add its API key or endpoint, "
+            "or select Auto to allow the labeled evidence baseline."
+        )
 
     if len(available) == 1:
         adapter = available[0]

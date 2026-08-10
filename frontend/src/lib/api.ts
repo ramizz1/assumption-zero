@@ -80,6 +80,8 @@ export interface PromptAnalysisRequest {
   research_depth?: ResearchDepth
 }
 
+export type DemoAnalysisRequest = Omit<AnalysisCreateRequest, 'idea'>
+
 export const api = {
   health(): Promise<HealthResponse> {
     return request('/health')
@@ -110,8 +112,11 @@ export const api = {
     return request(`/analyses/${id}`, { method: 'DELETE' })
   },
 
-  runDemo(): Promise<{ analysis_id: string; status: string; demo: boolean }> {
-    return request('/demo', { method: 'POST' })
+  runDemo(settings?: DemoAnalysisRequest): Promise<{ analysis_id: string; status: string; demo: boolean }> {
+    return request('/demo', {
+      method: 'POST',
+      body: settings ? JSON.stringify(settings) : undefined,
+    })
   },
 
   verifyKeys(settings: Record<string, any>): Promise<{ status: string; provider: string; message: string }> {

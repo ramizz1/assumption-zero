@@ -244,7 +244,19 @@ export const HomePage: React.FC = () => {
     setLoading(true)
     setError(null)
     try {
-      const result = await api.runDemo()
+      const provider = aiSettings.provider === 'custom' ? 'openai_compat' : aiSettings.provider
+      const result = await api.runDemo({
+        ai_provider: provider,
+        groq_api_key: aiSettings.groqKey || undefined,
+        openrouter_api_key: aiSettings.openrouterKey || undefined,
+        opencode_api_key: aiSettings.opencodeKey || undefined,
+        openai_api_key: provider === 'openai_compat'
+          ? (aiSettings.customKey || aiSettings.openaiKey || undefined)
+          : (aiSettings.openaiKey || undefined),
+        custom_base_url: provider === 'openai_compat' ? (aiSettings.customUrl || undefined) : undefined,
+        ollama_base_url: aiSettings.ollamaUrl || undefined,
+        research_depth: researchDepth,
+      })
       navigate(`/analysis/${result.analysis_id}`)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to start demo')
@@ -268,6 +280,35 @@ export const HomePage: React.FC = () => {
   const readiness = inputMode === 'prompt'
     ? assessPromptReadiness(rawPromptText)
     : assessFormReadiness(idea)
+  const autoProvider = aiSettings.groqKey
+    ? 'Groq'
+    : aiSettings.openrouterKey
+      ? 'OpenRouter'
+      : aiSettings.opencodeKey
+        ? 'OpenCode'
+        : aiSettings.openaiKey
+          ? 'OpenAI-compatible'
+          : null
+  const providerLabel = {
+    auto: 'Auto',
+    beta: 'Auto',
+    groq: 'Groq',
+    openrouter: 'OpenRouter',
+    hybrid: 'Hybrid',
+    openai_compat: 'OpenAI-compatible',
+    ollama: 'Ollama',
+    opencode: 'OpenCode',
+    custom: 'Custom provider',
+  }[aiSettings.provider] + (aiSettings.provider === 'auto' && autoProvider ? ` → ${autoProvider}` : '')
+  const browserCredential = {
+    groq: aiSettings.groqKey,
+    openrouter: aiSettings.openrouterKey,
+    opencode: aiSettings.opencodeKey,
+    openai_compat: aiSettings.openaiKey,
+    custom: aiSettings.customKey || aiSettings.openaiKey,
+  }[aiSettings.provider as 'groq' | 'openrouter' | 'opencode' | 'openai_compat' | 'custom']
+  const browserKeyMissing = ['groq', 'openrouter', 'opencode', 'openai_compat', 'custom'].includes(aiSettings.provider)
+    && !browserCredential
 
   return (
     <div className="min-h-screen flex flex-col verseo-grid motion-scene text-zinc-900 selection:bg-zinc-200" style={{backgroundColor: '#ffffff'}}>
@@ -497,6 +538,11 @@ export const HomePage: React.FC = () => {
                 )
               })}
             </div>
+            <p className={`text-[11px] ${browserKeyMissing ? 'text-amber-700' : 'text-zinc-500'}`}>
+              Next run: <strong>{providerLabel}</strong>. {browserKeyMissing
+                ? 'No key is stored in this browser; the run will be rejected unless the backend has one configured.'
+                : 'The completed report will show the exact model that produced it.'}
+            </p>
           </div>
 
           <div className="mb-6 rounded-2xl border border-zinc-200 bg-zinc-50/70 p-4">
