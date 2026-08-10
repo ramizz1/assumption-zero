@@ -86,10 +86,9 @@ python -m venv .venv
 
 Activate the environment:
 
-```powershell
-# Windows PowerShell
-.venv\Scripts\Activate.ps1
-pip install -e ".[dev]"
+```cmd
+# Windows 
+.venv\Scripts\activate.bat && pip install -e ".[dev]"
 ```
 
 ```bash
