@@ -86,7 +86,7 @@ python -m venv .venv
 
 Activate the environment:
 
-```cmd
+```bash
 # Windows 
 .venv\Scripts\activate.bat && pip install -e ".[dev]"
 ```
