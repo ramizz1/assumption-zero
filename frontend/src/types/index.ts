@@ -9,7 +9,8 @@ export type ReliabilityLevel = 'low' | 'medium' | 'high'
 export type ConfidenceLevel = 'low' | 'medium' | 'high'
 export type AnalysisStatus = 'pending' | 'running' | 'complete' | 'failed'
 export type Recommendation = 'Build' | 'Test First' | 'Pivot' | 'Avoid'
-export type PerspectiveName = 'market_analyst' | 'skeptical_investor' | 'practical_builder'
+export type ResearchDepth = 'standard' | 'deep' | 'exhaustive'
+export type PerspectiveName = 'market_analyst' | 'regional_strategist' | 'skeptical_investor' | 'customer_researcher' | 'practical_builder'
 export type CompetitorType = 'direct' | 'indirect'
 
 export type AnalysisStage =
@@ -29,13 +30,23 @@ export interface IdeaInput {
   problem: string
   target_customer: string
   geography: string
+  market_language?: string
+  currency?: string
+  industry?: string
+  startup_stage?: string
+  solution?: string
   business_model?: string
   price?: string
   founder_skills?: string
+  team?: string
   budget?: string
+  launch_timeline?: string
+  revenue_goal?: string
+  acquisition_channels?: string
   known_competitors?: string
   unfair_advantage?: string
   key_assumptions?: string
+  regulatory_constraints?: string
   additional_context?: string
 }
 
@@ -132,6 +143,58 @@ export interface ValidationExperiment {
   priority: number
 }
 
+export interface FounderAction {
+  phase: string
+  objective: string
+  actions: string[]
+  success_metric: string
+  stop_condition: string
+  budget_hint: string
+}
+
+export interface FounderToolkit {
+  one_sentence_pitch: string
+  ideal_customer_profile: string
+  beachhead_market: string
+  recommended_channels: string[]
+  key_metrics: string[]
+  roadmap: FounderAction[]
+  interview_questions: string[]
+  decision_rules: string[]
+}
+
+export interface RegionalEvidenceSignal {
+  evidence_id: string
+  category: string
+  title: string
+  source_name: string
+  relevance_score: number
+}
+
+export interface RegionalMarketAnalysis {
+  geography: string
+  demand_score: number
+  confidence: ConfidenceLevel
+  evidence_count: number
+  source_count: number
+  summary: string
+  demand_signals: RegionalEvidenceSignal[]
+  pricing_signals: RegionalEvidenceSignal[]
+  regulatory_signals: RegionalEvidenceSignal[]
+  distribution_signals: RegionalEvidenceSignal[]
+  localization_requirements: string[]
+  research_gaps: string[]
+}
+
+export interface ResearchCoverage {
+  depth: ResearchDepth
+  queries_generated: number
+  queries_executed: number
+  providers_used: string[]
+  evidence_collected: number
+  regional_evidence_count: number
+}
+
 export interface AnalysisResult {
   analysis_id: string
   status: AnalysisStatus
@@ -152,6 +215,9 @@ export interface AnalysisResult {
   strongest_contradicting?: string
   missing_information: string[]
   experiments: ValidationExperiment[]
+  founder_toolkit?: FounderToolkit
+  regional_analysis?: RegionalMarketAnalysis
+  research_coverage?: ResearchCoverage
   disagreements: ModelDisagreement[]
   models_used: string[]
   provider_errors: string[]

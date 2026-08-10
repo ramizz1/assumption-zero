@@ -79,11 +79,22 @@ PERSPECTIVE_SYSTEM_PROMPTS: Dict[str, str] = {
         "2. [DEMAND & CUSTOMER PAIN]: Evaluate problem severity, customer pain intensity, search demand signals, and switching willingness from current solutions.\n"
         "3. [MONETIZATION & PRICING POWER]: Analyze business model viability, pricing strategy, revenue streams, and customer willingness to pay."
     ),
+    PerspectiveName.REGIONAL_STRATEGIST: (
+        "You are a Regional Market Strategist. Never transfer global demand claims to the target geography without local evidence. "
+        "Structure the analysis into: [LOCAL DEMAND & BUYER DENSITY], [LOCAL PRICING & PURCHASING POWER], "
+        "[REGULATION & LOCALIZATION], and [REGION-SPECIFIC DISTRIBUTION]. Cite regional evidence IDs for every factual claim, "
+        "separate evidence from inference, and name the exact local primary research still required."
+    ),
     PerspectiveName.SKEPTICAL_INVESTOR: (
         "You are a Skeptical VC Partner stress-testing startup ideas. You MUST structure your analysis into 3 DISTINCT SUB-SECTIONS:\n"
         "1. [COMPETITIVE MOAT & SWITCHING COSTS]: Challenge defensibility vs entrenched competitors, user lock-in barriers, and what stops copying.\n"
         "2. [UNIT ECONOMICS & CAC/LTV]: Scrutinize customer acquisition costs, lifetime value, payback periods, and margin sustainability.\n"
         "3. [FATAL RISKS & FAILURE MODES]: Identify the top 3 ways this startup fails — distribution, timing, regulation, or technology risks."
+    ),
+    PerspectiveName.CUSTOMER_RESEARCHER: (
+        "You are a senior Customer Researcher looking for behavioral evidence, not compliments. Structure the analysis into: "
+        "[CURRENT WORKFLOW & PAIN FREQUENCY], [BUYING PROCESS & WILLINGNESS TO PAY], [SWITCHING TRIGGERS & OBJECTIONS], "
+        "and [DISPROVING INTERVIEWS & COMMITMENT TESTS]. Define specific participant criteria, questions, sample sizes, and pass/fail thresholds."
     ),
     PerspectiveName.PRACTICAL_BUILDER: (
         "You are an ultra-pragmatic Technical Product Architect. Your mandate is EXTREME MVP MINIMALISM & RIGOROUS VALIDATION.\n"
@@ -121,7 +132,7 @@ def build_analysis_prompt(
         e for e in evidence
         if e.evidence_id not in selected_ids
     )
-    compact_evidence = compact_evidence[:40]
+    compact_evidence = compact_evidence[:70]
     evidence_block = "\n".join(
         f"[{e.evidence_id}] {e.title[:90]}\n"
         f"  Source: {e.source_name} | Type: {e.evidence_type.value}\n"
@@ -137,13 +148,23 @@ def build_analysis_prompt(
 **Problem:** {idea.problem}
 **Target Customer:** {idea.target_customer}
 **Geography:** {idea.geography}
+**Market Language:** {idea.market_language or 'Not specified'}
+**Local Currency:** {idea.currency or 'Not specified'}
+**Industry:** {idea.industry or 'Not specified'}
+**Startup Stage:** {idea.startup_stage or 'Not specified'}
+**Proposed Solution:** {idea.solution or idea.description}
 **Business Model:** {idea.business_model or 'Not specified'}
 **Price:** {idea.price or 'Not specified'}
 **Founder Skills:** {idea.founder_skills or 'Not specified'}
+**Team:** {idea.team or 'Not specified'}
 **Budget:** {idea.budget or 'Not specified'}
+**Launch Timeline:** {idea.launch_timeline or 'Not specified'}
+**Revenue / Customer Goal:** {idea.revenue_goal or 'Not specified'}
+**Available Acquisition Channels:** {idea.acquisition_channels or 'Not specified'}
 **Known Competitors:** {idea.known_competitors or 'Not specified'}
 **Unfair Advantage / Moat:** {getattr(idea, 'unfair_advantage', None) or 'Not specified'}
 **Core Unvalidated Assumptions:** {getattr(idea, 'key_assumptions', None) or 'Not specified'}
+**Regulatory / Operational Constraints:** {idea.regulatory_constraints or 'Not specified'}
 **Additional Context:** {idea.additional_context or 'None'}
 
 ## Collected Evidence
@@ -161,6 +182,9 @@ EXHAUSTIVE ANALYSIS REQUIREMENTS:
 3. **Go-to-Market Strategy**: Provide 90-day launch milestones for acquiring the first 100, 1,000, and 10,000 target customers.
 4. **Competitive Matrix**: Profile top competitors ({idea.known_competitors or 'existing alternatives in this space'}) with strengths, weaknesses, and defensible moats.
 5. **Trust, Safety & Legal**: Outline data security, identity verification, and legal compliance considerations specific to this product.
+6. **Regional Demand**: Evaluate demand specifically in {idea.geography}; do not use global category growth as proof of local demand.
+7. **Local Buyer Reality**: Evaluate purchasing power, expected price in {idea.currency or 'local currency'}, language/localization, procurement behavior, and trusted channels.
+8. **Evidence Gaps**: Clearly label any regional claim that lacks a local citation and turn it into a concrete primary-research task.
 
 COMPETITOR DISCOVERY REQUIREMENTS:
 1. Identify direct products, indirect substitutes, open-source alternatives, and the status-quo/manual workflow when the evidence names them.
@@ -289,8 +313,23 @@ class LLMAdapter(ABC):
             if len(name) < 4:
                 name = "New Startup Idea"
 
-        # 2. Extract Geography
-        geography = "global"
+        def extract_labeled(*labels: str, limit: int = 1000) -> str | None:
+            label_pattern = "|".join(re.escape(label) for label in labels)
+            match = re.search(
+                rf"(?im)(?:^|\n)\s*(?:[-*#]\s*)?(?:\*\*)?(?:{label_pattern})(?:\*\*)?\s*[:\-]\s*([^\n]+)",
+                text,
+            )
+            return match.group(1).strip().rstrip(".;")[:limit] if match else None
+
+        labeled_name = extract_labeled("name", "product name", "idea name", limit=60)
+        if labeled_name:
+            name = labeled_name
+
+        # 2. Extract geography and localization. Explicit labels win, then
+        # known country mentions, then a conservative "in Place" pattern.
+        geography = extract_labeled(
+            "geography", "target region", "target market", "location", limit=200
+        ) or "global"
         geo_map = {
             "azerbaijan": "Azerbaijan", "azerbaijani": "Azerbaijan",
             "united states": "United States", "usa": "United States", " us ": "United States",
@@ -300,40 +339,54 @@ class LLMAdapter(ABC):
             "nigeria": "Nigeria", "brazil": "Brazil", "france": "France",
         }
         text_lower = text.lower()
-        for kw, geo in geo_map.items():
-            if kw in text_lower:
-                geography = geo
-                break
+        if geography == "global":
+            for kw, geo in geo_map.items():
+                if kw in text_lower:
+                    geography = geo
+                    break
+        if geography == "global":
+            place_match = re.search(
+                r"\b(?:in|across|targeting)\s+([A-Z][A-Za-zÀ-ɏЀ-ӿ-]+(?:\s+[A-Z][A-Za-zÀ-ɏЀ-ӿ-]+){0,2}(?:,\s*[A-Z][A-Za-zÀ-ɏЀ-ӿ-]+)?)",
+                text,
+            )
+            if place_match:
+                geography = place_match.group(1)[:200]
 
-        # 3. Extract Competitors — scan text for quoted or named tools
-        comps_found = []
-        # Known competitor names to auto-detect
-        known_comp_list = [
-            "Tap.az", "Lalafo", "Turbo.az", "Bina.az",
-            "Facebook Marketplace", "Instagram", "Otter.ai", "Fireflies.ai",
-            "Stylebook", "Whering", "Grammarly", "Notion", "Slack", "Jira",
-            "Qualys", "Tenable", "Rapid7", "Snyk", "SonarQube", "Checkmarx",
-            "GitHub", "GitLab", "Vercel", "Stripe", "Twilio", "Zapier",
-        ]
-        for comp_name in known_comp_list:
-            if comp_name.lower() in text_lower:
-                comps_found.append(comp_name)
-        # Also detect quoted names in "competitors: X, Y, Z" pattern
-        comp_patterns = re.findall(r"(?:competitors?|alternatives?|competing with|vs\.?)\s*[:\-]?\s*([A-Z][\w\.]+(?:,\s*[A-Z][\w\.]+)*)", text, re.IGNORECASE)
-        for cp in comp_patterns:
-            for c in cp.split(","):
-                c = c.strip()
-                if c and c not in comps_found:
-                    comps_found.append(c)
+        market_language = extract_labeled(
+            "language", "market language", "customer language", limit=100
+        )
+        currency = extract_labeled("currency", "local currency", limit=50)
+        if not currency:
+            currency_match = re.search(
+                r"\b(USD|EUR|GBP|AZN|TRY|INR|CAD|AUD|NGN|BRL|JPY|CNY|AED|SAR|GEL|KZT)\b",
+                text,
+                re.IGNORECASE,
+            )
+            if currency_match:
+                currency = currency_match.group(1).upper()
+
+        # 3. Extract competitors only when the user explicitly labels them.
+        # Hardcoded product names would bias unrelated ideas.
+        competitors_value = extract_labeled(
+            "competitor", "competitors", "alternatives", "current alternatives", limit=500
+        )
+        comps_found = (
+            [item.strip() for item in re.split(r"[,;]", competitors_value) if item.strip()]
+            if competitors_value else []
+        )
 
         known_competitors = ", ".join(comps_found[:8]) if comps_found else None
 
         # 4. Extract target customer from text
-        cust_match = re.search(
-            r"(?:target customer|target user|audience|for|serving|used by)[:\s]+([^.\n]{5,80})",
-            text, re.IGNORECASE
+        labeled_customer = extract_labeled(
+            "target customer", "target user", "audience", "buyer", "customer", limit=500
         )
-        if cust_match:
+        cust_match = re.search(
+            r"(?:for|serving|used by)\s+([^.\n]{5,120})", text, re.IGNORECASE
+        )
+        if labeled_customer:
+            target_customer = labeled_customer
+        elif cust_match:
             target_customer = cust_match.group(1).strip().rstrip(",;")
         else:
             # Infer from product description
@@ -341,8 +394,12 @@ class LLMAdapter(ABC):
 
         # 5. Extract Description & Problem
         paragraphs = [p.strip() for p in text.split("\n\n") if p.strip() and not p.strip().startswith(("#", "Act as", "Create a"))]
-        desc = paragraphs[0][:300] if paragraphs else text[:300]
-        prob = paragraphs[1][:400] if len(paragraphs) > 1 else desc
+        desc = extract_labeled(
+            "description", "idea", "product", limit=2000
+        ) or (paragraphs[0][:2000] if paragraphs else text[:2000])
+        prob = extract_labeled(
+            "problem", "pain", "problem solved", limit=2000
+        ) or (paragraphs[1][:2000] if len(paragraphs) > 1 else desc)
 
         return IdeaInput(
             name=name[:60],
@@ -350,6 +407,40 @@ class LLMAdapter(ABC):
             problem=prob,
             target_customer=target_customer[:120],
             geography=geography,
+            market_language=market_language,
+            currency=currency,
+            industry=extract_labeled("industry", "vertical", "sector", limit=200),
+            startup_stage=extract_labeled(
+                "stage", "startup stage", "current stage", limit=100
+            ),
+            solution=extract_labeled("solution", "proposed solution", limit=1500),
+            business_model=extract_labeled(
+                "business model", "monetization", limit=500
+            ),
+            price=extract_labeled("price", "pricing", limit=200),
+            founder_skills=extract_labeled(
+                "founder skills", "skills", limit=1000
+            ),
+            team=extract_labeled("team", "founding team", limit=500),
+            budget=extract_labeled("budget", "runway", limit=200),
+            launch_timeline=extract_labeled(
+                "timeline", "launch timeline", "deadline", limit=200
+            ),
+            revenue_goal=extract_labeled(
+                "goal", "revenue goal", "customer goal", limit=200
+            ),
+            acquisition_channels=extract_labeled(
+                "channels", "acquisition channels", "distribution", limit=1000
+            ),
             known_competitors=known_competitors,
+            unfair_advantage=extract_labeled(
+                "unfair advantage", "moat", "advantage", limit=1000
+            ),
+            key_assumptions=extract_labeled(
+                "assumptions", "key assumptions", "critical assumptions", limit=1000
+            ),
+            regulatory_constraints=extract_labeled(
+                "constraints", "regulatory constraints", "compliance", limit=1000
+            ),
             additional_context=text[:3000],
         )

@@ -126,6 +126,11 @@ async def test_engine_end_to_end():
     # Contains experiments
     assert hasattr(result, "experiments")
     assert isinstance(result.experiments, list)
+
+    # Contains an actionable founder operating plan
+    assert result.founder_toolkit is not None
+    assert len(result.founder_toolkit.roadmap) == 4
+    assert result.founder_toolkit.decision_rules
     
     # Serializes successfully
     serialized = result.model_dump(mode="json")

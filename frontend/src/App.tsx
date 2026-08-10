@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import HomePage from './pages/HomePage'
 
 const AnalysisPage = lazy(() => import('./pages/AnalysisPage'))
+const DocsPage = lazy(() => import('./pages/DocsPage'))
 
 export default function App() {
   return (
@@ -18,6 +19,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/analysis/:id" element={<AnalysisPage />} />
+          <Route path="/docs" element={<DocsPage />} />
           <Route path="*" element={<HomePage />} />
         </Routes>
       </Suspense>

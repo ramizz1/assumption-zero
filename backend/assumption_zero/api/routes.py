@@ -174,6 +174,7 @@ async def create_analysis_endpoint(
         custom_base_url=body.custom_base_url,
         ollama_base_url=body.ollama_base_url,
         research_providers_override=body.research_providers,
+        research_depth=body.research_depth,
         is_demo=False,
     )
     return {"analysis_id": analysis_id, "status": "pending"}
@@ -245,6 +246,7 @@ async def create_analysis_from_prompt_endpoint(
         custom_base_url=body.custom_base_url,
         ollama_base_url=body.ollama_base_url,
         research_providers_override=body.research_providers,
+        research_depth=body.research_depth,
         is_demo=False,
     )
     return {"analysis_id": analysis_id, "status": "pending", "parsed_idea": parsed_idea.model_dump(mode="json")}

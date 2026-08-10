@@ -8,7 +8,7 @@ from typer.testing import CliRunner
 
 import assumption_zero.storage as store
 from assumption_zero.analysis.unit_economics import calculate_unit_economics
-from assumption_zero.cli import _run_analysis_sync, app
+from assumption_zero.cli import _run_analysis_sync, _with_founder_context, app
 from assumption_zero.schemas import AnalysisResult, AnalysisStage, AnalysisStatus
 
 
@@ -26,11 +26,34 @@ def test_cli_exposes_web_equivalent_commands_and_provider_controls():
     assert "--research-provider" in analyze_help.stdout
     assert "--provider" in analyze_help.stdout
     assert "--base-url" in analyze_help.stdout
+    for option in (
+        "--industry", "--stage", "--budget", "--timeline", "--goal",
+        "--channels", "--constraints", "--language", "--currency", "--depth",
+    ):
+        assert option in analyze_help.stdout
 
     prompt_help = runner.invoke(app, ["prompt", "--help"])
     assert prompt_help.exit_code == 0
     assert "--research-provider" in prompt_help.stdout
     assert "--provider" in prompt_help.stdout
+    assert "--timeline" in prompt_help.stdout
+    assert "--language" in prompt_help.stdout
+    assert "--currency" in prompt_help.stdout
+    assert "--depth" in prompt_help.stdout
+
+
+def test_cli_founder_context_flags_override_parsed_idea(sample_idea):
+    updated = _with_founder_context(
+        sample_idea,
+        startup_stage="Pre-MVP",
+        revenue_goal="Five paid pilots",
+        acquisition_channels="Trade groups, founder outreach",
+    )
+
+    assert updated.startup_stage == "Pre-MVP"
+    assert updated.revenue_goal == "Five paid pilots"
+    assert updated.acquisition_channels == "Trade groups, founder outreach"
+    assert updated.name == sample_idea.name
 
 
 def test_unit_economics_matches_web_default_model():

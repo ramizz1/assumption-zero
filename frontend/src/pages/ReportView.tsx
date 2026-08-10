@@ -10,6 +10,8 @@ import ExperimentCard from '../components/ExperimentCard'
 import ProgressView from './ProgressView'
 import FinancialSimulator from '../components/FinancialSimulator'
 import ScoreBreakdown from '../components/ScoreBreakdown'
+import FounderToolkit from '../components/FounderToolkit'
+import RegionalMarketPanel from '../components/RegionalMarketPanel'
 import { recommendationBg, recommendationColor, safeExternalUrl } from '../lib/utils'
 import { generateMarkdownReport } from '../lib/report'
 
@@ -269,9 +271,15 @@ export default function ReportView({ initialResult }: Props) {
         {/* 1.5 Unit Economics Simulator */}
         <FinancialSimulator idea={result.idea_input} />
 
+        {result.regional_analysis && (
+          <RegionalMarketPanel analysis={result.regional_analysis} coverage={result.research_coverage} />
+        )}
+
+        {result.founder_toolkit && <FounderToolkit toolkit={result.founder_toolkit} />}
+
         {/* 2. AI Perspectives (Bento Grid) */}
         <section id="perspectives" className="space-y-4">
-          <h2 className="section-title text-gray-900 font-display font-black tracking-tight"><span className="text-gray-400">01 /</span> AI Perspectives</h2>
+          <h2 className="section-title text-gray-900 font-display font-black tracking-tight"><span className="text-gray-400">03 /</span> AI Perspectives</h2>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {result.perspectives.map((p) => (
               <PerspectivePanel key={p.perspective_name} perspective={p} evidence={result.evidence} />
@@ -282,7 +290,7 @@ export default function ReportView({ initialResult }: Props) {
         {/* 3. Competitor Intelligence */}
         {result.competitors.length > 0 && (
           <section id="competitors" className="space-y-4 pt-4 border-t border-gray-200">
-            <h2 className="section-title text-gray-900 font-display font-black tracking-tight"><span className="text-gray-400">02 /</span> Competitor Intelligence</h2>
+            <h2 className="section-title text-gray-900 font-display font-black tracking-tight"><span className="text-gray-400">04 /</span> Competitor Intelligence</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {result.competitors.map((comp) => (
                 <CompetitorCard key={comp.name} competitor={comp} evidence={result.evidence} />
@@ -294,7 +302,7 @@ export default function ReportView({ initialResult }: Props) {
         {/* 4. Validation Experiments */}
         {result.experiments.length > 0 && (
           <section id="experiments" className="space-y-4 pt-4 border-t border-gray-200">
-            <h2 className="section-title text-gray-900 font-display font-black tracking-tight"><span className="text-gray-400">03 /</span> Validation Experiments</h2>
+            <h2 className="section-title text-gray-900 font-display font-black tracking-tight"><span className="text-gray-400">05 /</span> Validation Experiments</h2>
             <div className="grid grid-cols-1 gap-4">
               {result.experiments.map((exp, idx) => (
                 <ExperimentCard key={exp.title} experiment={exp} index={idx} />
@@ -308,7 +316,7 @@ export default function ReportView({ initialResult }: Props) {
           <section id="evidence" className="space-y-4 pt-4 border-t border-gray-200">
             <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
               <div>
-                <h2 className="section-title text-gray-900 font-display font-black tracking-tight"><span className="text-gray-400">04 /</span> Cited Sources</h2>
+                <h2 className="section-title text-gray-900 font-display font-black tracking-tight"><span className="text-gray-400">06 /</span> Cited Sources</h2>
                 <p className="text-xs text-gray-500 mt-1">Search the evidence behind the score and perspective claims.</p>
               </div>
               <input

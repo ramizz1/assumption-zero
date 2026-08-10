@@ -16,13 +16,23 @@ export interface IdeaDraft {
   problem?: string
   target_customer?: string
   geography?: string
+  market_language?: string
+  currency?: string
+  industry?: string
+  startup_stage?: string
+  solution?: string
   business_model?: string
   price?: string
   founder_skills?: string
+  team?: string
   budget?: string
+  launch_timeline?: string
+  revenue_goal?: string
+  acquisition_channels?: string
   known_competitors?: string
   unfair_advantage?: string
   key_assumptions?: string
+  regulatory_constraints?: string
   additional_context?: string
 }
 
@@ -86,9 +96,22 @@ export function assessFormReadiness(idea: IdeaDraft): ReadinessResult {
       complete: present(idea.geography, 2),
     },
     {
+      id: 'localization', label: 'Regional context',
+      hint: 'Add the local customer language or pricing currency for deeper regional research.',
+      complete: present(idea.geography, 2)
+        && [idea.market_language, idea.currency, idea.regulatory_constraints]
+          .some((value) => present(value, 2)),
+    },
+    {
       id: 'commercial', label: 'Business evidence',
       hint: 'Add at least two of pricing, model, competitors, budget, or founder fit.',
       complete: [idea.business_model, idea.price, idea.known_competitors, idea.budget, idea.founder_skills]
+        .filter((value) => present(value, 2)).length >= 2,
+    },
+    {
+      id: 'execution', label: 'Execution plan',
+      hint: 'Add a stage, solution, launch goal, or acquisition channel to personalize the roadmap.',
+      complete: [idea.startup_stage, idea.solution, idea.launch_timeline, idea.revenue_goal, idea.acquisition_channels]
         .filter((value) => present(value, 2)).length >= 2,
     },
   ])

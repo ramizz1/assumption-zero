@@ -125,6 +125,16 @@ def _compute_scores(
             "founder_fit": 0.95,
             "legal_operational_risk": 1.0,
         }
+    elif perspective == PerspectiveName.REGIONAL_STRATEGIST:
+        multipliers = {
+            "problem_evidence": 1.0,
+            "demand_signals": 1.05,
+            "competitive_gap": 0.95,
+            "distribution_feasibility": 0.9,
+            "unit_economics": 0.9,
+            "founder_fit": 0.9,
+            "legal_operational_risk": 0.85,
+        }
     elif perspective == PerspectiveName.SKEPTICAL_INVESTOR:
         # Skeptic: lowers most scores, especially competition and economics
         multipliers = {
@@ -135,6 +145,16 @@ def _compute_scores(
             "unit_economics": 0.8,
             "founder_fit": 0.85,
             "legal_operational_risk": 0.8,
+        }
+    elif perspective == PerspectiveName.CUSTOMER_RESEARCHER:
+        multipliers = {
+            "problem_evidence": 1.05,
+            "demand_signals": 1.0,
+            "competitive_gap": 0.9,
+            "distribution_feasibility": 0.9,
+            "unit_economics": 0.9,
+            "founder_fit": 0.9,
+            "legal_operational_risk": 0.95,
         }
     else:  # PRACTICAL_BUILDER
         # Builder: optimistic on feasibility, critical on distribution
@@ -277,6 +297,44 @@ class MockAdapter(LLMAdapter):
             ]
             mda = f"Unvalidated assumption: {idea.target_customer} will switch to {idea.name} from {comps}."
 
+        elif perspective_name == PerspectiveName.REGIONAL_STRATEGIST:
+            regional = [
+                item for item in evidence
+                if item.evidence_type == EvidenceType.GEOGRAPHIC
+                or loc.casefold() in f"{item.title} {item.passage} {item.search_query}".casefold()
+            ]
+            demand_local = [item for item in regional if item.evidence_type in (EvidenceType.DEMAND, EvidenceType.GEOGRAPHIC, EvidenceType.COMPLAINT)]
+            pricing_local = [item for item in regional if item.evidence_type == EvidenceType.PRICING]
+            regulatory_local = [item for item in regional if item.evidence_type == EvidenceType.REGULATORY]
+            distribution_local = [item for item in regional if item.evidence_type == EvidenceType.DISTRIBUTION]
+            summary = (
+                f"Regional evidence baseline for {idea.name} in {loc}: {len(regional)} local items across "
+                f"{len(set(item.source_name for item in regional))} sources. Global evidence is excluded from local demand claims."
+            )
+            findings = [
+                "В§LOCAL DEMAND & BUYER DENSITYВ§",
+                f"Regional demand or pain signals collected: {len(demand_local)}. Confirm with at least 10 local buyer interviews.",
+                f"Target customer for local sampling: {idea.target_customer} in {loc}.",
+                "В§LOCAL PRICING & PURCHASING POWERВ§",
+                f"Local pricing evidence items: {len(pricing_local)}; planned pricing is {price_model}.",
+                f"Run price-sensitivity interviews in {idea.currency or 'the local currency'} before fixing tiers.",
+                "В§REGULATION & LOCALIZATIONВ§",
+                f"Local regulatory evidence items: {len(regulatory_local)}.",
+                f"Validate language, trust, payment, privacy, and procurement requirements in {idea.market_language or loc}.",
+                "В§REGION-SPECIFIC DISTRIBUTIONВ§",
+                f"Local distribution evidence items: {len(distribution_local)}.",
+                f"Test locally trusted channels rather than assuming global acquisition tactics transfer to {loc}.",
+            ]
+            risks = [
+                f"Global category evidence may overstate actual demand in {loc}.",
+                "Local pricing, regulation, and acquisition costs remain hypotheses until independently cited.",
+            ]
+            opportunities = [
+                f"A narrow beachhead within {idea.target_customer} can reveal regional demand before wider expansion.",
+                "Local partnerships and trusted communities may reduce early acquisition cost.",
+            ]
+            mda = f"Regional transfer risk: demand for {idea.name} may not be strong enough in {loc} at {price_model}."
+
         elif perspective_name == PerspectiveName.SKEPTICAL_INVESTOR:
             comp_count = len([e for e in evidence if e.evidence_type == EvidenceType.COMPETITOR])
             summary = (
@@ -308,6 +366,34 @@ class MockAdapter(LLMAdapter):
                 f"Proprietary workflow features create defensible retention moat.",
             ]
             mda = f"Distribution & CAC: Can {idea.name} acquire target customers in {loc} within {budget_str}?"
+
+        elif perspective_name == PerspectiveName.CUSTOMER_RESEARCHER:
+            pain_items = [item for item in evidence if item.evidence_type in (EvidenceType.DEMAND, EvidenceType.COMPLAINT, EvidenceType.MANUAL_WORKFLOW)]
+            summary = (
+                f"Customer-research baseline for {idea.name}: {len(pain_items)} behavioral or pain signals found. "
+                "The next decision should depend on observed workflows and meaningful commitments from qualified buyers."
+            )
+            findings = [
+                "В§CURRENT WORKFLOW & PAIN FREQUENCYВ§",
+                f"Interview 10-15 people matching {idea.target_customer}; ask about the last real occurrence of the problem.",
+                "Record frequency, current workaround, time cost, financial cost, and consequences of doing nothing.",
+                "В§BUYING PROCESS & WILLINGNESS TO PAYВ§",
+                "Separate the user, champion, budget owner, security reviewer, and final approver.",
+                f"Ask for a paid pilot or equivalent commitment around {price_model}; compliments do not count as validation.",
+                "В§SWITCHING TRIGGERS & OBJECTIONSВ§",
+                f"Test why a buyer would leave {comps}, what proof they require, and which integration or trust concern blocks adoption.",
+                "В§DISPROVING TESTВ§",
+                "Pass when at least 7 of 10 confirm urgent recurring pain and 3 make a meaningful commitment; pivot after two failed cohorts.",
+            ]
+            risks = [
+                "Self-reported interest without observed behavior can create false demand confidence.",
+                "Interviewing convenient but unqualified participants will bias the result.",
+            ]
+            opportunities = [
+                "Manual delivery can expose the true value loop before product development.",
+                "Repeated buyer language can improve positioning and acquisition messages.",
+            ]
+            mda = f"Behavioral demand: qualified {idea.target_customer} may discuss the problem but refuse a meaningful commitment."
 
         else:  # PRACTICAL_BUILDER
             skills = idea.founder_skills or "Full-stack developer"

@@ -30,7 +30,9 @@ from assumption_zero.analysis.competitor_merger import merge_competitors
 from assumption_zero.analysis.confidence import calculate_evidence_confidence
 from assumption_zero.analysis.disagreement import detect_disagreements
 from assumption_zero.analysis.experiment_generator import generate_experiments
+from assumption_zero.analysis.founder_toolkit import generate_founder_toolkit
 from assumption_zero.analysis.query_generator import generate_queries
+from assumption_zero.analysis.regional_analysis import generate_regional_analysis
 from assumption_zero.analysis.scoring import calculate_opportunity_score
 from assumption_zero.llm.base import DiscoveredCompetitor, LLMAdapter, PerspectiveOutput
 from assumption_zero.research.base import ResearchProvider
@@ -49,11 +51,19 @@ from assumption_zero.schemas import (
     PERSPECTIVE_DISPLAY,
     PerspectiveName,
     Recommendation,
+    ResearchCoverage,
+    ResearchDepth,
     STAGE_DESCRIPTIONS,
     ValidationExperiment,
 )
 
 logger = logging.getLogger(__name__)
+
+_DEPTH_PRESETS = {
+    ResearchDepth.STANDARD: {"queries_per_type": 1, "max_results": 3, "max_evidence": 50, "concurrency": 12},
+    ResearchDepth.DEEP: {"queries_per_type": 2, "max_results": 5, "max_evidence": 100, "concurrency": 20},
+    ResearchDepth.EXHAUSTIVE: {"queries_per_type": 4, "max_results": 8, "max_evidence": 200, "concurrency": 24},
+}
 
 ProgressCallback = Optional[Callable[[AnalysisStage, str], Awaitable[None]]]
 
@@ -414,18 +424,24 @@ class AnalysisEngine:
         self,
         providers: List[ResearchProvider],
         llm_adapter: LLMAdapter,
-        max_evidence: int = 50,
-        queries_per_type: int = 2,
+        max_evidence: Optional[int] = None,
+        queries_per_type: Optional[int] = None,
+        research_depth: ResearchDepth | str = ResearchDepth.DEEP,
     ) -> None:
+        self._research_depth = ResearchDepth(research_depth)
+        preset = _DEPTH_PRESETS[self._research_depth]
         self._providers = [p for p in providers if p.is_available]
         self._llm = llm_adapter
-        self._max_evidence = max_evidence
-        self._queries_per_type = queries_per_type
+        self._max_evidence = max_evidence or preset["max_evidence"]
+        self._queries_per_type = queries_per_type or preset["queries_per_type"]
+        self._max_results_per_query = preset["max_results"]
+        self._max_concurrent_searches = preset["concurrency"]
 
         logger.info(
-            "AnalysisEngine ready: providers=%s, llm=%s",
+            "AnalysisEngine ready: providers=%s, llm=%s, depth=%s",
             [p.name for p in self._providers],
             llm_adapter.model_id,
+            self._research_depth.value,
         )
 
     async def run(
@@ -456,8 +472,13 @@ class AnalysisEngine:
 
         # ── Stage 2: Generate research queries ────────────────────
         await _progress(AnalysisStage.GENERATING_QUERIES)
-        all_queries = generate_queries(idea)
-        logger.info("Generated %d research queries", len(all_queries))
+        generated_queries = generate_queries(idea)
+        all_queries = self._select_queries(generated_queries)
+        logger.info(
+            "Generated %d research queries; executing %d balanced queries",
+            len(generated_queries),
+            len(all_queries),
+        )
 
         # ── Stage 3: Collect evidence ─────────────────────────────
         await _progress(AnalysisStage.COLLECTING_EVIDENCE)
@@ -466,6 +487,15 @@ class AnalysisEngine:
         )
         evidence = _assign_evidence_ids(raw_evidence)[: self._max_evidence]
         logger.info("Collected %d unique evidence items", len(evidence))
+        regional_analysis = generate_regional_analysis(idea, evidence)
+        research_coverage = ResearchCoverage(
+            depth=self._research_depth,
+            queries_generated=len(generated_queries),
+            queries_executed=len(all_queries),
+            providers_used=[provider.name for provider in self._providers],
+            evidence_collected=len(evidence),
+            regional_evidence_count=regional_analysis.evidence_count,
+        )
 
         # ── Stage 4: Find competitors ─────────────────────────────
         await _progress(AnalysisStage.FINDING_COMPETITORS)
@@ -511,6 +541,9 @@ class AnalysisEngine:
                 strongest_contradicting="",
                 missing_information=[],
                 experiments=[],
+                founder_toolkit=None,
+                regional_analysis=regional_analysis,
+                research_coverage=research_coverage,
                 disagreements=[],
                 models_used=[],
                 provider_errors=provider_errors,
@@ -532,6 +565,7 @@ class AnalysisEngine:
         # ── Stage 8: Generate experiments ─────────────────────────
         await _progress(AnalysisStage.GENERATING_EXPERIMENTS)
         experiments = generate_experiments(idea, perspectives, evidence)
+        founder_toolkit = generate_founder_toolkit(idea, recommendation, experiments)
 
         # ── Synthesis ─────────────────────────────────────────────
         disagreements = detect_disagreements(perspectives)
@@ -562,6 +596,9 @@ class AnalysisEngine:
             strongest_contradicting=strongest_con,
             missing_information=missing_info,
             experiments=experiments,
+            founder_toolkit=founder_toolkit,
+            regional_analysis=regional_analysis,
+            research_coverage=research_coverage,
             disagreements=disagreements,
             models_used=models_used,
             provider_errors=provider_errors,
@@ -582,17 +619,21 @@ class AnalysisEngine:
             )
             return []
 
+        semaphore = asyncio.Semaphore(self._max_concurrent_searches)
+
+        async def limited_search(provider, query_info):
+            async with semaphore:
+                return await self._safe_search(
+                    provider,
+                    query_info["query"],
+                    query_info["type"],
+                    idea,
+                )
+
         tasks = []
         for query_info in queries:
             for provider in self._providers:
-                tasks.append(
-                    self._safe_search(
-                        provider,
-                        query_info["query"],
-                        query_info["type"],
-                        idea,
-                    )
-                )
+                tasks.append(limited_search(provider, query_info))
 
         # Run all concurrently; failures are caught inside _safe_search
         results = await asyncio.gather(*tasks, return_exceptions=False)
@@ -611,7 +652,12 @@ class AnalysisEngine:
     ) -> List[EvidenceItem]:
         """Run a single provider search, catching all exceptions."""
         try:
-            return await provider.search(query, query_type, idea, max_results=5)
+            return await provider.search(
+                query,
+                query_type,
+                idea,
+                max_results=self._max_results_per_query,
+            )
         except Exception as exc:
             logger.warning(
                 "Provider %s failed for query %r: %s",
@@ -625,12 +671,16 @@ class AnalysisEngine:
         evidence: List[EvidenceItem],
         errors: List[str],
     ) -> tuple[List[AnalysisPerspective], List[str], List[DiscoveredCompetitor]]:
-        """Run three independent perspective analyses."""
+        """Run three to five independent perspectives based on research depth."""
         perspective_names = [
             PerspectiveName.MARKET_ANALYST,
             PerspectiveName.SKEPTICAL_INVESTOR,
             PerspectiveName.PRACTICAL_BUILDER,
         ]
+        if self._research_depth in (ResearchDepth.DEEP, ResearchDepth.EXHAUSTIVE):
+            perspective_names.insert(1, PerspectiveName.REGIONAL_STRATEGIST)
+        if self._research_depth == ResearchDepth.EXHAUSTIVE:
+            perspective_names.insert(-1, PerspectiveName.CUSTOMER_RESEARCHER)
 
         tasks = [
             self._safe_perspective(name, idea, evidence, errors)
@@ -666,6 +716,18 @@ class AnalysisEngine:
                 models_used.append(output.model_id)
 
         return perspectives, models_used, competitor_candidates
+
+    def _select_queries(self, queries: List[Dict[str, str]]) -> List[Dict[str, str]]:
+        """Take a bounded number of queries from every evidence category."""
+        selected: List[Dict[str, str]] = []
+        counts: Counter = Counter()
+        for query in queries:
+            query_type = query["type"]
+            if counts[query_type] >= self._queries_per_type:
+                continue
+            selected.append(query)
+            counts[query_type] += 1
+        return selected
 
     async def _safe_perspective(
         self,

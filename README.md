@@ -39,19 +39,22 @@
 Most idea validators turn a polished prompt into a polished opinion. Assumption Zero separates the jobs:
 
 - **Research providers collect evidence** from the live web, news, arXiv, GitHub, Hacker News, Reddit, and Wikipedia.
-- **AI perspectives interpret the evidence** as a market analyst, skeptical investor, and practical builder.
+- **Up to five perspectives interpret the evidence** as a market analyst, regional strategist, skeptical investor, customer researcher, and practical builder.
 - **Python computes the score** with explicit weights instead of asking a model to invent one.
 - **Citation validation rejects unsupported claims** and competitor candidates that are not backed by their cited evidence.
 - **Experiments turn uncertainty into action** with success criteria, failure criteria, cost, and time estimates.
+- **The founder toolkit turns the verdict into an operating plan** with positioning, a beachhead customer, acquisition channels, metrics, interview questions, decision rules, and a 30-day roadmap.
 
 ### What you get
 
 | Output | What it answers |
 |---|---|
 | Evidence-backed competitor map | Who already solves this problem, and how directly? |
+| Regional market reality | Is demand, pricing, regulation, and distribution actually evidenced in the selected geography? |
 | Opportunity Score | How strong is the opportunity across seven inspectable dimensions? |
-| Three independent perspectives | What would an analyst, investor, and builder challenge? |
+| Three to five independent perspectives | What would market, regional, investor, customer-research, and builder specialists challenge? |
 | Unit-economics stress test | What happens when price, CAC, cost, or churn changes? |
+| Founder action plan | Who should I reach first, what should I measure, and when should I stop or proceed? |
 | Validation experiments | What is the cheapest useful test to run next? |
 | Exportable report | How can the evidence and decision be shared with a team? |
 
@@ -61,9 +64,10 @@ Most idea validators turn a polished prompt into a polished opinion. Assumption 
 flowchart LR
     A[Describe the idea] --> B[Collect live evidence]
     B --> C[Verify competitors and citations]
-    C --> D[Run 3 AI perspectives]
+    C --> D[Run 3-5 independent perspectives]
     D --> E[Compute deterministic score]
     E --> F[Generate validation experiments]
+    F --> G[Build a 30-day founder action plan]
 ```
 
 The engine preserves the evidence trail throughout the report, so a reader can distinguish a sourced claim from an inference and an inference from a missing signal.
@@ -110,6 +114,8 @@ Or start with your own idea:
 azero prompt "A privacy-first AI meeting summarizer for small law firms"
 ```
 
+Use `--depth standard`, `--depth deep`, or `--depth exhaustive`. Deep is the default. Exhaustive runs the broadest query set and five analysis perspectives, so it takes longer and uses more provider/API capacity.
+
 ### 3. Launch the web interface
 
 Terminal one:
@@ -131,6 +137,8 @@ npm run dev
 
 Open [http://localhost:5173](http://localhost:5173).
 
+The in-app founder guide and CLI/API reference are available at [http://localhost:5173/docs](http://localhost:5173/docs). The detailed web brief supports industry, stage, solution, team, runway, timeline, revenue goal, acquisition channels, competitors, moat, assumptions, and regulatory constraints.
+
 > [!TIP]
 > If Windows reports `WinError 10013` on port 8000, another process or Windows port reservation is blocking it. Try `--port 8010`, then set `VITE_API_BASE_URL=http://localhost:8010` for the frontend.
 
@@ -147,7 +155,7 @@ Keep secrets in your local `.env`; never commit API keys. See [.env.example](.en
 
 ## CLI + Web parity
 
-Both interfaces use the same engine and the same root `azero_data` history. An analysis started in either interface appears in both `azero list` and the web **History** view.
+Both interfaces use the same engine, founder-toolkit generator, and root `azero_data` history. An analysis started in either interface appears in both `azero list` and the web **History** view.
 
 | Goal | CLI |
 |---|---|
@@ -155,6 +163,8 @@ Both interfaces use the same engine and the same root `azero_data` history. An a
 | Run a guided example | `azero demo` |
 | Analyze natural language | `azero prompt "your idea"` |
 | Analyze structured input | `azero analyze --file examples/sample-idea.json` |
+| Choose research depth | `azero prompt "your idea" --depth exhaustive` |
+| Localize the market | `azero analyze --geography Azerbaijan --language Azerbaijani --currency AZN` |
 | Choose research sources | `azero analyze -r "Web Search" -r GitHub` |
 | Inspect saved work | `azero list` / `azero show 1` |
 | Stress-test economics | `azero simulate 1 --cac 120 --churn 4` |
@@ -188,6 +198,18 @@ Assumption Zero treats model output as a candidate—not a fact:
 3. Citation validation rejects missing or fabricated references.
 4. Discovered competitors are accepted only when their cited evidence supports the name.
 5. Conflicts, gaps, confidence, and missing information remain visible in the report.
+
+Regional demand is calculated separately. Only evidence tied to the selected geography contributes to the regional evidence score; global category growth is never treated as proof of local demand. The report also separates local demand, pricing, regulatory, and distribution signals and lists the regional research gaps that remain.
+
+### Research depth
+
+| Depth | Query coverage | Perspectives | Best for |
+|---|---:|---:|---|
+| Standard | 1 query per evidence category | 3 | Quick early screening |
+| Deep (default) | 2 queries per category | 4 | Serious validation with regional analysis |
+| Exhaustive | Up to 4 queries per category | 5 | Maximum evidence collection and customer-research scrutiny |
+
+With an AI key, every selected perspective receives the evidence pack and full founder context. Without a key, the deterministic evidence engine still produces scoring, regional coverage, competitors, experiments, economics, and the 30-day founder toolkit; it labels missing evidence instead of inventing conclusions.
 
 This design reduces hallucination risk, but it cannot eliminate incomplete search results, stale source material, provider errors, or ambiguous evidence.
 
@@ -242,10 +264,6 @@ See [SECURITY.md](SECURITY.md) for vulnerability reporting.
 ## Contributing
 
 Contributions that improve evidence quality, research coverage, scoring transparency, provider support, accessibility, or founder workflows are welcome. Start with [CONTRIBUTING.md](CONTRIBUTING.md), or open a feature request if you want to discuss an idea first.
-
-## Repository artwork
-
-The GitHub-ready social preview is available at [docs/assets/social-preview.jpg](docs/assets/social-preview.jpg). It is **1280×640**, uses a solid background, and is under 1 MB as recommended by GitHub.
 
 ## License
 

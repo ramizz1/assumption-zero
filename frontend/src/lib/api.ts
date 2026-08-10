@@ -5,6 +5,7 @@ import type {
   AnalysisResult,
   HealthResponse,
   IdeaInput,
+  ResearchDepth,
 } from '../types'
 
 export interface AnalysisCreateRequest {
@@ -17,6 +18,7 @@ export interface AnalysisCreateRequest {
   custom_base_url?: string
   ollama_base_url?: string
   research_providers?: string[]
+  research_depth?: ResearchDepth
 }
 
 const BASE = '/api'
@@ -75,6 +77,7 @@ export interface PromptAnalysisRequest {
   custom_base_url?: string
   ollama_base_url?: string
   research_providers?: string[]
+  research_depth?: ResearchDepth
 }
 
 export const api = {

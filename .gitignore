@@ -41,6 +41,24 @@ Thumbs.db
 # Test / coverage
 .pytest_cache/
 .coverage
+.coverage.*
+coverage.xml
 htmlcov/
 .mypy_cache/
 .ruff_cache/
+.tox/
+.nox/
+.hypothesis/
+
+# Node tooling
+.vite/
+coverage/
+*.tsbuildinfo
+
+# Logs / temporary files
+*.log
+*.tmp
+*.temp
+*.bak
+*.orig
+*~

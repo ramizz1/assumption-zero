@@ -40,6 +40,7 @@ export default function AnalysisPage() {
             <span className="font-bold text-zinc-900">Assumption Zero</span>
           </Link>
           <div className="flex items-center gap-4">
+            <Link to="/docs" className="text-xs font-semibold text-zinc-500 hover:text-zinc-900 hidden sm:inline">Docs</Link>
             <button
               onClick={handleShare}
               className="px-3 py-1.5 bg-zinc-50 hover:bg-zinc-100 text-zinc-700 border border-zinc-200 rounded-lg text-xs font-bold font-mono transition-colors flex items-center gap-2"

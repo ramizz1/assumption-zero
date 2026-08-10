@@ -34,6 +34,7 @@ from assumption_zero.schemas import (
     AnalysisStatus,
     IdeaInput,
     Recommendation,
+    ResearchDepth,
 )
 
 logger = logging.getLogger(__name__)
@@ -166,6 +167,7 @@ async def run_analysis(
     custom_base_url: Optional[str] = None,
     ollama_base_url: Optional[str] = None,
     research_providers_override: Optional[List[str]] = None,
+    research_depth: ResearchDepth = ResearchDepth.DEEP,
     is_demo: bool = False,
 ) -> None:
     """Run the full analysis pipeline. Called as a FastAPI BackgroundTask."""
@@ -204,7 +206,11 @@ async def run_analysis(
             base_url_override=base_url_override
         )
         providers = build_research_providers(research_providers_override)
-        engine = AnalysisEngine(providers=providers, llm_adapter=llm)
+        engine = AnalysisEngine(
+            providers=providers,
+            llm_adapter=llm,
+            research_depth=research_depth,
+        )
 
         result = await engine.run(
             idea=idea,

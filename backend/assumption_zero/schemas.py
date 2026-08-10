@@ -51,6 +51,12 @@ class AnalysisStatus(str, Enum):
     FAILED = "failed"
 
 
+class ResearchDepth(str, Enum):
+    STANDARD = "standard"
+    DEEP = "deep"
+    EXHAUSTIVE = "exhaustive"
+
+
 class AnalysisStage(str, Enum):
     CLARIFYING_IDEA = "clarifying_idea"
     GENERATING_QUERIES = "generating_queries"
@@ -85,13 +91,17 @@ class Recommendation(str, Enum):
 
 class PerspectiveName(str, Enum):
     MARKET_ANALYST = "market_analyst"
+    REGIONAL_STRATEGIST = "regional_strategist"
     SKEPTICAL_INVESTOR = "skeptical_investor"
+    CUSTOMER_RESEARCHER = "customer_researcher"
     PRACTICAL_BUILDER = "practical_builder"
 
 
 PERSPECTIVE_DISPLAY: Dict[str, str] = {
     PerspectiveName.MARKET_ANALYST: "Market Analyst",
+    PerspectiveName.REGIONAL_STRATEGIST: "Regional Market Strategist",
     PerspectiveName.SKEPTICAL_INVESTOR: "Skeptical Investor",
+    PerspectiveName.CUSTOMER_RESEARCHER: "Customer Researcher",
     PerspectiveName.PRACTICAL_BUILDER: "Practical Builder",
 }
 
@@ -164,13 +174,23 @@ class IdeaInput(BaseModel):
         ..., min_length=2, max_length=200,
         description="Required: Target market geography"
     )
+    market_language: Optional[str] = Field(None, max_length=100, description="Primary language used by target customers")
+    currency: Optional[str] = Field(None, max_length=50, description="Currency used for local pricing")
+    industry: Optional[str] = Field(None, max_length=200, description="Industry or vertical")
+    startup_stage: Optional[str] = Field(None, max_length=100, description="Idea, validation, MVP, beta, or revenue stage")
+    solution: Optional[str] = Field(None, max_length=1500, description="How the product solves the problem")
     business_model: Optional[str] = Field(None, max_length=500)
     price: Optional[str] = Field(None, max_length=200, description="Expected price or pricing model")
     founder_skills: Optional[str] = Field(None, max_length=1000)
+    team: Optional[str] = Field(None, max_length=500, description="Current team size and roles")
     budget: Optional[str] = Field(None, max_length=200, description="Available runway or budget")
+    launch_timeline: Optional[str] = Field(None, max_length=200, description="Desired validation or launch timeline")
+    revenue_goal: Optional[str] = Field(None, max_length=200, description="Initial revenue or customer goal")
+    acquisition_channels: Optional[str] = Field(None, max_length=1000, description="Channels available for reaching early customers")
     known_competitors: Optional[str] = Field(None, max_length=500)
     unfair_advantage: Optional[str] = Field(None, max_length=1000, description="Unique advantage, distribution channel, or IP")
     key_assumptions: Optional[str] = Field(None, max_length=1000, description="1-2 core assumptions that must be true for success")
+    regulatory_constraints: Optional[str] = Field(None, max_length=1000, description="Legal, compliance, privacy, or operational constraints")
     additional_context: Optional[str] = Field(None, max_length=3000)
 
     @field_validator("name", "description", "problem")
@@ -313,6 +333,64 @@ class ValidationExperiment(BaseModel):
     priority: int = Field(ge=1, le=5)  # 1 = highest priority / lowest cost
 
 
+class FounderAction(BaseModel):
+    """A time-boxed operating milestone with a measurable exit condition."""
+
+    phase: str
+    objective: str
+    actions: List[str] = []
+    success_metric: str
+    stop_condition: str
+    budget_hint: str
+
+
+class FounderToolkit(BaseModel):
+    """Deterministic, actionable business-starting playbook derived from an analysis."""
+
+    one_sentence_pitch: str
+    ideal_customer_profile: str
+    beachhead_market: str
+    recommended_channels: List[str] = []
+    key_metrics: List[str] = []
+    roadmap: List[FounderAction] = []
+    interview_questions: List[str] = []
+    decision_rules: List[str] = []
+
+
+class RegionalEvidenceSignal(BaseModel):
+    evidence_id: str
+    category: str
+    title: str
+    source_name: str
+    relevance_score: float = Field(ge=0.0, le=1.0)
+
+
+class RegionalMarketAnalysis(BaseModel):
+    """Evidence-only analysis of demand and operating conditions in the target region."""
+
+    geography: str
+    demand_score: float = Field(ge=0.0, le=100.0)
+    confidence: ConfidenceLevel
+    evidence_count: int = 0
+    source_count: int = 0
+    summary: str
+    demand_signals: List[RegionalEvidenceSignal] = []
+    pricing_signals: List[RegionalEvidenceSignal] = []
+    regulatory_signals: List[RegionalEvidenceSignal] = []
+    distribution_signals: List[RegionalEvidenceSignal] = []
+    localization_requirements: List[str] = []
+    research_gaps: List[str] = []
+
+
+class ResearchCoverage(BaseModel):
+    depth: ResearchDepth
+    queries_generated: int
+    queries_executed: int
+    providers_used: List[str] = []
+    evidence_collected: int
+    regional_evidence_count: int
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # Full Analysis Result
 # ─────────────────────────────────────────────────────────────────────────────
@@ -351,6 +429,9 @@ class AnalysisResult(BaseModel):
 
     # Set after experiment generation
     experiments: List[ValidationExperiment] = []
+    founder_toolkit: Optional[FounderToolkit] = None
+    regional_analysis: Optional[RegionalMarketAnalysis] = None
+    research_coverage: Optional[ResearchCoverage] = None
 
     # Set after disagreement detection
     disagreements: List[ModelDisagreement] = []
@@ -373,6 +454,7 @@ class AnalysisCreateRequest(BaseModel):
     custom_base_url: Optional[str] = None
     ollama_base_url: Optional[str] = None
     research_providers: Optional[List[str]] = None  # Pin specific providers; None = all enabled
+    research_depth: ResearchDepth = ResearchDepth.DEEP
 
     @field_validator("ai_provider")
     @classmethod
@@ -399,6 +481,7 @@ class PromptAnalysisRequest(BaseModel):
     custom_base_url: Optional[str] = None
     ollama_base_url: Optional[str] = None
     research_providers: Optional[List[str]] = None
+    research_depth: ResearchDepth = ResearchDepth.DEEP
 
     @field_validator("prompt")
     @classmethod

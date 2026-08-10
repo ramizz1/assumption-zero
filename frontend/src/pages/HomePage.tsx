@@ -5,6 +5,7 @@ import SavedAnalysesModal from '../components/SavedAnalysesModal'
 import SettingsModal, { getStoredAISettings, AISettings } from '../components/SettingsModal'
 import ProviderIcon from '../components/ProviderIcon'
 import { assessFormReadiness, assessPromptReadiness, type ReadinessResult } from '../lib/readiness'
+import type { ResearchDepth } from '../types'
 
 // SVG Icons
 const LucideGlobe = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
@@ -64,13 +65,23 @@ const SAMPLE_IDEA = {
   problem: "Legal professionals have confidential client meetings that cannot be recorded or transcribed using cloud-based AI tools due to attorney-client privilege and data sovereignty concerns. Existing tools like Otter.ai and Fireflies.ai send audio to remote servers, creating compliance risks.",
   target_customer: "Solo practitioners and small law firms (1–20 attorneys) who have weekly client meetings and hearings they need documented but cannot use cloud AI tools due to ethical obligations",
   geography: "United States",
+  market_language: "English",
+  currency: "USD",
+  industry: "Legal technology",
+  startup_stage: "Idea validation",
+  solution: "Private on-device transcription and summarization with no client audio sent to cloud services",
   business_model: "SaaS subscription per seat, installed locally, no data leaves the device",
   price: "$49/month per attorney seat",
   founder_skills: "Full-stack developer with 5 years experience, no legal industry background, some ML experience running local models",
+  team: "Solo technical founder",
   budget: "$15,000 runway for 6 months",
+  launch_timeline: "Paid pilot within 30 days",
+  revenue_goal: "10 paid law-firm pilots and $500 MRR",
+  acquisition_channels: "Founder-led LinkedIn outreach, local bar associations, legal-tech consultants",
   known_competitors: "Otter.ai, Fireflies.ai, Whisper (open source), Tactiq",
   unfair_advantage: "Proprietary lightweight local model quantization pipeline running 4x faster on Apple Silicon and Windows NPU chips",
   key_assumptions: "Attorneys will pay $49/mo for 100% on-device data privacy rather than risk cloud security compliance violations",
+  regulatory_constraints: "Attorney-client privilege, data residency, recording consent, and local device security",
   additional_context: "Planning to use OpenAI Whisper for transcription and a local Llama model for summarization. Initial target is solo practitioners in the US who already use case management software."
 }
 
@@ -87,6 +98,7 @@ export const HomePage: React.FC = () => {
 
   const [aiSettings, setAiSettings] = useState<AISettings>(getStoredAISettings())
   const [inputMode, setInputMode] = useState<'prompt' | 'form'>('prompt')
+  const [researchDepth, setResearchDepth] = useState<ResearchDepth>('deep')
 
   const [rawPromptText, setRawPromptText] = useState('')
 
@@ -96,13 +108,23 @@ export const HomePage: React.FC = () => {
     problem: '',
     target_customer: '',
     geography: '',
+    market_language: '',
+    currency: '',
+    industry: '',
+    startup_stage: '',
+    solution: '',
     business_model: '',
     price: '',
     founder_skills: '',
+    team: '',
     budget: '',
+    launch_timeline: '',
+    revenue_goal: '',
+    acquisition_channels: '',
     known_competitors: '',
     unfair_advantage: '',
     key_assumptions: '',
+    regulatory_constraints: '',
     additional_context: '',
   })
 
@@ -126,7 +148,7 @@ export const HomePage: React.FC = () => {
   }, [])
 
   const update = (field: keyof typeof idea) => (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     setIdea((prev) => ({ ...prev, [field]: e.target.value }))
   }
@@ -158,6 +180,7 @@ export const HomePage: React.FC = () => {
         openai_api_key: (provider === 'openai_compat') ? (aiSettings.customKey || aiSettings.openaiKey || undefined) : (aiSettings.openaiKey || undefined),
         custom_base_url: (provider === 'openai_compat') ? (aiSettings.customUrl || undefined) : undefined,
         ollama_base_url: aiSettings.ollamaUrl || undefined,
+        research_depth: researchDepth,
       })
       navigate(`/analysis/${result.analysis_id}`)
     } catch (err) {
@@ -179,13 +202,23 @@ export const HomePage: React.FC = () => {
         problem: idea.problem,
         target_customer: idea.target_customer,
         geography: idea.geography,
+        market_language: idea.market_language || undefined,
+        currency: idea.currency || undefined,
+        industry: idea.industry || undefined,
+        startup_stage: idea.startup_stage || undefined,
+        solution: idea.solution || undefined,
         business_model: idea.business_model || undefined,
         price: idea.price || undefined,
         founder_skills: idea.founder_skills || undefined,
+        team: idea.team || undefined,
         budget: idea.budget || undefined,
+        launch_timeline: idea.launch_timeline || undefined,
+        revenue_goal: idea.revenue_goal || undefined,
+        acquisition_channels: idea.acquisition_channels || undefined,
         known_competitors: idea.known_competitors || undefined,
         unfair_advantage: idea.unfair_advantage || undefined,
         key_assumptions: idea.key_assumptions || undefined,
+        regulatory_constraints: idea.regulatory_constraints || undefined,
         additional_context: idea.additional_context || undefined,
       }
 
@@ -198,6 +231,7 @@ export const HomePage: React.FC = () => {
         openai_api_key: (provider === 'openai_compat') ? (aiSettings.customKey || aiSettings.openaiKey || undefined) : (aiSettings.openaiKey || undefined),
         custom_base_url: (provider === 'openai_compat') ? (aiSettings.customUrl || undefined) : undefined,
         ollama_base_url: aiSettings.ollamaUrl || undefined,
+        research_depth: researchDepth,
       })
       navigate(`/analysis/${result.analysis_id}`)
     } catch (err) {
@@ -276,6 +310,15 @@ export const HomePage: React.FC = () => {
               API {backendStatus}
             </span>
             <button
+              type="button"
+              onClick={() => navigate('/docs')}
+              className="nav-action-3d px-3.5 py-1.5 rounded-xl border text-xs font-mono font-medium transition-all flex items-center gap-2 shadow-sm hover:bg-zinc-50"
+              style={{borderColor: '#e4e4e7', backgroundColor: '#fafafa', color: '#52525b'}}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></svg>
+              <span className="hidden sm:inline">Docs</span>
+            </button>
+            <button
               onClick={() => setIsHistoryOpen(true)}
               className="nav-action-3d px-3.5 py-1.5 rounded-xl border text-xs font-mono font-medium transition-all flex items-center gap-2 shadow-sm hover:bg-zinc-50"
               style={{borderColor: '#e4e4e7', backgroundColor: '#fafafa', color: '#52525b'}}
@@ -330,7 +373,7 @@ export const HomePage: React.FC = () => {
         <div className="max-w-4xl mx-auto space-y-5">
           <div className="inline-flex items-center gap-2 verseo-badge shadow-sm">
             <span className="w-2 h-2 rounded-full animate-pulse" style={{backgroundColor: '#18181b'}} />
-            <span>[ ✦ MULTI-SOURCE LIVE RESEARCH · 3 AI PERSPECTIVES · DETERMINISTIC SCORING ]</span>
+            <span>[ ✦ DEEP REGIONAL RESEARCH · UP TO 5 PERSPECTIVES · DETERMINISTIC SCORING ]</span>
           </div>
 
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-display font-black tracking-tight leading-[1.1]" style={{color: '#09090b'}}>
@@ -454,6 +497,37 @@ export const HomePage: React.FC = () => {
                 )
               })}
             </div>
+          </div>
+
+          <div className="mb-6 rounded-2xl border border-zinc-200 bg-zinc-50/70 p-4">
+            <div className="flex items-center justify-between gap-3 mb-3">
+              <div>
+                <p className="text-xs font-mono font-bold text-zinc-700">[ RESEARCH DEPTH ]</p>
+                <p className="text-[11px] text-zinc-500 mt-0.5">Controls regional queries, evidence volume, and independent analysis perspectives.</p>
+              </div>
+              <span className="text-[10px] font-mono text-zinc-400 hidden sm:inline">Deep is recommended</span>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+              {([
+                { id: 'standard', label: 'Standard', detail: 'Fast · 3 perspectives' },
+                { id: 'deep', label: 'Deep regional', detail: 'Default · 4 perspectives' },
+                { id: 'exhaustive', label: 'Exhaustive', detail: 'Maximum · 5 perspectives' },
+              ] as const).map((option) => (
+                <button
+                  key={option.id}
+                  type="button"
+                  aria-pressed={researchDepth === option.id}
+                  onClick={() => setResearchDepth(option.id)}
+                  className={`rounded-xl border p-3 text-left transition-all ${researchDepth === option.id ? 'bg-zinc-950 text-white border-zinc-950 shadow-md' : 'bg-white text-zinc-700 border-zinc-200 hover:border-zinc-400'}`}
+                >
+                  <span className="block text-xs font-bold">{option.label}</span>
+                  <span className={`block text-[10px] mt-0.5 ${researchDepth === option.id ? 'text-zinc-300' : 'text-zinc-500'}`}>{option.detail}</span>
+                </button>
+              ))}
+            </div>
+            {researchDepth === 'exhaustive' && (
+              <p className="text-[11px] text-amber-800 bg-amber-50 border border-amber-200 rounded-xl p-2.5 mt-3">Runs the largest balanced query set and five independent perspectives. Expect more time and AI-provider usage.</p>
+            )}
           </div>
 
           {/* Mode 1: Natural Language Prompt */}
@@ -639,6 +713,67 @@ export const HomePage: React.FC = () => {
                 </div>
               </div>
 
+              <fieldset className="rounded-2xl border border-zinc-200 bg-zinc-50/70 p-4 sm:p-5 space-y-4">
+                <legend className="px-2 text-xs font-mono font-bold uppercase tracking-wider text-zinc-700">Founder planning context</legend>
+                <p className="text-xs text-zinc-500">These options tailor the positioning, go-to-market channels, 30-day roadmap, and decision rules in your report.</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="label">Industry / Vertical</label>
+                    <input value={idea.industry} onChange={update('industry')} placeholder="e.g. Legal technology" className="input-field shadow-inner" />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="label">Current Stage</label>
+                    <select value={idea.startup_stage} onChange={update('startup_stage')} className="input-field shadow-inner">
+                      <option value="">Select stage</option>
+                      <option>Idea validation</option>
+                      <option>Pre-MVP</option>
+                      <option>MVP built</option>
+                      <option>Private beta</option>
+                      <option>Early revenue</option>
+                      <option>Scaling</option>
+                    </select>
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="label">Primary Market Language</label>
+                    <input value={idea.market_language} onChange={update('market_language')} placeholder="e.g. Azerbaijani and Russian" className="input-field shadow-inner" />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="label">Local Pricing Currency</label>
+                    <input value={idea.currency} onChange={update('currency')} placeholder="e.g. AZN, USD, EUR" className="input-field shadow-inner" />
+                  </div>
+                </div>
+                <div className="space-y-1.5">
+                  <label className="label">Proposed Solution</label>
+                  <textarea rows={2} value={idea.solution} onChange={update('solution')} placeholder="Describe the smallest product or service that delivers the outcome." className="textarea-field shadow-inner" />
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="label">Team</label>
+                    <input value={idea.team} onChange={update('team')} placeholder="e.g. Solo founder" className="input-field shadow-inner" />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="label">Launch Timeline</label>
+                    <input value={idea.launch_timeline} onChange={update('launch_timeline')} placeholder="e.g. Pilot in 30 days" className="input-field shadow-inner" />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="label">First Goal</label>
+                    <input value={idea.revenue_goal} onChange={update('revenue_goal')} placeholder="e.g. 10 pilots / $500 MRR" className="input-field shadow-inner" />
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="label">Acquisition Channels</label>
+                    <textarea rows={2} value={idea.acquisition_channels} onChange={update('acquisition_channels')} placeholder="Communities, audience, partners, outbound, paid channels" className="textarea-field shadow-inner" />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="label">Regulatory / Operating Constraints</label>
+                    <textarea rows={2} value={idea.regulatory_constraints} onChange={update('regulatory_constraints')} placeholder="Privacy, licensing, safety, integrations, procurement" className="textarea-field shadow-inner" />
+                  </div>
+                </div>
+              </fieldset>
+
               <div className="space-y-1.5">
                 <label className="label">Critical Assumptions</label>
                 <textarea
@@ -724,9 +859,9 @@ export const HomePage: React.FC = () => {
                 <div className="w-10 h-10 rounded-xl bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-700 group-hover:bg-gray-900 group-hover:text-white transition-colors duration-300">
                   <LucideBrain />
                 </div>
-                <h3 className="text-lg font-display font-bold text-gray-900">3 AI Agent Perspectives</h3>
+                <h3 className="text-lg font-display font-bold text-gray-900">Up to 5 Independent Perspectives</h3>
                 <p className="text-xs text-gray-500 leading-relaxed">
-                  Evaluates your idea simultaneously through three distinct lenses: <strong>Market Analyst</strong> (sizing), <strong>Skeptical VC Investor</strong> (moat risks), and <strong>Practical Builder</strong> (90-day roadmap).
+                  Adds regional-market and customer-research specialists in deeper modes alongside the market analyst, skeptical investor, and practical builder.
                 </p>
               </div>
               <div className="mt-4 pt-3 border-t border-gray-100 flex items-center gap-2 font-mono text-[11px] text-gray-400">

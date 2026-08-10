@@ -116,7 +116,9 @@ def _conf_color(conf: str) -> str:
 def _perspective_color(name: str) -> str:
     return {
         "market_analyst": "bold cyan",
+        "regional_strategist": "bold blue",
         "skeptical_investor": "bold magenta",
+        "customer_researcher": "bold yellow",
         "practical_builder": "bold green",
     }.get(name, "bold white")
 
@@ -129,7 +131,7 @@ def _print_splash() -> None:
     banner_text = (
         f"[bold #F5A623]✦ A S S U M P T I O N   Z E R O[/]   [bold cyan]v{__version__}[/]\n"
         f"[bold white]{TAGLINE}[/]\n\n"
-        f"[bold cyan]Multi-Source Live Research[/]  [bright_white]•[/]  [bold green]3 AI Perspectives[/]  [bright_white]•[/]  [bold #F5A623]Deterministic Scoring[/]\n"
+        f"[bold cyan]Multi-Source Live Research[/]  [bright_white]•[/]  [bold green]Up to 5 Perspectives[/]  [bright_white]•[/]  [bold #F5A623]Deterministic Scoring[/]\n"
         f"[bright_white]GitHub:[/] [bold cyan]https://github.com/ramizz1/assumption-zero[/]\n\n"
         f"[bold yellow]💡 Tip:[/] Highly recommended to run [bold #D97706]'azero config'[/] first to set up API keys & providers!"
     )
@@ -169,6 +171,7 @@ def _print_disclaimer() -> None:
 def _build_engine_sync(
     provider_override=None, api_key_override=None,
     model_override=None, base_url_override=None, research_providers=None,
+    research_depth="deep",
 ):
     from assumption_zero.analysis.engine import AnalysisEngine
     from assumption_zero.services.analysis_service import (
@@ -182,7 +185,11 @@ def _build_engine_sync(
         base_url_override=base_url_override,
     )
     providers = build_research_providers(research_providers)
-    return AnalysisEngine(providers=providers, llm_adapter=llm)
+    return AnalysisEngine(
+        providers=providers,
+        llm_adapter=llm,
+        research_depth=research_depth,
+    )
 
 
 STAGE_LABELS = {
@@ -206,6 +213,7 @@ def _run_analysis_sync(
     model_override=None,
     base_url_override=None,
     research_providers=None,
+    research_depth="deep",
 ):
     import uuid
     import assumption_zero.storage as store
@@ -215,6 +223,7 @@ def _run_analysis_sync(
         model_override=model_override,
         base_url_override=base_url_override,
         research_providers=research_providers,
+        research_depth=research_depth,
     )
     analysis_id = str(uuid.uuid4())
     store.create_record(
@@ -386,6 +395,27 @@ def _print_report(result) -> None:
     )
     console.print("  [bright_white]Adjust inputs with: azero simulate <analysis-id>[/]\n")
 
+    if result.regional_analysis:
+        regional = result.regional_analysis
+        _print_section(f"Regional Market Reality — {regional.geography}")
+        coverage = result.research_coverage
+        console.print(
+            f"  [bold white]Regional evidence score:[/] [{_score_color(regional.demand_score)}]{regional.demand_score:.0f}/100[/]   "
+            f"[bold white]Confidence:[/] [{_conf_color(regional.confidence.value)}]{regional.confidence.value.upper()}[/]   "
+            f"[bold white]Local evidence:[/] [cyan]{regional.evidence_count} items / {regional.source_count} sources[/]"
+        )
+        if coverage:
+            console.print(
+                f"  [bold white]Coverage:[/] [white]{coverage.depth.value} depth · "
+                f"{coverage.queries_executed} balanced queries · {coverage.evidence_collected} total evidence items[/]"
+            )
+        console.print(f"\n  [white]{regional.summary}[/]\n")
+        if regional.research_gaps:
+            console.print("  [bold #D97706]Regional research gaps:[/]")
+            for gap in regional.research_gaps:
+                console.print(f"    - [white]{gap}[/]")
+            console.print()
+
     _print_section("Evidence Collected")
 
     ev_count = len(result.evidence)
@@ -500,7 +530,7 @@ def _print_report(result) -> None:
                 )
 
     # ── 5. AI Perspectives ────────────────────────────────────────
-    _print_section("3 AI Strategic Perspectives (Market Analyst • Investor • Builder)")
+    _print_section(f"{len(result.perspectives)} Strategic Perspectives")
 
     for idx, p in enumerate(result.perspectives):
         pcol = _perspective_color(p.perspective_name.value)
@@ -583,22 +613,26 @@ def _print_report(result) -> None:
         console.print()
 
     # ── 8. Next Steps ─────────────────────────────────────────────
-    console.print("  [bold white]Recommended Next Steps:[/]")
-    next_steps = [
-        "Conduct 5 discovery interviews with target segment customers before writing code.",
-        "Create a lean landing page to measure conversion interest and sign-up intent.",
-        "Manually deliver core value to 3 early users to validate willingness to pay.",
-        "Allocate a 1-week budget ($0-$200) to test riskiest distribution channel.",
-        "Define primary success metric (retention, revenue, NPS) and measure from Day 1.",
-    ]
-    if result.perspectives:
-        for p in result.perspectives:
-            if "builder" in p.perspective_name.value:
-                next_steps.insert(0, f"Scope check: {p.most_dangerous_assumption}")
-                break
-    for i, step in enumerate(next_steps[:5], 1):
-        console.print(f"    {i}. [white]{step}[/]")
-    console.print()
+    if result.founder_toolkit:
+        toolkit = result.founder_toolkit
+        _print_section("Founder Action Plan")
+        console.print(Panel(toolkit.one_sentence_pitch, title="[bold cyan]Positioning[/]", border_style="cyan", box=box.ROUNDED))
+        console.print(f"  [bold white]Beachhead:[/] [white]{toolkit.beachhead_market}[/]\n")
+        roadmap = Table(box=box.SIMPLE, show_header=True, header_style="bold #D97706", show_edge=False)
+        roadmap.add_column("Phase", width=12, style="bold cyan")
+        roadmap.add_column("Objective", min_width=24, style="bold white")
+        roadmap.add_column("Exit metric")
+        roadmap.add_column("Budget", width=14)
+        for action in toolkit.roadmap:
+            roadmap.add_row(action.phase, action.objective, action.success_metric, action.budget_hint)
+        console.print(roadmap)
+        console.print("  [bold white]Recommended channels:[/]")
+        for channel in toolkit.recommended_channels:
+            console.print(f"    - [white]{channel}[/]")
+        console.print("\n  [bold white]Decision rules:[/]")
+        for rule in toolkit.decision_rules:
+            console.print(f"    - [white]{rule}[/]")
+        console.print()
 
     # ── 9. Validation Experiments ─────────────────────────────────
     if result.experiments:
@@ -664,6 +698,27 @@ def _export_markdown(result) -> str:
     lines.append(f"**Analysis Mode:** {', '.join(result.models_used) or 'Evidence baseline'}")
     if result.most_dangerous_assumption:
         lines.append(f"**Most Dangerous Assumption:** {result.most_dangerous_assumption}")
+
+    if result.regional_analysis:
+        regional = result.regional_analysis
+        lines += [
+            "", f"## Regional Market Reality — {regional.geography}", "",
+            f"**Regional evidence score:** {regional.demand_score:.0f}/100",
+            f"**Confidence:** {regional.confidence.value.upper()}",
+            f"**Coverage:** {regional.evidence_count} regional items across {regional.source_count} sources",
+        ]
+        if result.research_coverage:
+            coverage = result.research_coverage
+            lines.append(
+                f"**Research run:** {coverage.depth.value} depth; {coverage.queries_executed} balanced queries; "
+                f"{coverage.evidence_collected} total evidence items"
+            )
+        lines += ["", regional.summary, "", "### Regional demand signals", ""]
+        lines += [f"- [{item.evidence_id}] {item.title} — {item.source_name}" for item in regional.demand_signals] or ["- None collected"]
+        lines += ["", "### Local pricing signals", ""]
+        lines += [f"- [{item.evidence_id}] {item.title} — {item.source_name}" for item in regional.pricing_signals] or ["- None collected"]
+        lines += ["", "### Regulation and distribution gaps", ""]
+        lines += [f"- {gap}" for gap in regional.research_gaps]
 
     lines += [
         "",
@@ -732,6 +787,28 @@ def _export_markdown(result) -> str:
             if disagreement.requires_human_research:
                 lines.append("- **Requires direct human research:** Yes")
             lines.append("")
+
+    if result.founder_toolkit:
+        toolkit = result.founder_toolkit
+        lines += [
+            "## Founder Toolkit", "",
+            f"**Positioning:** {toolkit.one_sentence_pitch}", "",
+            f"**Ideal customer:** {toolkit.ideal_customer_profile}", "",
+            f"**Beachhead:** {toolkit.beachhead_market}", "",
+            "### Recommended channels", "",
+            *[f"- {channel}" for channel in toolkit.recommended_channels], "",
+            "### 30-day roadmap", "",
+        ]
+        for action in toolkit.roadmap:
+            lines += [
+                f"#### {action.phase}: {action.objective}",
+                *[f"- {step}" for step in action.actions],
+                f"- **Success metric:** {action.success_metric}",
+                f"- **Stop condition:** {action.stop_condition}",
+                f"- **Budget:** {action.budget_hint}", "",
+            ]
+        lines += ["### Customer interview questions", "", *[f"- {question}" for question in toolkit.interview_questions], ""]
+        lines += ["### Decision rules", "", *[f"- {rule}" for rule in toolkit.decision_rules], ""]
 
     lines += ["", "## Validation Experiments", ""]
     for i, exp in enumerate(result.experiments, 1):
@@ -871,6 +948,41 @@ def _export_html(result) -> str:
         </div>
         """
 
+    regional_html = ""
+    if result.regional_analysis:
+        regional = result.regional_analysis
+        signal_items = "".join(
+            f"<li><strong>[{item.evidence_id}]</strong> {item.title} — {item.source_name}</li>"
+            for item in (
+                regional.demand_signals
+                + regional.pricing_signals
+                + regional.regulatory_signals
+                + regional.distribution_signals
+            )[:16]
+        )
+        gap_items = "".join(f"<li>{gap}</li>" for gap in regional.research_gaps)
+        coverage_text = ""
+        if result.research_coverage:
+            coverage = result.research_coverage
+            coverage_text = (
+                f"{coverage.depth.value} depth · {coverage.queries_executed} balanced queries · "
+                f"{coverage.evidence_collected} total evidence items"
+            )
+        regional_html = f"""
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">{regional.geography}: regional evidence score {regional.demand_score:.0f}/100</span>
+                <span class="badge" style="background:#38BDF822;color:#38BDF8;">{regional.confidence.value.upper()} confidence</span>
+            </div>
+            <p style="margin-top:1rem;color:#CBD5E1;">{regional.summary}</p>
+            <p style="margin-top:.5rem;color:#94A3B8;font-size:.85rem;">{regional.evidence_count} local items across {regional.source_count} sources · {coverage_text}</p>
+            <div class="grid" style="margin-top:1rem;">
+                <div><strong style="color:#4ADE80;">Regional signals</strong><ul>{signal_items or '<li>No regional signals collected</li>'}</ul></div>
+                <div><strong style="color:#F5A623;">Research gaps</strong><ul>{gap_items or '<li>No gaps recorded</li>'}</ul></div>
+            </div>
+        </div>
+        """
+
     # Validation Experiments
     exp_html = ""
     if result.experiments:
@@ -898,22 +1010,36 @@ def _export_html(result) -> str:
             </div>
             """
 
-    # Next steps
+    # Founder roadmap / legacy next steps
     next_steps_html = ""
-    next_steps = [
-        "Conduct 5 discovery interviews with target segment customers before writing code.",
-        "Create a lean landing page to measure conversion interest and sign-up intent.",
-        "Manually deliver core value to 3 early users to validate willingness to pay.",
-        "Allocate a 1-week budget ($0-$200) to test riskiest distribution channel.",
-        "Define primary success metric (retention, revenue, NPS) and measure from Day 1.",
-    ]
-    for idx, st in enumerate(next_steps, 1):
-        next_steps_html += f"""
-        <div class="card" style="display: flex; gap: 1rem; align-items: center;">
-            <div style="background: #D97706; color: #FFF; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; flex-shrink: 0;">{idx}</div>
-            <div style="color: #F8FAFC; font-size: 1rem;">{st}</div>
-        </div>
-        """
+    if result.founder_toolkit:
+        for idx, action in enumerate(result.founder_toolkit.roadmap, 1):
+            action_items = "".join(f"<li>{item}</li>" for item in action.actions)
+            next_steps_html += f"""
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title" style="color:#D97706;">{idx}. {action.phase}: {action.objective}</span>
+                    <span class="badge" style="background:#38BDF822;color:#38BDF8;">{action.budget_hint}</span>
+                </div>
+                <ul>{action_items}</ul>
+                <div style="background:#064E3B44;padding:.75rem;border-radius:6px;border-left:3px solid #10B981;"><strong style="color:#34D399;">Advance when:</strong> {action.success_metric}</div>
+                <div style="background:#7F1D1D44;padding:.75rem;border-radius:6px;border-left:3px solid #EF4444;margin-top:.5rem;"><strong style="color:#F87171;">Stop when:</strong> {action.stop_condition}</div>
+            </div>
+            """
+    else:
+        fallback_steps = [
+            "Conduct 10 discovery interviews with qualified target customers.",
+            "Run a manual concierge test before building the full product.",
+            "Ask at least 3 prospects for a meaningful commitment.",
+            "Define activation, time-to-value, retention, and acquisition-cost metrics.",
+        ]
+        for idx, step in enumerate(fallback_steps, 1):
+            next_steps_html += f"""
+            <div class="card" style="display:flex;gap:1rem;align-items:center;">
+                <div style="background:#D97706;color:#FFF;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:bold;flex-shrink:0;">{idx}</div>
+                <div style="color:#F8FAFC;font-size:1rem;">{step}</div>
+            </div>
+            """
 
     html = f"""<!DOCTYPE html>
 <html lang="en">
@@ -1130,6 +1256,8 @@ def _export_html(result) -> str:
             </tbody>
         </table>
 
+        {"<div class='section-title'>Regional Market Reality</div>" + regional_html if regional_html else ""}
+
         <div class="section-title">AI Strategic Perspectives</div>
         {persp_html}
 
@@ -1137,7 +1265,7 @@ def _export_html(result) -> str:
 
         {"<div class='section-title'>Cited Sources</div>" + evidence_html if evidence_html else ""}
 
-        <div class="section-title">Actionable Next Steps</div>
+        <div class="section-title">Founder 30-Day Action Plan</div>
         <div style="display: grid; gap: 0.75rem; margin-bottom: 2rem;">
             {next_steps_html}
         </div>
@@ -1184,6 +1312,11 @@ def _ask_idea():
     problem = ask("Problem being solved", "Attorneys lose 10+ hours/week summarizing client meetings due to cloud data privacy compliance", required=True)
     customer = ask("Target customer", "Solo practitioners and small law firms (1-20 attorneys)", required=True)
     geography = ask("Target geography", "United States", required=True)
+    market_language = ask("Primary market language", "English")
+    currency = ask("Local pricing currency", "USD")
+    industry = ask("Industry / vertical", "Legal technology")
+    stage = ask("Current stage", "Idea validation, pre-MVP, beta, or revenue")
+    solution = ask("Proposed solution", "Private on-device transcription and summarization")
 
     from assumption_zero.config import get_settings
     _settings = get_settings()
@@ -1215,12 +1348,17 @@ def _ask_idea():
     model = ask("Business model", "SaaS subscription per seat")
     price = ask("Expected price", "$49/month per attorney seat")
     skills = ask("Founder skills", "Full-stack developer (Python + React)")
+    team = ask("Team", "Solo founder, or roles and headcount")
     budget = ask("Available budget / runway", "$15,000 for 6 months")
+    timeline = ask("Validation / launch timeline", "Paid pilot within 30 days")
+    revenue_goal = ask("First revenue or customer goal", "10 paid pilots and $500 MRR")
+    channels = ask("Available acquisition channels", "LinkedIn outreach, industry associations, partners")
     competitors = ask("Known competitors", "Otter.ai, Fireflies.ai")
 
     _print_section("Strategic Insights")
     advantage = ask("Unfair advantage / Moat", "Proprietary algorithm, direct distribution channel with industry partners")
     assumptions = ask("Core assumption to test", "Target customers will pay for on-device privacy over cloud alternatives")
+    constraints = ask("Regulatory / operational constraints", "Privacy, data residency, licensing, or integrations")
     context = ask("Additional context", "Web app + Mobile client backed by REST API")
 
     return IdeaInput(
@@ -1229,13 +1367,23 @@ def _ask_idea():
         problem=problem,
         target_customer=customer,
         geography=geography,
+        market_language=market_language or None,
+        currency=currency or None,
+        industry=industry or None,
+        startup_stage=stage or None,
+        solution=solution or None,
         business_model=model or None,
         price=price or None,
         founder_skills=skills or None,
+        team=team or None,
         budget=budget or None,
+        launch_timeline=timeline or None,
+        revenue_goal=revenue_goal or None,
+        acquisition_channels=channels or None,
         known_competitors=competitors or None,
         unfair_advantage=advantage or None,
         key_assumptions=assumptions or None,
+        regulatory_constraints=constraints or None,
         additional_context=context or None,
     )
 
@@ -1254,6 +1402,12 @@ _PROVIDER_PRESETS = {
     "7": ("Offline Mock Demo (free, instant)",          "mock",        None,  None,                            None),
     "8": ("Custom / self-hosted (any OpenAI-spec API)", "openai_compat", None,  None,                         None),
 }
+
+
+def _with_founder_context(idea, **overrides):
+    """Apply non-empty CLI context flags to an IdeaInput parsed from any source."""
+    clean = {key: value.strip() for key, value in overrides.items() if isinstance(value, str) and value.strip()}
+    return idea.__class__.model_validate({**idea.model_dump(), **clean}) if clean else idea
 
 
 def _ask_idea_with_key(
@@ -1446,6 +1600,20 @@ def analyze(
         None, "--research-provider", "-r",
         help="Use a specific research provider; repeat for multiple providers (for example: -r 'Web Search' -r GitHub).",
     ),
+    depth: str = typer.Option(
+        "deep", "--depth", help="Research depth: standard, deep, or exhaustive."
+    ),
+    industry: Optional[str] = typer.Option(None, "--industry", help="Industry or vertical context."),
+    stage: Optional[str] = typer.Option(None, "--stage", help="Idea, validation, MVP, beta, revenue, or scaling stage."),
+    solution: Optional[str] = typer.Option(None, "--solution", help="Smallest proposed product or service."),
+    team: Optional[str] = typer.Option(None, "--team", help="Founder/team roles and headcount."),
+    budget: Optional[str] = typer.Option(None, "--budget", help="Validation budget or runway."),
+    timeline: Optional[str] = typer.Option(None, "--timeline", help="Validation or launch deadline."),
+    goal: Optional[str] = typer.Option(None, "--goal", help="First customer or revenue milestone."),
+    channels: Optional[str] = typer.Option(None, "--channels", help="Available customer acquisition channels."),
+    constraints: Optional[str] = typer.Option(None, "--constraints", help="Legal, compliance, privacy, or operating constraints."),
+    language: Optional[str] = typer.Option(None, "--language", help="Primary language used by target customers."),
+    currency: Optional[str] = typer.Option(None, "--currency", help="Currency used for local pricing research."),
 ) -> None:
     """
     Analyse an MVP idea interactively, from a 1-prompt text, or from a JSON or text file.
@@ -1469,6 +1637,8 @@ def analyze(
         _model = model if isinstance(model, str) else None
         _base_url = base_url if isinstance(base_url, str) else None
         _research_providers = research_provider if isinstance(research_provider, list) else None
+        from assumption_zero.schemas import ResearchDepth
+        _research_depth = ResearchDepth(depth.strip().lower()).value
 
         # If --api-key given but no --provider, auto-detect from model name or default to openai
         if _api_key and not _provider:
@@ -1530,6 +1700,21 @@ def analyze(
                 base_url_override=_base_url,
             )
 
+        idea = _with_founder_context(
+            idea,
+            industry=industry,
+            startup_stage=stage,
+            solution=solution,
+            team=team,
+            budget=budget,
+            launch_timeline=timeline,
+            revenue_goal=goal,
+            acquisition_channels=channels,
+            regulatory_constraints=constraints,
+            market_language=language,
+            currency=currency,
+        )
+
         # Show what AI will be used
         if _api_key or _provider:
             _prov_label = _provider or "auto"
@@ -1555,6 +1740,7 @@ def analyze(
             model_override=_model,
             base_url_override=_base_url,
             research_providers=_research_providers,
+            research_depth=_research_depth,
         )
         _print_report(result)
     except Exception as exc:
@@ -1577,6 +1763,18 @@ def prompt(
     research_provider: Optional[list[str]] = typer.Option(
         None, "--research-provider", "-r", help="Research provider to use; repeat for multiple providers."
     ),
+    depth: str = typer.Option("deep", "--depth", help="Research depth: standard, deep, or exhaustive."),
+    industry: Optional[str] = typer.Option(None, "--industry", help="Industry or vertical context."),
+    stage: Optional[str] = typer.Option(None, "--stage", help="Current startup stage."),
+    solution: Optional[str] = typer.Option(None, "--solution", help="Smallest proposed product or service."),
+    team: Optional[str] = typer.Option(None, "--team", help="Founder/team roles and headcount."),
+    budget: Optional[str] = typer.Option(None, "--budget", help="Validation budget or runway."),
+    timeline: Optional[str] = typer.Option(None, "--timeline", help="Validation or launch deadline."),
+    goal: Optional[str] = typer.Option(None, "--goal", help="First customer or revenue milestone."),
+    channels: Optional[str] = typer.Option(None, "--channels", help="Available acquisition channels."),
+    constraints: Optional[str] = typer.Option(None, "--constraints", help="Legal, compliance, privacy, or operating constraints."),
+    language: Optional[str] = typer.Option(None, "--language", help="Primary market language."),
+    currency: Optional[str] = typer.Option(None, "--currency", help="Local pricing currency."),
 ) -> None:
     """Analyze a startup idea from a freeform text prompt or text/markdown file."""
     if file:
@@ -1616,6 +1814,18 @@ def prompt(
         provider=provider,
         base_url=base_url,
         research_provider=research_provider,
+        depth=depth,
+        industry=industry,
+        stage=stage,
+        solution=solution,
+        team=team,
+        budget=budget,
+        timeline=timeline,
+        goal=goal,
+        channels=channels,
+        constraints=constraints,
+        language=language,
+        currency=currency,
     )
 
 
@@ -1628,6 +1838,7 @@ def demo(
     research_provider: Optional[list[str]] = typer.Option(
         None, "--research-provider", "-r", help="Research provider to use; repeat for multiple providers."
     ),
+    depth: str = typer.Option("deep", "--depth", help="Research depth: standard, deep, or exhaustive."),
 ) -> None:
     """Run the same real example analysis available from the web home page."""
     from assumption_zero.demo import DEMO_IDEA
@@ -1649,6 +1860,7 @@ def demo(
         model_override=model,
         base_url_override=base_url,
         research_providers=research_provider,
+        research_depth=depth,
     )
     _print_report(result)
 
