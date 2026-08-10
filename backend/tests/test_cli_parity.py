@@ -4,6 +4,7 @@ from __future__ import annotations
 from datetime import datetime
 
 import pytest
+from click.utils import strip_ansi
 from typer.testing import CliRunner
 
 import assumption_zero.storage as store
@@ -23,23 +24,25 @@ def test_cli_exposes_web_equivalent_commands_and_provider_controls():
 
     analyze_help = runner.invoke(app, ["analyze", "--help"])
     assert analyze_help.exit_code == 0
-    assert "--research-provider" in analyze_help.stdout
-    assert "--provider" in analyze_help.stdout
-    assert "--base-url" in analyze_help.stdout
+    analyze_help_text = strip_ansi(analyze_help.stdout)
+    assert "--research-provider" in analyze_help_text
+    assert "--provider" in analyze_help_text
+    assert "--base-url" in analyze_help_text
     for option in (
         "--industry", "--stage", "--budget", "--timeline", "--goal",
         "--channels", "--constraints", "--language", "--currency", "--depth",
     ):
-        assert option in analyze_help.stdout
+        assert option in analyze_help_text
 
     prompt_help = runner.invoke(app, ["prompt", "--help"])
     assert prompt_help.exit_code == 0
-    assert "--research-provider" in prompt_help.stdout
-    assert "--provider" in prompt_help.stdout
-    assert "--timeline" in prompt_help.stdout
-    assert "--language" in prompt_help.stdout
-    assert "--currency" in prompt_help.stdout
-    assert "--depth" in prompt_help.stdout
+    prompt_help_text = strip_ansi(prompt_help.stdout)
+    assert "--research-provider" in prompt_help_text
+    assert "--provider" in prompt_help_text
+    assert "--timeline" in prompt_help_text
+    assert "--language" in prompt_help_text
+    assert "--currency" in prompt_help_text
+    assert "--depth" in prompt_help_text
 
 
 def test_cli_founder_context_flags_override_parsed_idea(sample_idea):
