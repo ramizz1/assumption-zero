@@ -358,11 +358,10 @@ export const HomePage: React.FC = () => {
               type="button"
               onClick={() => navigate('/docs')}
               aria-label="Open documentation"
-              className="nav-action-3d px-2.5 sm:px-3.5 py-1.5 rounded-xl border text-xs font-mono font-medium transition-all flex items-center gap-2 shadow-sm hover:bg-zinc-50"
-              style={{borderColor: '#e4e4e7', backgroundColor: '#fafafa', color: '#52525b'}}
+              className="nav-action-3d flex items-center gap-1.5 rounded-xl border border-zinc-950 bg-zinc-950 px-2.5 py-1.5 text-xs font-mono font-bold text-white shadow-md transition-all hover:bg-zinc-800 sm:px-3.5"
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></svg>
-              <span className="hidden sm:inline">Docs</span>
+              <span>Docs</span>
             </button>
             <button
               type="button"

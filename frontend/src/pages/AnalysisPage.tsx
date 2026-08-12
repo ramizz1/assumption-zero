@@ -48,12 +48,15 @@ export default function AnalysisPage() {
             <span className="font-bold text-zinc-900">Assumption Zero</span>
           </Link>
           <div className="flex items-center gap-4">
-            <Link to="/docs" className="text-xs font-semibold text-zinc-500 hover:text-zinc-900 hidden sm:inline">Docs</Link>
+            <Link to="/docs" className="inline-flex items-center gap-1.5 rounded-lg bg-zinc-950 px-3 py-1.5 text-xs font-bold text-white shadow-sm transition-colors hover:bg-zinc-800">
+              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></svg>
+              Docs
+            </Link>
             <button
               onClick={handleShare}
               className="px-3 py-1.5 bg-zinc-50 hover:bg-zinc-100 text-zinc-700 border border-zinc-200 rounded-lg text-xs font-bold font-mono transition-colors flex items-center gap-2"
             >
-              🔗 Share Analysis
+              <span aria-hidden="true">↗</span><span className="hidden sm:inline">Share Analysis</span><span className="sm:hidden">Share</span>
             </button>
             <span className="text-xs text-zinc-400 font-mono hidden sm:inline">{id?.slice(0, 8)}…</span>
           </div>
