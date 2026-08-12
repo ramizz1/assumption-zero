@@ -17,6 +17,12 @@
   </p>
 
   <p>
+    <a href="https://assumption-zero-demo.vercel.app"><strong>Open the live web demo →</strong></a>
+  </p>
+
+  <p><sub>The bundled example is precomputed and uses 0 AI credits. Your own analysis requires a real provider and never silently falls back to mock AI.</sub></p>
+
+  <p>
     <a href="#quick-start"><strong>Quick start</strong></a> ·
     <a href="#how-it-works"><strong>How it works</strong></a> ·
     <a href="#cli--web-parity"><strong>CLI</strong></a> ·
@@ -78,7 +84,7 @@ The engine preserves the evidence trail throughout the report, so a reader can d
 
 - Python 3.12+
 - Node.js 20+ for the web interface
-- An AI-provider key is optional; without one, Assumption Zero runs its labeled deterministic baseline over collected evidence
+- The live web workflow requires a real AI provider; the bundled example is token-free, while the CLI can still run its explicitly labeled deterministic baseline
 
 ### 1. Install the engine
 

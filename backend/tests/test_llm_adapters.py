@@ -45,6 +45,12 @@ def test_auto_mode_does_not_probe_unselected_local_ollama():
     assert "ollama" not in adapter.model_id
 
 
+def test_real_auto_mode_never_falls_back_to_mock(monkeypatch):
+    monkeypatch.setattr(GroqAdapter, "is_available", property(lambda self: False))
+    with pytest.raises(ValueError, match="not configured"):
+        build_llm_adapter(provider_override="auto", allow_mock_fallback=False)
+
+
 @pytest.mark.asyncio
 async def test_mock_adapter_parse_prompt():
     adapter = MockAdapter()

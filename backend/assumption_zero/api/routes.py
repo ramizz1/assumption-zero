@@ -18,7 +18,6 @@ from fastapi import APIRouter, BackgroundTasks, HTTPException, Query, Request, s
 
 from assumption_zero import __version__
 from assumption_zero.config import get_settings, is_public_http_url
-from assumption_zero.demo import DEMO_IDEA
 from assumption_zero.research.github_provider import GitHubProvider
 from assumption_zero.research.hackernews_provider import HackerNewsProvider
 from assumption_zero.research.reddit_provider import RedditProvider
@@ -31,7 +30,6 @@ from assumption_zero.schemas import (
     DemoAnalysisRequest,
     HealthResponse,
     PromptAnalysisRequest,
-    ResearchDepth,
 )
 from assumption_zero.services.analysis_service import (
     build_llm_adapter,
@@ -47,8 +45,8 @@ logger = logging.getLogger(__name__)
 
 
 # ── Demo idea ─────────────────────────────────────────────────────
-# When users click "Run Example Analysis", this idea goes through the
-# REAL pipeline — no hardcoded responses.
+# The public example is served from a curated browser bundle and never enters
+# the live provider pipeline.
 def _available_providers() -> list[str]:
     providers = [GitHubProvider(), HackerNewsProvider(), WikipediaProvider(), RedditProvider()]
     sx = SearXNGProvider()
@@ -96,11 +94,17 @@ def _llm_options(body: ProviderRequest) -> tuple[str | None, str | None, str | N
 def _validate_selected_provider(body: ProviderRequest) -> str | None:
     """Reject an unconfigured explicit provider before starting a long research run."""
     provider, api_key, base_url = _llm_options(body)
+    if provider == "mock":
+        raise HTTPException(
+            status_code=400,
+            detail="Real analyses require a configured AI provider. Mock mode is not allowed.",
+        )
     try:
         build_llm_adapter(
             provider_override=provider,
             api_key_override=api_key,
             base_url_override=base_url,
+            allow_mock_fallback=False,
         )
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
@@ -129,6 +133,18 @@ async def verify_keys_endpoint(body: dict) -> dict:
     openai_api_key = body.get("openaiKey") or body.get("openai_api_key")
     ollama_base_url = body.get("ollamaUrl") or body.get("ollama_base_url")
     custom_base_url = body.get("customUrl") or body.get("custom_base_url")
+
+    if provider in ("auto", "beta"):
+        if groq_api_key:
+            provider = "groq"
+        elif openrouter_api_key:
+            provider = "openrouter"
+        elif opencode_api_key:
+            provider = "opencode"
+        elif openai_api_key:
+            provider = "openai_compat"
+        else:
+            provider = "auto"
 
     api_key_override = None
     base_url_override = None
@@ -178,6 +194,7 @@ async def verify_keys_endpoint(body: dict) -> dict:
             provider_override=provider,
             api_key_override=api_key_override,
             base_url_override=base_url_override,
+            allow_mock_fallback=False,
         )
         if provider in key_required_providers and not llm.is_available:
             raise HTTPException(
@@ -232,6 +249,48 @@ async def create_analysis_endpoint(
         is_demo=False,
     )
     return {"analysis_id": analysis_id, "status": "pending"}
+
+
+async def _run_analysis_in_request(
+    body: ProviderRequest,
+    idea,
+    provider: str | None,
+) -> AnalysisResult:
+    """Complete an analysis within one request for serverless production hosts."""
+    analysis_id = await create_analysis(
+        idea=idea,
+        ai_provider_override=provider,
+        research_providers_override=body.research_providers,
+        is_demo=False,
+    )
+    await run_analysis(
+        analysis_id=analysis_id,
+        idea=idea,
+        ai_provider_override=provider,
+        openrouter_api_key=body.openrouter_api_key,
+        groq_api_key=body.groq_api_key,
+        opencode_api_key=body.opencode_api_key,
+        openai_api_key=body.openai_api_key,
+        custom_base_url=body.custom_base_url,
+        ollama_base_url=body.ollama_base_url,
+        research_providers_override=body.research_providers,
+        research_depth=body.research_depth,
+        is_demo=False,
+    )
+    result = await get_analysis(analysis_id)
+    if result is None:
+        raise HTTPException(
+            status_code=500,
+            detail="The analysis finished without a readable report. Please try again.",
+        )
+    return result
+
+
+@router.post("/analyses/sync", response_model=AnalysisResult)
+async def create_analysis_sync_endpoint(body: AnalysisCreateRequest) -> AnalysisResult:
+    """Run a real AI analysis synchronously so the host cannot drop background work."""
+    provider = _validate_selected_provider(body)
+    return await _run_analysis_in_request(body, body.idea, provider)
 
 
 @router.post("/analyses/from-prompt", response_model=dict, status_code=status.HTTP_202_ACCEPTED)
@@ -298,6 +357,43 @@ async def create_analysis_from_prompt_endpoint(
     }
 
 
+@router.post("/analyses/from-prompt/sync", response_model=AnalysisResult)
+async def create_analysis_from_prompt_sync_endpoint(
+    body: PromptAnalysisRequest,
+) -> AnalysisResult:
+    """Parse a prompt with real AI, then return the completed analysis."""
+    provider, api_key_override, base_url_override = _llm_options(body)
+    settings = get_settings()
+    if settings.ssrf_protection_enabled and base_url_override:
+        if not is_public_http_url(base_url_override):
+            raise HTTPException(
+                status_code=400,
+                detail="Only public HTTP(S) provider URLs are allowed in hosted mode.",
+            )
+    try:
+        llm = build_llm_adapter(
+            provider_override=provider,
+            api_key_override=api_key_override,
+            base_url_override=base_url_override,
+            allow_mock_fallback=False,
+        )
+        parsed_idea = await llm.parse_raw_prompt(body.prompt)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    except RuntimeError as exc:
+        raise HTTPException(
+            status_code=429,
+            detail=f"AI provider could not complete the request: {exc}",
+        ) from exc
+    except Exception as exc:
+        logger.exception("Prompt parsing failed")
+        raise HTTPException(
+            status_code=502,
+            detail="The selected AI provider could not process this prompt. Verify the key and try again.",
+        ) from exc
+    return await _run_analysis_in_request(body, parsed_idea, provider)
+
+
 @router.get("/analyses", response_model=list[AnalysisListItem])
 async def list_analyses_endpoint(
     search: str | None = None,
@@ -322,35 +418,17 @@ async def delete_analysis_endpoint(analysis_id: str) -> None:
         raise HTTPException(status_code=404, detail=f"Analysis {analysis_id!r} not found")
 
 
-@router.post("/demo", response_model=dict, status_code=status.HTTP_202_ACCEPTED)
-async def demo_endpoint(
-    background_tasks: BackgroundTasks,
-    body: DemoAnalysisRequest | None = None,
-) -> dict:
+@router.post("/demo", response_model=dict)
+async def demo_endpoint(body: DemoAnalysisRequest | None = None) -> dict:
     """
-    Start a demo analysis using the example idea (LegalMind Local).
-    Runs through the REAL research and AI pipeline — no fake data.
+    Return the browser-bundled example identifier without calling AI.
+
+    The public example is intentionally precomputed so evaluating the interface
+    never consumes the user's provider quota.
     """
-    provider = _validate_selected_provider(body) if body else None
-    analysis_id = await create_analysis(
-        idea=DEMO_IDEA,
-        ai_provider_override=provider,
-        research_providers_override=body.research_providers if body else None,
-        is_demo=True,
-    )
-    background_tasks.add_task(
-        run_analysis,
-        analysis_id=analysis_id,
-        idea=DEMO_IDEA,
-        ai_provider_override=provider,
-        openrouter_api_key=body.openrouter_api_key if body else None,
-        groq_api_key=body.groq_api_key if body else None,
-        opencode_api_key=body.opencode_api_key if body else None,
-        openai_api_key=body.openai_api_key if body else None,
-        custom_base_url=body.custom_base_url if body else None,
-        ollama_base_url=body.ollama_base_url if body else None,
-        research_providers_override=body.research_providers if body else None,
-        research_depth=body.research_depth if body else ResearchDepth.DEEP,
-        is_demo=True,
-    )
-    return {"analysis_id": analysis_id, "status": "pending", "demo": True}
+    return {
+        "analysis_id": "demo-legalmind-local",
+        "status": "complete",
+        "demo": True,
+        "bundled": True,
+    }

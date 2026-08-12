@@ -72,7 +72,7 @@ export default function DocsPage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
               {[
                 ['1', 'Describe the business', 'Use Prompt mode for speed or Detailed brief for control. Include the buyer, painful workflow, solution, geography, price, and constraints.'],
-                ['2', 'Run the evidence engine', 'Choose Standard, Deep, or Exhaustive research. Add an AI provider for maximum qualitative depth, or use the evidence baseline without a key.'],
+                ['2', 'Run the evidence engine', 'Choose Standard, Deep, or Exhaustive research. Web analyses require a validated real AI provider; the token-free example is a separate precomputed report.'],
                 ['3', 'Act on thresholds', 'Use the founder roadmap and validation experiments. Pre-write success and failure thresholds before spending on a full MVP.'],
               ].map(([number, title, body]) => (
                 <article key={number} className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm">
@@ -261,7 +261,7 @@ DELETE /api/analyses/{id}`}</CodeBlock>
               {[
                 ['Should I build when the recommendation says Build?', 'Only the narrowest value loop supported by evidence. Keep interviewing and require real usage or payment milestones.'],
                 ['What if evidence confidence is low?', 'Treat the report as a research queue. Run interviews, pricing tests, and source-specific searches before making an expensive decision.'],
-                ['Can I use the built-in baseline without an AI key?', 'Yes. Deterministic scoring, regional evidence coverage, competitors, experiments, economics, and the founder toolkit still work. A configured provider adds deeper qualitative reasoning across the selected perspectives.'],
+                ['Does the example consume AI credits?', 'No. The example is a precomputed, source-backed report. Your own web analysis requires a validated AI provider and never silently falls back to mock output.'],
                 ['Are market sizes and competitor claims guaranteed?', 'No. Open every citation, check its date and scope, and verify important claims with primary sources.'],
                 ['What should I do first?', 'Recruit ten narrowly matched customer interviews. Do that before naming features, choosing architecture, or buying ads.'],
               ].map(([question, answer]) => <details key={question} className="group rounded-2xl border border-zinc-200 bg-white p-4"><summary className="cursor-pointer font-bold text-zinc-950 list-none flex justify-between gap-4">{question}<span className="text-zinc-400 group-open:rotate-45 transition-transform">+</span></summary><p className="text-xs mt-3 pr-8">{answer}</p></details>)}

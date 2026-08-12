@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import ProviderIcon from './ProviderIcon'
 import { api } from '../lib/api'
 
@@ -14,6 +15,7 @@ interface Props {
   isOpen: boolean
   onClose: () => void
   onSave?: (settings: AISettings) => void
+  backendOnline?: boolean
 }
 
 export interface AISettings {
@@ -86,8 +88,8 @@ export const getStoredAISettings = (): AISettings => {
   return defaults
 }
 
-export const SettingsModal: React.FC<Props> = ({ isOpen, onClose, onSave }) => {
-  const [settings, setSettings] = useState<AISettings>(getStoredAISettings())
+export const SettingsModal: React.FC<Props> = ({ isOpen, onClose, onSave, backendOnline = true }) => {
+  const [settings, setSettings] = useState<AISettings>(getStoredAISettings)
   const [savedStatus, setSavedStatus] = useState(false)
   const [showKeys, setShowKeys] = useState(false)
   const [testing, setTesting] = useState(false)
@@ -101,6 +103,20 @@ export const SettingsModal: React.FC<Props> = ({ isOpen, onClose, onSave }) => {
     }
   }, [isOpen])
 
+  useEffect(() => {
+    if (!isOpen) return
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') onClose()
+    }
+    window.addEventListener('keydown', closeOnEscape)
+    return () => {
+      document.body.style.overflow = previousOverflow
+      window.removeEventListener('keydown', closeOnEscape)
+    }
+  }, [isOpen, onClose])
+
   if (!isOpen) return null
 
   const handleSave = (e: React.FormEvent) => {
@@ -113,12 +129,22 @@ export const SettingsModal: React.FC<Props> = ({ isOpen, onClose, onSave }) => {
         setSavedStatus(false)
         onClose()
       }, 600)
-    } catch (err) {
-      alert('Failed to save settings in this browser session')
+    } catch {
+      setTestResult({
+        status: 'error',
+        message: 'This browser blocked session storage. The key was not saved.',
+      })
     }
   }
 
   const handleTestConnection = async () => {
+    if (!backendOnline) {
+      setTestResult({
+        status: 'error',
+        message: 'The live AI service is temporarily offline. Your key remains only in this browser session.',
+      })
+      return
+    }
     setTesting(true)
     setTestResult(null)
     try {
@@ -139,9 +165,15 @@ export const SettingsModal: React.FC<Props> = ({ isOpen, onClose, onSave }) => {
     }
   }
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/40 backdrop-blur-md animate-in fade-in duration-200">
-      <div className="relative w-full max-w-xl flex flex-col bg-white border border-gray-200 rounded-2xl shadow-2xl overflow-hidden verseo-card">
+  return createPortal(
+    <div
+      className="fixed inset-0 z-[100] grid min-h-[100dvh] place-items-center overflow-y-auto bg-black/40 p-3 backdrop-blur-md animate-in fade-in duration-200 sm:p-6"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="ai-settings-title"
+      onMouseDown={(event) => event.target === event.currentTarget && onClose()}
+    >
+      <div className="relative flex max-h-[calc(100dvh-1.5rem)] w-full max-w-xl flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl sm:max-h-[min(820px,calc(100dvh-3rem))]">
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-5 border-b border-gray-200 bg-amber-50/60">
           <div className="flex items-center gap-3">
@@ -149,7 +181,7 @@ export const SettingsModal: React.FC<Props> = ({ isOpen, onClose, onSave }) => {
               🔑
             </div>
             <div>
-              <h2 className="text-lg font-display font-bold text-gray-900 tracking-tight">
+              <h2 id="ai-settings-title" className="text-lg font-display font-bold text-gray-900 tracking-tight">
                 AI Provider API Keys & Settings
               </h2>
               <p className="text-xs text-gray-500 font-mono">
@@ -159,7 +191,9 @@ export const SettingsModal: React.FC<Props> = ({ isOpen, onClose, onSave }) => {
           </div>
 
           <button
+            type="button"
             onClick={onClose}
+            aria-label="Close AI settings"
             className="w-8 h-8 rounded-lg border border-gray-200 bg-white hover:bg-gray-100 text-gray-500 hover:text-gray-900 flex items-center justify-center transition-colors shadow-xs"
           >
             ✕
@@ -167,9 +201,9 @@ export const SettingsModal: React.FC<Props> = ({ isOpen, onClose, onSave }) => {
         </div>
 
         {/* Form Body */}
-        <form onSubmit={handleSave} className="p-6 space-y-5 overflow-y-auto max-h-[75vh]">
+        <form onSubmit={handleSave} className="min-h-0 flex-1 space-y-5 overflow-y-auto p-4 sm:p-6">
           {/* Key Visibility & Test Controls */}
-          <div className="flex items-center justify-between bg-gray-50 p-3 rounded-xl border border-gray-200">
+          <div className="flex flex-col gap-3 rounded-xl border border-gray-200 bg-gray-50 p-3 sm:flex-row sm:items-center sm:justify-between">
             <label className="flex items-center gap-2 text-xs font-mono font-medium text-gray-700 cursor-pointer select-none">
               <input
                 type="checkbox"
@@ -183,10 +217,10 @@ export const SettingsModal: React.FC<Props> = ({ isOpen, onClose, onSave }) => {
             <button
               type="button"
               onClick={handleTestConnection}
-              disabled={testing}
-              className="px-3 py-1.5 rounded-lg border border-gray-300 bg-white hover:bg-gray-100 text-xs font-mono font-bold text-gray-800 transition-all flex items-center gap-1.5 shadow-xs"
+              disabled={testing || !backendOnline}
+              className="flex items-center justify-center gap-1.5 rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-xs font-mono font-bold text-gray-800 shadow-xs transition-all hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50"
             >
-              {testing ? '⚡ Validating...' : '⚡ Validate Setup'}
+              {testing ? 'Validating...' : backendOnline ? 'Validate Setup' : 'Service offline'}
             </button>
           </div>
 
@@ -238,7 +272,7 @@ export const SettingsModal: React.FC<Props> = ({ isOpen, onClose, onSave }) => {
             </div>
             {settings.provider === 'auto' && (
               <p className="text-[11px] text-gray-500 leading-relaxed">
-                Uses your first browser key (Groq first), then configured server providers. Without a working AI, Assumption Zero runs a clearly labelled evidence baseline.
+                Uses your first browser key (Groq first), then configured server providers. Real analyses never fall back to a simulated result.
               </p>
             )}
           </div>
@@ -413,7 +447,8 @@ export const SettingsModal: React.FC<Props> = ({ isOpen, onClose, onSave }) => {
           </div>
         </form>
       </div>
-    </div>
+    </div>,
+    document.body,
   )
 }
 

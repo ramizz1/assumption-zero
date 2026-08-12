@@ -2,11 +2,12 @@ import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { api } from '../lib/api'
 import SavedAnalysesModal from '../components/SavedAnalysesModal'
-import SettingsModal, { getStoredAISettings, AISettings } from '../components/SettingsModal'
+import SettingsModal, { getStoredAISettings, saveAISettings, AISettings } from '../components/SettingsModal'
 import ProviderIcon from '../components/ProviderIcon'
 import { assessFormReadiness, assessPromptReadiness, type ReadinessResult } from '../lib/readiness'
 import type { ResearchDepth } from '../types'
 import { BUNDLED_DEMO_ID } from '../lib/bundledDemo'
+import { getSessionAnalyses, saveSessionAnalysis } from '../lib/sessionAnalysis'
 
 // SVG Icons
 const LucideGlobe = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
@@ -18,6 +19,14 @@ const LucideCode = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" heig
 const LucideZap = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
 const LucideBot = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="14" x="3" y="7" rx="2" ry="2"/><path d="M12 3v4"/><path d="M8 3h8"/><path d="M15 12v.01"/><path d="M9 12v.01"/></svg>
 const LucideCloud = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></svg>
+
+function safeRequestMessage(value: string): string {
+  const message = value.replace(/<[^>]+>/g, '').trim()
+  if (!message || /unexpected error occurred/i.test(message)) {
+    return 'The live AI analysis could not start. Verify your provider setup and try again.'
+  }
+  return message.slice(0, 500)
+}
 
 const ReadinessPanel = ({ readiness }: { readiness: ReadinessResult }) => {
   const missing = readiness.checks.filter((check) => !check.complete)
@@ -97,9 +106,9 @@ export const HomePage: React.FC = () => {
   const [historyCount, setHistoryCount] = useState<number | null>(null)
   const [backendStatus, setBackendStatus] = useState<'checking' | 'online' | 'offline'>('checking')
 
-  const [aiSettings, setAiSettings] = useState<AISettings>(getStoredAISettings())
+  const [aiSettings, setAiSettings] = useState<AISettings>(getStoredAISettings)
   const [inputMode, setInputMode] = useState<'prompt' | 'form'>('prompt')
-  const [researchDepth, setResearchDepth] = useState<ResearchDepth>('deep')
+  const [researchDepth, setResearchDepth] = useState<ResearchDepth>('exhaustive')
 
   const [rawPromptText, setRawPromptText] = useState('')
 
@@ -129,16 +138,27 @@ export const HomePage: React.FC = () => {
     additional_context: '',
   })
 
-  // Load history count on mount
+  // Check the live service before requesting any server-backed data.
   useEffect(() => {
-    api.listAnalyses().then((items) => {
-      setHistoryCount(items.length)
-    }).catch(() => {})
     let active = true
-    const checkBackend = () => {
-      api.health()
-        .then(() => active && setBackendStatus('online'))
-        .catch(() => active && setBackendStatus('offline'))
+    let historyLoaded = false
+    const checkBackend = async () => {
+      try {
+        await api.health()
+        if (!active) return
+        setBackendStatus('online')
+        if (!historyLoaded) {
+          historyLoaded = true
+          api.listAnalyses({ limit: 100 })
+            .then((items) => active && setHistoryCount(items.length + getSessionAnalyses().length))
+            .catch(() => active && setHistoryCount(getSessionAnalyses().length))
+        }
+      } catch {
+        if (active) {
+          setBackendStatus('offline')
+          setHistoryCount(1 + getSessionAnalyses().length)
+        }
+      }
     }
     checkBackend()
     const healthInterval = window.setInterval(checkBackend, 15_000)
@@ -172,7 +192,7 @@ export const HomePage: React.FC = () => {
 
     try {
       const provider = aiSettings.provider === 'custom' ? 'openai_compat' : aiSettings.provider
-      const result = await api.createAnalysisFromPrompt({
+      const result = await api.runAnalysisFromPromptSync({
         prompt: rawPromptText,
         ai_provider: provider,
         groq_api_key: aiSettings.groqKey || undefined,
@@ -183,6 +203,7 @@ export const HomePage: React.FC = () => {
         ollama_base_url: aiSettings.ollamaUrl || undefined,
         research_depth: researchDepth,
       })
+      saveSessionAnalysis(result)
       navigate(`/analysis/${result.analysis_id}`)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to start prompt analysis')
@@ -223,7 +244,7 @@ export const HomePage: React.FC = () => {
         additional_context: idea.additional_context || undefined,
       }
 
-      const result = await api.createAnalysis({
+      const result = await api.runAnalysisSync({
         idea: payload,
         ai_provider: provider,
         groq_api_key: aiSettings.groqKey || undefined,
@@ -234,6 +255,7 @@ export const HomePage: React.FC = () => {
         ollama_base_url: aiSettings.ollamaUrl || undefined,
         research_depth: researchDepth,
       })
+      saveSessionAnalysis(result)
       navigate(`/analysis/${result.analysis_id}`)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to start analysis')
@@ -335,6 +357,7 @@ export const HomePage: React.FC = () => {
             <button
               type="button"
               onClick={() => navigate('/docs')}
+              aria-label="Open documentation"
               className="nav-action-3d px-2.5 sm:px-3.5 py-1.5 rounded-xl border text-xs font-mono font-medium transition-all flex items-center gap-2 shadow-sm hover:bg-zinc-50"
               style={{borderColor: '#e4e4e7', backgroundColor: '#fafafa', color: '#52525b'}}
             >
@@ -342,7 +365,9 @@ export const HomePage: React.FC = () => {
               <span className="hidden sm:inline">Docs</span>
             </button>
             <button
+              type="button"
               onClick={() => setIsHistoryOpen(true)}
+              aria-label="Open analysis history"
               className="nav-action-3d px-2.5 sm:px-3.5 py-1.5 rounded-xl border text-xs font-mono font-medium transition-all flex items-center gap-2 shadow-sm hover:bg-zinc-50"
               style={{borderColor: '#e4e4e7', backgroundColor: '#fafafa', color: '#52525b'}}
             >
@@ -358,6 +383,7 @@ export const HomePage: React.FC = () => {
             <button
               type="button"
               onClick={() => setIsSettingsOpen(true)}
+              aria-label="Open AI provider settings"
               className="nav-action-3d px-2.5 sm:px-3.5 py-1.5 rounded-xl border text-xs font-mono font-medium transition-all flex items-center gap-1.5 shadow-sm hover:bg-zinc-50"
               style={{borderColor: '#e4e4e7', backgroundColor: '#fafafa', color: '#52525b'}}
             >
@@ -425,7 +451,7 @@ export const HomePage: React.FC = () => {
                   ? 'No AI Tokens Available (Quota Exceeded)'
                   : 'Analysis Request Failed'}
               </h4>
-              <p className="text-xs text-red-600 leading-relaxed">{error}</p>
+              <p className="text-xs text-red-600 leading-relaxed">{safeRequestMessage(error)}</p>
             </div>
           </div>
         )}
@@ -505,7 +531,11 @@ export const HomePage: React.FC = () => {
                   <button
                     key={p.id}
                     type="button"
-                    onClick={() => setAiSettings({ ...aiSettings, provider: p.id as AISettings['provider'] })}
+                    onClick={() => {
+                      const nextSettings = { ...aiSettings, provider: p.id as AISettings['provider'] }
+                      setAiSettings(nextSettings)
+                      saveAISettings(nextSettings)
+                    }}
                     className="px-3 py-1.5 rounded-xl border font-medium flex items-center gap-2 transition-all hover:scale-[1.02] active:scale-[0.98]"
                     style={{
                       background: isActive ? '#18181b' : '#fafafa',
@@ -603,9 +633,12 @@ export const HomePage: React.FC = () => {
                   {loading ? 'Running AI Engine & Live Research...' : <><LucideSparkles /> Analyze MVP Idea Now</>}
                 </button>
                 <button type="button" onClick={handleDemo} disabled={loading} className="btn-ghost px-5 py-4">
-                  Run example
+                  View token-free example
                 </button>
               </div>
+              <p className="text-center text-[11px] text-zinc-500">
+                The example is a precomputed report and uses 0 AI credits. Your own analysis always uses a real configured AI provider.
+              </p>
             </form>
           ) : (
             /* Mode 2: Detailed Form */
@@ -837,9 +870,12 @@ export const HomePage: React.FC = () => {
                   {loading ? 'Running AI Engine & Live Research...' : <><LucideSparkles /> Analyze MVP Idea Now</>}
                 </button>
                 <button type="button" onClick={handleDemo} disabled={loading} className="btn-ghost px-5 py-4">
-                  Run example
+                  View token-free example
                 </button>
               </div>
+              <p className="text-center text-[11px] text-zinc-500">
+                The example is a precomputed report and uses 0 AI credits. Your own analysis always uses a real configured AI provider.
+              </p>
             </form>
           )}
         </div>
@@ -945,12 +981,14 @@ export const HomePage: React.FC = () => {
         isOpen={isHistoryOpen}
         onClose={() => setIsHistoryOpen(false)}
         onCountUpdate={(cnt) => setHistoryCount(cnt)}
+        backendOnline={backendStatus === 'online'}
       />
 
       <SettingsModal
         isOpen={isSettingsOpen}
         onClose={() => setIsSettingsOpen(false)}
         onSave={(newSettings) => setAiSettings(newSettings)}
+        backendOnline={backendStatus === 'online'}
       />
     </div>
   )

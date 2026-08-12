@@ -5,6 +5,14 @@ import ProgressView from './ProgressView'
 import ReportView from './ReportView'
 import DisclaimerBanner from '../components/DisclaimerBanner'
 
+function safeAnalysisMessage(value?: string | null): string {
+  const message = (value || '').replace(/<[^>]+>/g, '').trim()
+  if (!message || /unexpected error occurred/i.test(message)) {
+    return 'The analysis could not be completed. Verify your AI provider setup and try again.'
+  }
+  return message.slice(0, 500)
+}
+
 export default function AnalysisPage() {
   const { id } = useParams<{ id: string }>()
   const { data, error } = useAnalysis(id ?? null)
@@ -62,7 +70,7 @@ export default function AnalysisPage() {
                   ? 'No AI Tokens Available (Quota / Rate Limit Exceeded)'
                   : 'Analysis Error'}
               </p>
-              <p className="text-zinc-500 text-sm mb-6 max-w-lg mx-auto leading-relaxed">{error}</p>
+              <p className="text-zinc-500 text-sm mb-6 max-w-lg mx-auto leading-relaxed">{safeAnalysisMessage(error)}</p>
               <Link to="/" className="btn-primary">← Start New Analysis</Link>
             </div>
           </div>
@@ -82,10 +90,10 @@ export default function AnalysisPage() {
                   ? 'No AI Tokens Available (Quota Exceeded)'
                   : 'Analysis Failed'}
               </p>
-              <p className="text-zinc-500 text-sm mb-6 max-w-lg mx-auto leading-relaxed">{data.error_message}</p>
+              <p className="text-zinc-500 text-sm mb-6 max-w-lg mx-auto leading-relaxed">{safeAnalysisMessage(data.error_message)}</p>
               {(data.error_message?.includes('402') || data.error_message?.includes('429') || data.error_message?.includes('quota') || data.error_message?.includes('token')) && (
                 <div className="mb-6 p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-700 text-left max-w-lg mx-auto">
-                  💡 <strong>Tip:</strong> Provide your own free OpenRouter key in the homepage field or set <code className="bg-amber-100 px-1 py-0.5 rounded font-mono">OPENROUTER_API_KEY</code> in backend <code className="bg-amber-100 px-1 py-0.5 rounded font-mono">.env</code>.
+                  <strong>Tip:</strong> Return home, open Configure Keys, and validate a provider. Keys stay in session storage and are never included in the public site bundle.
                 </div>
               )}
               <Link to="/" className="btn-primary">← Start New Analysis</Link>

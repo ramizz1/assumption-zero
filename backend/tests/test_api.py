@@ -39,6 +39,8 @@ def test_health_no_secrets_exposed(client):
 
 def test_create_analysis_returns_id(client):
     body = {
+        "ai_provider": "groq",
+        "groq_api_key": "test-groq-key",
         "idea": {
             "name": "TestProduct",
             "description": "Test description",
@@ -56,6 +58,24 @@ def test_create_analysis_returns_id(client):
     assert data["status"] == "pending"
 
 
+def test_sync_analysis_requires_real_ai(client):
+    resp = client.post(
+        "/api/analyses/sync",
+        json={
+            "ai_provider": "mock",
+            "idea": {
+                "name": "TestProduct",
+                "description": "Test description",
+                "problem": "Test problem that is long enough",
+                "target_customer": "Test customers",
+                "geography": "US",
+            },
+        },
+    )
+    assert resp.status_code == 400
+    assert "require a configured AI provider" in resp.json()["detail"]
+
+
 def test_get_nonexistent_analysis(client):
     resp = client.get("/api/analyses/nonexistent-id-12345")
     assert resp.status_code == 404
@@ -67,24 +87,19 @@ def test_list_analyses_returns_list(client):
     assert isinstance(resp.json(), list)
 
 
-def test_demo_endpoint_returns_id(client):
+def test_demo_endpoint_is_precomputed_and_token_free(client):
     with patch("assumption_zero.api.routes.run_analysis", new_callable=AsyncMock) as run:
-        resp = client.post(
-            "/api/demo",
-            json={
-                "ai_provider": "groq",
-                "groq_api_key": "test-groq-key",
-            },
-        )
-    assert resp.status_code == 202
+        resp = client.post("/api/demo")
+    assert resp.status_code == 200
     data = resp.json()
-    assert "analysis_id" in data
+    assert data["analysis_id"] == "demo-legalmind-local"
+    assert data["status"] == "complete"
     assert data.get("demo") is True
-    assert run.await_args.kwargs["ai_provider_override"] == "groq"
-    assert run.await_args.kwargs["groq_api_key"] == "test-groq-key"
+    assert data.get("bundled") is True
+    run.assert_not_awaited()
 
 
-def test_demo_auto_uses_browser_groq_key(client):
+def test_demo_never_uses_browser_groq_key(client):
     with patch("assumption_zero.api.routes.run_analysis", new_callable=AsyncMock) as run:
         resp = client.post(
             "/api/demo",
@@ -93,9 +108,9 @@ def test_demo_auto_uses_browser_groq_key(client):
                 "groq_api_key": "browser-groq-key",
             },
         )
-    assert resp.status_code == 202
-    assert run.await_args.kwargs["ai_provider_override"] == "groq"
-    assert run.await_args.kwargs["groq_api_key"] == "browser-groq-key"
+    assert resp.status_code == 200
+    assert resp.json()["bundled"] is True
+    run.assert_not_awaited()
 
 
 def test_create_analysis_invalid_input(client):

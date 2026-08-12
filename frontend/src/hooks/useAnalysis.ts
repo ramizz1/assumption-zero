@@ -2,6 +2,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { api } from '../lib/api'
 import { getBundledDemo } from '../lib/bundledDemo'
+import { getSessionAnalysis } from '../lib/sessionAnalysis'
 import type { AnalysisResult } from '../types'
 
 const POLL_INTERVAL = 2500 // ms
@@ -21,6 +22,13 @@ export function useAnalysis(analysisId: string | null) {
       return
     }
 
+    const sessionAnalysis = getSessionAnalysis(analysisId)
+    if (sessionAnalysis) {
+      setData(sessionAnalysis)
+      setError(null)
+      return
+    }
+
     const poll = async () => {
       try {
         const result = await api.getAnalysis(analysisId)
@@ -33,7 +41,11 @@ export function useAnalysis(analysisId: string | null) {
           }
         }
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Unknown error')
+        setError(
+          err instanceof Error
+            ? err.message
+            : 'This report could not be loaded. Return home and start a new analysis.',
+        )
         if (intervalRef.current) {
           clearInterval(intervalRef.current)
           intervalRef.current = null

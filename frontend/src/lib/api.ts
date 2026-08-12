@@ -23,48 +23,78 @@ export interface AnalysisCreateRequest {
 
 const BASE = (import.meta.env.VITE_API_BASE_URL || '/api').replace(/\/$/, '')
 
+export class ApiRequestError extends Error {
+  status: number | null
+
+  constructor(message: string, status: number | null = null) {
+    super(message)
+    this.name = 'ApiRequestError'
+    this.status = status
+  }
+}
+
+const SERVICE_UNAVAILABLE_MESSAGE =
+  'Live AI analysis is temporarily unavailable. Your API key was not saved or exposed. Please try again shortly.'
+
+function friendlyApiMessage(status: number, raw: string): string {
+  const contentTypeLooksLikeHtml = /<!doctype|<html|<body/i.test(raw)
+  if (status === 404 || status >= 500 || contentTypeLooksLikeHtml) {
+    return SERVICE_UNAVAILABLE_MESSAGE
+  }
+
+  let message = raw
+  try {
+    const data = raw ? JSON.parse(raw) : {}
+    if (Array.isArray(data.detail)) {
+      message = data.detail
+        .map((detail: { msg?: string } | string) =>
+          typeof detail === 'string' ? detail : detail.msg || '',
+        )
+        .filter(Boolean)
+        .join(' ')
+    } else if (typeof data.detail === 'string') {
+      message = data.detail
+    } else if (typeof data.message === 'string') {
+      message = data.message
+    }
+  } catch {
+    // Plain-text API responses are handled below. HTML is never shown to users.
+  }
+
+  message = message
+    .replace(/For further information visit https:\/\/errors\.pydantic\.dev\/[^\s]+/g, '')
+    .replace(/\[type=[^\]]+\]/g, '')
+    .replace(/^\d+ validation error(s)? for [^\n:]+:\s*/gi, '')
+    .trim()
+
+  if (message.startsWith('Value error, ')) message = message.slice('Value error, '.length)
+  return message || 'The request could not be completed. Please check your setup and try again.'
+}
+
 async function request<T>(
   path: string,
   options?: RequestInit,
 ): Promise<T> {
-  const res = await fetch(`${BASE}${path}`, {
-    headers: { 'Content-Type': 'application/json' },
-    ...options,
-  })
+  let res: Response
+  try {
+    res = await fetch(`${BASE}${path}`, {
+      headers: { 'Content-Type': 'application/json' },
+      ...options,
+    })
+  } catch {
+    throw new ApiRequestError(SERVICE_UNAVAILABLE_MESSAGE)
+  }
+
+  const raw = res.status === 204 ? '' : await res.text()
   if (!res.ok) {
-    let message = res.statusText
-    try {
-      const data = await res.json()
-      if (Array.isArray(data.detail)) {
-        message = data.detail
-          .map((d: any) => (typeof d === 'string' ? d : d.msg || JSON.stringify(d)))
-          .join(' ')
-      } else if (typeof data.detail === 'string') {
-        message = data.detail
-      } else if (data.message) {
-        message = data.message
-      } else {
-        message = JSON.stringify(data)
-      }
-    } catch {
-      message = await res.text().catch(() => res.statusText)
-    }
-
-    // Clean up Pydantic type tags & URLs
-    message = message
-      .replace(/For further information visit https:\/\/errors\.pydantic\.dev\/[^\s]+/g, '')
-      .replace(/\[type=[^\]]+\]/g, '')
-      .replace(/^\d+ validation error(s)? for [^\n:]+:\s*/gi, '')
-      .trim()
-
-    if (message.startsWith('Value error, ')) {
-      message = message.replace('Value error, ', '')
-    }
-
-    throw new Error(message || 'An unexpected error occurred.')
+    throw new ApiRequestError(friendlyApiMessage(res.status, raw), res.status)
   }
   if (res.status === 204) return undefined as unknown as T
-  return res.json()
+  try {
+    return JSON.parse(raw) as T
+  } catch {
+    throw new ApiRequestError(SERVICE_UNAVAILABLE_MESSAGE, res.status)
+  }
 }
 
 export interface PromptAnalysisRequest {
@@ -93,6 +123,14 @@ export const api = {
 
   createAnalysisFromPrompt(body: PromptAnalysisRequest): Promise<{ analysis_id: string; status: string; parsed_idea: IdeaInput }> {
     return request('/analyses/from-prompt', { method: 'POST', body: JSON.stringify(body) })
+  },
+
+  runAnalysisSync(body: AnalysisCreateRequest): Promise<AnalysisResult> {
+    return request('/analyses/sync', { method: 'POST', body: JSON.stringify(body) })
+  },
+
+  runAnalysisFromPromptSync(body: PromptAnalysisRequest): Promise<AnalysisResult> {
+    return request('/analyses/from-prompt/sync', { method: 'POST', body: JSON.stringify(body) })
   },
 
   listAnalyses(params?: { search?: string; status?: string; limit?: number }): Promise<AnalysisListItem[]> {

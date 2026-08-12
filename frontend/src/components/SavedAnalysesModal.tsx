@@ -1,32 +1,63 @@
 import React, { useEffect, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { Link } from 'react-router-dom'
 import { api } from '../lib/api'
-import type { AnalysisResult, AnalysisListItem } from '../types'
+import type { AnalysisListItem } from '../types'
 import { recommendationBg, recommendationColor } from '../lib/utils'
+import { BUNDLED_DEMO_ID, getBundledDemo } from '../lib/bundledDemo'
+import { getSessionAnalyses, getSessionAnalysis, removeSessionAnalysis } from '../lib/sessionAnalysis'
 
 interface Props {
   isOpen: boolean
   onClose: () => void
   onCountUpdate?: (count: number) => void
+  backendOnline?: boolean
 }
 
-export const SavedAnalysesModal: React.FC<Props> = ({ isOpen, onClose, onCountUpdate }) => {
+export const SavedAnalysesModal: React.FC<Props> = ({ isOpen, onClose, onCountUpdate, backendOnline = true }) => {
   const [items, setItems] = useState<AnalysisListItem[]>([])
   const [loading, setLoading] = useState(false)
+  const [loadError, setLoadError] = useState<string | null>(null)
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState<string>('')
 
   const loadData = async () => {
     setLoading(true)
+    setLoadError(null)
     try {
-      const data = await api.listAnalyses({ search, status: statusFilter || undefined })
+      const toListItem = (result: ReturnType<typeof getBundledDemo>): AnalysisListItem | null => result
+        ? {
+            analysis_id: result.analysis_id,
+            status: result.status,
+            stage: result.stage,
+            created_at: result.created_at,
+            completed_at: result.completed_at,
+            idea_name: result.idea_input.name,
+            is_demo: result.is_demo,
+            opportunity_score: result.opportunity_score?.total,
+            recommendation: result.recommendation,
+          }
+        : null
+      const sessionItems = getSessionAnalyses()
+        .map((result) => toListItem(result))
+        .filter((item): item is AnalysisListItem => item !== null)
+      let data: AnalysisListItem[]
+      if (!backendOnline) {
+        const demo = getBundledDemo(BUNDLED_DEMO_ID)
+        const demoItem = toListItem(demo)
+        data = demoItem ? [...sessionItems, demoItem] : sessionItems
+      } else {
+        const remoteItems = await api.listAnalyses({ search, status: statusFilter || undefined })
+        const seen = new Set(sessionItems.map((item) => item.analysis_id))
+        data = [...sessionItems, ...remoteItems.filter((item) => !seen.has(item.analysis_id))]
+      }
       setItems(data)
       if (onCountUpdate) {
         // Send true count back to parent
         onCountUpdate(data.length)
       }
-    } catch (e) {
-      console.error(e)
+    } catch {
+      setLoadError('Saved analyses could not be loaded. Please try again in a moment.')
     } finally {
       setLoading(false)
     }
@@ -36,7 +67,21 @@ export const SavedAnalysesModal: React.FC<Props> = ({ isOpen, onClose, onCountUp
     if (isOpen) {
       loadData()
     }
-  }, [isOpen, search, statusFilter])
+  }, [isOpen, search, statusFilter, backendOnline])
+
+  useEffect(() => {
+    if (!isOpen) return
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') onClose()
+    }
+    window.addEventListener('keydown', closeOnEscape)
+    return () => {
+      document.body.style.overflow = previousOverflow
+      window.removeEventListener('keydown', closeOnEscape)
+    }
+  }, [isOpen, onClose])
 
   if (!isOpen) return null
 
@@ -45,16 +90,27 @@ export const SavedAnalysesModal: React.FC<Props> = ({ isOpen, onClose, onCountUp
     e.stopPropagation()
     if (!window.confirm('Delete this analysis permanently?')) return
     try {
+      if (getSessionAnalysis(id)) {
+        removeSessionAnalysis(id)
+        await loadData()
+        return
+      }
       await api.deleteAnalysis(id)
       loadData()
-    } catch (err) {
-      alert('Failed to delete')
+    } catch {
+      setLoadError('This analysis could not be deleted. Please try again.')
     }
   }
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/40 backdrop-blur-md animate-in fade-in duration-200">
-      <div className="relative w-full max-w-4xl max-h-[85vh] flex flex-col bg-white border border-gray-200 rounded-2xl shadow-2xl overflow-hidden verseo-card">
+  return createPortal(
+    <div
+      className="fixed inset-0 z-[100] grid min-h-[100dvh] place-items-center overflow-y-auto bg-black/40 p-3 backdrop-blur-md animate-in fade-in duration-200 sm:p-6"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="saved-analyses-title"
+      onMouseDown={(event) => event.target === event.currentTarget && onClose()}
+    >
+      <div className="relative flex max-h-[calc(100dvh-1.5rem)] w-full max-w-4xl flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl sm:max-h-[min(860px,calc(100dvh-3rem))]">
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-5 border-b border-gray-200 bg-gray-50">
           <div className="flex items-center gap-3">
@@ -62,12 +118,14 @@ export const SavedAnalysesModal: React.FC<Props> = ({ isOpen, onClose, onCountUp
               📜
             </div>
             <div>
-              <h2 className="text-xl font-display font-bold text-gray-900 tracking-tight">Saved Analyses</h2>
+              <h2 id="saved-analyses-title" className="text-xl font-display font-bold text-gray-900 tracking-tight">Saved Analyses</h2>
               <p className="text-xs text-gray-500 font-mono">View past validation reports</p>
             </div>
           </div>
           <button
+            type="button"
             onClick={onClose}
+            aria-label="Close saved analyses"
             className="w-9 h-9 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 text-gray-500 hover:text-gray-900 flex items-center justify-center transition-colors shadow-sm"
           >
             ✕
@@ -75,7 +133,7 @@ export const SavedAnalysesModal: React.FC<Props> = ({ isOpen, onClose, onCountUp
         </div>
 
         {/* Filters */}
-        <div className="px-6 py-4 border-b border-gray-200 bg-white flex flex-col sm:flex-row gap-3">
+        {backendOnline ? <div className="px-6 py-4 border-b border-gray-200 bg-white flex flex-col sm:flex-row gap-3">
           <input
             type="text"
             placeholder="Search ideas..."
@@ -98,11 +156,19 @@ export const SavedAnalysesModal: React.FC<Props> = ({ isOpen, onClose, onCountUp
               </button>
             ))}
           </div>
-        </div>
+        </div> : (
+          <div className="border-b border-indigo-100 bg-indigo-50 px-6 py-3 text-xs text-indigo-800">
+            Demo mode shows the bundled token-free report. Live history appears when the AI service is online.
+          </div>
+        )}
 
         {/* List */}
         <div className="flex-1 overflow-y-auto p-4 sm:p-6 bg-gray-50">
-          {loading ? (
+          {loadError ? (
+            <div role="status" className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-center text-sm text-amber-800">
+              {loadError}
+            </div>
+          ) : loading ? (
             <div className="flex items-center justify-center h-32">
               <div className="w-6 h-6 border-2 border-gray-300 border-t-gray-900 rounded-full animate-spin" />
             </div>
@@ -121,7 +187,8 @@ export const SavedAnalysesModal: React.FC<Props> = ({ isOpen, onClose, onCountUp
                 >
                   <button
                     onClick={(e) => handleDelete(item.analysis_id, e)}
-                    className="absolute top-4 right-4 text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
+                    aria-label={`Delete ${item.idea_name}`}
+                    className={`${item.is_demo ? 'hidden' : ''} absolute top-4 right-4 text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity`}
                     title="Delete"
                   >
                     🗑️
@@ -164,7 +231,8 @@ export const SavedAnalysesModal: React.FC<Props> = ({ isOpen, onClose, onCountUp
           )}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   )
 }
 

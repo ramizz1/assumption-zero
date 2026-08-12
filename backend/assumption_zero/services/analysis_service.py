@@ -53,11 +53,13 @@ def build_llm_adapter(
     api_key_override: str | None = None,
     model_override: str | None = None,
     base_url_override: str | None = None,
+    allow_mock_fallback: bool = True,
 ) -> LLMAdapter:
     """Return the configured LLM adapter.
 
     Explicit providers are strict. ``auto`` may try multiple configured AI
-    providers and finally return the labeled deterministic evidence baseline.
+    providers. The deterministic baseline is available only when
+    ``allow_mock_fallback`` is explicitly enabled.
 
     Args:
         provider_override: Force a specific provider (groq, openrouter, openai_compat, opencode, ollama, mock)
@@ -98,17 +100,19 @@ def build_llm_adapter(
     elif provider == "mock":
         candidates = [mock]
     else:
-        # Auto mode uses configured key-based providers, then the deterministic
-        # baseline. Local Ollama must be selected explicitly so a default URL
+        # Auto mode uses configured key-based providers. Local Ollama must be
+        # selected explicitly so a default URL
         # does not add repeated connection delays when no server is running.
-        candidates = [groq, openrouter, openai_compat, opencode, mock]
+        candidates = [groq, openrouter, openai_compat, opencode]
+        if allow_mock_fallback:
+            candidates.append(mock)
 
     # Filter to available adapters
     available = [a for a in candidates if a.is_available]
     if not available:
         raise ValueError(
             f"AI provider '{provider}' is not configured. Add its API key or endpoint, "
-            "or select Auto to allow the labeled evidence baseline."
+            "before starting a real analysis."
         )
 
     if len(available) == 1:
@@ -216,6 +220,7 @@ async def run_analysis(
             provider_override=ai_provider_override,
             api_key_override=api_key_override,
             base_url_override=base_url_override,
+            allow_mock_fallback=is_demo,
         )
         providers = build_research_providers(research_providers_override)
         engine = AnalysisEngine(
