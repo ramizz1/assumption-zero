@@ -11,12 +11,15 @@
     font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
     -webkit-font-smoothing: antialiased;
     scroll-behavior: smooth;
+    max-width: 100%;
+    overflow-x: hidden;
   }
 
   body {
     background-color: #ffffff;
     color: #0a0a0a;
     min-height: 100vh;
+    max-width: 100%;
     overflow-x: hidden;
   }
 
@@ -89,6 +92,12 @@
   .creator-avatar {
     box-shadow: 0 4px 12px rgba(24,24,27,0.16);
     transition: transform 300ms cubic-bezier(.2,.8,.2,1), box-shadow 300ms ease;
+  }
+
+  @media (max-width: 639px) {
+    .creator-link {
+      display: none !important;
+    }
   }
 
   .creator-link:hover .creator-avatar {
