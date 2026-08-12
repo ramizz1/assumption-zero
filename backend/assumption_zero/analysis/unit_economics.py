@@ -1,10 +1,10 @@
 """Transparent unit-economics calculations shared by CLI reporting tools."""
+
 from __future__ import annotations
 
 import math
 import re
 from dataclasses import dataclass
-from typing import Optional
 
 
 @dataclass(frozen=True)
@@ -16,14 +16,14 @@ class UnitEconomicsResult:
     monthly_churn_pct: float
     gross_margin_per_customer: float
     monthly_contribution: float
-    breakeven_customers: Optional[int]
-    payback_months: Optional[float]
-    estimated_ltv: Optional[float]
-    ltv_to_cac: Optional[float]
+    breakeven_customers: int | None
+    payback_months: float | None
+    estimated_ltv: float | None
+    ltv_to_cac: float | None
     health: str
 
 
-def extract_price(value: Optional[str], fallback: float = 20.0) -> float:
+def extract_price(value: str | None, fallback: float = 20.0) -> float:
     """Extract the first numeric price, matching the web simulator behavior."""
     if not value:
         return fallback
@@ -41,7 +41,9 @@ def calculate_unit_economics(
     """Calculate the same directional subscription model shown in the web UI."""
     values = (price, cac, variable_cost, fixed_costs, monthly_churn_pct)
     if any(value < 0 for value in values) or monthly_churn_pct > 100:
-        raise ValueError("Economics inputs must be non-negative and churn must be between 0 and 100.")
+        raise ValueError(
+            "Economics inputs must be non-negative and churn must be between 0 and 100."
+        )
 
     gross_margin = price - variable_cost
     churn_rate = monthly_churn_pct / 100
@@ -52,9 +54,12 @@ def calculate_unit_economics(
     ltv = gross_margin / churn_rate if churn_rate > 0 and gross_margin > 0 else None
     ratio = ltv / cac if ltv is not None and cac > 0 else None
     health = (
-        "Incomplete" if ratio is None
-        else "Healthy" if ratio >= 3
-        else "Needs work" if ratio >= 1
+        "Incomplete"
+        if ratio is None
+        else "Healthy"
+        if ratio >= 3
+        else "Needs work"
+        if ratio >= 1
         else "Unsustainable"
     )
 

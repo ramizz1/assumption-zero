@@ -5,13 +5,13 @@ Queries live news streams for startup market news, press releases,
 competitor announcements, and regulatory updates.
 No API key required.
 """
+
 from __future__ import annotations
 
 import hashlib
 import logging
 import re
 from datetime import date, datetime
-from typing import List
 from urllib.parse import quote_plus, unquote
 
 import httpx
@@ -54,7 +54,7 @@ class NewsSearchProvider(ResearchProvider):
         query_type: str,
         idea: IdeaInput,
         max_results: int = 5,
-    ) -> List[EvidenceItem]:
+    ) -> list[EvidenceItem]:
         # Search news for market direction, competitor, demand, regulatory, and pricing
         news_query = f"{query} news press release"
         url = f"{DUCKDUCKGO_NEWS_URL}?q={quote_plus(news_query)}"
@@ -67,7 +67,7 @@ class NewsSearchProvider(ResearchProvider):
             ),
         }
 
-        items: List[EvidenceItem] = []
+        items: list[EvidenceItem] = []
         now = datetime.utcnow()
         today = date.today()
 

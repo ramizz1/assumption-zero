@@ -15,14 +15,16 @@ Orchestrates the full analysis pipeline:
 The engine is shared by both the FastAPI backend and the CLI.
 It has no direct dependency on HTTP or database layers.
 """
+
 from __future__ import annotations
 
 import asyncio
 import logging
 import re
 from collections import Counter
+from collections.abc import Awaitable, Callable
 from datetime import datetime
-from typing import Any, Callable, Dict, List, Optional, Awaitable
+from typing import Optional
 from urllib.parse import urlparse
 
 from assumption_zero.analysis.citation_validator import validate_citations
@@ -37,6 +39,8 @@ from assumption_zero.analysis.scoring import calculate_opportunity_score
 from assumption_zero.llm.base import DiscoveredCompetitor, LLMAdapter, PerspectiveOutput
 from assumption_zero.research.base import ResearchProvider
 from assumption_zero.schemas import (
+    PERSPECTIVE_DISPLAY,
+    STAGE_DESCRIPTIONS,
     AnalysisPerspective,
     AnalysisResult,
     AnalysisStage,
@@ -47,34 +51,46 @@ from assumption_zero.schemas import (
     EvidenceItem,
     EvidenceType,
     IdeaInput,
-    ModelDisagreement,
-    PERSPECTIVE_DISPLAY,
     PerspectiveName,
     Recommendation,
+    RegionalMarketAnalysis,
     ResearchCoverage,
     ResearchDepth,
-    STAGE_DESCRIPTIONS,
-    ValidationExperiment,
 )
 
 logger = logging.getLogger(__name__)
 
 _DEPTH_PRESETS = {
-    ResearchDepth.STANDARD: {"queries_per_type": 1, "max_results": 3, "max_evidence": 50, "concurrency": 12},
-    ResearchDepth.DEEP: {"queries_per_type": 2, "max_results": 5, "max_evidence": 100, "concurrency": 20},
-    ResearchDepth.EXHAUSTIVE: {"queries_per_type": 4, "max_results": 8, "max_evidence": 200, "concurrency": 24},
+    ResearchDepth.STANDARD: {
+        "queries_per_type": 1,
+        "max_results": 3,
+        "max_evidence": 50,
+        "concurrency": 12,
+    },
+    ResearchDepth.DEEP: {
+        "queries_per_type": 2,
+        "max_results": 5,
+        "max_evidence": 100,
+        "concurrency": 20,
+    },
+    ResearchDepth.EXHAUSTIVE: {
+        "queries_per_type": 4,
+        "max_results": 8,
+        "max_evidence": 200,
+        "concurrency": 24,
+    },
 }
 
 ProgressCallback = Optional[Callable[[AnalysisStage, str], Awaitable[None]]]
 
 
-def _assign_evidence_ids(items: List[EvidenceItem]) -> List[EvidenceItem]:
+def _assign_evidence_ids(items: list[EvidenceItem]) -> list[EvidenceItem]:
     """
     Assign stable sequential E001, E002, ... IDs to all evidence items.
     Deduplicates by URL before assigning IDs.
     """
     seen_urls: set[str] = set()
-    unique: List[EvidenceItem] = []
+    unique: list[EvidenceItem] = []
     for item in items:
         if item.url not in seen_urls:
             seen_urls.add(item.url)
@@ -87,20 +103,49 @@ def _assign_evidence_ids(items: List[EvidenceItem]) -> List[EvidenceItem]:
 
 
 IGNORE_COMPETITOR_WORDS = {
-    "idk", "none", "no", "n/a", "unknown", "nothing", "no idea",
-    "dont know", "don't know", "na",
+    "idk",
+    "none",
+    "no",
+    "n/a",
+    "unknown",
+    "nothing",
+    "no idea",
+    "dont know",
+    "don't know",
+    "na",
 }
 
 _AGGREGATOR_HOSTS = {
-    "alternativeto.net", "capterra.com", "crunchbase.com", "duckduckgo.com",
-    "facebook.com", "g2.com", "github.com", "linkedin.com", "medium.com",
-    "producthunt.com", "reddit.com", "techcrunch.com", "wikipedia.org",
-    "x.com", "youtube.com",
+    "alternativeto.net",
+    "capterra.com",
+    "crunchbase.com",
+    "duckduckgo.com",
+    "facebook.com",
+    "g2.com",
+    "github.com",
+    "linkedin.com",
+    "medium.com",
+    "producthunt.com",
+    "reddit.com",
+    "techcrunch.com",
+    "wikipedia.org",
+    "x.com",
+    "youtube.com",
 }
 
 _GENERIC_COMPETITOR_TITLES = (
-    "best ", "top ", "alternatives", "competitors", "comparison", "review",
-    "software for", "tools for", "how to", "what is", "why ", "guide to",
+    "best ",
+    "top ",
+    "alternatives",
+    "competitors",
+    "comparison",
+    "review",
+    "software for",
+    "tools for",
+    "how to",
+    "what is",
+    "why ",
+    "guide to",
 )
 
 
@@ -181,12 +226,14 @@ def _clean_competitor_name(title: str, url: str = "") -> str:
     return name.strip()
 
 
-def _extract_competitors_from_evidence(evidence: List[EvidenceItem], idea: Optional[IdeaInput] = None) -> List[Competitor]:
+def _extract_competitors_from_evidence(
+    evidence: list[EvidenceItem], idea: IdeaInput | None = None
+) -> list[Competitor]:
     """
     Parse competitor information from evidence items and user-declared competitors.
     Returns Competitor objects that will be merged.
     """
-    competitors: List[Competitor] = []
+    competitors: list[Competitor] = []
     # 1. Include user-specified competitors directly
     if idea and idea.known_competitors:
         for raw_comp in idea.known_competitors.split(","):
@@ -203,15 +250,19 @@ def _extract_competitors_from_evidence(evidence: List[EvidenceItem], idea: Optio
             )
             independent_sources = {e.source_name for e in matching_items}
             confidence = (
-                ConfidenceLevel.HIGH if len(independent_sources) >= 2
-                else ConfidenceLevel.MEDIUM if matching_items
+                ConfidenceLevel.HIGH
+                if len(independent_sources) >= 2
+                else ConfidenceLevel.MEDIUM
+                if matching_items
                 else ConfidenceLevel.LOW
             )
 
             competitors.append(
                 Competitor(
                     name=cname,
-                    url=next((e.url for e in matching_items if not e.url.startswith("demo://")), ""),
+                    url=next(
+                        (e.url for e in matching_items if not e.url.startswith("demo://")), ""
+                    ),
                     competitor_type=CompetitorType.DIRECT,
                     description=desc,
                     target_user="Not established in collected evidence",
@@ -219,7 +270,9 @@ def _extract_competitors_from_evidence(evidence: List[EvidenceItem], idea: Optio
                     strengths=[],
                     weaknesses=[],
                     complaints=[],
-                    differentiation=[f"Hypothesis: validate a meaningful switching reason versus {cname}"],
+                    differentiation=[
+                        f"Hypothesis: validate a meaningful switching reason versus {cname}"
+                    ],
                     evidence_ids=matching_ev[:5],
                     confidence=confidence,
                 )
@@ -232,6 +285,8 @@ def _extract_competitors_from_evidence(evidence: List[EvidenceItem], idea: Optio
 
         clean_name = _clean_competitor_name(item.title, item.url)
         if not clean_name or clean_name.lower() in IGNORE_COMPETITOR_WORDS:
+            continue
+        if not _evidence_text_mentions(clean_name, item):
             continue
         if idea and _normalized_name(clean_name) == _normalized_name(idea.name):
             continue
@@ -267,26 +322,35 @@ def _evidence_mentions(name: str, item: EvidenceItem) -> bool:
     needle = _normalized_name(name)
     if len(needle) < 2:
         return False
-    haystack = _normalized_name(
-        f"{item.title} {item.passage} {urlparse(item.url).hostname or ''}"
-    )
+    haystack = _normalized_name(f"{item.title} {item.passage} {urlparse(item.url).hostname or ''}")
+    return bool(re.search(rf"(?<![a-z0-9]){re.escape(needle)}(?![a-z0-9])", haystack))
+
+
+def _evidence_text_mentions(name: str, item: EvidenceItem) -> bool:
+    """Require the product name in readable evidence, not only its URL hostname."""
+    needle = _normalized_name(name)
+    if len(needle) < 2:
+        return False
+    title = re.sub(r"^\[[^\]]+\]\s*", "", item.title)
+    haystack = _normalized_name(f"{title} {item.passage}")
     return bool(re.search(rf"(?<![a-z0-9]){re.escape(needle)}(?![a-z0-9])", haystack))
 
 
 def _validated_ai_competitors(
-    candidates: List[DiscoveredCompetitor],
-    evidence: List[EvidenceItem],
+    candidates: list[DiscoveredCompetitor],
+    evidence: list[EvidenceItem],
     idea: IdeaInput,
-) -> List[Competitor]:
+) -> list[Competitor]:
     """Accept AI competitors only when cited evidence explicitly names them."""
     by_id = {item.evidence_id: item for item in evidence}
-    accepted: List[Competitor] = []
+    accepted: list[Competitor] = []
 
     for candidate in candidates:
         if _normalized_name(candidate.name) == _normalized_name(idea.name):
             continue
         cited_items = [
-            by_id[eid] for eid in dict.fromkeys(candidate.evidence_ids)
+            by_id[eid]
+            for eid in dict.fromkeys(candidate.evidence_ids)
             if eid in by_id and _evidence_mentions(candidate.name, by_id[eid])
         ]
         if not cited_items:
@@ -295,14 +359,19 @@ def _validated_ai_competitors(
 
         source_count = len({item.source_name for item in cited_items})
         confidence = ConfidenceLevel.HIGH if source_count >= 2 else ConfidenceLevel.MEDIUM
-        pricing_markers = (
-            re.findall(r"(?:[$€£]\s?\d+(?:[.,]\d+)?)|(?:\b\d+(?:[.,]\d+)?\s?%\b)", candidate.pricing_evidence or "")
-            + re.findall(r"\b(?:free|freemium|custom pricing)\b", candidate.pricing_evidence or "", re.I)
+        pricing_markers = re.findall(
+            r"(?:[$€£]\s?\d+(?:[.,]\d+)?)|(?:\b\d+(?:[.,]\d+)?\s?%\b)",
+            candidate.pricing_evidence or "",
+        ) + re.findall(
+            r"\b(?:free|freemium|custom pricing)\b", candidate.pricing_evidence or "", re.IGNORECASE
         )
         cited_pricing_text = " ".join(item.passage for item in cited_items).casefold()
         pricing_supported = bool(candidate.pricing_evidence) and (
             any(item.evidence_type == EvidenceType.PRICING for item in cited_items)
-            or any(marker.casefold().replace(" ", "") in cited_pricing_text.replace(" ", "") for marker in pricing_markers)
+            or any(
+                marker.casefold().replace(" ", "") in cited_pricing_text.replace(" ", "")
+                for marker in pricing_markers
+            )
         )
         differentiation = [
             value if value.casefold().startswith("hypothesis:") else f"Hypothesis: {value}"
@@ -313,7 +382,9 @@ def _validated_ai_competitors(
         accepted.append(
             Competitor(
                 name=candidate.name.strip(),
-                url=next((item.url for item in cited_items if not item.url.startswith("demo://")), ""),
+                url=next(
+                    (item.url for item in cited_items if not item.url.startswith("demo://")), ""
+                ),
                 competitor_type=candidate.competitor_type,
                 description=(candidate.description or cited_items[0].passage)[:500],
                 target_user=candidate.target_user or "Not established in collected evidence",
@@ -330,23 +401,46 @@ def _validated_ai_competitors(
     return accepted
 
 
-def _select_recommendation(perspectives: List[AnalysisPerspective], confidence: ConfidenceLevel) -> Recommendation:
-    """Majority vote across perspectives. Tie → Test First.
-    Downgrade Build to Test First if evidence confidence is low.
-    """
+def _select_recommendation(
+    perspectives: list[AnalysisPerspective],
+    confidence: ConfidenceLevel,
+    evidence: list[EvidenceItem],
+    competitors: list[Competitor],
+    regional_analysis: RegionalMarketAnalysis,
+) -> Recommendation:
+    """Choose the majority verdict while keeping unsupported builds behind validation gates."""
     if not perspectives:
         return Recommendation.TEST_FIRST
     counts = Counter(p.recommendation.value for p in perspectives)
-    most_common = counts.most_common(1)[0][0]
-    rec = Recommendation(most_common)
-    
-    if rec == Recommendation.BUILD and confidence == ConfidenceLevel.LOW:
+    highest_vote_count = max(counts.values())
+    leaders = [value for value, count in counts.items() if count == highest_vote_count]
+    if len(leaders) != 1:
         return Recommendation.TEST_FIRST
-        
+    rec = Recommendation(leaders[0])
+
+    if rec == Recommendation.BUILD:
+        demand_sources = {
+            item.source_name
+            for item in evidence
+            if item.evidence_type == EvidenceType.DEMAND and item.relevance_score >= 0.6
+        }
+        has_verified_competitor = any(
+            competitor.evidence_ids and competitor.confidence != ConfidenceLevel.LOW
+            for competitor in competitors
+        )
+        evidence_ready = (
+            confidence == ConfidenceLevel.HIGH
+            and len(demand_sources) >= 2
+            and has_verified_competitor
+            and regional_analysis.confidence != ConfidenceLevel.LOW
+        )
+        if not evidence_ready:
+            return Recommendation.TEST_FIRST
+
     return rec
 
 
-def _select_most_dangerous_assumption(perspectives: List[AnalysisPerspective]) -> str:
+def _select_most_dangerous_assumption(perspectives: list[AnalysisPerspective]) -> str:
     """Pick the most dangerous assumption — prefer the skeptic's view."""
     for p in perspectives:
         if p.perspective_name == PerspectiveName.SKEPTICAL_INVESTOR and p.most_dangerous_assumption:
@@ -358,7 +452,7 @@ def _select_most_dangerous_assumption(perspectives: List[AnalysisPerspective]) -
 
 
 def _find_strongest(
-    evidence: List[EvidenceItem],
+    evidence: list[EvidenceItem],
     good: bool,
 ) -> str:
     """Return the passage from the most relevant supporting or contradicting evidence."""
@@ -367,10 +461,7 @@ def _find_strongest(
         if good
         else [EvidenceType.FAILED_PRODUCT, EvidenceType.FAILURE_REASON, EvidenceType.COMPETITOR]
     )
-    candidates = [
-        e for e in evidence
-        if e.evidence_type in ev_type_filter
-    ]
+    candidates = [e for e in evidence if e.evidence_type in ev_type_filter]
     if not candidates:
         candidates = [e for e in evidence if e.relevance_score >= 0.7]
     if not candidates:
@@ -380,19 +471,23 @@ def _find_strongest(
 
 
 def _collect_missing_info(
-    perspectives: List[AnalysisPerspective],
-    evidence: List[EvidenceItem],
-    competitors: Optional[List[Competitor]] = None,
-) -> List[str]:
-    missing: List[str] = []
+    perspectives: list[AnalysisPerspective],
+    evidence: list[EvidenceItem],
+    competitors: list[Competitor] | None = None,
+) -> list[str]:
+    missing: list[str] = []
 
     if not evidence:
-        missing.append("No research evidence collected — configure research providers (SearXNG, GitHub, etc.)")
+        missing.append(
+            "No research evidence collected — configure research providers (SearXNG, GitHub, etc.)"
+        )
 
     # Collect from dimension missing_information (populated by scoring)
     for p in perspectives:
         if "No AI provider" in p.summary or "template analysis" in p.summary.lower():
-            missing.append("Configure a real AI provider (Gemini, Ollama, OpenAI-compatible) for qualitative analysis")
+            missing.append(
+                "Configure a real AI provider (Gemini, Ollama, OpenAI-compatible) for qualitative analysis"
+            )
             break
 
     if not any(e.evidence_type == EvidenceType.PRICING for e in evidence):
@@ -402,11 +497,17 @@ def _collect_missing_info(
     if not any(e.evidence_type == EvidenceType.REGULATORY for e in evidence):
         missing.append("No regulatory/compliance evidence found for this geography")
     if not competitors:
-        missing.append("No evidence-grounded competitors found; run targeted customer and category research")
+        missing.append(
+            "No evidence-grounded competitors found; run targeted customer and category research"
+        )
     elif not any(competitor.evidence_ids for competitor in competitors):
-        missing.append("Competitors are user-supplied but not independently verified by collected evidence")
+        missing.append(
+            "Competitors are user-supplied but not independently verified by collected evidence"
+        )
     elif len({eid for competitor in competitors for eid in competitor.evidence_ids}) < 2:
-        missing.append("Competitor coverage relies on a single evidence item; verify with another independent source")
+        missing.append(
+            "Competitor coverage relies on a single evidence item; verify with another independent source"
+        )
 
     return list(dict.fromkeys(missing))
 
@@ -422,10 +523,10 @@ class AnalysisEngine:
 
     def __init__(
         self,
-        providers: List[ResearchProvider],
+        providers: list[ResearchProvider],
         llm_adapter: LLMAdapter,
-        max_evidence: Optional[int] = None,
-        queries_per_type: Optional[int] = None,
+        max_evidence: int | None = None,
+        queries_per_type: int | None = None,
         research_depth: ResearchDepth | str = ResearchDepth.DEEP,
     ) -> None:
         self._research_depth = ResearchDepth(research_depth)
@@ -453,7 +554,7 @@ class AnalysisEngine:
     ) -> AnalysisResult:
         """Run the full analysis pipeline and return a complete AnalysisResult."""
 
-        provider_errors: List[str] = []
+        provider_errors: list[str] = []
 
         async def _progress(stage: AnalysisStage) -> None:
             desc = STAGE_DESCRIPTIONS.get(stage, "")
@@ -482,9 +583,7 @@ class AnalysisEngine:
 
         # ── Stage 3: Collect evidence ─────────────────────────────
         await _progress(AnalysisStage.COLLECTING_EVIDENCE)
-        raw_evidence = await self._collect_evidence(
-            all_queries, idea, provider_errors
-        )
+        raw_evidence = await self._collect_evidence(all_queries, idea, provider_errors)
         evidence = _assign_evidence_ids(raw_evidence)[: self._max_evidence]
         logger.info("Collected %d unique evidence items", len(evidence))
         regional_analysis = generate_regional_analysis(idea, evidence)
@@ -511,13 +610,12 @@ class AnalysisEngine:
 
         # AI adds semantic extraction (names buried in passages), but every
         # candidate passes a deterministic evidence-name check before display.
-        ai_competitors = _validated_ai_competitors(
-            ai_competitor_candidates, evidence, idea
-        )
+        ai_competitors = _validated_ai_competitors(ai_competitor_candidates, evidence, idea)
         competitors = merge_competitors(competitors + ai_competitors)[:20]
         logger.info(
             "Competitor profile complete: %d verified/declared entries (%d AI-supported)",
-            len(competitors), len(ai_competitors),
+            len(competitors),
+            len(ai_competitors),
         )
 
         if not perspectives:
@@ -557,10 +655,18 @@ class AnalysisEngine:
 
         # ── Stage 7: Calculate scores ─────────────────────────────
         await _progress(AnalysisStage.CALCULATING_SCORES)
-        
+
         opportunity_score = calculate_opportunity_score(perspectives, evidence, idea)
-        evidence_confidence = calculate_evidence_confidence(perspectives=perspectives, evidence=evidence)
-        recommendation = _select_recommendation(perspectives, evidence_confidence)
+        evidence_confidence = calculate_evidence_confidence(
+            perspectives=perspectives, evidence=evidence
+        )
+        recommendation = _select_recommendation(
+            perspectives,
+            evidence_confidence,
+            evidence,
+            competitors,
+            regional_analysis,
+        )
 
         # ── Stage 8: Generate experiments ─────────────────────────
         await _progress(AnalysisStage.GENERATING_EXPERIMENTS)
@@ -607,10 +713,10 @@ class AnalysisEngine:
 
     async def _collect_evidence(
         self,
-        queries: List[Dict[str, str]],
+        queries: list[dict[str, str]],
         idea: IdeaInput,
-        errors: List[str],
-    ) -> List[EvidenceItem]:
+        errors: list[str],
+    ) -> list[EvidenceItem]:
         """Run all queries against all available providers concurrently."""
         if not self._providers:
             errors.append(
@@ -637,7 +743,7 @@ class AnalysisEngine:
 
         # Run all concurrently; failures are caught inside _safe_search
         results = await asyncio.gather(*tasks, return_exceptions=False)
-        all_items: List[EvidenceItem] = []
+        all_items: list[EvidenceItem] = []
         for batch in results:
             all_items.extend(batch)
 
@@ -649,7 +755,7 @@ class AnalysisEngine:
         query: str,
         query_type: str,
         idea: IdeaInput,
-    ) -> List[EvidenceItem]:
+    ) -> list[EvidenceItem]:
         """Run a single provider search, catching all exceptions."""
         try:
             return await provider.search(
@@ -661,16 +767,18 @@ class AnalysisEngine:
         except Exception as exc:
             logger.warning(
                 "Provider %s failed for query %r: %s",
-                provider.name, query, exc,
+                provider.name,
+                query,
+                exc,
             )
             return []
 
     async def _run_perspectives(
         self,
         idea: IdeaInput,
-        evidence: List[EvidenceItem],
-        errors: List[str],
-    ) -> tuple[List[AnalysisPerspective], List[str], List[DiscoveredCompetitor]]:
+        evidence: list[EvidenceItem],
+        errors: list[str],
+    ) -> tuple[list[AnalysisPerspective], list[str], list[DiscoveredCompetitor]]:
         """Run three to five independent perspectives based on research depth."""
         perspective_names = [
             PerspectiveName.MARKET_ANALYST,
@@ -682,15 +790,12 @@ class AnalysisEngine:
         if self._research_depth == ResearchDepth.EXHAUSTIVE:
             perspective_names.insert(-1, PerspectiveName.CUSTOMER_RESEARCHER)
 
-        tasks = [
-            self._safe_perspective(name, idea, evidence, errors)
-            for name in perspective_names
-        ]
-        outputs: List[Optional[PerspectiveOutput]] = await asyncio.gather(*tasks)
+        tasks = [self._safe_perspective(name, idea, evidence, errors) for name in perspective_names]
+        outputs: list[PerspectiveOutput | None] = await asyncio.gather(*tasks)
 
-        perspectives: List[AnalysisPerspective] = []
-        models_used: List[str] = []
-        competitor_candidates: List[DiscoveredCompetitor] = []
+        perspectives: list[AnalysisPerspective] = []
+        models_used: list[str] = []
+        competitor_candidates: list[DiscoveredCompetitor] = []
 
         for name, output in zip(perspective_names, outputs):
             if output is None:
@@ -717,9 +822,9 @@ class AnalysisEngine:
 
         return perspectives, models_used, competitor_candidates
 
-    def _select_queries(self, queries: List[Dict[str, str]]) -> List[Dict[str, str]]:
+    def _select_queries(self, queries: list[dict[str, str]]) -> list[dict[str, str]]:
         """Take a bounded number of queries from every evidence category."""
-        selected: List[Dict[str, str]] = []
+        selected: list[dict[str, str]] = []
         counts: Counter = Counter()
         for query in queries:
             query_type = query["type"]
@@ -733,9 +838,9 @@ class AnalysisEngine:
         self,
         name: PerspectiveName,
         idea: IdeaInput,
-        evidence: List[EvidenceItem],
-        errors: List[str],
-    ) -> Optional[PerspectiveOutput]:
+        evidence: list[EvidenceItem],
+        errors: list[str],
+    ) -> PerspectiveOutput | None:
         try:
             return await self._llm.analyze_perspective(name, idea, evidence)
         except Exception as exc:

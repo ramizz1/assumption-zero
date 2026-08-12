@@ -1,8 +1,8 @@
 """Abstract base class for all research providers."""
+
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import List
 
 from assumption_zero.schemas import EvidenceItem, IdeaInput
 
@@ -38,7 +38,7 @@ class ResearchProvider(ABC):
         query_type: str,
         idea: IdeaInput,
         max_results: int = 10,
-    ) -> List[EvidenceItem]:
+    ) -> list[EvidenceItem]:
         """
         Run a single search query and return a list of evidence items.
 

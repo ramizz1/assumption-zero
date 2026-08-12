@@ -7,12 +7,13 @@ competitor mentions, and customer complaints.
 API: https://hn.algolia.com/api
 Terms: Public, documented API — no key required.
 """
+
 from __future__ import annotations
 
 import hashlib
 import logging
 from datetime import date, datetime
-from typing import Any, Dict, List
+from typing import Any
 
 import httpx
 
@@ -65,8 +66,8 @@ class HackerNewsProvider(ResearchProvider):
         query_type: str,
         idea: IdeaInput,
         max_results: int = 10,
-    ) -> List[EvidenceItem]:
-        params = {
+    ) -> list[EvidenceItem]:
+        params: dict[str, str | int] = {
             "query": query,
             "tags": "story",
             "hitsPerPage": min(max_results, 20),
@@ -76,26 +77,25 @@ class HackerNewsProvider(ResearchProvider):
             async with httpx.AsyncClient(timeout=self._settings.request_timeout) as client:
                 resp = await client.get(HN_API, params=params)
                 resp.raise_for_status()
-                data: Dict[str, Any] = resp.json()
+                data: dict[str, Any] = resp.json()
         except Exception as exc:
             logger.warning("HN search failed for %r: %s", query, exc)
             return []
 
-        items: List[EvidenceItem] = []
+        items: list[EvidenceItem] = []
         now = datetime.utcnow()
         today = date.today()
 
         for hit in data.get("hits", [])[:max_results]:
-            story_url = hit.get("url") or f"https://news.ycombinator.com/item?id={hit.get('objectID', '')}"
+            story_url = (
+                hit.get("url") or f"https://news.ycombinator.com/item?id={hit.get('objectID', '')}"
+            )
             title = hit.get("title") or "Untitled HN Story"
             points = hit.get("points") or 0
             num_comments = hit.get("num_comments") or 0
 
             # Build a meaningful passage from available fields
-            passage = (
-                f"HN story: '{title}'. "
-                f"Points: {points}, Comments: {num_comments}. "
-            )
+            passage = f"HN story: '{title}'. Points: {points}, Comments: {num_comments}. "
             if hit.get("_highlightResult", {}).get("title", {}).get("value"):
                 passage += f"Excerpt: {hit['_highlightResult']['title']['value']}"
 
@@ -104,7 +104,7 @@ class HackerNewsProvider(ResearchProvider):
             pub_date: date | None = None
             if created_at:
                 try:
-                    pub_date = datetime.fromisoformat(created_at.replace("Z", "+00:00")).date()
+                    pub_date = datetime.fromisoformat(created_at).date()
                 except ValueError:
                     pub_date = None
 

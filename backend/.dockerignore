@@ -1,0 +1,10 @@
+.audit-venv
+__pycache__
+.pytest_cache
+.mypy_cache
+.ruff_cache
+tests
+azero_data
+*.pyc
+report.html
+audit-report.*

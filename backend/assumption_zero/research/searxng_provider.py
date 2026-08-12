@@ -8,12 +8,13 @@ Terms: SearXNG itself is AGPL-licensed and designed for privacy-respecting
 search aggregation.  Deployers must respect the terms of the underlying
 search engines SearXNG queries on their behalf.
 """
+
 from __future__ import annotations
 
 import hashlib
 import logging
 from datetime import date, datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 from urllib.parse import urlencode
 
 import httpx
@@ -30,7 +31,7 @@ from assumption_zero.schemas import (
 logger = logging.getLogger(__name__)
 
 # Map our internal query types to SearXNG categories
-_CATEGORY_MAP: Dict[str, str] = {
+_CATEGORY_MAP: dict[str, str] = {
     "competitor": "general",
     "oss_alternative": "general",
     "complaint": "general",
@@ -46,7 +47,7 @@ _CATEGORY_MAP: Dict[str, str] = {
     "general": "general",
 }
 
-_EVIDENCE_TYPE_MAP: Dict[str, EvidenceType] = {
+_EVIDENCE_TYPE_MAP: dict[str, EvidenceType] = {
     "competitor": EvidenceType.COMPETITOR,
     "oss_alternative": EvidenceType.OSS_ALTERNATIVE,
     "complaint": EvidenceType.COMPLAINT,
@@ -69,13 +70,23 @@ def _stable_id(url: str, prefix: str = "SX") -> str:
 
 
 def _reliability_from_domain(url: str) -> ReliabilityLevel:
-    high = ["reuters.com", "bbc.com", "nytimes.com", "wsj.com", "techcrunch.com",
-            "bloomberg.com", "ft.com", "statista.com", "gartner.com", "forrester.com"]
+    high = [
+        "reuters.com",
+        "bbc.com",
+        "nytimes.com",
+        "wsj.com",
+        "techcrunch.com",
+        "bloomberg.com",
+        "ft.com",
+        "statista.com",
+        "gartner.com",
+        "forrester.com",
+    ]
     low = ["reddit.com", "quora.com", "yahoo.com", "medium.com"]
     domain = url.split("/")[2] if "//" in url else url
     if any(h in domain for h in high):
         return ReliabilityLevel.HIGH
-    if any(l in domain for l in low):
+    if any(low_domain in domain for low_domain in low):
         return ReliabilityLevel.LOW
     return ReliabilityLevel.MEDIUM
 
@@ -101,7 +112,7 @@ class SearXNGProvider(ResearchProvider):
         query_type: str,
         idea: IdeaInput,
         max_results: int = 10,
-    ) -> List[EvidenceItem]:
+    ) -> list[EvidenceItem]:
         if not self.is_available:
             return []
 
@@ -117,12 +128,12 @@ class SearXNGProvider(ResearchProvider):
             async with httpx.AsyncClient(timeout=self._settings.request_timeout) as client:
                 resp = await client.get(url, follow_redirects=True)
                 resp.raise_for_status()
-                data: Dict[str, Any] = resp.json()
+                data: dict[str, Any] = resp.json()
         except Exception as exc:
             logger.warning("SearXNG search failed for %r: %s", query, exc)
             return []
 
-        items: List[EvidenceItem] = []
+        items: list[EvidenceItem] = []
         now = datetime.utcnow()
         today = date.today()
         ev_type = _EVIDENCE_TYPE_MAP.get(query_type, EvidenceType.GENERAL)
@@ -131,9 +142,7 @@ class SearXNGProvider(ResearchProvider):
             result_url = result.get("url", "")
             if not result_url:
                 continue
-            passage = self._truncate(
-                result.get("content") or result.get("title") or "", 500
-            )
+            passage = self._truncate(result.get("content") or result.get("title") or "", 500)
             items.append(
                 EvidenceItem(
                     evidence_id=_stable_id(result_url),

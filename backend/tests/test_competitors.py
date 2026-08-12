@@ -1,15 +1,16 @@
 """
 Tests for the competitor merger.
 """
+
 from __future__ import annotations
 
 from datetime import date, datetime
 
+from assumption_zero.analysis.competitor_merger import merge_competitors
 from assumption_zero.analysis.engine import (
     _extract_competitors_from_evidence,
     _validated_ai_competitors,
 )
-from assumption_zero.analysis.competitor_merger import merge_competitors
 from assumption_zero.llm.base import DiscoveredCompetitor
 from assumption_zero.schemas import (
     Competitor,
@@ -149,7 +150,11 @@ def test_ai_competitor_is_grounded_and_uses_evidence_url():
     )
     accepted = _validated_ai_competitors(
         [candidate],
-        [_evidence("E001", "Otter.ai provides meeting transcription but this source has no price.")],
+        [
+            _evidence(
+                "E001", "Otter.ai provides meeting transcription but this source has no price."
+            )
+        ],
         _idea(),
     )
     assert len(accepted) == 1
@@ -183,3 +188,22 @@ def test_merge_promotes_better_supported_entry():
     assert len(merged) == 1
     assert merged[0].confidence == ConfidenceLevel.HIGH
     assert merged[0].url == "https://otter.ai"
+
+
+def test_publisher_domain_is_not_misclassified_as_a_competitor():
+    publisher = EvidenceItem(
+        evidence_id="E009",
+        title="[managingpartnerforum.org] Legal buyer sentiment data",
+        url="https://managingpartnerforum.org/legal-buyer-sentiment",
+        evidence_origin="Web Search",
+        source_name="Web Search",
+        retrieval_date=date.today(),
+        passage="The report summarizes interviews collected by a market research publisher.",
+        search_query="legal software competitors",
+        evidence_type=EvidenceType.COMPETITOR,
+        reliability=ReliabilityLevel.MEDIUM,
+        relevance_score=0.8,
+        retrieval_timestamp=datetime.utcnow(),
+    )
+
+    assert _extract_competitors_from_evidence([publisher], _idea()) == []

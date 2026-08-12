@@ -1,4 +1,5 @@
 """Tests for evidence confidence calculation."""
+
 from __future__ import annotations
 
 from assumption_zero.analysis.confidence import calculate_evidence_confidence
@@ -12,13 +13,14 @@ def test_no_evidence_returns_low():
 
 def test_many_high_quality_items_returns_high(sample_evidence, sample_perspectives):
     from assumption_zero.schemas import ReliabilityLevel
+
     # Override all reliability to HIGH
     for e in sample_evidence:
         e.reliability = ReliabilityLevel.HIGH
     # Add more items to pass thresholds
     from copy import deepcopy
-    from datetime import date, datetime
-    from assumption_zero.schemas import EvidenceItem, EvidenceType
+    from datetime import date
+
     extra = []
     for i in range(10):
         item = deepcopy(sample_evidence[0])

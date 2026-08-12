@@ -12,12 +12,13 @@ Rate limits:
 Set GITHUB_TOKEN in .env for a higher limit.
 Terms: GitHub's Terms of Service allow automated search API use.
 """
+
 from __future__ import annotations
 
 import hashlib
 import logging
 from datetime import date, datetime
-from typing import Any, Dict, List
+from typing import Any
 
 import httpx
 
@@ -54,7 +55,7 @@ class GitHubProvider(ResearchProvider):
         # GitHub public API works without a token
         return True
 
-    def _headers(self) -> Dict[str, str]:
+    def _headers(self) -> dict[str, str]:
         h = {"Accept": "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28"}
         if self._settings.github_token:
             h["Authorization"] = f"Bearer {self._settings.github_token}"
@@ -66,12 +67,12 @@ class GitHubProvider(ResearchProvider):
         query_type: str,
         idea: IdeaInput,
         max_results: int = 10,
-    ) -> List[EvidenceItem]:
+    ) -> list[EvidenceItem]:
         # Only search GitHub for competitor / oss_alternative queries
         if query_type not in ("competitor", "oss_alternative", "general"):
             return []
 
-        params = {
+        params: dict[str, str | int] = {
             "q": query,
             "sort": "stars",
             "order": "desc",
@@ -85,12 +86,12 @@ class GitHubProvider(ResearchProvider):
             ) as client:
                 resp = await client.get(GITHUB_API, params=params)
                 resp.raise_for_status()
-                data: Dict[str, Any] = resp.json()
+                data: dict[str, Any] = resp.json()
         except Exception as exc:
             logger.debug("GitHub search skipped or rate limited for %r: %s", query, exc)
             return []
 
-        items: List[EvidenceItem] = []
+        items: list[EvidenceItem] = []
         now = datetime.utcnow()
         today = date.today()
 

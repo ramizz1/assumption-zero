@@ -7,19 +7,34 @@ Produces 3-5 concrete, cheap experiments prioritized by:
 Never recommends deceptive experiments or collecting real payments
 without clear disclosure to participants.
 """
+
 from __future__ import annotations
 
-from typing import List
+from typing import TypedDict
 
 from assumption_zero.schemas import (
     AnalysisPerspective,
     EvidenceItem,
     IdeaInput,
-    Recommendation,
     ValidationExperiment,
 )
 
-_EXPERIMENT_TEMPLATES = [
+
+class ExperimentTemplate(TypedDict):
+    title: str
+    assumption_tested: str
+    why_it_matters: str
+    procedure: str
+    estimated_time: str
+    estimated_cost_range: str
+    success_threshold: str
+    failure_threshold: str
+    decision_after: str
+    legal_ethical: str
+    priority: int
+
+
+_EXPERIMENT_TEMPLATES: list[ExperimentTemplate] = [
     {
         "title": "7-Day Manual Concierge / Smoke Test (Pre-Build Validation)",
         "assumption_tested": "Target customers will pay real money for the core outcome delivered manually before code is written",
@@ -90,15 +105,15 @@ _EXPERIMENT_TEMPLATES = [
 
 def _pick_experiments(
     idea: IdeaInput,
-    perspectives: List[AnalysisPerspective],
-    evidence: List[EvidenceItem],
-) -> List[ValidationExperiment]:
+    perspectives: list[AnalysisPerspective],
+    evidence: list[EvidenceItem],
+) -> list[ValidationExperiment]:
     """
     Select and customize 3-5 experiments based on idea context.
     Always include customer interviews and landing page test first.
     """
     # Customize templates with idea-specific values
-    experiments: List[ValidationExperiment] = []
+    experiments: list[ValidationExperiment] = []
 
     for template in _EXPERIMENT_TEMPLATES:
         exp = ValidationExperiment(
@@ -123,8 +138,8 @@ def _pick_experiments(
 
 def generate_experiments(
     idea: IdeaInput,
-    perspectives: List[AnalysisPerspective],
-    evidence: List[EvidenceItem],
-) -> List[ValidationExperiment]:
+    perspectives: list[AnalysisPerspective],
+    evidence: list[EvidenceItem],
+) -> list[ValidationExperiment]:
     """Generate 3-5 validation experiments ordered by cost and information value."""
     return _pick_experiments(idea, perspectives, evidence)

@@ -3,6 +3,7 @@ FastAPI application entry point.
 
 Assumption Zero — The open-source MVP validation engine.
 """
+
 from __future__ import annotations
 
 import logging
@@ -64,9 +65,13 @@ def create_app() -> FastAPI:
             cleaned = clean_error_message(raw_msg)
             if cleaned and cleaned not in messages:
                 messages.append(cleaned)
-        clean_detail = " ".join(messages) if messages else "Invalid input provided. Please enter a valid startup idea."
+        clean_detail = (
+            " ".join(messages)
+            if messages
+            else "Invalid input provided. Please enter a valid startup idea."
+        )
         return JSONResponse(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
             content={"detail": clean_detail, "message": clean_detail},
         )
 
@@ -74,7 +79,14 @@ def create_app() -> FastAPI:
     async def http_exception_handler(request: Request, exc: StarletteHTTPException):
         detail = exc.detail
         if isinstance(detail, list):
-            detail = " ".join([clean_error_message(d.get("msg", "")) if isinstance(d, dict) else clean_error_message(str(d)) for d in detail])
+            detail = " ".join(
+                [
+                    clean_error_message(d.get("msg", ""))
+                    if isinstance(d, dict)
+                    else clean_error_message(str(d))
+                    for d in detail
+                ]
+            )
         elif isinstance(detail, str):
             detail = clean_error_message(detail)
         return JSONResponse(

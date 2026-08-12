@@ -5,26 +5,24 @@ Identifies topics where the three perspectives reach different conclusions,
 presents both positions with supporting evidence, and flags items that
 require human research.
 """
-from __future__ import annotations
 
-from typing import List
+from __future__ import annotations
 
 from assumption_zero.schemas import (
     AnalysisPerspective,
     DisagreementPosition,
     ModelDisagreement,
-    Recommendation,
 )
 
 
 def detect_disagreements(
-    perspectives: List[AnalysisPerspective],
-) -> List[ModelDisagreement]:
+    perspectives: list[AnalysisPerspective],
+) -> list[ModelDisagreement]:
     """Detect meaningful disagreements across perspectives and return them."""
     if len(perspectives) < 2:
         return []
 
-    disagreements: List[ModelDisagreement] = []
+    disagreements: list[ModelDisagreement] = []
 
     # ── Recommendation disagreement ───────────────────────────────
     recs = [p.recommendation for p in perspectives]
@@ -41,6 +39,7 @@ def detect_disagreements(
         rec_values = [r.value for r in recs]
         # Stronger position = most common recommendation
         from collections import Counter
+
         most_common = Counter(rec_values).most_common(1)[0][0]
         disagreements.append(
             ModelDisagreement(
@@ -52,7 +51,7 @@ def detect_disagreements(
         )
 
     # ── Dimension score disagreements ─────────────────────────────
-    from assumption_zero.analysis.scoring import DIMENSION_WEIGHTS, DIMENSION_DISPLAY_NAMES
+    from assumption_zero.analysis.scoring import DIMENSION_DISPLAY_NAMES, DIMENSION_WEIGHTS
 
     for dim in DIMENSION_WEIGHTS:
         scores = [p.dimension_scores.get(dim) for p in perspectives]
@@ -81,7 +80,14 @@ def detect_disagreements(
         ]
 
         if len(positions) >= 2:
-            high_scorer = max(positions, key=lambda pos: float(pos.position.split(":")[1].split("/")[0].strip()) if ":" in pos.position else 0)
+            high_scorer = max(
+                positions,
+                key=lambda pos: (
+                    float(pos.position.split(":")[1].split("/")[0].strip())
+                    if ":" in pos.position
+                    else 0
+                ),
+            )
             disagreements.append(
                 ModelDisagreement(
                     topic=f"{DIMENSION_DISPLAY_NAMES[dim]} Assessment",

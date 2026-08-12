@@ -2,12 +2,13 @@
 Assumption Zero CLI — MVP Validation Engine
 Anthropic Claude-inspired warm aesthetic interface with HTML export.
 """
+
 from __future__ import annotations
 
 import asyncio
 import json
+import sys
 from pathlib import Path
-from typing import Optional
 
 import typer
 from rich import box
@@ -21,8 +22,6 @@ from rich.text import Text
 from rich.theme import Theme
 
 from assumption_zero import __version__
-
-import sys
 
 if hasattr(sys.stdout, "reconfigure"):
     try:
@@ -38,17 +37,17 @@ if hasattr(sys.stderr, "reconfigure"):
 # ── Claude Warm & Crisp Theme (Zero Grey Text) ──────────────────────────────
 THEME = Theme(
     {
-        "a0.accent":  "bold #D97706",       # Claude terracotta / warm amber
-        "a0.muted":   "bright_white",       # high-contrast secondary text
-        "a0.good":    "bold green",         # high score / positive
-        "a0.warn":    "bold #D97706",       # warm amber warning status
-        "a0.bad":     "bold red",           # low score / danger
-        "a0.info":    "bold cyan",          # primary informational text
-        "a0.label":   "bold white",         # primary labels
-        "a0.section": "bold #D97706",       # section header accent
-        "a0.market":  "bold cyan",          # market perspective
-        "a0.skeptic": "bold magenta",       # skeptic perspective
-        "a0.builder": "bold green",         # builder perspective
+        "a0.accent": "bold #D97706",  # Claude terracotta / warm amber
+        "a0.muted": "bright_white",  # high-contrast secondary text
+        "a0.good": "bold green",  # high score / positive
+        "a0.warn": "bold #D97706",  # warm amber warning status
+        "a0.bad": "bold red",  # low score / danger
+        "a0.info": "bold cyan",  # primary informational text
+        "a0.label": "bold white",  # primary labels
+        "a0.section": "bold #D97706",  # section header accent
+        "a0.market": "bold cyan",  # market perspective
+        "a0.skeptic": "bold magenta",  # skeptic perspective
+        "a0.builder": "bold green",  # builder perspective
     }
 )
 
@@ -110,7 +109,9 @@ def _status_color(status: str) -> str:
 
 
 def _conf_color(conf: str) -> str:
-    return {"high": "bold green", "medium": "bold #F5A623", "low": "bold red"}.get(conf.lower(), "bold white")
+    return {"high": "bold green", "medium": "bold #F5A623", "low": "bold red"}.get(
+        conf.lower(), "bold white"
+    )
 
 
 def _perspective_color(name: str) -> str:
@@ -169,8 +170,11 @@ def _print_disclaimer() -> None:
 
 
 def _build_engine_sync(
-    provider_override=None, api_key_override=None,
-    model_override=None, base_url_override=None, research_providers=None,
+    provider_override=None,
+    api_key_override=None,
+    model_override=None,
+    base_url_override=None,
+    research_providers=None,
     research_depth="deep",
 ):
     from assumption_zero.analysis.engine import AnalysisEngine
@@ -178,6 +182,7 @@ def _build_engine_sync(
         build_llm_adapter,
         build_research_providers,
     )
+
     llm = build_llm_adapter(
         provider_override=provider_override,
         api_key_override=api_key_override,
@@ -193,15 +198,15 @@ def _build_engine_sync(
 
 
 STAGE_LABELS = {
-    "clarifying_idea":              ("Clarifying project scope", "1/6"),
-    "generating_queries":           ("Building research query set", "2/6"),
-    "collecting_evidence":          ("Collecting evidence from primary sources", "3/6"),
-    "running_market_analyst":       ("Analyzing market dynamics & sizing", "4/6"),
-    "running_skeptical_investor":   ("Analyzing moat & risk factors", "4/6"),
-    "running_practical_builder":    ("Analyzing execution & roadmap", "4/6"),
-    "calculating_score":            ("Calculating opportunity score", "5/6"),
-    "generating_experiments":       ("Designing validation experiments", "6/6"),
-    "complete":                     ("Analysis complete", "DONE"),
+    "clarifying_idea": ("Clarifying project scope", "1/6"),
+    "generating_queries": ("Building research query set", "2/6"),
+    "collecting_evidence": ("Collecting evidence from primary sources", "3/6"),
+    "running_market_analyst": ("Analyzing market dynamics & sizing", "4/6"),
+    "running_skeptical_investor": ("Analyzing moat & risk factors", "4/6"),
+    "running_practical_builder": ("Analyzing execution & roadmap", "4/6"),
+    "calculating_score": ("Calculating opportunity score", "5/6"),
+    "generating_experiments": ("Designing validation experiments", "6/6"),
+    "complete": ("Analysis complete", "DONE"),
 }
 
 
@@ -216,7 +221,9 @@ def _run_analysis_sync(
     research_depth="deep",
 ):
     import uuid
+
     import assumption_zero.storage as store
+
     engine = _build_engine_sync(
         provider_override=provider_override,
         api_key_override=api_key_override,
@@ -378,6 +385,7 @@ def _print_report(result) -> None:
 
     # ── 3. Evidence ───────────────────────────────────────────────
     from assumption_zero.analysis.unit_economics import calculate_unit_economics, extract_price
+
     monthly_price = max(1.0, extract_price(result.idea_input.price))
     default_economics = calculate_unit_economics(
         monthly_price,
@@ -419,14 +427,16 @@ def _print_report(result) -> None:
     _print_section("Evidence Collected")
 
     ev_count = len(result.evidence)
-    sources = sorted(set(e.source_name for e in result.evidence))
+    sources = sorted({e.source_name for e in result.evidence})
     console.print(
         f"  [bold white]{ev_count} evidence items[/]  [bright_white]collected from[/]  "
         f"[bold cyan]{', '.join(sources)}[/]"
     )
 
     if result.provider_errors:
-        console.print(f"\n  [bold #D97706][WARNING] {len(result.provider_errors)} provider issue(s):[/]")
+        console.print(
+            f"\n  [bold #D97706][WARNING] {len(result.provider_errors)} provider issue(s):[/]"
+        )
         for err in result.provider_errors[:3]:
             console.print(f"    - [bright_white]{err[:110]}[/]")
 
@@ -515,9 +525,13 @@ def _print_report(result) -> None:
             if comp.complaints:
                 details.append("[bold red]Complaints:[/] " + "; ".join(comp.complaints))
             if comp.differentiation:
-                details.append("[bold cyan]Differentiation hypotheses:[/] " + "; ".join(comp.differentiation))
+                details.append(
+                    "[bold cyan]Differentiation hypotheses:[/] " + "; ".join(comp.differentiation)
+                )
             if not comp.evidence_ids:
-                details.append("[bold #D97706]User-reported candidate; independent verification required.[/]")
+                details.append(
+                    "[bold #D97706]User-reported candidate; independent verification required.[/]"
+                )
             if details:
                 console.print(
                     Panel(
@@ -596,8 +610,7 @@ def _print_report(result) -> None:
         for p in result.perspectives:
             pcol = _perspective_color(p.perspective_name.value)
             console.print(
-                f"    - [{pcol}]{p.perspective_display}:[/] "
-                f"[white]{p.most_dangerous_assumption}[/]"
+                f"    - [{pcol}]{p.perspective_display}:[/] [white]{p.most_dangerous_assumption}[/]"
             )
         console.print()
 
@@ -616,15 +629,26 @@ def _print_report(result) -> None:
     if result.founder_toolkit:
         toolkit = result.founder_toolkit
         _print_section("Founder Action Plan")
-        console.print(Panel(toolkit.one_sentence_pitch, title="[bold cyan]Positioning[/]", border_style="cyan", box=box.ROUNDED))
+        console.print(
+            Panel(
+                toolkit.one_sentence_pitch,
+                title="[bold cyan]Positioning[/]",
+                border_style="cyan",
+                box=box.ROUNDED,
+            )
+        )
         console.print(f"  [bold white]Beachhead:[/] [white]{toolkit.beachhead_market}[/]\n")
-        roadmap = Table(box=box.SIMPLE, show_header=True, header_style="bold #D97706", show_edge=False)
+        roadmap = Table(
+            box=box.SIMPLE, show_header=True, header_style="bold #D97706", show_edge=False
+        )
         roadmap.add_column("Phase", width=12, style="bold cyan")
         roadmap.add_column("Objective", min_width=24, style="bold white")
         roadmap.add_column("Exit metric")
         roadmap.add_column("Budget", width=14)
         for action in toolkit.roadmap:
-            roadmap.add_row(action.phase, action.objective, action.success_metric, action.budget_hint)
+            roadmap.add_row(
+                action.phase, action.objective, action.success_metric, action.budget_hint
+            )
         console.print(roadmap)
         console.print("  [bold white]Recommended channels:[/]")
         for channel in toolkit.recommended_channels:
@@ -672,7 +696,9 @@ def _print_report(result) -> None:
         html_content = _export_html(result)
         report_path = Path("report.html")
         report_path.write_text(html_content, encoding="utf-8")
-        console.print(f"  [bold green]✓ Standalone HTML Report generated:[/] [bold cyan]{report_path.resolve()}[/]\n")
+        console.print(
+            f"  [bold green]✓ Standalone HTML Report generated:[/] [bold cyan]{report_path.resolve()}[/]\n"
+        )
     except Exception:
         pass
 
@@ -702,7 +728,9 @@ def _export_markdown(result) -> str:
     if result.regional_analysis:
         regional = result.regional_analysis
         lines += [
-            "", f"## Regional Market Reality — {regional.geography}", "",
+            "",
+            f"## Regional Market Reality — {regional.geography}",
+            "",
             f"**Regional evidence score:** {regional.demand_score:.0f}/100",
             f"**Confidence:** {regional.confidence.value.upper()}",
             f"**Coverage:** {regional.evidence_count} regional items across {regional.source_count} sources",
@@ -714,9 +742,15 @@ def _export_markdown(result) -> str:
                 f"{coverage.evidence_collected} total evidence items"
             )
         lines += ["", regional.summary, "", "### Regional demand signals", ""]
-        lines += [f"- [{item.evidence_id}] {item.title} — {item.source_name}" for item in regional.demand_signals] or ["- None collected"]
+        lines += [
+            f"- [{item.evidence_id}] {item.title} — {item.source_name}"
+            for item in regional.demand_signals
+        ] or ["- None collected"]
         lines += ["", "### Local pricing signals", ""]
-        lines += [f"- [{item.evidence_id}] {item.title} — {item.source_name}" for item in regional.pricing_signals] or ["- None collected"]
+        lines += [
+            f"- [{item.evidence_id}] {item.title} — {item.source_name}"
+            for item in regional.pricing_signals
+        ] or ["- None collected"]
         lines += ["", "### Regulation and distribution gaps", ""]
         lines += [f"- {gap}" for gap in regional.research_gaps]
 
@@ -791,13 +825,20 @@ def _export_markdown(result) -> str:
     if result.founder_toolkit:
         toolkit = result.founder_toolkit
         lines += [
-            "## Founder Toolkit", "",
-            f"**Positioning:** {toolkit.one_sentence_pitch}", "",
-            f"**Ideal customer:** {toolkit.ideal_customer_profile}", "",
-            f"**Beachhead:** {toolkit.beachhead_market}", "",
-            "### Recommended channels", "",
-            *[f"- {channel}" for channel in toolkit.recommended_channels], "",
-            "### 30-day roadmap", "",
+            "## Founder Toolkit",
+            "",
+            f"**Positioning:** {toolkit.one_sentence_pitch}",
+            "",
+            f"**Ideal customer:** {toolkit.ideal_customer_profile}",
+            "",
+            f"**Beachhead:** {toolkit.beachhead_market}",
+            "",
+            "### Recommended channels",
+            "",
+            *[f"- {channel}" for channel in toolkit.recommended_channels],
+            "",
+            "### 30-day roadmap",
+            "",
         ]
         for action in toolkit.roadmap:
             lines += [
@@ -805,9 +846,15 @@ def _export_markdown(result) -> str:
                 *[f"- {step}" for step in action.actions],
                 f"- **Success metric:** {action.success_metric}",
                 f"- **Stop condition:** {action.stop_condition}",
-                f"- **Budget:** {action.budget_hint}", "",
+                f"- **Budget:** {action.budget_hint}",
+                "",
             ]
-        lines += ["### Customer interview questions", "", *[f"- {question}" for question in toolkit.interview_questions], ""]
+        lines += [
+            "### Customer interview questions",
+            "",
+            *[f"- {question}" for question in toolkit.interview_questions],
+            "",
+        ]
         lines += ["### Decision rules", "", *[f"- {rule}" for rule in toolkit.decision_rules], ""]
 
     lines += ["", "## Validation Experiments", ""]
@@ -849,19 +896,47 @@ def _export_html(result) -> str:
     conf_val = result.evidence_confidence.value.upper() if result.evidence_confidence else "UNKNOWN"
 
     score_color = "#10B981" if score_val >= 65 else "#D97706" if score_val >= 45 else "#EF4444"
-    rec_bg = "#10B98122" if rec_val == "Build" else "#D9770622" if rec_val in ("Test First", "Pivot") else "#EF444422"
-    rec_color = "#10B981" if rec_val == "Build" else "#D97706" if rec_val in ("Test First", "Pivot") else "#EF4444"
+    rec_bg = (
+        "#10B98122"
+        if rec_val == "Build"
+        else "#D9770622"
+        if rec_val in ("Test First", "Pivot")
+        else "#EF444422"
+    )
+    rec_color = (
+        "#10B981"
+        if rec_val == "Build"
+        else "#D97706"
+        if rec_val in ("Test First", "Pivot")
+        else "#EF4444"
+    )
 
-    conf_bg = "#10B98122" if conf_val == "HIGH" else "#D9770622" if conf_val == "MEDIUM" else "#EF444422"
-    conf_color = "#10B981" if conf_val == "HIGH" else "#D97706" if conf_val == "MEDIUM" else "#EF4444"
+    conf_bg = (
+        "#10B98122" if conf_val == "HIGH" else "#D9770622" if conf_val == "MEDIUM" else "#EF444422"
+    )
+    conf_color = (
+        "#10B981" if conf_val == "HIGH" else "#D97706" if conf_val == "MEDIUM" else "#EF4444"
+    )
 
     # Score breakdown rows
     score_rows = ""
     if score and score.dimensions:
         for dim in score.dimensions:
-            dim_col = "#10B981" if dim.raw_score >= 65 else "#D97706" if dim.raw_score >= 45 else "#EF4444"
+            dim_col = (
+                "#10B981"
+                if dim.raw_score >= 65
+                else "#D97706"
+                if dim.raw_score >= 45
+                else "#EF4444"
+            )
             dim_conf = dim.confidence.value.upper()
-            dim_conf_col = "#10B981" if dim_conf == "HIGH" else "#D97706" if dim_conf == "MEDIUM" else "#EF4444"
+            dim_conf_col = (
+                "#10B981"
+                if dim_conf == "HIGH"
+                else "#D97706"
+                if dim_conf == "MEDIUM"
+                else "#EF4444"
+            )
             score_rows += f"""
             <tr>
                 <td><strong>{dim.display_name}</strong></td>
@@ -887,7 +962,8 @@ def _export_html(result) -> str:
             evidence_ids = ", ".join(c.evidence_ids) or "Unverified user input"
             pricing_html = (
                 f'<p style="margin-top: .65rem;"><strong>Pricing:</strong> {c.pricing_evidence}</p>'
-                if c.pricing_evidence else ""
+                if c.pricing_evidence
+                else ""
             )
             comp_html += f"""
             <div class="card">
@@ -924,10 +1000,26 @@ def _export_html(result) -> str:
     # AI Perspectives
     persp_html = ""
     for p in result.perspectives:
-        p_col = "#38BDF8" if "market" in p.perspective_name.value else "#E879F9" if "skeptick" in p.perspective_name.value or "investor" in p.perspective_name.value else "#4ADE80"
-        p_rec_col = "#10B981" if p.recommendation.value == "Build" else "#D97706" if p.recommendation.value in ("Test First", "Pivot") else "#EF4444"
+        p_col = (
+            "#38BDF8"
+            if "market" in p.perspective_name.value
+            else "#E879F9"
+            if "skeptick" in p.perspective_name.value or "investor" in p.perspective_name.value
+            else "#4ADE80"
+        )
+        p_rec_col = (
+            "#10B981"
+            if p.recommendation.value == "Build"
+            else "#D97706"
+            if p.recommendation.value in ("Test First", "Pivot")
+            else "#EF4444"
+        )
 
-        findings_li = "".join(f"<li>{f.strip('§')}</li>" for f in p.key_findings if not (f.startswith("§") and f.endswith("§")))
+        findings_li = "".join(
+            f"<li>{f.strip('§')}</li>"
+            for f in p.key_findings
+            if not (f.startswith("§") and f.endswith("§"))
+        )
         risks_li = "".join(f"<li>{r}</li>" for r in p.risks)
         opps_li = "".join(f"<li>{o}</li>" for o in p.opportunities)
 
@@ -977,8 +1069,8 @@ def _export_html(result) -> str:
             <p style="margin-top:1rem;color:#CBD5E1;">{regional.summary}</p>
             <p style="margin-top:.5rem;color:#94A3B8;font-size:.85rem;">{regional.evidence_count} local items across {regional.source_count} sources · {coverage_text}</p>
             <div class="grid" style="margin-top:1rem;">
-                <div><strong style="color:#4ADE80;">Regional signals</strong><ul>{signal_items or '<li>No regional signals collected</li>'}</ul></div>
-                <div><strong style="color:#F5A623;">Research gaps</strong><ul>{gap_items or '<li>No gaps recorded</li>'}</ul></div>
+                <div><strong style="color:#4ADE80;">Regional signals</strong><ul>{signal_items or "<li>No regional signals collected</li>"}</ul></div>
+                <div><strong style="color:#F5A623;">Research gaps</strong><ul>{gap_items or "<li>No gaps recorded</li>"}</ul></div>
             </div>
         </div>
         """
@@ -1306,11 +1398,21 @@ def _ask_idea():
             return val
 
     name = ask("Idea / product name", "LegalMind Local", required=True)
-    description = ask("Short description", "On-device AI legal meeting summarizer for small law firms", required=True)
+    description = ask(
+        "Short description",
+        "On-device AI legal meeting summarizer for small law firms",
+        required=True,
+    )
 
     _print_section("The Problem")
-    problem = ask("Problem being solved", "Attorneys lose 10+ hours/week summarizing client meetings due to cloud data privacy compliance", required=True)
-    customer = ask("Target customer", "Solo practitioners and small law firms (1-20 attorneys)", required=True)
+    problem = ask(
+        "Problem being solved",
+        "Attorneys lose 10+ hours/week summarizing client meetings due to cloud data privacy compliance",
+        required=True,
+    )
+    customer = ask(
+        "Target customer", "Solo practitioners and small law firms (1-20 attorneys)", required=True
+    )
     geography = ask("Target geography", "United States", required=True)
     market_language = ask("Primary market language", "English")
     currency = ask("Local pricing currency", "USD")
@@ -1319,6 +1421,7 @@ def _ask_idea():
     solution = ask("Proposed solution", "Private on-device transcription and summarization")
 
     from assumption_zero.config import get_settings
+
     _settings = get_settings()
     _has_openrouter = bool(_settings.openrouter_api_key)
     _has_groq = bool(_settings.groq_api_key)
@@ -1339,6 +1442,7 @@ def _ask_idea():
         user_key = ask("OpenRouter API Key", "sk-or-v1-...")
         if user_key:
             import os
+
             os.environ["OPENROUTER_API_KEY"] = user_key
             console.print("  [bold green]Using custom OpenRouter API key[/]\n")
         else:
@@ -1352,13 +1456,24 @@ def _ask_idea():
     budget = ask("Available budget / runway", "$15,000 for 6 months")
     timeline = ask("Validation / launch timeline", "Paid pilot within 30 days")
     revenue_goal = ask("First revenue or customer goal", "10 paid pilots and $500 MRR")
-    channels = ask("Available acquisition channels", "LinkedIn outreach, industry associations, partners")
+    channels = ask(
+        "Available acquisition channels", "LinkedIn outreach, industry associations, partners"
+    )
     competitors = ask("Known competitors", "Otter.ai, Fireflies.ai")
 
     _print_section("Strategic Insights")
-    advantage = ask("Unfair advantage / Moat", "Proprietary algorithm, direct distribution channel with industry partners")
-    assumptions = ask("Core assumption to test", "Target customers will pay for on-device privacy over cloud alternatives")
-    constraints = ask("Regulatory / operational constraints", "Privacy, data residency, licensing, or integrations")
+    advantage = ask(
+        "Unfair advantage / Moat",
+        "Proprietary algorithm, direct distribution channel with industry partners",
+    )
+    assumptions = ask(
+        "Core assumption to test",
+        "Target customers will pay for on-device privacy over cloud alternatives",
+    )
+    constraints = ask(
+        "Regulatory / operational constraints",
+        "Privacy, data residency, licensing, or integrations",
+    )
     context = ask("Additional context", "Web app + Mobile client backed by REST API")
 
     return IdeaInput(
@@ -1393,20 +1508,48 @@ def _ask_idea():
 # ─────────────────────────────────────────────────────────────────────────────
 
 _PROVIDER_PRESETS = {
-    "1": ("Local Ollama (http://localhost:11434)",     "ollama",      None,  "llama3.2",                      "http://localhost:11434"),
-    "2": ("OpenCode AI (your key)",                    "opencode",    None,  "opencode/claude-3.5-sonnet",    "https://opencode.ai/api/v1"),
-    "3": ("OpenAI ChatGPT (your key — gpt-4o-mini)",   "openai_compat", None, "gpt-4o-mini",                 "https://api.openai.com/v1"),
-    "4": ("OpenAI ChatGPT (your key — gpt-4o)",        "openai_compat", None, "gpt-4o",                      "https://api.openai.com/v1"),
-    "5": ("Groq — llama-3.3-70b (your key)",           "groq",        None,  "llama-3.3-70b-versatile",      None),
-    "6": ("OpenRouter — 200+ models (your key)",        "openrouter",  None,  None,                            None),
-    "7": ("Offline Mock Demo (free, instant)",          "mock",        None,  None,                            None),
-    "8": ("Custom / self-hosted (any OpenAI-spec API)", "openai_compat", None,  None,                         None),
+    "1": (
+        "Local Ollama (http://localhost:11434)",
+        "ollama",
+        None,
+        "llama3.2",
+        "http://localhost:11434",
+    ),
+    "2": (
+        "OpenCode AI (your key)",
+        "opencode",
+        None,
+        "opencode/claude-3.5-sonnet",
+        "https://opencode.ai/api/v1",
+    ),
+    "3": (
+        "OpenAI ChatGPT (your key — gpt-4o-mini)",
+        "openai_compat",
+        None,
+        "gpt-4o-mini",
+        "https://api.openai.com/v1",
+    ),
+    "4": (
+        "OpenAI ChatGPT (your key — gpt-4o)",
+        "openai_compat",
+        None,
+        "gpt-4o",
+        "https://api.openai.com/v1",
+    ),
+    "5": ("Groq — llama-3.3-70b (your key)", "groq", None, "llama-3.3-70b-versatile", None),
+    "6": ("OpenRouter — 200+ models (your key)", "openrouter", None, None, None),
+    "7": ("Offline Mock Demo (free, instant)", "mock", None, None, None),
+    "8": ("Custom / self-hosted (any OpenAI-spec API)", "openai_compat", None, None, None),
 }
 
 
 def _with_founder_context(idea, **overrides):
     """Apply non-empty CLI context flags to an IdeaInput parsed from any source."""
-    clean = {key: value.strip() for key, value in overrides.items() if isinstance(value, str) and value.strip()}
+    clean = {
+        key: value.strip()
+        for key, value in overrides.items()
+        if isinstance(value, str) and value.strip()
+    }
     return idea.__class__.model_validate({**idea.model_dump(), **clean}) if clean else idea
 
 
@@ -1421,6 +1564,7 @@ def _ask_idea_with_key(
     Returns: (IdeaInput, provider, api_key, model, base_url)
     """
     from assumption_zero.config import get_settings
+
     settings = get_settings()
 
     # Check what keys are already configured
@@ -1449,7 +1593,9 @@ def _ask_idea_with_key(
         if _has_compat:
             detected.append("[bold #F5A623]Custom OpenAI-compat[/]")
         console.print(f"  [bold green]✓ Keys detected in config:[/] {', '.join(detected)}")
-        console.print("  [bright_white]Press Enter to use them, or type a number to switch provider.[/]\n")
+        console.print(
+            "  [bright_white]Press Enter to use them, or type a number to switch provider.[/]\n"
+        )
 
         choice = Prompt.ask(
             "  [bold #D97706]›[/] [bold white]Use detected keys?[/] [bright_white](Enter = yes, 1-8 = switch)[/]",
@@ -1462,7 +1608,9 @@ def _ask_idea_with_key(
             return idea, provider_override, api_key_override, model_override, base_url_override
     else:
         if not _any_key:
-            console.print("  [bold #D97706]No API keys found in config.[/] Choose an AI provider:\n")
+            console.print(
+                "  [bold #D97706]No API keys found in config.[/] Choose an AI provider:\n"
+            )
         else:
             console.print("  [bright_white]Override AI provider:[/]\n")
         choice = ""
@@ -1495,13 +1643,21 @@ def _ask_idea_with_key(
     if needs_key and not entered_key:
         console.print()
         if choice == "2":
-            console.print("  [bright_white]Get your OpenCode key at:[/] [bold cyan]https://opencode.ai[/]")
+            console.print(
+                "  [bright_white]Get your OpenCode key at:[/] [bold cyan]https://opencode.ai[/]"
+            )
         elif choice == "3" or choice == "4":
-            console.print("  [bright_white]Get your OpenAI API key at:[/] [bold cyan]https://platform.openai.com/api-keys[/]")
+            console.print(
+                "  [bright_white]Get your OpenAI API key at:[/] [bold cyan]https://platform.openai.com/api-keys[/]"
+            )
         elif choice == "5":
-            console.print("  [bright_white]Get your free Groq key at:[/] [bold cyan]https://console.groq.com/keys[/]")
+            console.print(
+                "  [bright_white]Get your free Groq key at:[/] [bold cyan]https://console.groq.com/keys[/]"
+            )
         elif choice == "6":
-            console.print("  [bright_white]Get your free OpenRouter key at:[/] [bold cyan]https://openrouter.ai/keys[/]")
+            console.print(
+                "  [bright_white]Get your free OpenRouter key at:[/] [bold cyan]https://openrouter.ai/keys[/]"
+            )
         else:
             console.print("  [bright_white]Enter your API key for this provider.[/]")
 
@@ -1513,7 +1669,9 @@ def _ask_idea_with_key(
         ).strip()
 
         if not entered_key and choice != "8":
-            console.print("  [bright_white]No key entered — falling back to local Ollama / Mock mode.[/]\n")
+            console.print(
+                "  [bright_white]No key entered — falling back to local Ollama / Mock mode.[/]\n"
+            )
             return idea, None, None, None, None
 
     # For custom provider, ask for model and base URL
@@ -1574,46 +1732,66 @@ def guide() -> None:
 
 @app.command()
 def analyze(
-    file: Optional[Path] = typer.Option(
+    file: Path | None = typer.Option(
         None, "--file", "-f", help="Path to a JSON file or text prompt file with IdeaInput fields"
     ),
-    prompt: Optional[str] = typer.Option(
+    prompt: str | None = typer.Option(
         None, "--prompt", "-p", help="Analyze from a single freeform text prompt"
     ),
-    api_key: Optional[str] = typer.Option(
-        None, "--api-key", "-k",
+    api_key: str | None = typer.Option(
+        None,
+        "--api-key",
+        "-k",
         help="Custom API key (OpenAI, Groq, OpenRouter, or any OpenAI-compatible provider). Overrides .env.",
     ),
-    model: Optional[str] = typer.Option(
-        None, "--model", "-m",
+    model: str | None = typer.Option(
+        None,
+        "--model",
+        "-m",
         help="Model name to use (e.g. gpt-4o, gpt-4o-mini, claude-3-haiku, llama-3.3-70b-versatile). Overrides .env.",
     ),
-    provider: Optional[str] = typer.Option(
-        None, "--provider",
+    provider: str | None = typer.Option(
+        None,
+        "--provider",
         help="AI provider: openai, openrouter, groq, ollama, opencode, hybrid, or openai_compat. Overrides AI_PROVIDER in .env.",
     ),
-    base_url: Optional[str] = typer.Option(
-        None, "--base-url",
+    base_url: str | None = typer.Option(
+        None,
+        "--base-url",
         help="Custom OpenAI-compatible base URL (e.g. https://api.together.xyz/v1). Used with --api-key.",
     ),
-    research_provider: Optional[list[str]] = typer.Option(
-        None, "--research-provider", "-r",
+    research_provider: list[str] | None = typer.Option(
+        None,
+        "--research-provider",
+        "-r",
         help="Use a specific research provider; repeat for multiple providers (for example: -r 'Web Search' -r GitHub).",
     ),
     depth: str = typer.Option(
         "deep", "--depth", help="Research depth: standard, deep, or exhaustive."
     ),
-    industry: Optional[str] = typer.Option(None, "--industry", help="Industry or vertical context."),
-    stage: Optional[str] = typer.Option(None, "--stage", help="Idea, validation, MVP, beta, revenue, or scaling stage."),
-    solution: Optional[str] = typer.Option(None, "--solution", help="Smallest proposed product or service."),
-    team: Optional[str] = typer.Option(None, "--team", help="Founder/team roles and headcount."),
-    budget: Optional[str] = typer.Option(None, "--budget", help="Validation budget or runway."),
-    timeline: Optional[str] = typer.Option(None, "--timeline", help="Validation or launch deadline."),
-    goal: Optional[str] = typer.Option(None, "--goal", help="First customer or revenue milestone."),
-    channels: Optional[str] = typer.Option(None, "--channels", help="Available customer acquisition channels."),
-    constraints: Optional[str] = typer.Option(None, "--constraints", help="Legal, compliance, privacy, or operating constraints."),
-    language: Optional[str] = typer.Option(None, "--language", help="Primary language used by target customers."),
-    currency: Optional[str] = typer.Option(None, "--currency", help="Currency used for local pricing research."),
+    industry: str | None = typer.Option(None, "--industry", help="Industry or vertical context."),
+    stage: str | None = typer.Option(
+        None, "--stage", help="Idea, validation, MVP, beta, revenue, or scaling stage."
+    ),
+    solution: str | None = typer.Option(
+        None, "--solution", help="Smallest proposed product or service."
+    ),
+    team: str | None = typer.Option(None, "--team", help="Founder/team roles and headcount."),
+    budget: str | None = typer.Option(None, "--budget", help="Validation budget or runway."),
+    timeline: str | None = typer.Option(None, "--timeline", help="Validation or launch deadline."),
+    goal: str | None = typer.Option(None, "--goal", help="First customer or revenue milestone."),
+    channels: str | None = typer.Option(
+        None, "--channels", help="Available customer acquisition channels."
+    ),
+    constraints: str | None = typer.Option(
+        None, "--constraints", help="Legal, compliance, privacy, or operating constraints."
+    ),
+    language: str | None = typer.Option(
+        None, "--language", help="Primary language used by target customers."
+    ),
+    currency: str | None = typer.Option(
+        None, "--currency", help="Currency used for local pricing research."
+    ),
 ) -> None:
     """
     Analyse an MVP idea interactively, from a 1-prompt text, or from a JSON or text file.
@@ -1638,6 +1816,7 @@ def analyze(
         _base_url = base_url if isinstance(base_url, str) else None
         _research_providers = research_provider if isinstance(research_provider, list) else None
         from assumption_zero.schemas import ResearchDepth
+
         _research_depth = ResearchDepth(depth.strip().lower()).value
 
         # If --api-key given but no --provider, auto-detect from model name or default to openai
@@ -1661,6 +1840,7 @@ def analyze(
             try:
                 data = json.loads(raw_content)
                 from assumption_zero.schemas import IdeaInput
+
                 idea = IdeaInput(**data)
                 console.print(
                     f"[bright_white]Loaded from[/] [bold cyan]{file}[/]\n"
@@ -1671,6 +1851,7 @@ def analyze(
                 console.print(f"[bright_white]Loaded text prompt from[/] [bold cyan]{file}[/]")
                 console.print("[bright_white]Parsing idea details with AI...[/]")
                 from assumption_zero.services.analysis_service import build_llm_adapter
+
                 llm = build_llm_adapter(
                     provider_override=_provider,
                     api_key_override=_api_key,
@@ -1682,6 +1863,7 @@ def analyze(
         elif prompt:
             console.print("[bright_white]Parsing freeform prompt using AI...[/]")
             from assumption_zero.services.analysis_service import build_llm_adapter
+
             llm = build_llm_adapter(
                 provider_override=_provider,
                 api_key_override=_api_key,
@@ -1719,7 +1901,9 @@ def analyze(
         if _api_key or _provider:
             _prov_label = _provider or "auto"
             _model_label = _model or "default"
-            console.print(f"  [bold green]✓ Using provider:[/] [bold cyan]{_prov_label}[/]  model: [bold white]{_model_label}[/]\n")
+            console.print(
+                f"  [bold green]✓ Using provider:[/] [bold cyan]{_prov_label}[/]  model: [bold white]{_model_label}[/]\n"
+            )
 
         console.print()
         console.print(
@@ -1746,7 +1930,9 @@ def analyze(
     except Exception as exc:
         msg = str(exc)
         if "gibberish" in msg.lower():
-            err_console.print(f"\n[bold red]Error: The input text appears to be random characters or gibberish. Please enter a valid product or business idea.[/]\n")
+            err_console.print(
+                "\n[bold red]Error: The input text appears to be random characters or gibberish. Please enter a valid product or business idea.[/]\n"
+            )
         else:
             err_console.print(f"\n[bold red]Error: {msg}[/]\n")
         raise typer.Exit(1)
@@ -1754,27 +1940,44 @@ def analyze(
 
 @app.command()
 def prompt(
-    text: Optional[str] = typer.Argument(None, help="Single natural language text prompt describing your startup idea"),
-    file: Optional[Path] = typer.Option(None, "--file", "-f", help="Path to a text or markdown file containing your idea prompt"),
-    api_key: Optional[str] = typer.Option(None, "--api-key", "-k", help="Runtime AI provider API key."),
-    model: Optional[str] = typer.Option(None, "--model", "-m", help="Runtime model override."),
-    provider: Optional[str] = typer.Option(None, "--provider", help="AI provider override."),
-    base_url: Optional[str] = typer.Option(None, "--base-url", help="Custom or local AI provider base URL."),
-    research_provider: Optional[list[str]] = typer.Option(
-        None, "--research-provider", "-r", help="Research provider to use; repeat for multiple providers."
+    text: str | None = typer.Argument(
+        None, help="Single natural language text prompt describing your startup idea"
     ),
-    depth: str = typer.Option("deep", "--depth", help="Research depth: standard, deep, or exhaustive."),
-    industry: Optional[str] = typer.Option(None, "--industry", help="Industry or vertical context."),
-    stage: Optional[str] = typer.Option(None, "--stage", help="Current startup stage."),
-    solution: Optional[str] = typer.Option(None, "--solution", help="Smallest proposed product or service."),
-    team: Optional[str] = typer.Option(None, "--team", help="Founder/team roles and headcount."),
-    budget: Optional[str] = typer.Option(None, "--budget", help="Validation budget or runway."),
-    timeline: Optional[str] = typer.Option(None, "--timeline", help="Validation or launch deadline."),
-    goal: Optional[str] = typer.Option(None, "--goal", help="First customer or revenue milestone."),
-    channels: Optional[str] = typer.Option(None, "--channels", help="Available acquisition channels."),
-    constraints: Optional[str] = typer.Option(None, "--constraints", help="Legal, compliance, privacy, or operating constraints."),
-    language: Optional[str] = typer.Option(None, "--language", help="Primary market language."),
-    currency: Optional[str] = typer.Option(None, "--currency", help="Local pricing currency."),
+    file: Path | None = typer.Option(
+        None, "--file", "-f", help="Path to a text or markdown file containing your idea prompt"
+    ),
+    api_key: str | None = typer.Option(
+        None, "--api-key", "-k", help="Runtime AI provider API key."
+    ),
+    model: str | None = typer.Option(None, "--model", "-m", help="Runtime model override."),
+    provider: str | None = typer.Option(None, "--provider", help="AI provider override."),
+    base_url: str | None = typer.Option(
+        None, "--base-url", help="Custom or local AI provider base URL."
+    ),
+    research_provider: list[str] | None = typer.Option(
+        None,
+        "--research-provider",
+        "-r",
+        help="Research provider to use; repeat for multiple providers.",
+    ),
+    depth: str = typer.Option(
+        "deep", "--depth", help="Research depth: standard, deep, or exhaustive."
+    ),
+    industry: str | None = typer.Option(None, "--industry", help="Industry or vertical context."),
+    stage: str | None = typer.Option(None, "--stage", help="Current startup stage."),
+    solution: str | None = typer.Option(
+        None, "--solution", help="Smallest proposed product or service."
+    ),
+    team: str | None = typer.Option(None, "--team", help="Founder/team roles and headcount."),
+    budget: str | None = typer.Option(None, "--budget", help="Validation budget or runway."),
+    timeline: str | None = typer.Option(None, "--timeline", help="Validation or launch deadline."),
+    goal: str | None = typer.Option(None, "--goal", help="First customer or revenue milestone."),
+    channels: str | None = typer.Option(None, "--channels", help="Available acquisition channels."),
+    constraints: str | None = typer.Option(
+        None, "--constraints", help="Legal, compliance, privacy, or operating constraints."
+    ),
+    language: str | None = typer.Option(None, "--language", help="Primary market language."),
+    currency: str | None = typer.Option(None, "--currency", help="Local pricing currency."),
 ) -> None:
     """Analyze a startup idea from a freeform text prompt or text/markdown file."""
     if file:
@@ -1831,14 +2034,21 @@ def prompt(
 
 @app.command()
 def demo(
-    provider: Optional[str] = typer.Option(None, "--provider", help="AI provider override."),
-    api_key: Optional[str] = typer.Option(None, "--api-key", "-k", help="Runtime provider API key."),
-    model: Optional[str] = typer.Option(None, "--model", "-m", help="Runtime model override."),
-    base_url: Optional[str] = typer.Option(None, "--base-url", help="Custom or local provider base URL."),
-    research_provider: Optional[list[str]] = typer.Option(
-        None, "--research-provider", "-r", help="Research provider to use; repeat for multiple providers."
+    provider: str | None = typer.Option(None, "--provider", help="AI provider override."),
+    api_key: str | None = typer.Option(None, "--api-key", "-k", help="Runtime provider API key."),
+    model: str | None = typer.Option(None, "--model", "-m", help="Runtime model override."),
+    base_url: str | None = typer.Option(
+        None, "--base-url", help="Custom or local provider base URL."
     ),
-    depth: str = typer.Option("deep", "--depth", help="Research depth: standard, deep, or exhaustive."),
+    research_provider: list[str] | None = typer.Option(
+        None,
+        "--research-provider",
+        "-r",
+        help="Research provider to use; repeat for multiple providers.",
+    ),
+    depth: str = typer.Option(
+        "deep", "--depth", help="Research depth: standard, deep, or exhaustive."
+    ),
 ) -> None:
     """Run the same real example analysis available from the web home page."""
     from assumption_zero.demo import DEMO_IDEA
@@ -1867,12 +2077,12 @@ def demo(
 
 @app.command()
 def simulate(
-    analysis_id: Optional[str] = typer.Argument(
+    analysis_id: str | None = typer.Argument(
         None, help="Saved analysis ID, short ID, or index. Omit for the latest analysis."
     ),
-    price: Optional[float] = typer.Option(None, "--price", help="Monthly customer price in USD."),
-    cac: Optional[float] = typer.Option(None, "--cac", help="Customer acquisition cost in USD."),
-    variable_cost: Optional[float] = typer.Option(
+    price: float | None = typer.Option(None, "--price", help="Monthly customer price in USD."),
+    cac: float | None = typer.Option(None, "--cac", help="Customer acquisition cost in USD."),
+    variable_cost: float | None = typer.Option(
         None, "--variable-cost", help="Variable monthly cost per customer in USD."
     ),
     fixed_costs: float = typer.Option(500.0, "--fixed-costs", help="Monthly fixed costs in USD."),
@@ -1887,7 +2097,8 @@ def simulate(
         err_console.print("No saved analysis found. Supply an analysis ID or --price.")
         raise typer.Exit(1)
 
-    monthly_price = max(1.0, price if price is not None else extract_price(result.idea_input.price))
+    stored_price = result.idea_input.price if result is not None else None
+    monthly_price = max(1.0, price if price is not None else extract_price(stored_price))
     effective_cac = cac if cac is not None else max(10.0, round(monthly_price * 3))
     effective_variable = (
         variable_cost if variable_cost is not None else max(1.0, round(monthly_price * 0.15))
@@ -1907,11 +2118,15 @@ def simulate(
     table.add_row("Monthly contribution", f"${economics.monthly_contribution:,.2f}")
     table.add_row(
         "Break-even customers",
-        str(economics.breakeven_customers) if economics.breakeven_customers is not None else "Not reachable",
+        str(economics.breakeven_customers)
+        if economics.breakeven_customers is not None
+        else "Not reachable",
     )
     table.add_row(
         "CAC payback",
-        f"{economics.payback_months:.1f} months" if economics.payback_months is not None else "Not reachable",
+        f"{economics.payback_months:.1f} months"
+        if economics.payback_months is not None
+        else "Not reachable",
     )
     table.add_row(
         "Estimated LTV",
@@ -1922,15 +2137,21 @@ def simulate(
         f"{economics.ltv_to_cac:.1f}x" if economics.ltv_to_cac is not None else "Unknown",
     )
     console.print(table)
-    console.print("\n[bright_white]Directional model only; validate every input with real customer data.[/]")
+    console.print(
+        "\n[bright_white]Directional model only; validate every input with real customer data.[/]"
+    )
 
 
 @app.command(name="verify-provider")
 def verify_provider(
-    provider: str = typer.Argument(..., help="Provider name: ollama, opencode, openai_compat, groq, or openrouter."),
-    api_key: Optional[str] = typer.Option(None, "--api-key", "-k", help="Runtime provider API key."),
-    model: Optional[str] = typer.Option(None, "--model", "-m", help="Runtime model override."),
-    base_url: Optional[str] = typer.Option(None, "--base-url", help="Custom or local provider base URL."),
+    provider: str = typer.Argument(
+        ..., help="Provider name: ollama, opencode, openai_compat, groq, or openrouter."
+    ),
+    api_key: str | None = typer.Option(None, "--api-key", "-k", help="Runtime provider API key."),
+    model: str | None = typer.Option(None, "--model", "-m", help="Runtime model override."),
+    base_url: str | None = typer.Option(
+        None, "--base-url", help="Custom or local provider base URL."
+    ),
 ) -> None:
     """Validate provider configuration like the web settings connection check."""
     from assumption_zero.config import get_settings, is_public_http_url
@@ -1946,7 +2167,9 @@ def verify_provider(
         "openai_compat": settings.openai_compatible_api_key,
         "custom": settings.openai_compatible_api_key,
     }
-    if normalized_provider in configured_keys and not (api_key or configured_keys[normalized_provider]):
+    if normalized_provider in configured_keys and not (
+        api_key or configured_keys[normalized_provider]
+    ):
         err_console.print(f"API key is missing for {provider.upper()}.")
         raise typer.Exit(1)
     if settings.ssrf_protection_enabled and base_url and not is_public_http_url(base_url):
@@ -1969,9 +2192,13 @@ def verify_provider(
 
 @app.command(name="list")
 def list_cmd(
-    search: Optional[str] = typer.Option(None, "--search", "-s", help="Filter by idea name or analysis ID"),
-    status: Optional[str] = typer.Option(
-        None, "--status", help="Filter by run status or verdict: complete, pending, failed, build, test_first, pivot, avoid"
+    search: str | None = typer.Option(
+        None, "--search", "-s", help="Filter by idea name or analysis ID"
+    ),
+    status: str | None = typer.Option(
+        None,
+        "--status",
+        help="Filter by run status or verdict: complete, pending, failed, build, test_first, pivot, avoid",
     ),
     limit: int = typer.Option(50, "--limit", "-n", min=1, max=100, help="Maximum items to display"),
 ) -> None:
@@ -1980,12 +2207,15 @@ def list_cmd(
 
     async def _list():
         from assumption_zero.services.analysis_service import list_analyses
+
         return await list_analyses(search=search, status_filter=status, limit=limit)
 
     items = asyncio.run(_list())
 
     if not items:
-        filter_msg = f" matching filter: search={search!r}, status={status!r}" if (search or status) else ""
+        filter_msg = (
+            f" matching filter: search={search!r}, status={status!r}" if (search or status) else ""
+        )
         console.print(
             Panel(
                 f"[white]No analyses found{filter_msg}.[/]\n"
@@ -2015,7 +2245,11 @@ def list_cmd(
     table.add_column("Created", width=17, style="bright_white")
 
     for i, item in enumerate(items, 1):
-        status_col = "bold green" if item.status.value == "complete" else ("bold red" if item.status.value == "failed" else "bold #D97706")
+        status_col = (
+            "bold green"
+            if item.status.value == "complete"
+            else ("bold red" if item.status.value == "failed" else "bold #D97706")
+        )
         score_str = (
             f"[{_score_color(item.opportunity_score)}]{item.opportunity_score:.0f}[/]"
             if item.opportunity_score is not None
@@ -2054,7 +2288,7 @@ def config_cmd() -> None:
         "  [bright_white]Press Enter to keep current value for any setting.[/]\n"
     )
 
-    from assumption_zero.config import ROOT_ENV, LOCAL_ENV
+    from assumption_zero.config import LOCAL_ENV, ROOT_ENV
 
     target_env = LOCAL_ENV if LOCAL_ENV.exists() else ROOT_ENV
 
@@ -2145,8 +2379,9 @@ REQUEST_TIMEOUT=30
 
 @app.command()
 def show(
-    analysis_id: Optional[str] = typer.Argument(
-        None, help="Analysis ID, 8-char short ID (e.g. b28a73fb), or index (1, 2, ...). Omit for latest."
+    analysis_id: str | None = typer.Argument(
+        None,
+        help="Analysis ID, 8-char short ID (e.g. b28a73fb), or index (1, 2, ...). Omit for latest.",
     ),
 ) -> None:
     """Show the full report for a saved analysis. Omit ID to show the latest analysis."""
@@ -2156,12 +2391,15 @@ def show(
 
     async def _get():
         from assumption_zero.services.analysis_service import get_analysis
+
         return await get_analysis(target_id)
 
     result = asyncio.run(_get())
     if not result:
         err_console.print(f"Analysis '{target_id}' not found.")
-        console.print(f"[bright_white]Run [/][bold #D97706]azero list[/][bright_white] to see all saved analyses.[/]")
+        console.print(
+            "[bright_white]Run [/][bold #D97706]azero list[/][bright_white] to see all saved analyses.[/]"
+        )
         raise typer.Exit(1)
 
     _print_report(result)
@@ -2169,11 +2407,11 @@ def show(
 
 @app.command()
 def export(
-    analysis_id: Optional[str] = typer.Argument(
+    analysis_id: str | None = typer.Argument(
         None, help="Analysis ID, short ID, or index (1, 2, ...). Omit for latest."
     ),
     format: str = typer.Option("markdown", "--format", "-f", help="markdown, json, or html"),
-    output: Optional[Path] = typer.Option(None, "--output", "-o", help="Output file path"),
+    output: Path | None = typer.Option(None, "--output", "-o", help="Output file path"),
 ) -> None:
     """Export an analysis as Markdown, JSON, or HTML."""
     _print_splash()
@@ -2181,6 +2419,7 @@ def export(
 
     async def _get():
         from assumption_zero.services.analysis_service import get_analysis
+
         return await get_analysis(target_id)
 
     result = asyncio.run(_get())
@@ -2212,7 +2451,9 @@ def export(
 
 @app.command()
 def delete(
-    analysis_id: str = typer.Argument(..., help="Analysis ID, short ID, or index (1, 2, ...) to delete."),
+    analysis_id: str = typer.Argument(
+        ..., help="Analysis ID, short ID, or index (1, 2, ...) to delete."
+    ),
     yes: bool = typer.Option(False, "--yes", "-y", help="Skip confirmation prompt."),
 ) -> None:
     """Delete a saved analysis by ID or index."""
@@ -2227,7 +2468,9 @@ def delete(
     # Show what we're deleting
     row = store.get_record(full_id)
     idea_name = row.get("idea_name", "Unknown") if row else "Unknown"
-    console.print(f"  [bold white]Analysis:[/] [bold #D97706]{idea_name}[/]  [bright_white]({full_id[:8]})[/]")
+    console.print(
+        f"  [bold white]Analysis:[/] [bold #D97706]{idea_name}[/]  [bright_white]({full_id[:8]})[/]"
+    )
 
     if not yes:
         confirm = Prompt.ask(
@@ -2241,7 +2484,9 @@ def delete(
 
     deleted = store.delete_record(full_id)
     if deleted:
-        console.print(f"  [bold green]✓ Deleted analysis[/] [bold #D97706]{idea_name}[/] [bright_white]({full_id[:8]})[/]")
+        console.print(
+            f"  [bold green]✓ Deleted analysis[/] [bold #D97706]{idea_name}[/] [bright_white]({full_id[:8]})[/]"
+        )
     else:
         err_console.print(f"Failed to delete '{analysis_id}'.")
         raise typer.Exit(1)
@@ -2249,7 +2494,12 @@ def delete(
 
 @app.command()
 def clean(
-    status_filter: str = typer.Option("pending,failed", "--status", "-s", help="Comma-separated statuses to remove (e.g. pending,failed)."),
+    status_filter: str = typer.Option(
+        "pending,failed",
+        "--status",
+        "-s",
+        help="Comma-separated statuses to remove (e.g. pending,failed).",
+    ),
     yes: bool = typer.Option(False, "--yes", "-y", help="Skip confirmation prompt."),
 ) -> None:
     """Remove all analyses matching the given status (default: pending and failed)."""
@@ -2264,11 +2514,15 @@ def clean(
         console.print(f"  [bright_white]No analyses with status {statuses} found.[/]")
         return
 
-    console.print(f"  [bold white]Found[/] [bold #D97706]{len(targets)}[/] [bold white]analyses to remove:[/]")
+    console.print(
+        f"  [bold white]Found[/] [bold #D97706]{len(targets)}[/] [bold white]analyses to remove:[/]"
+    )
     for r in targets[:10]:
-        console.print(f"    - [bright_white]{r.get('idea_name', '?')[:30]}[/]  [bold cyan]{r['id'][:8]}[/]  [{_status_color(r.get('status',''))}]{r.get('status','')}[/]")
+        console.print(
+            f"    - [bright_white]{r.get('idea_name', '?')[:30]}[/]  [bold cyan]{r['id'][:8]}[/]  [{_status_color(r.get('status', ''))}]{r.get('status', '')}[/]"
+        )
     if len(targets) > 10:
-        console.print(f"    ... and {len(targets)-10} more")
+        console.print(f"    ... and {len(targets) - 10} more")
 
     if not yes:
         confirm = Prompt.ask(
@@ -2290,14 +2544,19 @@ def clean(
 
 @app.command()
 def serve(
-    host: str = typer.Option("127.0.0.1", "--host", "-h", help="Host address to bind backend server to"),
+    host: str = typer.Option(
+        "127.0.0.1", "--host", "-h", help="Host address to bind backend server to"
+    ),
     port: int = typer.Option(8000, "--port", "-p", help="Port number to listen on"),
     reload: bool = typer.Option(False, "--reload", "-r", help="Enable auto-reload for development"),
 ) -> None:
     """Start the FastAPI REST backend server."""
     _print_splash()
-    console.print(f"  [bold green]✓ Starting Assumption Zero API server at[/] [bold cyan]http://{host}:{port}[/]\n")
+    console.print(
+        f"  [bold green]✓ Starting Assumption Zero API server at[/] [bold cyan]http://{host}:{port}[/]\n"
+    )
     import uvicorn
+
     uvicorn.run("assumption_zero.main:app", host=host, port=port, reload=reload)
 
 
@@ -2306,7 +2565,10 @@ def version() -> None:
     """Show version and configuration info."""
     _print_splash()
 
-    from assumption_zero.services.analysis_service import build_llm_adapter, build_research_providers
+    from assumption_zero.services.analysis_service import (
+        build_llm_adapter,
+        build_research_providers,
+    )
 
     adapter = build_llm_adapter()
     providers = build_research_providers()

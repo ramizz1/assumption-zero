@@ -4,13 +4,14 @@ Reddit research provider.
 Uses Reddit search with DuckDuckGo fallback for community discussions,
 complaints, and demand signals.
 """
+
 from __future__ import annotations
 
 import hashlib
 import logging
 import re
 from datetime import date, datetime
-from typing import Any, Dict, List
+from typing import Any
 from urllib.parse import quote_plus, urlencode
 
 import httpx
@@ -30,8 +31,13 @@ REDDIT_SEARCH = "https://www.reddit.com/search.json"
 DUCKDUCKGO_HTML = "https://html.duckduckgo.com/html/"
 
 _USEFUL_TYPES = {
-    "complaint", "demand", "competitor", "manual_workflow",
-    "failure_reason", "general", "pricing",
+    "complaint",
+    "demand",
+    "competitor",
+    "manual_workflow",
+    "failure_reason",
+    "general",
+    "pricing",
 }
 
 
@@ -40,7 +46,7 @@ def _stable_id(url: str) -> str:
 
 
 def _ev_type(query_type: str) -> EvidenceType:
-    mapping: Dict[str, EvidenceType] = {
+    mapping: dict[str, EvidenceType] = {
         "complaint": EvidenceType.COMPLAINT,
         "demand": EvidenceType.DEMAND,
         "competitor": EvidenceType.COMPETITOR,
@@ -71,7 +77,7 @@ class RedditProvider(ResearchProvider):
         query_type: str,
         idea: IdeaInput,
         max_results: int = 10,
-    ) -> List[EvidenceItem]:
+    ) -> list[EvidenceItem]:
         if query_type not in _USEFUL_TYPES:
             return []
 
@@ -93,7 +99,7 @@ class RedditProvider(ResearchProvider):
             "type": "link",
         }
 
-        items: List[EvidenceItem] = []
+        items: list[EvidenceItem] = []
         now = datetime.utcnow()
         today = date.today()
 
@@ -106,7 +112,7 @@ class RedditProvider(ResearchProvider):
                 url = f"{REDDIT_SEARCH}?{urlencode(params)}"
                 resp = await client.get(url)
                 if resp.status_code == 200:
-                    data: Dict[str, Any] = resp.json()
+                    data: dict[str, Any] = resp.json()
                     posts = data.get("data", {}).get("children", [])
                     for child in posts[:max_results]:
                         post = child.get("data", {})
@@ -116,7 +122,7 @@ class RedditProvider(ResearchProvider):
                         title = post.get("title") or "Untitled"
                         selftext = post.get("selftext", "")
                         subreddit = post.get("subreddit", "discussion")
-                        score = post.get("score", 0)
+                        post.get("score", 0)
 
                         passage = f"r/{subreddit}: {title}"
                         if selftext:
@@ -141,7 +147,9 @@ class RedditProvider(ResearchProvider):
                             )
                         )
                     if items:
-                        logger.info("Reddit native search returned %d items for %r", len(items), query)
+                        logger.info(
+                            "Reddit native search returned %d items for %r", len(items), query
+                        )
                         return items
         except Exception as exc:
             logger.debug("Reddit native search failed silently: %s", exc)

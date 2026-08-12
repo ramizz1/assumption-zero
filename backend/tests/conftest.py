@@ -1,13 +1,13 @@
 """Shared fixtures for all tests."""
+
 from __future__ import annotations
 
-import pytest
 from datetime import date, datetime
+
+import pytest
 
 from assumption_zero.schemas import (
     AnalysisPerspective,
-    CompetitorType,
-    ConfidenceLevel,
     EvidenceItem,
     EvidenceType,
     IdeaInput,

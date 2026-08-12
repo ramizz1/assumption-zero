@@ -1,8 +1,8 @@
 """Shared example analysis used by both the web interface and CLI."""
+
 from __future__ import annotations
 
 from assumption_zero.schemas import IdeaInput
-
 
 DEMO_IDEA = IdeaInput(
     name="LegalMind Local",
@@ -28,6 +28,8 @@ DEMO_IDEA = IdeaInput(
     revenue_goal="10 paid law-firm pilots and $500 MRR",
     acquisition_channels="Founder-led LinkedIn outreach, local bar associations, legal-tech consultants",
     known_competitors="Otter.ai, Fireflies.ai, Whisper (open source), Tactiq",
+    unfair_advantage="Private, on-device processing designed for confidential legal workflows",
+    key_assumptions="Small law firms will pay for local processing and can adopt an on-device workflow",
     regulatory_constraints="Attorney-client privilege, data residency, consent to recording, and local device security",
     additional_context=(
         "Planning to use OpenAI Whisper for transcription and a local Llama model for "

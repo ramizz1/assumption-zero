@@ -4,12 +4,12 @@ Ollama LLM adapter — run local models via Ollama.
 Allows connecting to any local Ollama instance (http://localhost:11434).
 Supports models like llama3.2, llama3.3, mistral, deepseek-r1, qwen2.5, phi3, etc.
 """
+
 from __future__ import annotations
 
-import os
-import json
 import logging
-from typing import Any, Dict, List
+import os
+from typing import Any
 
 import httpx
 
@@ -35,7 +35,7 @@ class OllamaAdapter(LLMAdapter):
     Attempts OpenAI-compatible /v1/chat/completions endpoint first, falling back to /api/chat.
     """
 
-    def __init__(self, model: str = None, base_url: str = None, **kwargs) -> None:
+    def __init__(self, model: str | None = None, base_url: str | None = None, **kwargs) -> None:
         self._settings = get_settings()
         self._model_override = model
         self._base_url_override = base_url
@@ -66,14 +66,14 @@ class OllamaAdapter(LLMAdapter):
         # Local Ollama is assumed available if base_url is set
         return bool(self._base_url())
 
-    async def _chat(self, messages: List[Dict[str, str]]) -> str:
+    async def _chat(self, messages: list[dict[str, str]]) -> str:
         base = self._base_url()
         model_name = self._model()
         timeout = max(90.0, float(self._settings.request_timeout))
 
         # Attempt 1: OpenAI-compatible endpoint (/v1/chat/completions) available in Ollama >= 0.1.24
         v1_url = f"{base}/v1/chat/completions"
-        v1_payload: Dict[str, Any] = {
+        v1_payload: dict[str, Any] = {
             "model": model_name,
             "messages": messages,
             "temperature": 0.2,
@@ -89,7 +89,9 @@ class OllamaAdapter(LLMAdapter):
                         if content:
                             return content
             except Exception as exc:
-                logger.debug("Ollama /v1/chat/completions failed (%s) — trying /api/chat fallback...", exc)
+                logger.debug(
+                    "Ollama /v1/chat/completions failed (%s) — trying /api/chat fallback...", exc
+                )
 
             # Attempt 2: Native Ollama endpoint (/api/chat)
             native_url = f"{base}/api/chat"
@@ -121,11 +123,14 @@ class OllamaAdapter(LLMAdapter):
         self,
         perspective_name: PerspectiveName,
         idea: IdeaInput,
-        evidence: List[EvidenceItem],
+        evidence: list[EvidenceItem],
     ) -> PerspectiveOutput:
         messages = [
             {"role": "system", "content": PERSPECTIVE_SYSTEM_PROMPTS[perspective_name]},
-            {"role": "user", "content": build_analysis_prompt(perspective_name.value, idea, evidence)},
+            {
+                "role": "user",
+                "content": build_analysis_prompt(perspective_name.value, idea, evidence),
+            },
         ]
         raw = await self._chat(messages)
         return _parse_output(raw, perspective_name, self.model_id)
@@ -146,6 +151,7 @@ class OllamaAdapter(LLMAdapter):
     async def parse_raw_prompt(self, raw_text: str) -> IdeaInput:
         """Parse freeform prompt text into structured IdeaInput using local Ollama model."""
         from assumption_zero.schemas import is_gibberish
+
         if is_gibberish(raw_text):
             raise ValueError(
                 "The input text appears to be random characters or gibberish. Please enter a valid product or business idea."
@@ -170,10 +176,12 @@ class OllamaAdapter(LLMAdapter):
         )
 
         try:
-            raw_response = await self._chat([
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": f"Parse this startup idea:\n{raw_text}"},
-            ])
+            raw_response = await self._chat(
+                [
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": f"Parse this startup idea:\n{raw_text}"},
+                ]
+            )
             parsed_data = _repair_and_parse_json(raw_response)
             parsed_data["name"] = parsed_data.get("name") or "New Idea"
             parsed_data["description"] = parsed_data.get("description") or raw_text[:200]

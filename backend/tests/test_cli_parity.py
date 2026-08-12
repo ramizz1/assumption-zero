@@ -1,4 +1,5 @@
 """Regression tests for web/CLI feature parity."""
+
 from __future__ import annotations
 
 from datetime import datetime
@@ -11,7 +12,6 @@ import assumption_zero.storage as store
 from assumption_zero.analysis.unit_economics import calculate_unit_economics
 from assumption_zero.cli import _run_analysis_sync, _with_founder_context, app
 from assumption_zero.schemas import AnalysisResult, AnalysisStage, AnalysisStatus
-
 
 runner = CliRunner()
 
@@ -29,8 +29,16 @@ def test_cli_exposes_web_equivalent_commands_and_provider_controls():
     assert "--provider" in analyze_help_text
     assert "--base-url" in analyze_help_text
     for option in (
-        "--industry", "--stage", "--budget", "--timeline", "--goal",
-        "--channels", "--constraints", "--language", "--currency", "--depth",
+        "--industry",
+        "--stage",
+        "--budget",
+        "--timeline",
+        "--goal",
+        "--channels",
+        "--constraints",
+        "--language",
+        "--currency",
+        "--depth",
     ):
         assert option in analyze_help_text
 

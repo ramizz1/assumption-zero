@@ -3,12 +3,12 @@ OpenCode LLM adapter — connect to OpenCode AI API.
 
 https://opencode.ai
 """
+
 from __future__ import annotations
 
-import os
-import json
 import logging
-from typing import Any, Dict, List
+import os
+from typing import Any
 
 import httpx
 
@@ -33,7 +33,13 @@ class OpencodeAdapter(LLMAdapter):
     Adapter for OpenCode AI API endpoint.
     """
 
-    def __init__(self, api_key: str = None, model: str = None, base_url: str = None, **kwargs) -> None:
+    def __init__(
+        self,
+        api_key: str | None = None,
+        model: str | None = None,
+        base_url: str | None = None,
+        **kwargs,
+    ) -> None:
         self._settings = get_settings()
         self._api_key_override = api_key
         self._model_override = model
@@ -73,7 +79,7 @@ class OpencodeAdapter(LLMAdapter):
     def is_available(self) -> bool:
         return bool(self._api_key())
 
-    def _headers(self) -> Dict[str, str]:
+    def _headers(self) -> dict[str, str]:
         api_key = self._api_key()
         if not api_key:
             raise RuntimeError(
@@ -84,13 +90,13 @@ class OpencodeAdapter(LLMAdapter):
             "Content-Type": "application/json",
         }
 
-    async def _chat(self, messages: List[Dict[str, str]]) -> str:
+    async def _chat(self, messages: list[dict[str, str]]) -> str:
         base = self._base_url()
         url = f"{base}/chat/completions"
         model_name = self._model()
         timeout = max(60.0, float(self._settings.request_timeout))
 
-        payload: Dict[str, Any] = {
+        payload: dict[str, Any] = {
             "model": model_name,
             "messages": messages,
             "temperature": 0.2,
@@ -124,11 +130,14 @@ class OpencodeAdapter(LLMAdapter):
         self,
         perspective_name: PerspectiveName,
         idea: IdeaInput,
-        evidence: List[EvidenceItem],
+        evidence: list[EvidenceItem],
     ) -> PerspectiveOutput:
         messages = [
             {"role": "system", "content": PERSPECTIVE_SYSTEM_PROMPTS[perspective_name]},
-            {"role": "user", "content": build_analysis_prompt(perspective_name.value, idea, evidence)},
+            {
+                "role": "user",
+                "content": build_analysis_prompt(perspective_name.value, idea, evidence),
+            },
         ]
         raw = await self._chat(messages)
         return _parse_output(raw, perspective_name, self.model_id)
@@ -149,6 +158,7 @@ class OpencodeAdapter(LLMAdapter):
     async def parse_raw_prompt(self, raw_text: str) -> IdeaInput:
         """Parse freeform prompt text into structured IdeaInput using OpenCode AI."""
         from assumption_zero.schemas import is_gibberish
+
         if is_gibberish(raw_text):
             raise ValueError(
                 "The input text appears to be random characters or gibberish. Please enter a valid product or business idea."
@@ -173,10 +183,12 @@ class OpencodeAdapter(LLMAdapter):
         )
 
         try:
-            raw_response = await self._chat([
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": f"Parse this startup idea:\n{raw_text}"},
-            ])
+            raw_response = await self._chat(
+                [
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": f"Parse this startup idea:\n{raw_text}"},
+                ]
+            )
             parsed_data = _repair_and_parse_json(raw_response)
             parsed_data["name"] = parsed_data.get("name") or "New Idea"
             parsed_data["description"] = parsed_data.get("description") or raw_text[:200]

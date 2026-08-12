@@ -16,11 +16,12 @@ Configure:
   OPENAI_COMPATIBLE_API_KEY=your-key
   OPENAI_COMPATIBLE_MODEL=gpt-4o-mini
 """
+
 from __future__ import annotations
 
 import json
 import logging
-from typing import Any, Dict, List
+from typing import Any
 
 import httpx
 
@@ -42,8 +43,7 @@ def _parse_output(raw: str, perspective_name: PerspectiveName, model_id: str) ->
     text = raw.strip()
     if text.startswith("```"):
         text = text.split("```", 2)[1]
-        if text.startswith("json"):
-            text = text[4:]
+        text = text.removeprefix("json")
         text = text.rsplit("```", 1)[0].strip()
 
     try:
@@ -89,16 +89,23 @@ class OpenAICompatAdapter(LLMAdapter):
 
     # Well-known provider base URLs for convenience
     KNOWN_PROVIDERS: dict = {
-        "openai":    "https://api.openai.com/v1",
-        "together":  "https://api.together.xyz/v1",
-        "anyscale":  "https://api.endpoints.anyscale.com/v1",
-        "deepseek":  "https://api.deepseek.com/v1",
-        "mistral":   "https://api.mistral.ai/v1",
-        "cohere":    "https://api.cohere.ai/compatibility/v1",
+        "openai": "https://api.openai.com/v1",
+        "together": "https://api.together.xyz/v1",
+        "anyscale": "https://api.endpoints.anyscale.com/v1",
+        "deepseek": "https://api.deepseek.com/v1",
+        "mistral": "https://api.mistral.ai/v1",
+        "cohere": "https://api.cohere.ai/compatibility/v1",
     }
 
-    def __init__(self, api_key: str = None, model: str = None, base_url: str = None, **kwargs) -> None:
+    def __init__(
+        self,
+        api_key: str | None = None,
+        model: str | None = None,
+        base_url: str | None = None,
+        **kwargs,
+    ) -> None:
         import os
+
         self._settings = get_settings()
         self._base_url = (
             base_url
@@ -138,9 +145,9 @@ class OpenAICompatAdapter(LLMAdapter):
             "Content-Type": "application/json",
         }
 
-    async def _chat(self, messages: List[Dict[str, str]]) -> str:
+    async def _chat(self, messages: list[dict[str, str]]) -> str:
         url = f"{self._base_url}/chat/completions"
-        payload: Dict[str, Any] = {
+        payload: dict[str, Any] = {
             "model": self._model,
             "messages": messages,
             "temperature": 0.3,
@@ -166,11 +173,14 @@ class OpenAICompatAdapter(LLMAdapter):
         self,
         perspective_name: PerspectiveName,
         idea: IdeaInput,
-        evidence: List[EvidenceItem],
+        evidence: list[EvidenceItem],
     ) -> PerspectiveOutput:
         messages = [
             {"role": "system", "content": PERSPECTIVE_SYSTEM_PROMPTS[perspective_name]},
-            {"role": "user", "content": build_analysis_prompt(perspective_name.value, idea, evidence)},
+            {
+                "role": "user",
+                "content": build_analysis_prompt(perspective_name.value, idea, evidence),
+            },
         ]
         try:
             raw = await self._chat(messages)

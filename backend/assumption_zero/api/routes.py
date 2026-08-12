@@ -9,10 +9,10 @@ Routes:
   DELETE /api/analyses/{analysis_id}
   POST /api/demo
 """
+
 from __future__ import annotations
 
 import logging
-from typing import List, Optional
 
 from fastapi import APIRouter, BackgroundTasks, HTTPException, Query, Request, status
 
@@ -45,10 +45,11 @@ from assumption_zero.services.analysis_service import (
 router = APIRouter(prefix="/api")
 logger = logging.getLogger(__name__)
 
+
 # ── Demo idea ─────────────────────────────────────────────────────
 # When users click "Run Example Analysis", this idea goes through the
 # REAL pipeline — no hardcoded responses.
-def _available_providers() -> List[str]:
+def _available_providers() -> list[str]:
     providers = [GitHubProvider(), HackerNewsProvider(), WikipediaProvider(), RedditProvider()]
     sx = SearXNGProvider()
     if sx.is_available:
@@ -59,7 +60,7 @@ def _available_providers() -> List[str]:
 ProviderRequest = AnalysisCreateRequest | DemoAnalysisRequest | PromptAnalysisRequest
 
 
-def _llm_options(body: ProviderRequest) -> tuple[Optional[str], Optional[str], Optional[str]]:
+def _llm_options(body: ProviderRequest) -> tuple[str | None, str | None, str | None]:
     """Resolve the provider and only the credential that belongs to it.
 
     In Auto mode, a runtime/browser key takes priority over server-side
@@ -92,7 +93,7 @@ def _llm_options(body: ProviderRequest) -> tuple[Optional[str], Optional[str], O
     return provider, api_key, base_url
 
 
-def _validate_selected_provider(body: ProviderRequest) -> Optional[str]:
+def _validate_selected_provider(body: ProviderRequest) -> str | None:
     """Reject an unconfigured explicit provider before starting a long research run."""
     provider, api_key, base_url = _llm_options(body)
     try:
@@ -240,11 +241,12 @@ async def create_analysis_from_prompt_endpoint(
     background_tasks: BackgroundTasks,
 ) -> dict:
     """Analyze a startup idea from a single freeform text prompt."""
-    
+
     provider, api_key_override, base_url_override = _llm_options(body)
 
     # SSRF Protection
     from assumption_zero.config import get_settings
+
     settings = get_settings()
     if settings.ssrf_protection_enabled and base_url_override:
         if not is_public_http_url(base_url_override):
@@ -257,7 +259,7 @@ async def create_analysis_from_prompt_endpoint(
         llm = build_llm_adapter(
             provider_override=provider,
             api_key_override=api_key_override,
-            base_url_override=base_url_override
+            base_url_override=base_url_override,
         )
         parsed_idea = await llm.parse_raw_prompt(body.prompt)
     except ValueError as exc:
@@ -289,15 +291,19 @@ async def create_analysis_from_prompt_endpoint(
         research_depth=body.research_depth,
         is_demo=False,
     )
-    return {"analysis_id": analysis_id, "status": "pending", "parsed_idea": parsed_idea.model_dump(mode="json")}
+    return {
+        "analysis_id": analysis_id,
+        "status": "pending",
+        "parsed_idea": parsed_idea.model_dump(mode="json"),
+    }
 
 
-@router.get("/analyses", response_model=List[AnalysisListItem])
+@router.get("/analyses", response_model=list[AnalysisListItem])
 async def list_analyses_endpoint(
-    search: Optional[str] = None,
-    status: Optional[str] = None,
+    search: str | None = None,
+    status: str | None = None,
     limit: int = Query(default=100, ge=1, le=100),
-) -> List[AnalysisListItem]:
+) -> list[AnalysisListItem]:
     return await list_analyses(search=search, status_filter=status, limit=limit)
 
 
@@ -319,7 +325,7 @@ async def delete_analysis_endpoint(analysis_id: str) -> None:
 @router.post("/demo", response_model=dict, status_code=status.HTTP_202_ACCEPTED)
 async def demo_endpoint(
     background_tasks: BackgroundTasks,
-    body: Optional[DemoAnalysisRequest] = None,
+    body: DemoAnalysisRequest | None = None,
 ) -> dict:
     """
     Start a demo analysis using the example idea (LegalMind Local).

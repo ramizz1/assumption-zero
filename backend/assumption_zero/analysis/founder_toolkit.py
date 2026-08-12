@@ -1,4 +1,5 @@
 """Generate an actionable founder playbook without inventing market facts."""
+
 from __future__ import annotations
 
 import re
@@ -20,7 +21,10 @@ def _split_channels(value: str | None) -> list[str]:
 
 def _default_channels(idea: IdeaInput) -> list[str]:
     customer = idea.target_customer.lower()
-    if any(term in customer for term in ("business", "company", "firm", "team", "enterprise", "agency", "clinic")):
+    if any(
+        term in customer
+        for term in ("business", "company", "firm", "team", "enterprise", "agency", "clinic")
+    ):
         return [
             "Founder-led outreach to 30 narrowly matched buyers",
             "One trusted niche community where the buyer already asks for help",
@@ -47,8 +51,16 @@ def generate_founder_toolkit(
     budget = idea.budget or "a tightly capped validation budget"
     goal = idea.revenue_goal or "three committed pilot customers"
 
-    interview_metric = experiments[1].success_threshold if len(experiments) > 1 else "At least 7 of 10 buyers confirm an urgent problem"
-    smoke_metric = experiments[0].success_threshold if experiments else "At least 3 buyers commit time, data, or money"
+    interview_metric = (
+        experiments[1].success_threshold
+        if len(experiments) > 1
+        else "At least 7 of 10 buyers confirm an urgent problem"
+    )
+    smoke_metric = (
+        experiments[0].success_threshold
+        if experiments
+        else "At least 3 buyers commit time, data, or money"
+    )
 
     roadmap = [
         FounderAction(

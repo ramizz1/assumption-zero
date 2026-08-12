@@ -27,7 +27,26 @@ export interface AISettings {
   customUrl: string
 }
 
-const STORAGE_KEY = 'azero_ai_settings'
+const LEGACY_STORAGE_KEY = 'azero_ai_settings'
+const PREFERENCES_STORAGE_KEY = 'azero_ai_preferences'
+const SECRETS_STORAGE_KEY = 'azero_ai_session_secrets'
+
+type AISecrets = Pick<AISettings, 'groqKey' | 'openrouterKey' | 'opencodeKey' | 'openaiKey' | 'customKey'>
+
+const splitSettings = (settings: AISettings): { preferences: Omit<AISettings, keyof AISecrets>; secrets: AISecrets } => {
+  const { groqKey, openrouterKey, opencodeKey, openaiKey, customKey, ...preferences } = settings
+  return {
+    preferences,
+    secrets: { groqKey, openrouterKey, opencodeKey, openaiKey, customKey },
+  }
+}
+
+export const saveAISettings = (settings: AISettings): void => {
+  const { preferences, secrets } = splitSettings(settings)
+  localStorage.setItem(PREFERENCES_STORAGE_KEY, JSON.stringify(preferences))
+  sessionStorage.setItem(SECRETS_STORAGE_KEY, JSON.stringify(secrets))
+  localStorage.removeItem(LEGACY_STORAGE_KEY)
+}
 
 export const getStoredAISettings = (): AISettings => {
   const defaults: AISettings = {
@@ -41,14 +60,25 @@ export const getStoredAISettings = (): AISettings => {
     customUrl: 'http://localhost:8000/v1',
   }
   try {
-    const raw = localStorage.getItem(STORAGE_KEY)
-    if (raw) {
-      const stored = JSON.parse(raw) as Partial<AISettings>
-      return {
-        ...defaults,
-        ...stored,
-        provider: stored.provider === 'beta' ? 'auto' : (stored.provider || defaults.provider),
-      }
+    const legacyRaw = localStorage.getItem(LEGACY_STORAGE_KEY)
+    const preferencesRaw = localStorage.getItem(PREFERENCES_STORAGE_KEY)
+    const secretsRaw = sessionStorage.getItem(SECRETS_STORAGE_KEY)
+    const legacy = legacyRaw ? JSON.parse(legacyRaw) as Partial<AISettings> : {}
+    const preferences = preferencesRaw ? JSON.parse(preferencesRaw) as Partial<AISettings> : {}
+    const secrets = secretsRaw ? JSON.parse(secretsRaw) as Partial<AISecrets> : {}
+    const stored = { ...legacy, ...preferences, ...secrets }
+
+    if (legacyRaw) {
+      const migrated = splitSettings({ ...defaults, ...legacy, provider: legacy.provider === 'beta' ? 'auto' : (legacy.provider || defaults.provider) })
+      localStorage.setItem(PREFERENCES_STORAGE_KEY, JSON.stringify(migrated.preferences))
+      sessionStorage.setItem(SECRETS_STORAGE_KEY, JSON.stringify(migrated.secrets))
+      localStorage.removeItem(LEGACY_STORAGE_KEY)
+    }
+
+    return {
+      ...defaults,
+      ...stored,
+      provider: stored.provider === 'beta' ? 'auto' : (stored.provider || defaults.provider),
     }
   } catch {
     // fallback
@@ -76,7 +106,7 @@ export const SettingsModal: React.FC<Props> = ({ isOpen, onClose, onSave }) => {
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault()
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(settings))
+      saveAISettings(settings)
       if (onSave) onSave(settings)
       setSavedStatus(true)
       setTimeout(() => {
@@ -84,7 +114,7 @@ export const SettingsModal: React.FC<Props> = ({ isOpen, onClose, onSave }) => {
         onClose()
       }, 600)
     } catch (err) {
-      alert('Failed to save settings to localStorage')
+      alert('Failed to save settings in this browser session')
     }
   }
 
@@ -123,7 +153,7 @@ export const SettingsModal: React.FC<Props> = ({ isOpen, onClose, onSave }) => {
                 AI Provider API Keys & Settings
               </h2>
               <p className="text-xs text-gray-500 font-mono">
-                Browser-only keys for analysis requests; this does not edit the server .env
+                API keys are kept only for this browser session; this does not edit the server .env
               </p>
             </div>
           </div>
@@ -362,7 +392,7 @@ export const SettingsModal: React.FC<Props> = ({ isOpen, onClose, onSave }) => {
               {savedStatus ? (
                 <span className="text-emerald-600 font-bold">✓ Settings Saved!</span>
               ) : (
-                'Keys saved in local storage'
+                'Keys saved for this browser session'
               )}
             </span>
             <div className="flex gap-2">

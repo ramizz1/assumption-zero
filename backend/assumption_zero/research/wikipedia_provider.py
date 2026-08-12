@@ -8,12 +8,13 @@ API: https://en.wikipedia.org/api/rest_v1/
 Terms: Wikipedia content is freely available under CC BY-SA.
 No API key required. Documented API.
 """
+
 from __future__ import annotations
 
 import hashlib
 import logging
 from datetime import date, datetime
-from typing import Any, Dict, List
+from typing import Any
 from urllib.parse import quote
 
 import httpx
@@ -38,7 +39,7 @@ def _stable_id(url: str) -> str:
 
 
 def _ev_type_for_wiki(query_type: str) -> EvidenceType:
-    mapping: Dict[str, EvidenceType] = {
+    mapping: dict[str, EvidenceType] = {
         "regulatory": EvidenceType.REGULATORY,
         "market_direction": EvidenceType.MARKET_DIRECTION,
         "competitor": EvidenceType.COMPETITOR,
@@ -61,8 +62,8 @@ class WikipediaProvider(ResearchProvider):
     def is_available(self) -> bool:
         return True  # No key required
 
-    async def _search_titles(self, query: str, limit: int) -> List[str]:
-        params = {
+    async def _search_titles(self, query: str, limit: int) -> list[str]:
+        params: dict[str, str | int] = {
             "action": "opensearch",
             "search": query,
             "limit": limit,
@@ -82,7 +83,7 @@ class WikipediaProvider(ResearchProvider):
             logger.warning("Wikipedia search failed for %r: %s", query, exc)
             return []
 
-    async def _get_summary(self, title: str) -> Dict[str, Any]:
+    async def _get_summary(self, title: str) -> dict[str, Any]:
         encoded = quote(title.replace(" ", "_"))
         url = f"{WIKI_SUMMARY_API}{encoded}"
         try:
@@ -103,11 +104,15 @@ class WikipediaProvider(ResearchProvider):
         query_type: str,
         idea: IdeaInput,
         max_results: int = 5,
-    ) -> List[EvidenceItem]:
+    ) -> list[EvidenceItem]:
         # Wikipedia is most useful for regulatory/market/general context
         if query_type not in (
-            "regulatory", "market_direction", "competitor", "general",
-            "failed_product", "oss_alternative",
+            "regulatory",
+            "market_direction",
+            "competitor",
+            "general",
+            "failed_product",
+            "oss_alternative",
         ):
             return []
 
@@ -115,7 +120,7 @@ class WikipediaProvider(ResearchProvider):
         if not titles:
             return []
 
-        items: List[EvidenceItem] = []
+        items: list[EvidenceItem] = []
         now = datetime.utcnow()
         today = date.today()
 

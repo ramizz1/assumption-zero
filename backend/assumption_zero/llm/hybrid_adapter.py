@@ -6,10 +6,10 @@ Intelligently balances workloads between Groq and OpenRouter:
 - Automatically fails over if one provider hits rate limits (HTTP 429) or token quotas.
 - Gives founders maximum resilience, accuracy, and double the daily token limit.
 """
+
 from __future__ import annotations
 
 import logging
-from typing import Dict, List, Optional
 
 from assumption_zero.llm.base import LLMAdapter, PerspectiveOutput
 from assumption_zero.llm.groq_adapter import GroqAdapter
@@ -26,8 +26,8 @@ class HybridLLMAdapter(LLMAdapter):
 
     def __init__(
         self,
-        groq_adapter: Optional[GroqAdapter] = None,
-        openrouter_adapter: Optional[OpenRouterAdapter] = None,
+        groq_adapter: GroqAdapter | None = None,
+        openrouter_adapter: OpenRouterAdapter | None = None,
     ) -> None:
         self.groq = groq_adapter or GroqAdapter()
         self.openrouter = openrouter_adapter or OpenRouterAdapter()
@@ -44,7 +44,7 @@ class HybridLLMAdapter(LLMAdapter):
         self,
         perspective_name: PerspectiveName,
         idea: IdeaInput,
-        evidence: List[EvidenceItem],
+        evidence: list[EvidenceItem],
     ) -> PerspectiveOutput:
         """
         Distribute perspective runs intelligently.
@@ -73,7 +73,11 @@ class HybridLLMAdapter(LLMAdapter):
             fallback_adapter = self.openrouter  # only one available
 
         try:
-            logger.info("Running perspective %s on primary provider %s", perspective_name.value, primary_adapter.model_id)
+            logger.info(
+                "Running perspective %s on primary provider %s",
+                perspective_name.value,
+                primary_adapter.model_id,
+            )
             return await primary_adapter.analyze_perspective(perspective_name, idea, evidence)
         except Exception as primary_exc:
             if fallback_adapter is primary_adapter:
@@ -88,7 +92,9 @@ class HybridLLMAdapter(LLMAdapter):
             )
             if fallback_adapter.is_available:
                 try:
-                    return await fallback_adapter.analyze_perspective(perspective_name, idea, evidence)
+                    return await fallback_adapter.analyze_perspective(
+                        perspective_name, idea, evidence
+                    )
                 except Exception as fallback_exc:
                     raise RuntimeError(
                         f"Both AI providers failed for {perspective_name.value}.\n"
@@ -96,7 +102,7 @@ class HybridLLMAdapter(LLMAdapter):
                         f"  Fallback ({fallback_adapter.model_id}): {fallback_exc}\n"
                         f"Tip: If you reached daily limits, connect a free API key at https://console.groq.com/keys or https://openrouter.ai/keys"
                     ) from fallback_exc
-            raise primary_exc
+            raise
 
     async def clarify_idea(self, idea: IdeaInput) -> str:
         if self.groq.is_available:

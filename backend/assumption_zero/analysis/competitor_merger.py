@@ -4,13 +4,12 @@ Competitor merger.
 Finds and merges duplicate Competitor entries discovered by different
 research providers or AI perspectives using name similarity.
 """
+
 from __future__ import annotations
 
 import re
-from typing import List
 
 from assumption_zero.schemas import Competitor, CompetitorType, ConfidenceLevel
-
 
 _CONFIDENCE_RANK = {
     ConfidenceLevel.LOW: 0,
@@ -80,14 +79,14 @@ def _merge_two(primary: Competitor, duplicate: Competitor) -> Competitor:
     )
 
 
-def merge_competitors(competitors: List[Competitor]) -> List[Competitor]:
+def merge_competitors(competitors: list[Competitor]) -> list[Competitor]:
     """
     Merge near-duplicate competitors.
 
     Input: list may contain duplicates from different providers.
     Output: deduplicated list with combined evidence.
     """
-    merged: List[Competitor] = []
+    merged: list[Competitor] = []
 
     for comp in competitors:
         matched = False

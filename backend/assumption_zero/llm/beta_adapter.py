@@ -5,9 +5,8 @@ This provider previously offered a built-in free key, but this is removed
 for the open-source version to prevent credential abuse.
 It now acts as an alias to OpenRouterAdapter and requires user configuration.
 """
-from __future__ import annotations
 
-from typing import List
+from __future__ import annotations
 
 from assumption_zero.llm.openrouter_adapter import OpenRouterAdapter, PerspectiveOutput
 from assumption_zero.schemas import EvidenceItem, IdeaInput, PerspectiveName
@@ -16,7 +15,7 @@ from assumption_zero.schemas import EvidenceItem, IdeaInput, PerspectiveName
 class BetaAdapter(OpenRouterAdapter):
     """
     Assumption Zero Beta AI.
-    
+
     Requires a user-configured OPENROUTER_API_KEY.
     """
 
@@ -32,7 +31,7 @@ class BetaAdapter(OpenRouterAdapter):
         self,
         perspective_name: PerspectiveName,
         idea: IdeaInput,
-        evidence: List[EvidenceItem],
+        evidence: list[EvidenceItem],
     ) -> PerspectiveOutput:
         return await super().analyze_perspective(perspective_name, idea, evidence)
 

@@ -6,12 +6,13 @@ https://openrouter.ai
 
 This adapter requires an OPENROUTER_API_KEY supplied in configuration or at runtime.
 """
+
 from __future__ import annotations
 
 import json
 import logging
 import re
-from typing import Any, Dict, List
+from typing import Any
 
 import httpx
 
@@ -67,14 +68,14 @@ def _repair_and_parse_json(text: str) -> dict:
 
     # Attempt 2: Fix trailing commas and missing commas between properties
     cleaned = re.sub(r",\s*([\}\]])", r"\1", text)
-    cleaned = re.sub(r'("|\d|true|false)\s*\n\s*(")', r'\1,\n\2', cleaned)
+    cleaned = re.sub(r'("|\d|true|false)\s*\n\s*(")', r"\1,\n\2", cleaned)
     try:
         return json.loads(cleaned)
     except json.JSONDecodeError:
         pass
 
     # Attempt 3: Sanitize newlines inside quoted strings
-    buf: List[str] = []
+    buf: list[str] = []
     in_string = False
     escaped = False
     for char in cleaned:
@@ -87,7 +88,7 @@ def _repair_and_parse_json(text: str) -> dict:
             buf.append("")
         else:
             buf.append(char)
-        escaped = (char == "\\" and not escaped)
+        escaped = char == "\\" and not escaped
 
     sanitized = "".join(buf)
     try:
@@ -99,7 +100,9 @@ def _repair_and_parse_json(text: str) -> dict:
     result: dict = {}
 
     summary_match = re.search(r'"summary"\s*:\s*"(.*?)"', text, re.DOTALL)
-    result["summary"] = summary_match.group(1).replace("\n", " ").strip() if summary_match else text[:300]
+    result["summary"] = (
+        summary_match.group(1).replace("\n", " ").strip() if summary_match else text[:300]
+    )
 
     rec_match = re.search(r'"recommendation"\s*:\s*"(.*?)"', text)
     result["recommendation"] = rec_match.group(1).strip() if rec_match else "Test First"
@@ -109,19 +112,19 @@ def _repair_and_parse_json(text: str) -> dict:
         result["most_dangerous_assumption"] = assumption_match.group(1).strip()
 
     # Extract lists of strings for findings/risks/opportunities
-    findings: List[str] = []
+    findings: list[str] = []
     findings_block = re.search(r'"key_findings"\s*:\s*\[(.*?)\]', text, re.DOTALL)
     if findings_block:
         findings = re.findall(r'"([^"]{5,300})"', findings_block.group(1))
     result["key_findings"] = findings
 
-    risks: List[str] = []
+    risks: list[str] = []
     risks_block = re.search(r'"risks"\s*:\s*\[(.*?)\]', text, re.DOTALL)
     if risks_block:
         risks = re.findall(r'"([^"]{5,300})"', risks_block.group(1))
     result["risks"] = risks
 
-    opps: List[str] = []
+    opps: list[str] = []
     opps_block = re.search(r'"opportunities"\s*:\s*\[(.*?)\]', text, re.DOTALL)
     if opps_block:
         opps = re.findall(r'"([^"]{5,300})"', opps_block.group(1))
@@ -169,13 +172,14 @@ class OpenRouterAdapter(LLMAdapter):
     fallback support if a model is unavailable.
     """
 
-    def __init__(self, api_key: str = None, model: str = None, **kwargs) -> None:
+    def __init__(self, api_key: str | None = None, model: str | None = None, **kwargs) -> None:
         self._settings = get_settings()
         self._api_key_override = api_key
         self._model_override = model
 
     def _api_key(self) -> str:
         import os
+
         key = (
             self._api_key_override
             or os.getenv("OPENROUTER_API_KEY")
@@ -195,7 +199,7 @@ class OpenRouterAdapter(LLMAdapter):
     def is_available(self) -> bool:
         return bool(self._api_key())
 
-    def _headers(self) -> Dict[str, str]:
+    def _headers(self) -> dict[str, str]:
         api_key = self._api_key()
         if not api_key:
             raise RuntimeError(
@@ -208,12 +212,12 @@ class OpenRouterAdapter(LLMAdapter):
             "X-Title": "Assumption Zero",
         }
 
-    async def _chat(self, messages: List[Dict[str, str]]) -> str:
+    async def _chat(self, messages: list[dict[str, str]]) -> str:
         url = f"{_OPENROUTER_BASE}/chat/completions"
         primary = self._model()
         models_to_try = [primary] + [m for m in _FALLBACK_MODELS if m != primary]
 
-        last_error = None
+        last_error: Exception | None = None
         timeout = max(30.0, float(self._settings.request_timeout))
 
         async with httpx.AsyncClient(
@@ -221,7 +225,7 @@ class OpenRouterAdapter(LLMAdapter):
             headers=self._headers(),
         ) as client:
             for model_name in models_to_try:
-                payload: Dict[str, Any] = {
+                payload: dict[str, Any] = {
                     "model": model_name,
                     "messages": messages,
                     "temperature": 0.3,
@@ -236,8 +240,12 @@ class OpenRouterAdapter(LLMAdapter):
                                 return content
                         if "error" in data:
                             err_msg = data["error"].get("message", str(data["error"]))
-                            logger.debug("OpenRouter model %s error payload: %s", model_name, err_msg)
-                            last_error = RuntimeError(f"OpenRouter model {model_name} error: {err_msg}")
+                            logger.debug(
+                                "OpenRouter model %s error payload: %s", model_name, err_msg
+                            )
+                            last_error = RuntimeError(
+                                f"OpenRouter model {model_name} error: {err_msg}"
+                            )
                             continue
                     elif resp.status_code == 401:
                         raise RuntimeError(
@@ -265,11 +273,14 @@ class OpenRouterAdapter(LLMAdapter):
         self,
         perspective_name: PerspectiveName,
         idea: IdeaInput,
-        evidence: List[EvidenceItem],
+        evidence: list[EvidenceItem],
     ) -> PerspectiveOutput:
         messages = [
             {"role": "system", "content": PERSPECTIVE_SYSTEM_PROMPTS[perspective_name]},
-            {"role": "user", "content": build_analysis_prompt(perspective_name.value, idea, evidence)},
+            {
+                "role": "user",
+                "content": build_analysis_prompt(perspective_name.value, idea, evidence),
+            },
         ]
         raw = await self._chat(messages)
         return _parse_output(raw, perspective_name, self.model_id)
@@ -290,6 +301,7 @@ class OpenRouterAdapter(LLMAdapter):
     async def parse_raw_prompt(self, raw_text: str) -> IdeaInput:
         """Parse freeform prompt text into structured IdeaInput using OpenRouter LLM."""
         from assumption_zero.schemas import is_gibberish
+
         if is_gibberish(raw_text):
             raise ValueError(
                 "The input text appears to be random characters or gibberish. Please enter a valid product or business idea."
@@ -314,10 +326,12 @@ class OpenRouterAdapter(LLMAdapter):
         )
 
         try:
-            raw_response = await self._chat([
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": f"Parse this startup idea:\n{raw_text}"},
-            ])
+            raw_response = await self._chat(
+                [
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": f"Parse this startup idea:\n{raw_text}"},
+                ]
+            )
             parsed_data = _repair_and_parse_json(raw_response)
             parsed_data["name"] = parsed_data.get("name") or "New Idea"
             parsed_data["description"] = parsed_data.get("description") or raw_text[:200]

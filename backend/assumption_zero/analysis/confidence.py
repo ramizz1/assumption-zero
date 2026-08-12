@@ -11,10 +11,10 @@ Calculated independently of the Opportunity Score using:
 
 A high Opportunity Score backed by weak evidence shows LOW confidence.
 """
+
 from __future__ import annotations
 
 from datetime import date
-from typing import List
 
 from assumption_zero.schemas import (
     AnalysisPerspective,
@@ -25,8 +25,8 @@ from assumption_zero.schemas import (
 
 
 def calculate_evidence_confidence(
-    evidence: List[EvidenceItem],
-    perspectives: List[AnalysisPerspective],
+    evidence: list[EvidenceItem],
+    perspectives: list[AnalysisPerspective],
 ) -> ConfidenceLevel:
     """
     Return Low / Medium / High evidence confidence.
@@ -41,7 +41,7 @@ def calculate_evidence_confidence(
     if not evidence:
         return ConfidenceLevel.LOW
 
-    valid_ids = {e.evidence_id for e in evidence}
+    {e.evidence_id for e in evidence}
     n = len(evidence)
 
     # ── Source count (0-25) ───────────────────────────────────────
@@ -59,14 +59,13 @@ def calculate_evidence_confidence(
     # ── Recency (0-15): items published within last 2 years ───────
     today = date.today()
     recent = sum(
-        1 for e in evidence
-        if e.publication_date and (today - e.publication_date).days <= 730
+        1 for e in evidence if e.publication_date and (today - e.publication_date).days <= 730
     )
     recency_score = min(15.0, (recent / n) * 15.0) if n else 0
 
     # ── Citation validity (0-15) ──────────────────────────────────
-    all_cited: List[str] = []
-    all_invalid: List[str] = []
+    all_cited: list[str] = []
+    all_invalid: list[str] = []
     for p in perspectives:
         all_cited.extend(p.cited_evidence_ids)
         all_invalid.extend(p.invalid_citations)
@@ -78,11 +77,7 @@ def calculate_evidence_confidence(
         citation_score = 5.0  # No citations at all = partial score
 
     total = (
-        source_count_score
-        + diversity_score
-        + reliability_score
-        + recency_score
-        + citation_score
+        source_count_score + diversity_score + reliability_score + recency_score + citation_score
     )
 
     if total >= 65:

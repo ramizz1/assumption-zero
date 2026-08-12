@@ -1,6 +1,7 @@
 """
 Tests for clean validation error handling in FastAPI backend.
 """
+
 from fastapi.testclient import TestClient
 
 from assumption_zero.config import Settings, is_public_http_url

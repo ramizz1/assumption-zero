@@ -1,11 +1,11 @@
 """Application configuration loaded from environment variables."""
+
 from __future__ import annotations
 
 import ipaddress
 import socket
 from functools import lru_cache
 from pathlib import Path
-from typing import Optional
 from urllib.parse import urlparse
 
 from pydantic import field_validator
@@ -28,8 +28,9 @@ def is_public_http_url(value: str) -> bool:
         if hostname == "localhost" or hostname.endswith((".localhost", ".local")):
             return False
 
+        addresses: set[ipaddress.IPv4Address | ipaddress.IPv6Address]
         try:
-            addresses = [ipaddress.ip_address(hostname)]
+            addresses = {ipaddress.ip_address(hostname)}
         except ValueError:
             port = parsed.port or (443 if parsed.scheme == "https" else 80)
             addresses = {
@@ -39,6 +40,7 @@ def is_public_http_url(value: str) -> bool:
         return bool(addresses) and all(address.is_global for address in addresses)
     except (OSError, ValueError):
         return False
+
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
@@ -61,16 +63,16 @@ class Settings(BaseSettings):
 
     # ── Assumption Zero Beta / OpenRouter ────────────────────────
     # OpenRouter routes to 200+ open models via a single API.
-    openrouter_api_key: Optional[str] = None
+    openrouter_api_key: str | None = None
     openrouter_model: str = "google/gemma-4-26b-a4b-it:free"
 
     # ── Groq (Ultra-fast Llama 3.3 models) ──────────────────────
     # https://console.groq.com/keys
-    groq_api_key: Optional[str] = None
+    groq_api_key: str | None = None
     groq_model: str = "llama-3.3-70b-versatile"
 
     # ── OpenCode AI ──────────────────────────────────────────────
-    opencode_api_key: Optional[str] = None
+    opencode_api_key: str | None = None
     opencode_base_url: str = "https://opencode.ai/api/v1"
     opencode_model: str = "opencode/claude-3.5-sonnet"
 
@@ -82,16 +84,15 @@ class Settings(BaseSettings):
     # Use this to plug in ChatGPT, Claude (via compatible proxy), Together AI,
     # Anyscale, LM Studio, vLLM self-hosted, or any OpenAI-spec API.
     # Set AI_PROVIDER=openai_compat to activate.
-    openai_compatible_base_url: Optional[str] = None   # e.g. https://api.openai.com/v1
-    openai_compatible_api_key: Optional[str] = None    # your API key
-    openai_compatible_model: str = "gpt-4o-mini"       # model name to pass in the request
+    openai_compatible_base_url: str | None = None  # e.g. https://api.openai.com/v1
+    openai_compatible_api_key: str | None = None  # your API key
+    openai_compatible_model: str = "gpt-4o-mini"  # model name to pass in the request
 
     # ── Research Providers ────────────────────────────────────────
-    searxng_base_url: Optional[str] = None
-    github_token: Optional[str] = None
+    searxng_base_url: str | None = None
+    github_token: str | None = None
 
     # ── Rate limiting & timeouts ──────────────────────────────────
-    rate_limit_per_minute: int = 10
     request_timeout: int = 30
 
     # ── CORS ──────────────────────────────────────────────────────
@@ -123,7 +124,19 @@ class Settings(BaseSettings):
     @field_validator("ai_provider")
     @classmethod
     def validate_ai_provider(cls, v: str) -> str:
-        allowed = {"mock", "beta", "openrouter", "ollama", "groq", "hybrid", "auto", "dual", "openai_compat", "openai", "opencode"}
+        allowed = {
+            "mock",
+            "beta",
+            "openrouter",
+            "ollama",
+            "groq",
+            "hybrid",
+            "auto",
+            "dual",
+            "openai_compat",
+            "openai",
+            "opencode",
+        }
         if v not in allowed:
             raise ValueError(f"ai_provider must be one of {allowed}, got: {v!r}")
         return v
@@ -131,7 +144,13 @@ class Settings(BaseSettings):
     def masked(self) -> dict:
         """Return a copy with secrets replaced — safe for logging."""
         d = self.model_dump()
-        for secret_key in ("openrouter_api_key", "github_token", "groq_api_key", "openai_compatible_api_key", "opencode_api_key"):
+        for secret_key in (
+            "openrouter_api_key",
+            "github_token",
+            "groq_api_key",
+            "openai_compatible_api_key",
+            "opencode_api_key",
+        ):
             if d.get(secret_key):
                 d[secret_key] = "***"
         return d

@@ -10,6 +10,7 @@ Structure:
 
 No database, no migrations, no setup. Everything is human-readable.
 """
+
 from __future__ import annotations
 
 import csv
@@ -18,21 +19,29 @@ import os
 import shutil
 from datetime import datetime
 from pathlib import Path
-from typing import Optional
 
 # Storage root — next to wherever the process runs
 _PROJECT_ROOT = Path(__file__).resolve().parents[2]
-_configured_root = Path(os.environ.get("AZERO_DATA_DIR", str(_PROJECT_ROOT / "azero_data"))).expanduser()
-_STORAGE_ROOT = _configured_root if _configured_root.is_absolute() else _PROJECT_ROOT / _configured_root
+_configured_root = Path(
+    os.environ.get("AZERO_DATA_DIR", str(_PROJECT_ROOT / "azero_data"))
+).expanduser()
+_STORAGE_ROOT = (
+    _configured_root if _configured_root.is_absolute() else _PROJECT_ROOT / _configured_root
+)
 _CSV_PATH = _STORAGE_ROOT / "analyses.csv"
 _ANALYSES_DIR = _STORAGE_ROOT / "analyses"
 _LEGACY_STORAGE_ROOT = _PROJECT_ROOT / "backend" / "azero_data"
 _migration_checked = False
 
 CSV_FIELDS = [
-    "id", "status", "stage",
-    "created_at", "completed_at",
-    "idea_name", "is_demo", "error_message",
+    "id",
+    "status",
+    "stage",
+    "created_at",
+    "completed_at",
+    "idea_name",
+    "is_demo",
+    "error_message",
 ]
 
 
@@ -103,7 +112,7 @@ def _write_all(rows: list[dict]) -> None:
     os.replace(tmp_path, _CSV_PATH)
 
 
-def resolve_id(query: str) -> Optional[str]:
+def resolve_id(query: str) -> str | None:
     """Resolve a full UUID, short prefix (e.g. b28a73fb), or 1-based index (e.g. 1) to a full analysis ID."""
     rows = _read_all()
     if not rows:
@@ -163,16 +172,19 @@ def create_record(
     )
 
     rows = _read_all()
-    rows.insert(0, {
-        "id": analysis_id,
-        "status": "pending",
-        "stage": "clarifying_idea",
-        "created_at": datetime.utcnow().isoformat(timespec="seconds"),
-        "completed_at": "",
-        "idea_name": idea_name,
-        "is_demo": "true" if is_demo else "false",
-        "error_message": "",
-    })
+    rows.insert(
+        0,
+        {
+            "id": analysis_id,
+            "status": "pending",
+            "stage": "clarifying_idea",
+            "created_at": datetime.utcnow().isoformat(timespec="seconds"),
+            "completed_at": "",
+            "idea_name": idea_name,
+            "is_demo": "true" if is_demo else "false",
+            "error_message": "",
+        },
+    )
     _write_all(rows)
 
 
@@ -219,7 +231,7 @@ def fail_record(analysis_id: str, error: str) -> None:
     _write_all(rows)
 
 
-def get_record(analysis_id: str) -> Optional[dict]:
+def get_record(analysis_id: str) -> dict | None:
     """Return the CSV row dict for an analysis, or None."""
     full_id = resolve_id(analysis_id)
     if not full_id:
@@ -230,7 +242,7 @@ def get_record(analysis_id: str) -> Optional[dict]:
     return None
 
 
-def get_input(analysis_id: str) -> Optional[dict]:
+def get_input(analysis_id: str) -> dict | None:
     full_id = resolve_id(analysis_id) or analysis_id
     p = _input_path(full_id)
     if p.exists():
@@ -238,7 +250,7 @@ def get_input(analysis_id: str) -> Optional[dict]:
     return None
 
 
-def get_result(analysis_id: str) -> Optional[dict]:
+def get_result(analysis_id: str) -> dict | None:
     full_id = resolve_id(analysis_id) or analysis_id
     p = _result_path(full_id)
     if p.exists():

@@ -1,4 +1,5 @@
 """Deterministic regional demand analysis grounded only in collected evidence."""
+
 from __future__ import annotations
 
 import re
@@ -41,7 +42,9 @@ def _is_regional(item: EvidenceItem, geography: str) -> bool:
     return bool(tokens) and any(token in haystack for token in tokens)
 
 
-def _signals(items: list[EvidenceItem], category: str, limit: int = 8) -> list[RegionalEvidenceSignal]:
+def _signals(
+    items: list[EvidenceItem], category: str, limit: int = 8
+) -> list[RegionalEvidenceSignal]:
     return [
         RegionalEvidenceSignal(
             evidence_id=item.evidence_id,
@@ -59,10 +62,16 @@ def generate_regional_analysis(
     evidence: list[EvidenceItem],
 ) -> RegionalMarketAnalysis:
     """Measure the strength and coverage of evidence specific to the requested geography."""
-    regional = [item for item in evidence if item.evidence_type in _REGIONAL_TYPES and _is_regional(item, idea.geography)]
+    regional = [
+        item
+        for item in evidence
+        if item.evidence_type in _REGIONAL_TYPES and _is_regional(item, idea.geography)
+    ]
     demand = [
-        item for item in regional
-        if item.evidence_type in {
+        item
+        for item in regional
+        if item.evidence_type
+        in {
             EvidenceType.DEMAND,
             EvidenceType.GEOGRAPHIC,
             EvidenceType.MARKET_DIRECTION,
@@ -103,9 +112,7 @@ def generate_regional_analysis(
             "Use the cited signals as hypotheses and close the listed research gaps locally."
         )
     else:
-        summary = (
-            f"No evidence explicitly tied to {idea.geography} was collected. Global category evidence must not be treated as proof of regional demand."
-        )
+        summary = f"No evidence explicitly tied to {idea.geography} was collected. Global category evidence must not be treated as proof of regional demand."
 
     localization = [
         f"Validate pricing and purchasing power in {idea.currency or 'the local currency'}.",
@@ -119,13 +126,21 @@ def generate_regional_analysis(
 
     gaps: list[str] = []
     if len(demand) < 5:
-        gaps.append(f"Collect at least five independent demand or pain signals from {idea.geography}.")
+        gaps.append(
+            f"Collect at least five independent demand or pain signals from {idea.geography}."
+        )
     if not pricing:
-        gaps.append(f"Find local competitor prices and willingness-to-pay evidence in {idea.currency or idea.geography}.")
+        gaps.append(
+            f"Find local competitor prices and willingness-to-pay evidence in {idea.currency or idea.geography}."
+        )
     if not regulatory:
-        gaps.append(f"Confirm licenses, taxes, privacy, consumer-protection, and sector rules in {idea.geography}.")
+        gaps.append(
+            f"Confirm licenses, taxes, privacy, consumer-protection, and sector rules in {idea.geography}."
+        )
     if not distribution:
-        gaps.append(f"Identify locally trusted communities, partners, directories, and acquisition benchmarks in {idea.geography}.")
+        gaps.append(
+            f"Identify locally trusted communities, partners, directories, and acquisition benchmarks in {idea.geography}."
+        )
     if len(sources) < 3:
         gaps.append("Triangulate regional claims across at least three independent source types.")
 

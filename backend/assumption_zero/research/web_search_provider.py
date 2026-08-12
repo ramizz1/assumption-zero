@@ -1,17 +1,14 @@
-"""
-Web Search research provider.
+"""Zero-configuration web research through a public RSS search endpoint."""
 
-Uses DuckDuckGo Web Search API / HTML scraper for zero-config live web research.
-No API key required. Works globally across all geographies and niches.
-"""
 from __future__ import annotations
 
 import hashlib
+import html
 import logging
 import re
+import xml.etree.ElementTree as ET
 from datetime import date, datetime
-from typing import Dict, List
-from urllib.parse import quote_plus, unquote
+from urllib.parse import urlparse
 
 import httpx
 
@@ -26,7 +23,7 @@ from assumption_zero.schemas import (
 
 logger = logging.getLogger(__name__)
 
-DUCKDUCKGO_HTML = "https://html.duckduckgo.com/html/"
+BING_RSS = "https://www.bing.com/search"
 
 
 def _stable_id(url: str) -> str:
@@ -34,7 +31,7 @@ def _stable_id(url: str) -> str:
 
 
 def _ev_type(query_type: str) -> EvidenceType:
-    mapping: Dict[str, EvidenceType] = {
+    mapping: dict[str, EvidenceType] = {
         "competitor": EvidenceType.COMPETITOR,
         "pricing": EvidenceType.PRICING,
         "complaint": EvidenceType.COMPLAINT,
@@ -50,7 +47,7 @@ def _ev_type(query_type: str) -> EvidenceType:
 
 
 class WebSearchProvider(ResearchProvider):
-    """Zero-config web search provider querying live search engines."""
+    """Collect public web results from Bing's RSS representation."""
 
     def __init__(self) -> None:
         self._settings = get_settings()
@@ -69,18 +66,14 @@ class WebSearchProvider(ResearchProvider):
         query_type: str,
         idea: IdeaInput,
         max_results: int = 10,
-    ) -> List[EvidenceItem]:
+    ) -> list[EvidenceItem]:
+        del idea  # The generated query already carries the idea and region context.
         headers = {
-            "User-Agent": (
-                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-                "AppleWebKit/537.36 (KHTML, like Gecko) "
-                "Chrome/124.0.0.0 Safari/537.36"
-            ),
-            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+            "User-Agent": "Assumption-Zero/0.1 (+https://github.com/ramizz1/assumption-zero)",
+            "Accept": "application/rss+xml, application/xml;q=0.9, text/xml;q=0.8",
         }
-
-        url = f"{DUCKDUCKGO_HTML}?q={quote_plus(query)}"
-        items: List[EvidenceItem] = []
+        params = {"format": "rss", "q": query}
+        items: list[EvidenceItem] = []
         now = datetime.utcnow()
         today = date.today()
 
@@ -91,46 +84,40 @@ class WebSearchProvider(ResearchProvider):
                 headers=headers,
                 follow_redirects=True,
             ) as client:
-                resp = await client.get(url)
-                if resp.status_code == 200:
-                    html = resp.text
-                    matches = re.findall(
-                        r'<a class="result__snippet"[^>]*href="//duckduckgo.com/l/\?uddg=([^&"]+)[^>]*">(.*?)</a>',
-                        html,
-                        re.DOTALL,
+                response = await client.get(BING_RSS, params=params)
+                response.raise_for_status()
+
+            root = ET.fromstring(response.content)
+            for result in root.findall("./channel/item")[:max_results]:
+                clean_url = (result.findtext("link") or "").strip()
+                title = html.unescape((result.findtext("title") or "").strip())
+                raw_description = result.findtext("description") or ""
+                clean_text = html.unescape(re.sub(r"<[^>]+>", " ", raw_description))
+                clean_text = re.sub(r"\s+", " ", clean_text).strip()
+                if not clean_url.startswith(("http://", "https://")) or len(clean_text) < 15:
+                    continue
+
+                domain = (urlparse(clean_url).hostname or "web").removeprefix("www.")
+                items.append(
+                    EvidenceItem(
+                        evidence_id=_stable_id(clean_url),
+                        title=title or f"Result from {domain}",
+                        url=clean_url,
+                        evidence_origin=f"Web Search - {domain}",
+                        source_name=f"Web ({domain})",
+                        publication_date=None,
+                        retrieval_date=today,
+                        passage=self._truncate(clean_text, 500),
+                        search_query=query,
+                        evidence_type=_ev_type(query_type),
+                        reliability=ReliabilityLevel.MEDIUM,
+                        relevance_score=0.8,
+                        retrieval_timestamp=now,
+                        is_demo=False,
                     )
-                    for raw_url, snippet in matches[:max_results]:
-                        clean_url = unquote(raw_url)
-                        clean_text = re.sub(r"<[^>]+>", "", snippet).strip()
-                        if not clean_text or len(clean_text) < 15:
-                            continue
-
-                        # Extract domain for clean title
-                        domain_match = re.search(r"https?://(?:www\.)?([^/]+)", clean_url)
-                        domain = domain_match.group(1) if domain_match else "Web"
-
-                        title = f"[{domain}] {clean_text[:70]}…"
-
-                        items.append(
-                            EvidenceItem(
-                                evidence_id=_stable_id(clean_url),
-                                title=title,
-                                url=clean_url,
-                                evidence_origin=f"Web Search - {domain}",
-                                source_name=f"Web ({domain})",
-                                publication_date=None,
-                                retrieval_date=today,
-                                passage=self._truncate(clean_text, 500),
-                                search_query=query,
-                                evidence_type=_ev_type(query_type),
-                                reliability=ReliabilityLevel.MEDIUM,
-                                relevance_score=0.8,
-                                retrieval_timestamp=now,
-                                is_demo=False,
-                            )
-                        )
-                    logger.info("WebSearchProvider: %d results for %r", len(items), query)
-        except Exception as exc:
-            logger.debug("WebSearchProvider failed for %r: %s", query, exc)
+                )
+            logger.info("WebSearchProvider: %d results for %r", len(items), query)
+        except (httpx.HTTPError, ET.ParseError, ValueError) as exc:
+            logger.warning("WebSearchProvider failed for %r: %s", query, exc)
 
         return items

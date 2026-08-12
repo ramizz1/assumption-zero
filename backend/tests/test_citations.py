@@ -1,4 +1,5 @@
 """Tests for citation validator."""
+
 from __future__ import annotations
 
 from assumption_zero.analysis.citation_validator import validate_citations

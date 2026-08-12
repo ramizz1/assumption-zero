@@ -4,6 +4,7 @@ Tests for the scoring engine.
 Critical: weights must sum to exactly 100.
 Scoring must be deterministic pure Python.
 """
+
 from __future__ import annotations
 
 import pytest

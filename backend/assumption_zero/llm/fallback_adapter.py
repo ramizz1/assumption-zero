@@ -1,14 +1,14 @@
 """
 Fallback Chain Adapter — Smart multi-key LLM failover.
 
-Automatically ranks and sequences available LLM adapters (Groq -> OpenRouter -> OpenAI -> OpenCode -> Ollama -> Mock).
+Automatically sequences the adapters supplied by the analysis service and fails over safely.
 If a provider hits rate limits (429), quota limits (402), timeouts, or network failures,
 it automatically fails over to the next configured provider seamlessly.
 """
+
 from __future__ import annotations
 
 import logging
-from typing import List
 
 from assumption_zero.llm.base import LLMAdapter, PerspectiveName, PerspectiveOutput
 from assumption_zero.schemas import EvidenceItem, IdeaInput
@@ -23,12 +23,13 @@ class FallbackChainAdapter(LLMAdapter):
     network timeouts, or server errors.
     """
 
-    def __init__(self, adapters: List[LLMAdapter]):
+    def __init__(self, adapters: list[LLMAdapter]):
         # Filter down to adapters that report is_available == True
         self.adapters = [a for a in adapters if a.is_available]
         if not self.adapters:
             # Fallback to mock adapter if no key adapters are available
             from assumption_zero.llm.mock_adapter import MockAdapter
+
             self.adapters = [MockAdapter()]
 
     @property
@@ -44,12 +45,14 @@ class FallbackChainAdapter(LLMAdapter):
         self,
         perspective_name: PerspectiveName,
         idea: IdeaInput,
-        evidence: List[EvidenceItem],
+        evidence: list[EvidenceItem],
     ) -> PerspectiveOutput:
         last_error = None
         for adapter in self.adapters:
             try:
-                logger.info("Executing perspective '%s' via adapter: %s", perspective_name, adapter.model_id)
+                logger.info(
+                    "Executing perspective '%s' via adapter: %s", perspective_name, adapter.model_id
+                )
                 return await adapter.analyze_perspective(perspective_name, idea, evidence)
             except Exception as exc:
                 last_error = exc

@@ -4,11 +4,12 @@ Groq LLM adapter — ultra-fast Llama 3.3 inference.
 Groq provides 200,000 tokens/day on its free tier.
 https://console.groq.com/keys
 """
+
 from __future__ import annotations
 
-import os
 import logging
-from typing import Any, Dict, List
+import os
+from typing import Any
 
 import httpx
 
@@ -39,17 +40,14 @@ class GroqAdapter(LLMAdapter):
     Groq adapter for ultra-fast Llama 3.3 inference.
     """
 
-    def __init__(self, api_key: str = None, model: str = None, **kwargs) -> None:
+    def __init__(self, api_key: str | None = None, model: str | None = None, **kwargs) -> None:
         self._settings = get_settings()
         self._api_key_override = api_key
         self._model_override = model
 
     def _api_key(self) -> str:
         key = (
-            self._api_key_override
-            or os.getenv("GROQ_API_KEY")
-            or self._settings.groq_api_key
-            or ""
+            self._api_key_override or os.getenv("GROQ_API_KEY") or self._settings.groq_api_key or ""
         )
         return key.strip()
 
@@ -64,7 +62,7 @@ class GroqAdapter(LLMAdapter):
     def is_available(self) -> bool:
         return bool(self._api_key())
 
-    def _headers(self) -> Dict[str, str]:
+    def _headers(self) -> dict[str, str]:
         api_key = self._api_key()
         if not api_key:
             raise RuntimeError(
@@ -75,12 +73,12 @@ class GroqAdapter(LLMAdapter):
             "Content-Type": "application/json",
         }
 
-    async def _chat(self, messages: List[Dict[str, str]]) -> str:
+    async def _chat(self, messages: list[dict[str, str]]) -> str:
         url = f"{_GROQ_BASE}/chat/completions"
         primary = self._model()
         models_to_try = [primary] + [m for m in _FALLBACK_MODELS if m != primary]
 
-        last_error = None
+        last_error: Exception | None = None
         timeout = max(30.0, float(self._settings.request_timeout))
 
         async with httpx.AsyncClient(
@@ -88,7 +86,7 @@ class GroqAdapter(LLMAdapter):
             headers=self._headers(),
         ) as client:
             for model_name in models_to_try:
-                payload: Dict[str, Any] = {
+                payload: dict[str, Any] = {
                     "model": model_name,
                     "messages": messages,
                     "temperature": 0.2,
@@ -112,7 +110,11 @@ class GroqAdapter(LLMAdapter):
                             "Please check your GROQ_API_KEY at https://console.groq.com/keys"
                         )
                     elif resp.status_code in (402, 429):
-                        logger.debug("Groq model %s rate limited (HTTP %s) — trying fallback model...", model_name, resp.status_code)
+                        logger.debug(
+                            "Groq model %s rate limited (HTTP %s) — trying fallback model...",
+                            model_name,
+                            resp.status_code,
+                        )
                         last_error = RuntimeError(
                             f"Groq API quota or rate limit exceeded on {model_name} (HTTP {resp.status_code}). "
                             "Please check your limit at https://console.groq.com"
@@ -134,11 +136,14 @@ class GroqAdapter(LLMAdapter):
         self,
         perspective_name: PerspectiveName,
         idea: IdeaInput,
-        evidence: List[EvidenceItem],
+        evidence: list[EvidenceItem],
     ) -> PerspectiveOutput:
         messages = [
             {"role": "system", "content": PERSPECTIVE_SYSTEM_PROMPTS[perspective_name]},
-            {"role": "user", "content": build_analysis_prompt(perspective_name.value, idea, evidence)},
+            {
+                "role": "user",
+                "content": build_analysis_prompt(perspective_name.value, idea, evidence),
+            },
         ]
         raw = await self._chat(messages)
         return _parse_output(raw, perspective_name, self.model_id)
@@ -159,6 +164,7 @@ class GroqAdapter(LLMAdapter):
     async def parse_raw_prompt(self, raw_text: str) -> IdeaInput:
         """Parse freeform prompt text into structured IdeaInput using Groq LLM."""
         from assumption_zero.schemas import is_gibberish
+
         if is_gibberish(raw_text):
             raise ValueError(
                 "The input text appears to be random characters or gibberish. Please enter a valid product or business idea."
@@ -183,10 +189,12 @@ class GroqAdapter(LLMAdapter):
         )
 
         try:
-            raw_response = await self._chat([
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": f"Parse this startup idea:\n{raw_text}"},
-            ])
+            raw_response = await self._chat(
+                [
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": f"Parse this startup idea:\n{raw_text}"},
+                ]
+            )
             parsed_data = _repair_and_parse_json(raw_response)
             parsed_data["name"] = parsed_data.get("name") or "New Idea"
             parsed_data["description"] = parsed_data.get("description") or raw_text[:200]

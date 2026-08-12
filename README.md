@@ -153,7 +153,7 @@ azero analyze --provider ollama --model llama3.1
 
 Keep secrets in your local `.env`; never commit API keys. See [.env.example](.env.example) for available settings.
 
-Keys entered in the web settings are intentionally stored only in that browser and sent with each analysis request. They do not modify the backend `.env`. Use `.env` for a server-wide or CLI key; use the web settings for a per-browser key. In `Auto` mode, a key supplied by the browser takes priority, starting with Groq.
+Keys entered in web settings are kept in `sessionStorage`, sent only with analysis requests, and cleared when the browser session ends. Non-secret provider preferences may persist locally. Keys do not modify the backend `.env`. Use `.env` for a server-wide or CLI key; use web settings for a temporary per-browser key. In `Auto` mode, a browser-supplied key takes priority, starting with Groq.
 
 Without a working generative-AI provider, the clearly labelled **Assumption Zero Evidence Engine** can still collect live public search results. It generates deterministic queries, runs the enabled research providers in parallel, normalizes and deduplicates their result snippets, assigns evidence IDs, and applies fixed scoring rules. It does not generate new facts or semantically reason over full sources like an LLM; its qualitative text is template-based and should be treated as a research baseline.
 
@@ -254,14 +254,22 @@ npm run check
 
 ## Deploy safely
 
-Before exposing Assumption Zero publicly:
+The included Compose stack builds both applications, keeps the backend off the host network, enables SSRF protection, applies same-origin API proxying, rate-limits analysis writes, adds browser security headers, and runs both containers as non-root users.
 
-- Serve it over HTTPS because users may supply their own provider keys.
-- Set `SSRF_PROTECTION_ENABLED=true` for custom provider URLs.
-- Restrict `CORS_ORIGINS` to the real frontend origin.
-- Add rate limiting at the proxy or hosting layer.
-- Persist `azero_data` on a protected volume and define a retention policy.
+```bash
+cp .env.example .env
+docker compose up --build -d
+docker compose ps
+```
+
+Open `http://localhost:5173` (or set `PORT` in `.env`). Before exposing the stack publicly:
+
+- Put it behind HTTPS and access control because saved analyses are private, single-tenant data.
+- Keep `SSRF_PROTECTION_ENABLED=true`; disable it only for trusted local Ollama/custom endpoints.
+- Keep the API private behind the included frontend proxy. If exposed separately, restrict `CORS_ORIGINS` and add equivalent rate limiting.
+- Back up `azero_data`, protect it as sensitive data, and define a retention policy.
 - Keep `.env` and generated private reports out of version control.
+- Run `docker compose pull && docker compose up --build -d` regularly and review Dependabot updates.
 
 See [SECURITY.md](SECURITY.md) for vulnerability reporting.
 

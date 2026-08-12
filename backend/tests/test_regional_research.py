@@ -1,4 +1,5 @@
 """Coverage for deterministic regional analysis and research-depth controls."""
+
 from __future__ import annotations
 
 from collections import Counter
@@ -61,13 +62,43 @@ def _evidence(
 def test_regional_analysis_counts_only_market_specific_evidence():
     idea = _idea()
     items = [
-        _evidence("E001", EvidenceType.DEMAND, "Clinic digitization survey", "Statistics agency", "dental Azerbaijan"),
-        _evidence("E002", EvidenceType.PRICING, "Local clinic software prices", "Trade directory", "pricing Azerbaijan AZN"),
-        _evidence("E003", EvidenceType.REGULATORY, "Patient data rules", "Health regulator", "health privacy Azerbaijan"),
-        _evidence("E004", EvidenceType.DISTRIBUTION, "Dental association directory", "Dental association", "clinics Azerbaijan"),
+        _evidence(
+            "E001",
+            EvidenceType.DEMAND,
+            "Clinic digitization survey",
+            "Statistics agency",
+            "dental Azerbaijan",
+        ),
+        _evidence(
+            "E002",
+            EvidenceType.PRICING,
+            "Local clinic software prices",
+            "Trade directory",
+            "pricing Azerbaijan AZN",
+        ),
+        _evidence(
+            "E003",
+            EvidenceType.REGULATORY,
+            "Patient data rules",
+            "Health regulator",
+            "health privacy Azerbaijan",
+        ),
+        _evidence(
+            "E004",
+            EvidenceType.DISTRIBUTION,
+            "Dental association directory",
+            "Dental association",
+            "clinics Azerbaijan",
+        ),
         EvidenceItem(
             **{
-                **_evidence("E005", EvidenceType.DEMAND, "US dental software demand", "US report", "dental software US").model_dump(),
+                **_evidence(
+                    "E005",
+                    EvidenceType.DEMAND,
+                    "US dental software demand",
+                    "US report",
+                    "dental software US",
+                ).model_dump(),
                 "passage": "United States clinics increased software purchases.",
             }
         ),

@@ -4,18 +4,23 @@ Analysis service — orchestrates research, AI, scoring, and file-based persiste
 Storage: CSV metadata + JSON files under ./azero_data/
 No database required.
 """
+
 from __future__ import annotations
 
 import logging
 import uuid
 from datetime import datetime
-from typing import List, Optional
 
 import assumption_zero.storage as store
 from assumption_zero.analysis.engine import AnalysisEngine
 from assumption_zero.config import get_settings, is_public_http_url
 from assumption_zero.llm.base import LLMAdapter
+from assumption_zero.llm.fallback_adapter import FallbackChainAdapter
+from assumption_zero.llm.groq_adapter import GroqAdapter
 from assumption_zero.llm.mock_adapter import MockAdapter
+from assumption_zero.llm.ollama_adapter import OllamaAdapter
+from assumption_zero.llm.openai_compat_adapter import OpenAICompatAdapter
+from assumption_zero.llm.opencode_adapter import OpencodeAdapter
 from assumption_zero.llm.openrouter_adapter import OpenRouterAdapter
 from assumption_zero.research.arxiv_provider import ArxivProvider
 from assumption_zero.research.base import ResearchProvider
@@ -43,18 +48,11 @@ logger = logging.getLogger(__name__)
 # ── LLM adapter factory ───────────────────────────────────────────────────────
 
 
-from assumption_zero.llm.fallback_adapter import FallbackChainAdapter
-from assumption_zero.llm.groq_adapter import GroqAdapter
-from assumption_zero.llm.ollama_adapter import OllamaAdapter
-from assumption_zero.llm.openai_compat_adapter import OpenAICompatAdapter
-from assumption_zero.llm.opencode_adapter import OpencodeAdapter
-
-
 def build_llm_adapter(
-    provider_override: Optional[str] = None,
-    api_key_override: Optional[str] = None,
-    model_override: Optional[str] = None,
-    base_url_override: Optional[str] = None,
+    provider_override: str | None = None,
+    api_key_override: str | None = None,
+    model_override: str | None = None,
+    base_url_override: str | None = None,
 ) -> LLMAdapter:
     """Return the configured LLM adapter.
 
@@ -73,15 +71,19 @@ def build_llm_adapter(
     # Instantiate candidate adapters with injected key/URL overrides
     groq = GroqAdapter(api_key=api_key_override, model=model_override)
     openrouter = OpenRouterAdapter(api_key=api_key_override, model=model_override)
-    openai_compat = OpenAICompatAdapter(api_key=api_key_override, model=model_override, base_url=base_url_override)
-    opencode = OpencodeAdapter(api_key=api_key_override, model=model_override, base_url=base_url_override)
+    openai_compat = OpenAICompatAdapter(
+        api_key=api_key_override, model=model_override, base_url=base_url_override
+    )
+    opencode = OpencodeAdapter(
+        api_key=api_key_override, model=model_override, base_url=base_url_override
+    )
     ollama = OllamaAdapter(model=model_override, base_url=base_url_override)
     mock = MockAdapter()
 
     # An explicitly selected provider is strict: never disguise a failed AI
     # request as a successful deterministic baseline report. Automatic mode is
     # the only mode that may move between providers and finally use MockAdapter.
-    candidates: List[LLMAdapter] = []
+    candidates: list[LLMAdapter] = []
 
     if provider == "groq":
         candidates = [groq]
@@ -96,8 +98,10 @@ def build_llm_adapter(
     elif provider == "mock":
         candidates = [mock]
     else:
-        # Default chain priority: Groq -> OpenRouter -> OpenAI -> OpenCode -> Ollama -> Mock
-        candidates = [groq, openrouter, openai_compat, opencode, ollama, mock]
+        # Auto mode uses configured key-based providers, then the deterministic
+        # baseline. Local Ollama must be selected explicitly so a default URL
+        # does not add repeated connection delays when no server is running.
+        candidates = [groq, openrouter, openai_compat, opencode, mock]
 
     # Filter to available adapters
     available = [a for a in candidates if a.is_available]
@@ -120,10 +124,10 @@ def build_llm_adapter(
 
 
 def build_research_providers(
-    requested: Optional[List[str]] = None,
-) -> List[ResearchProvider]:
+    requested: list[str] | None = None,
+) -> list[ResearchProvider]:
     """Return all enabled research providers."""
-    all_providers: List[ResearchProvider] = [
+    all_providers: list[ResearchProvider] = [
         WebSearchProvider(),
         NewsSearchProvider(),
         ArxivProvider(),
@@ -148,8 +152,8 @@ def build_research_providers(
 
 async def create_analysis(
     idea: IdeaInput,
-    ai_provider_override: Optional[str] = None,
-    research_providers_override: Optional[List[str]] = None,
+    ai_provider_override: str | None = None,
+    research_providers_override: list[str] | None = None,
     is_demo: bool = False,
 ) -> str:
     """Create a new analysis record and return its ID."""
@@ -167,14 +171,14 @@ async def create_analysis(
 async def run_analysis(
     analysis_id: str,
     idea: IdeaInput,
-    ai_provider_override: Optional[str] = None,
-    openrouter_api_key: Optional[str] = None,
-    groq_api_key: Optional[str] = None,
-    opencode_api_key: Optional[str] = None,
-    openai_api_key: Optional[str] = None,
-    custom_base_url: Optional[str] = None,
-    ollama_base_url: Optional[str] = None,
-    research_providers_override: Optional[List[str]] = None,
+    ai_provider_override: str | None = None,
+    openrouter_api_key: str | None = None,
+    groq_api_key: str | None = None,
+    opencode_api_key: str | None = None,
+    openai_api_key: str | None = None,
+    custom_base_url: str | None = None,
+    ollama_base_url: str | None = None,
+    research_providers_override: list[str] | None = None,
     research_depth: ResearchDepth = ResearchDepth.DEEP,
     is_demo: bool = False,
 ) -> None:
@@ -182,7 +186,7 @@ async def run_analysis(
 
     api_key_override = None
     base_url_override = None
-    
+
     if ai_provider_override == "groq" and groq_api_key:
         api_key_override = groq_api_key
     elif ai_provider_override == "openrouter" and openrouter_api_key:
@@ -211,7 +215,7 @@ async def run_analysis(
         llm = build_llm_adapter(
             provider_override=ai_provider_override,
             api_key_override=api_key_override,
-            base_url_override=base_url_override
+            base_url_override=base_url_override,
         )
         providers = build_research_providers(research_providers_override)
         engine = AnalysisEngine(
@@ -237,7 +241,7 @@ async def run_analysis(
         store.fail_record(analysis_id, str(exc))
 
 
-async def get_analysis(analysis_id: str) -> Optional[AnalysisResult]:
+async def get_analysis(analysis_id: str) -> AnalysisResult | None:
     """Retrieve a full AnalysisResult (in-progress or complete)."""
     row = store.get_record(analysis_id)
     if not row:
@@ -266,7 +270,7 @@ async def get_analysis(analysis_id: str) -> Optional[AnalysisResult]:
         return None
 
     # Still in progress — return minimal status object
-    created = _parse_dt(row.get("created_at"))
+    created = _parse_dt(row.get("created_at")) or datetime.now()
     completed = _parse_dt(row.get("completed_at")) if row.get("completed_at") else None
     stage_val = row.get("stage", "clarifying_idea")
 
@@ -284,13 +288,13 @@ async def get_analysis(analysis_id: str) -> Optional[AnalysisResult]:
 
 
 async def list_analyses(
-    search: Optional[str] = None,
-    status_filter: Optional[str] = None,
+    search: str | None = None,
+    status_filter: str | None = None,
     limit: int = 100,
-) -> List[AnalysisListItem]:
+) -> list[AnalysisListItem]:
     """Return all analyses as list items, newest first."""
     rows = store.list_records(limit=limit)
-    items: List[AnalysisListItem] = []
+    items: list[AnalysisListItem] = []
 
     search_clean = search.strip().lower() if search else None
     status_clean = status_filter.strip().lower() if status_filter else None
@@ -304,8 +308,8 @@ async def list_analyses(
                 continue
 
         row_status = row.get("status", "pending")
-        score: Optional[float] = None
-        rec: Optional[Recommendation] = None
+        score: float | None = None
+        rec: Recommendation | None = None
 
         result_data = store.get_result(row_id)
         if result_data:
@@ -348,7 +352,9 @@ async def list_analyses(
                 status=parsed_status,
                 stage=parsed_stage,
                 created_at=_parse_dt(row.get("created_at")) or datetime.utcnow(),
-                completed_at=_parse_dt(row.get("completed_at")) if row.get("completed_at") else None,
+                completed_at=_parse_dt(row.get("completed_at"))
+                if row.get("completed_at")
+                else None,
                 idea_name=idea_name,
                 is_demo=row.get("is_demo", "false") == "true",
                 opportunity_score=score,
@@ -367,7 +373,7 @@ async def delete_analysis(analysis_id: str) -> bool:
 # ── Helpers ───────────────────────────────────────────────────────────────────
 
 
-def _parse_dt(value: Optional[str]) -> Optional[datetime]:
+def _parse_dt(value: str | None) -> datetime | None:
     if not value:
         return None
     try:

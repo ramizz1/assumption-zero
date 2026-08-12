@@ -1,12 +1,13 @@
 """
 Tests for Markdown and JSON export functions.
 """
+
 from __future__ import annotations
 
 import json
 from datetime import datetime
 
-from assumption_zero.cli import _export_markdown, DISCLAIMER
+from assumption_zero.cli import DISCLAIMER, _export_markdown
 from assumption_zero.schemas import (
     AnalysisResult,
     AnalysisStage,
@@ -19,9 +20,9 @@ from assumption_zero.schemas import (
 
 
 def _make_result(sample_idea, sample_evidence, sample_perspectives):
-    from assumption_zero.analysis.scoring import calculate_opportunity_score
     from assumption_zero.analysis.confidence import calculate_evidence_confidence
     from assumption_zero.analysis.experiment_generator import generate_experiments
+    from assumption_zero.analysis.scoring import calculate_opportunity_score
 
     score = calculate_opportunity_score(sample_perspectives, sample_evidence, sample_idea)
     conf = calculate_evidence_confidence(sample_evidence, sample_perspectives)
@@ -98,6 +99,7 @@ def test_markdown_export_contains_experiments(sample_idea, sample_evidence, samp
 
 def test_html_export_structure(sample_idea, sample_evidence, sample_perspectives):
     from assumption_zero.cli import _export_html
+
     result = _make_result(sample_idea, sample_evidence, sample_perspectives)
     html = _export_html(result)
     assert "<!DOCTYPE html>" in html
@@ -107,7 +109,9 @@ def test_html_export_structure(sample_idea, sample_evidence, sample_perspectives
     assert DISCLAIMER in html
 
 
-def test_exports_include_full_competitor_intelligence(sample_idea, sample_evidence, sample_perspectives):
+def test_exports_include_full_competitor_intelligence(
+    sample_idea, sample_evidence, sample_perspectives
+):
     from assumption_zero.cli import _export_html
 
     result = _make_result(sample_idea, sample_evidence, sample_perspectives)

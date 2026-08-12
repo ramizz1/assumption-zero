@@ -6,9 +6,9 @@ the REAL research and AI pipeline. Configure .env with your preferred providers.
 
 This file is intentionally a no-op shim so existing imports don't break.
 """
+
 from assumption_zero.research.base import ResearchProvider
 from assumption_zero.schemas import EvidenceItem, IdeaInput
-from typing import List
 
 
 class DemoProvider(ResearchProvider):
@@ -39,5 +39,5 @@ class DemoProvider(ResearchProvider):
         query_type: str,
         idea: IdeaInput,
         max_results: int = 10,
-    ) -> List[EvidenceItem]:
+    ) -> list[EvidenceItem]:
         return []

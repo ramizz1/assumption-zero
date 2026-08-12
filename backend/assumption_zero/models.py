@@ -1,9 +1,9 @@
 """SQLAlchemy database models and session management."""
+
 from __future__ import annotations
 
 import json
 from datetime import datetime
-from typing import Optional
 
 from sqlalchemy import Boolean, Column, DateTime, String, Text, create_engine
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
@@ -26,15 +26,15 @@ class AnalysisRecord(Base):
     stage = Column(String(40), nullable=False, default="clarifying_idea")
     created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
     completed_at = Column(DateTime, nullable=True)
-    input_data = Column(Text, nullable=False)   # IdeaInput as JSON
-    result_data = Column(Text, nullable=True)   # AnalysisResult as JSON (updated incrementally)
+    input_data = Column(Text, nullable=False)  # IdeaInput as JSON
+    result_data = Column(Text, nullable=True)  # AnalysisResult as JSON (updated incrementally)
     is_demo = Column(Boolean, nullable=False, default=False)
     error_message = Column(Text, nullable=True)
 
     def set_result(self, result_dict: dict) -> None:
         self.result_data = json.dumps(result_dict, default=str)
 
-    def get_result(self) -> Optional[dict]:
+    def get_result(self) -> dict | None:
         if self.result_data:
             return json.loads(self.result_data)
         return None

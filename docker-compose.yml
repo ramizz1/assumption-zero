@@ -3,10 +3,10 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    ports:
-      - "8000:8000"
+    expose:
+      - "8000"
     volumes:
-      - ./azero_data:/app/azero_data
+      - azero_data:/app/azero_data
     environment:
       - AZERO_DATA_DIR=/app/azero_data
       - AI_PROVIDER=${AI_PROVIDER:-auto}
@@ -25,8 +25,8 @@ services:
       - SEARXNG_BASE_URL=${SEARXNG_BASE_URL:-}
       - GITHUB_TOKEN=${GITHUB_TOKEN:-}
       - DEBUG=${DEBUG:-false}
-      - SSRF_PROTECTION_ENABLED=${SSRF_PROTECTION_ENABLED:-false}
-      - CORS_ORIGINS=${CORS_ORIGINS:-["http://localhost:5173","http://localhost:3000"]}
+      - SSRF_PROTECTION_ENABLED=${SSRF_PROTECTION_ENABLED:-true}
+      - CORS_ORIGINS=${CORS_ORIGINS:-[]}
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/api/health"]
@@ -40,10 +40,17 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     ports:
-      - "5173:80"
+      - "${PORT:-5173}:8080"
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8080/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
 
 volumes:
   azero_data:
