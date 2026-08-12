@@ -11,68 +11,38 @@ export const ProviderIcon: React.FC<ProviderIconProps> = ({
   id,
   isActive = false,
   size = 'sm',
-  className = ''
+  className = '',
 }) => {
   const config = {
-    sm: { container: 'w-5 h-5 rounded-md p-0.5', img: 'w-3.5 h-3.5', text: 'text-xs' },
-    md: { container: 'w-6 h-6 rounded-lg p-1', img: 'w-4 h-4', text: 'text-sm' },
-    lg: { container: 'w-8 h-8 rounded-xl p-1.5', img: 'w-5 h-5', text: 'text-base' },
+    sm: { container: 'w-5 h-5 rounded-md p-0.5', text: 'text-[9px]' },
+    md: { container: 'w-6 h-6 rounded-lg p-1', text: 'text-[10px]' },
+    lg: { container: 'w-8 h-8 rounded-xl p-1.5', text: 'text-xs' },
   }[size]
 
-  if (id === 'custom') {
-    return (
-      <span
-        className={`inline-flex items-center justify-center shrink-0 transition-all ${
-          config.container
-        } ${
-          isActive
-            ? 'bg-white text-gray-900 shadow-sm ring-1 ring-black/10'
-            : 'bg-gray-100 text-gray-700 border border-gray-200'
-        } ${className}`}
-      >
-        <span className={config.text}>🔧</span>
-      </span>
-    )
+  const labelMap: Record<string, string> = {
+    auto: 'A0',
+    beta: 'A0',
+    custom: 'API',
+    ollama: 'OL',
+    opencode: 'OC',
+    openai_compat: 'AI',
+    groq: 'GQ',
+    openrouter: 'OR',
   }
-
-  if (id === 'auto' || id === 'beta') {
-    return (
-      <span
-        className={`inline-flex items-center justify-center shrink-0 font-black ${config.container} ${
-          isActive ? 'bg-white text-gray-900 shadow-sm ring-1 ring-black/10' : 'bg-gray-100 text-gray-700 border border-gray-200'
-        } ${className}`}
-        aria-hidden="true"
-      >
-        <span className={config.text}>A0</span>
-      </span>
-    )
-  }
-
-  const srcMap: Record<string, string> = {
-    ollama: '/ollama.png',
-    opencode: '/opencode.png',
-    openai_compat: '/openai.png',
-    groq: '/groq.png',
-    openrouter: '/openrouter.png',
-  }
-
-  const src = srcMap[id] || '/ollama.png'
+  const label = labelMap[id] || id.slice(0, 2).toUpperCase()
 
   return (
     <span
-      className={`inline-flex items-center justify-center shrink-0 transition-all ${
+      className={`inline-flex shrink-0 items-center justify-center font-black tracking-tight transition-all ${
         config.container
       } ${
         isActive
-          ? 'bg-white shadow-sm ring-1 ring-black/10'
-          : 'bg-gray-100 hover:bg-gray-200 border border-gray-200'
+          ? 'bg-white text-gray-900 shadow-sm ring-1 ring-black/10'
+          : 'border border-gray-200 bg-gray-100 text-gray-700 hover:bg-gray-200'
       } ${className}`}
+      aria-label={id}
     >
-      <img
-        src={src}
-        alt={id}
-        className={`${config.img} object-contain transition-transform duration-200`}
-      />
+      <span className={config.text}>{label}</span>
     </span>
   )
 }
