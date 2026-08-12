@@ -6,6 +6,7 @@ import SettingsModal, { getStoredAISettings, AISettings } from '../components/Se
 import ProviderIcon from '../components/ProviderIcon'
 import { assessFormReadiness, assessPromptReadiness, type ReadinessResult } from '../lib/readiness'
 import type { ResearchDepth } from '../types'
+import { BUNDLED_DEMO_ID } from '../lib/bundledDemo'
 
 // SVG Icons
 const LucideGlobe = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
@@ -240,28 +241,9 @@ export const HomePage: React.FC = () => {
     }
   }
 
-  const handleDemo = async () => {
-    setLoading(true)
+  const handleDemo = () => {
     setError(null)
-    try {
-      const provider = aiSettings.provider === 'custom' ? 'openai_compat' : aiSettings.provider
-      const result = await api.runDemo({
-        ai_provider: provider,
-        groq_api_key: aiSettings.groqKey || undefined,
-        openrouter_api_key: aiSettings.openrouterKey || undefined,
-        opencode_api_key: aiSettings.opencodeKey || undefined,
-        openai_api_key: provider === 'openai_compat'
-          ? (aiSettings.customKey || aiSettings.openaiKey || undefined)
-          : (aiSettings.openaiKey || undefined),
-        custom_base_url: provider === 'openai_compat' ? (aiSettings.customUrl || undefined) : undefined,
-        ollama_base_url: aiSettings.ollamaUrl || undefined,
-        research_depth: researchDepth,
-      })
-      navigate(`/analysis/${result.analysis_id}`)
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to start demo')
-      setLoading(false)
-    }
+    navigate(`/analysis/${BUNDLED_DEMO_ID}`)
   }
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -311,7 +293,7 @@ export const HomePage: React.FC = () => {
     && !browserCredential
 
   return (
-    <div className="min-h-screen flex flex-col verseo-grid motion-scene text-zinc-900 selection:bg-zinc-200" style={{backgroundColor: '#ffffff'}}>
+    <div className="min-h-screen flex flex-col overflow-x-hidden verseo-grid motion-scene text-zinc-900 selection:bg-zinc-200" style={{backgroundColor: '#ffffff'}}>
       <div className="ambient-shape ambient-shape-one" aria-hidden="true" />
       <div className="ambient-shape ambient-shape-two" aria-hidden="true" />
       <div className="ambient-ring ambient-ring-one" aria-hidden="true" />
@@ -325,7 +307,7 @@ export const HomePage: React.FC = () => {
             <div>
               <div className="flex items-center gap-2">
                 <span className="font-display font-bold tracking-tight text-base" style={{color: '#18181b'}}>Assumption Zero</span>
-                <span className="font-mono text-[10px] font-bold px-2 py-0.5 rounded-full" style={{color: '#52525b', backgroundColor: '#f4f4f5', border: '1px solid #e4e4e7'}}>
+                <span className="hidden sm:inline-flex font-mono text-[10px] font-bold px-2 py-0.5 rounded-full" style={{color: '#52525b', backgroundColor: '#f4f4f5', border: '1px solid #e4e4e7'}}>
                   v0.1.0
                 </span>
               </div>
@@ -336,24 +318,24 @@ export const HomePage: React.FC = () => {
           </div>
 
           {/* Navigation Controls */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1 sm:gap-3">
             <span
               className={`hidden md:inline-flex items-center gap-1.5 text-[10px] font-mono font-bold px-2 py-1 rounded-full border ${
                 backendStatus === 'online'
                   ? 'text-emerald-700 bg-emerald-50 border-emerald-200'
                   : backendStatus === 'offline'
-                  ? 'text-red-700 bg-red-50 border-red-200'
+                  ? 'text-indigo-700 bg-indigo-50 border-indigo-200'
                   : 'text-zinc-500 bg-zinc-50 border-zinc-200'
               }`}
-              title={backendStatus === 'offline' ? 'The API is unreachable. Start the backend before analyzing.' : 'Backend status'}
+              title={backendStatus === 'offline' ? 'The bundled browser demo is ready. Live analysis requires the API.' : 'Backend status'}
             >
-              <span className={`w-1.5 h-1.5 rounded-full ${backendStatus === 'online' ? 'bg-emerald-500' : backendStatus === 'offline' ? 'bg-red-500' : 'bg-zinc-400 animate-pulse'}`} />
-              API {backendStatus}
+              <span className={`w-1.5 h-1.5 rounded-full ${backendStatus === 'online' ? 'bg-emerald-500' : backendStatus === 'offline' ? 'bg-indigo-500' : 'bg-zinc-400 animate-pulse'}`} />
+              {backendStatus === 'offline' ? 'DEMO READY' : `API ${backendStatus}`}
             </span>
             <button
               type="button"
               onClick={() => navigate('/docs')}
-              className="nav-action-3d px-3.5 py-1.5 rounded-xl border text-xs font-mono font-medium transition-all flex items-center gap-2 shadow-sm hover:bg-zinc-50"
+              className="nav-action-3d px-2.5 sm:px-3.5 py-1.5 rounded-xl border text-xs font-mono font-medium transition-all flex items-center gap-2 shadow-sm hover:bg-zinc-50"
               style={{borderColor: '#e4e4e7', backgroundColor: '#fafafa', color: '#52525b'}}
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></svg>
@@ -361,7 +343,7 @@ export const HomePage: React.FC = () => {
             </button>
             <button
               onClick={() => setIsHistoryOpen(true)}
-              className="nav-action-3d px-3.5 py-1.5 rounded-xl border text-xs font-mono font-medium transition-all flex items-center gap-2 shadow-sm hover:bg-zinc-50"
+              className="nav-action-3d px-2.5 sm:px-3.5 py-1.5 rounded-xl border text-xs font-mono font-medium transition-all flex items-center gap-2 shadow-sm hover:bg-zinc-50"
               style={{borderColor: '#e4e4e7', backgroundColor: '#fafafa', color: '#52525b'}}
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg>
@@ -376,7 +358,7 @@ export const HomePage: React.FC = () => {
             <button
               type="button"
               onClick={() => setIsSettingsOpen(true)}
-              className="nav-action-3d px-3.5 py-1.5 rounded-xl border text-xs font-mono font-medium transition-all flex items-center gap-1.5 shadow-sm hover:bg-zinc-50"
+              className="nav-action-3d px-2.5 sm:px-3.5 py-1.5 rounded-xl border text-xs font-mono font-medium transition-all flex items-center gap-1.5 shadow-sm hover:bg-zinc-50"
               style={{borderColor: '#e4e4e7', backgroundColor: '#fafafa', color: '#52525b'}}
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
@@ -387,7 +369,7 @@ export const HomePage: React.FC = () => {
               href="https://github.com/ramizz1"
               target="_blank"
               rel="noopener noreferrer"
-              className="creator-link flex items-center gap-2 ml-1 rounded-full p-1 pr-1.5"
+              className="creator-link hidden sm:flex items-center gap-2 ml-1 rounded-full p-1 pr-1.5"
               title="Open @ramizz1 on GitHub"
               aria-label="Open creator Ramiz on GitHub"
             >
@@ -620,7 +602,7 @@ export const HomePage: React.FC = () => {
                 >
                   {loading ? 'Running AI Engine & Live Research...' : <><LucideSparkles /> Analyze MVP Idea Now</>}
                 </button>
-                <button type="button" onClick={handleDemo} disabled={loading || backendStatus === 'offline'} className="btn-ghost px-5 py-4">
+                <button type="button" onClick={handleDemo} disabled={loading} className="btn-ghost px-5 py-4">
                   Run example
                 </button>
               </div>
@@ -854,7 +836,7 @@ export const HomePage: React.FC = () => {
                 >
                   {loading ? 'Running AI Engine & Live Research...' : <><LucideSparkles /> Analyze MVP Idea Now</>}
                 </button>
-                <button type="button" onClick={handleDemo} disabled={loading || backendStatus === 'offline'} className="btn-ghost px-5 py-4">
+                <button type="button" onClick={handleDemo} disabled={loading} className="btn-ghost px-5 py-4">
                   Run example
                 </button>
               </div>

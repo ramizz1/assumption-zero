@@ -21,7 +21,7 @@ export interface AnalysisCreateRequest {
   research_depth?: ResearchDepth
 }
 
-const BASE = '/api'
+const BASE = (import.meta.env.VITE_API_BASE_URL || '/api').replace(/\/$/, '')
 
 async function request<T>(
   path: string,

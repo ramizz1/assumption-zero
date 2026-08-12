@@ -1,6 +1,7 @@
 /** useAnalysis hook — polls the API until the analysis completes */
 import { useState, useEffect, useRef } from 'react'
 import { api } from '../lib/api'
+import { getBundledDemo } from '../lib/bundledDemo'
 import type { AnalysisResult } from '../types'
 
 const POLL_INTERVAL = 2500 // ms
@@ -12,6 +13,13 @@ export function useAnalysis(analysisId: string | null) {
 
   useEffect(() => {
     if (!analysisId) return
+
+    const bundledDemo = getBundledDemo(analysisId)
+    if (bundledDemo) {
+      setData(bundledDemo)
+      setError(null)
+      return
+    }
 
     const poll = async () => {
       try {

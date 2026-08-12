@@ -1,0 +1,807 @@
+{
+  "analysis_id": "demo-invoiceguard",
+  "status": "complete",
+  "stage": "complete",
+  "stage_description": "Analysis complete",
+  "created_at": "2026-08-12T20:18:08.593085",
+  "completed_at": "2026-08-12T20:18:08.593090",
+  "idea_input": {
+    "name": "LegalMind Local",
+    "description": "A privacy-first AI meeting summarizer that runs entirely on-device for small legal firms",
+    "problem": "Legal professionals have confidential client meetings that cannot be transcribed using cloud AI tools due to attorney-client privilege and data sovereignty concerns. Existing tools like Otter.ai send audio to remote servers, creating compliance risks.",
+    "target_customer": "Solo practitioners and small law firms (1-20 attorneys)",
+    "geography": "United States",
+    "market_language": "English",
+    "currency": "USD",
+    "industry": "Legal technology",
+    "startup_stage": "Idea validation",
+    "solution": "Private on-device transcription and summarization with no client audio sent to cloud services",
+    "business_model": "SaaS subscription per seat, installed locally",
+    "price": "$49/month per attorney",
+    "founder_skills": "Full-stack developer, 5 years experience, some ML background",
+    "team": "Solo technical founder",
+    "budget": "$15,000 runway for 6 months",
+    "launch_timeline": "Paid pilot within 30 days",
+    "revenue_goal": "10 paid law-firm pilots and $500 MRR",
+    "acquisition_channels": "Founder-led LinkedIn outreach, local bar associations, legal-tech consultants",
+    "known_competitors": "Otter.ai, Fireflies.ai, Whisper (open source), Tactiq",
+    "unfair_advantage": "Private, on-device processing designed for confidential legal workflows",
+    "key_assumptions": "Small law firms will pay for local processing and can adopt an on-device workflow",
+    "regulatory_constraints": "Attorney-client privilege, data residency, consent to recording, and local device security",
+    "additional_context": "Planning to use OpenAI Whisper for transcription and a local Llama model for summarization. Initial target is solo practitioners who already use case management software."
+  },
+  "interpreted_idea": "**LegalMind Local** — A privacy-first AI meeting summarizer that runs entirely on-device for small legal firms\n\n**Problem:** Legal professionals have confidential client meetings that cannot be transcribed using cloud AI tools due to attorney-client privilege and data sovereignty concerns. Existing tools like Otter.ai send audio to remote servers, creating compliance risks.\n**Target:** Solo practitioners and small law firms (1-20 attorneys) in United States\n**Model:** SaaS subscription per seat, installed locally | **Price:** $49/month per attorney\n\n_Note: Configure Gemini, Ollama, or an OpenAI-compatible endpoint for AI-powered qualitative interpretation._",
+  "evidence": [
+    {
+      "evidence_id": "E001",
+      "title": "Otter.ai pricing and product capabilities",
+      "url": "https://otter.ai/pricing",
+      "evidence_origin": "Public demo source - Otter.ai pricing and product capabilities",
+      "source_name": "otter.ai",
+      "publication_date": null,
+      "retrieval_date": "2026-08-13",
+      "passage": "Otter offers cloud meeting transcription, automated summaries, team collaboration, and paid per-user plans, establishing a mature alternative with broad integrations.",
+      "search_query": "Legal professionals have confidenti competitors United States",
+      "evidence_type": "competitor",
+      "reliability": "high",
+      "relevance_score": 0.92,
+      "retrieval_timestamp": "2026-08-13T00:18:08.591428",
+      "is_demo": true
+    },
+    {
+      "evidence_id": "E002",
+      "title": "Fireflies.ai pricing and meeting intelligence plans",
+      "url": "https://fireflies.ai/pricing",
+      "evidence_origin": "Public demo source - Fireflies.ai pricing and meeting intelligence plans",
+      "source_name": "fireflies.ai",
+      "publication_date": null,
+      "retrieval_date": "2026-08-13",
+      "passage": "Fireflies offers meeting transcription, summaries, search, integrations, and multiple paid plans, making it a direct cloud-based meeting assistant alternative.",
+      "search_query": "Legal professionals have confidenti competitors United States",
+      "evidence_type": "competitor",
+      "reliability": "high",
+      "relevance_score": 0.92,
+      "retrieval_timestamp": "2026-08-13T00:18:08.591428",
+      "is_demo": true
+    },
+    {
+      "evidence_id": "E003",
+      "title": "ABA Model Rule 1.6: Confidentiality of Information",
+      "url": "https://www.americanbar.org/groups/professional_responsibility/publications/model_rules_of_professional_conduct/rule_1_6_confidentiality_of_information/",
+      "evidence_origin": "Public demo source - ABA Model Rule 1.6: Confidentiality of Information",
+      "source_name": "americanbar.org",
+      "publication_date": null,
+      "retrieval_date": "2026-08-13",
+      "passage": "Lawyers have a continuing duty to protect information relating to client representation, making privacy review and controlled handling central to any meeting-documentation workflow.",
+      "search_query": "how Solo practitioners and small currently solve Legal professionals have confi",
+      "evidence_type": "manual_workflow",
+      "reliability": "high",
+      "relevance_score": 0.92,
+      "retrieval_timestamp": "2026-08-13T00:18:08.591462",
+      "is_demo": true
+    },
+    {
+      "evidence_id": "E004",
+      "title": "Otter.ai privacy policy: meeting and uploaded information",
+      "url": "https://otter.ai/privacy-policy",
+      "evidence_origin": "Public demo source - Otter.ai privacy policy: meeting and uploaded information",
+      "source_name": "otter.ai",
+      "publication_date": null,
+      "retrieval_date": "2026-08-13",
+      "passage": "Otter privacy policy explains that its service processes meeting audio, transcripts, uploaded content, speaker information, and other personal information. Sensitive legal users must evaluate these data flows.",
+      "search_query": "Otter.ai customer complaints limitations",
+      "evidence_type": "complaint",
+      "reliability": "high",
+      "relevance_score": 0.92,
+      "retrieval_timestamp": "2026-08-13T00:18:08.591478",
+      "is_demo": true
+    },
+    {
+      "evidence_id": "E005",
+      "title": "OpenAI Whisper open-source speech recognition",
+      "url": "https://github.com/openai/whisper",
+      "evidence_origin": "Public demo source - OpenAI Whisper open-source speech recognition",
+      "source_name": "github.com",
+      "publication_date": null,
+      "retrieval_date": "2026-08-13",
+      "passage": "Whisper is an MIT-licensed general-purpose speech recognition model supporting multilingual transcription and local installation, reducing the technical barrier to an on-device prototype.",
+      "search_query": "open source Legal professionals have confidential cl github",
+      "evidence_type": "oss_alternative",
+      "reliability": "high",
+      "relevance_score": 0.92,
+      "retrieval_timestamp": "2026-08-13T00:18:08.591483",
+      "is_demo": true
+    },
+    {
+      "evidence_id": "E006",
+      "title": "Clio Legal Trends Report",
+      "url": "https://www.clio.com/resources/legal-trends/",
+      "evidence_origin": "Public demo source - Clio Legal Trends Report",
+      "source_name": "clio.com",
+      "publication_date": null,
+      "retrieval_date": "2026-08-13",
+      "passage": "Clio publishes data-driven research on law-firm operations, technology use, client expectations, productivity, and business performance, showing an active market for legal workflow technology.",
+      "search_query": "market demand Legal professionals have confidential cl United States",
+      "evidence_type": "demand",
+      "reliability": "high",
+      "relevance_score": 0.92,
+      "retrieval_timestamp": "2026-08-13T00:18:08.591489",
+      "is_demo": true
+    },
+    {
+      "evidence_id": "E007",
+      "title": "ABA guidance recognizes AI use in legal services",
+      "url": "https://www.americanbar.org/news/abanews/aba-news-archives/2024/07/aba-issues-first-ethics-guidance-ai-tools/",
+      "evidence_origin": "Public demo source - ABA guidance recognizes AI use in legal services",
+      "source_name": "americanbar.org",
+      "publication_date": null,
+      "retrieval_date": "2026-08-13",
+      "passage": "The ABA formal guidance responds to growing use of generative AI by lawyers while emphasizing that professional obligations continue to apply.",
+      "search_query": "Legal professionals have confidential cl industry trends 2026",
+      "evidence_type": "demand",
+      "reliability": "high",
+      "relevance_score": 0.92,
+      "retrieval_timestamp": "2026-08-13T00:18:08.591493",
+      "is_demo": true
+    },
+    {
+      "evidence_id": "E008",
+      "title": "ABA Formal Opinion 512: Generative Artificial Intelligence Tools",
+      "url": "https://www.americanbar.org/content/dam/aba/administrative/professional_responsibility/ethics-opinions/aba-formal-opinion-512.pdf",
+      "evidence_origin": "Public demo source - ABA Formal Opinion 512: Generative Artificial Intelligence Tools",
+      "source_name": "americanbar.org",
+      "publication_date": null,
+      "retrieval_date": "2026-08-13",
+      "passage": "The American Bar Association states that lawyers using generative AI must consider competence, confidentiality, client communication, supervision, candor, and reasonable fees.",
+      "search_query": "Legal technology regulations licenses tax United States",
+      "evidence_type": "regulatory",
+      "reliability": "high",
+      "relevance_score": 0.92,
+      "retrieval_timestamp": "2026-08-13T00:18:08.591503",
+      "is_demo": true
+    },
+    {
+      "evidence_id": "E009",
+      "title": "ABA analysis of maintaining confidentiality with generative AI",
+      "url": "https://www.americanbar.org/groups/litigation/resources/newsletters/ethics-professionalism/generative-ai-lawyers-part-2-maintaining-confidentiality/",
+      "evidence_origin": "Public demo source - ABA analysis of maintaining confidentiality with generative AI",
+      "source_name": "americanbar.org",
+      "publication_date": null,
+      "retrieval_date": "2026-08-13",
+      "passage": "Legal AI adoption can fail when firms cannot understand vendor data use, obtain appropriate consent, or ensure confidential client information is protected.",
+      "search_query": "why startups fail in Legal professionals have confi space",
+      "evidence_type": "failure_reason",
+      "reliability": "high",
+      "relevance_score": 0.92,
+      "retrieval_timestamp": "2026-08-13T00:18:08.591512",
+      "is_demo": true
+    }
+  ],
+  "provider_errors": [],
+  "competitors": [
+    {
+      "name": "Otter.ai",
+      "url": "https://otter.ai/pricing",
+      "competitor_type": "direct",
+      "description": "Otter offers cloud meeting transcription, automated summaries, team collaboration, and paid per-user plans, establishing a mature alternative with broad integrations.",
+      "target_user": "Not established in collected evidence",
+      "pricing_evidence": null,
+      "strengths": [],
+      "weaknesses": [],
+      "complaints": [],
+      "differentiation": [
+        "Hypothesis: validate a meaningful switching reason versus Otter.ai"
+      ],
+      "evidence_ids": [
+        "E001",
+        "E004"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "Fireflies.ai",
+      "url": "https://fireflies.ai/pricing",
+      "competitor_type": "direct",
+      "description": "Fireflies offers meeting transcription, summaries, search, integrations, and multiple paid plans, making it a direct cloud-based meeting assistant alternative.",
+      "target_user": "Not established in collected evidence",
+      "pricing_evidence": null,
+      "strengths": [],
+      "weaknesses": [],
+      "complaints": [],
+      "differentiation": [
+        "Hypothesis: validate a meaningful switching reason versus Fireflies.ai"
+      ],
+      "evidence_ids": [
+        "E002"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "Whisper (open source)",
+      "url": "https://github.com/openai/whisper",
+      "competitor_type": "direct",
+      "description": "Whisper is an MIT-licensed general-purpose speech recognition model supporting multilingual transcription and local installation, reducing the technical barrier to an on-device prototype.",
+      "target_user": "Not established in collected evidence",
+      "pricing_evidence": null,
+      "strengths": [],
+      "weaknesses": [],
+      "complaints": [],
+      "differentiation": [
+        "Hypothesis: validate a meaningful switching reason versus Whisper (open source)"
+      ],
+      "evidence_ids": [
+        "E005"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "name": "Tactiq",
+      "url": "",
+      "competitor_type": "direct",
+      "description": "User-supplied competitor; independent evidence was not found in this research run.",
+      "target_user": "Not established in collected evidence",
+      "pricing_evidence": null,
+      "strengths": [],
+      "weaknesses": [],
+      "complaints": [],
+      "differentiation": [
+        "Hypothesis: validate a meaningful switching reason versus Tactiq"
+      ],
+      "evidence_ids": [],
+      "confidence": "low"
+    }
+  ],
+  "perspectives": [
+    {
+      "perspective_name": "market_analyst",
+      "perspective_display": "Market Analyst",
+      "model_id": "Assumption Zero Evidence Engine",
+      "summary": "Exhaustive market analysis of LegalMind Local. 9 evidence items collected across 5 live search sources. TAM/SAM Analysis: Target market in United States for Solo practitioners and small law firms (1-20 attorneys).",
+      "key_findings": [
+        "—MARKET SIZING & TAM/SAM/SOM—",
+        "TAM = Global market for solving: Legal professionals have confidential client meetings that cannot be transcribed",
+        "SAM = Addressable segment in United States matching target profile: Solo practitioners and small law firms (1-20 attorneys)",
+        "SOM = Realistic first-year capture; requires acquiring first 1,000 paying accounts to establish baseline",
+        "—DEMAND & CUSTOMER PAIN—",
+        "Demand signals identified: 2 evidence items show active market search behaviour",
+        "Customer pain intensity: Legal professionals have confidential client meetings that c is an unsolved or underserved problem for Solo practitioners and small law firms (1-20 attorneys)",
+        "Switching willingness: Users switch when solution delivers >2x ROI over existing tools (Otter.ai, Fireflies.ai, Whisper (open source), Tactiq)",
+        "—MONETIZATION & PRICING POWER—",
+        "Revenue model: $49/month per attorney — validated by similar SaaS products in this category",
+        "Pricing power: Willingness to pay at $49/month per attorney requires 3-5 customer discovery interviews before public launch",
+        "Revenue stream diversification opportunity: tiered pricing, API access, and enterprise plans should be modelled in Year 1"
+      ],
+      "risks": [
+        "High competitive density from established solutions (Otter.ai, Fireflies.ai, Whisper (open source), Tactiq).",
+        "Willingness to pay at $49/month per attorney requires explicit customer discovery validation.",
+        "Customer acquisition friction in United States requiring targeted positioning."
+      ],
+      "opportunities": [
+        "Target segment (Solo practitioners and small law firms (1-20 attorneys)) exhibits active problem search behaviour.",
+        "Product differentiation via Private, on-device processing designed for confidential legal workflows attracts early adopters.",
+        "Expansion potential across secondary segments in United States."
+      ],
+      "recommendation": "Test First",
+      "cited_evidence_ids": [
+        "E001",
+        "E002",
+        "E003",
+        "E004",
+        "E005",
+        "E006",
+        "E007",
+        "E008",
+        "E009"
+      ],
+      "invalid_citations": [],
+      "dimension_scores": {
+        "problem_evidence": 65.0,
+        "demand_signals": 70.0,
+        "competitive_gap": 46.5,
+        "distribution_feasibility": 45.0,
+        "unit_economics": 75.0,
+        "founder_fit": 52.2,
+        "legal_operational_risk": 65.0
+      },
+      "most_dangerous_assumption": "Unvalidated assumption: Solo practitioners and small law firms (1-20 attorneys) will switch to LegalMind Local from Otter.ai, Fireflies.ai, Whisper (open source), Tactiq."
+    },
+    {
+      "perspective_name": "skeptical_investor",
+      "perspective_display": "Skeptical Investor",
+      "model_id": "Assumption Zero Evidence Engine",
+      "summary": "Skeptical VC stress-test of LegalMind Local. Identified 2 direct/indirect competitor(s). CAC vs LTV: organic growth fails if CAC exceeds 20% of first-year LTV.",
+      "key_findings": [
+        "—COMPETITIVE MOAT & SWITCHING COSTS—",
+        "Entrenched players (Otter.ai, Fireflies.ai, Whisper (open source), Tactiq) hold strong brand recognition and switching cost barriers",
+        "Defensibility: What stops a well-funded competitor from copying LegalMind Local in 6 months?",
+        "Lock-in mechanism required: proprietary data, integrations, or network effects must be built from Day 1",
+        "—UNIT ECONOMICS & CAC/LTV—",
+        "Customer acquisition cost (CAC): paid channel CAC must not exceed 20% of Year 1 LTV to be sustainable",
+        "Founder runway ($15,000 runway for 6 months) covers approx. 60-90 days of lean GTM outreach at zero paid CAC",
+        "LTV viability: monetising via $49/month per attorney yields positive LTV only after 3+ months of retention per account",
+        "—FATAL RISKS & FAILURE MODES—",
+        "Risk #1 — Distribution: LegalMind Local may fail to reach Solo practitioners and small law firms (1-20 attorneys) cheaply enough before runway ends",
+        "Risk #2 — Timing: Market may not be ready, or a larger player may enter with superior resources",
+        "Risk #3 — Regulation: Data compliance in United States adds unexpected legal overhead to product development"
+      ],
+      "risks": [
+        "Target customers default to existing tools (Otter.ai, Fireflies.ai, Whisper (open source), Tactiq) unless ROI is demonstrably 2x higher.",
+        "Paid acquisition CAC risks exceeding customer LTV in early launch phase.",
+        "Regulatory and data compliance in United States adds build complexity and legal risk."
+      ],
+      "opportunities": [
+        "High gross margin potential once $49/month per attorney subscription scales.",
+        "Proprietary workflow features create defensible retention moat."
+      ],
+      "recommendation": "Pivot",
+      "cited_evidence_ids": [
+        "E001",
+        "E002",
+        "E003",
+        "E004",
+        "E005",
+        "E006",
+        "E007",
+        "E008",
+        "E009"
+      ],
+      "invalid_citations": [],
+      "dimension_scores": {
+        "problem_evidence": 58.5,
+        "demand_signals": 54.1,
+        "competitive_gap": 36.0,
+        "distribution_feasibility": 36.0,
+        "unit_economics": 60.0,
+        "founder_fit": 46.8,
+        "legal_operational_risk": 52.0
+      },
+      "most_dangerous_assumption": "Distribution & CAC: Can LegalMind Local acquire target customers in United States within $15,000 runway for 6 months?"
+    },
+    {
+      "perspective_name": "practical_builder",
+      "perspective_display": "Practical Builder",
+      "model_id": "Assumption Zero Evidence Engine",
+      "summary": "90-day execution roadmap for LegalMind Local. Founder skills (Full-stack developer, 5 years experience, some ML background) align with MVP delivery. Target: first paying customer in 60 days, sustainable revenue by Day 90.",
+      "key_findings": [
+        "—90-DAY EXECUTION ROADMAP—",
+        "Month 1: Scope and ship MVP — core value loop only; no secondary features; target: 10 beta users",
+        "Month 2: Gather feedback from first 10 users; validate willingness to pay; onboard first 100 users",
+        "Month 3: Launch paid tier ($49/month per attorney); target 3-5 paying accounts; instrument key retention metrics",
+        "—TECH STACK & ARCHITECTURE—",
+        "Recommended stack: Next.js / React frontend, FastAPI or Node.js backend, PostgreSQL, deployed on Vercel + Railway",
+        "Estimated infra cost at launch: $50—80/mo; scales to $200-400/mo at 1,000 active users",
+        "AI integration: use OpenRouter or OpenAI API; budget $50-100/mo for AI calls at early scale",
+        "—TRUST, COMPLIANCE & RISK MITIGATION—",
+        "Authentication: implement email/OAuth + 2FA from Day 1 — non-negotiable for Solo practitioners and small law firms (1-20 attorneys)",
+        "Data privacy: GDPR or equivalent compliance required for United States; use data processing agreements with all subprocessors",
+        "Risk mitigation: build in staged rollout, feature flags, and user feedback loop before scaling marketing spend"
+      ],
+      "risks": [
+        "Over-scoping MVP before core value is validated risks delayed launch and wasted runway.",
+        "Third-party API costs can spike unexpectedly; set hard budget limits and alert thresholds from Day 1."
+      ],
+      "opportunities": [
+        "Focus Phase 1 on the core job-to-be-done for Solo practitioners and small law firms (1-20 attorneys) only.",
+        "Modern cloud stack enables lean infrastructure at <$80/mo initially."
+      ],
+      "recommendation": "Test First",
+      "cited_evidence_ids": [
+        "E001",
+        "E002",
+        "E003",
+        "E004",
+        "E005",
+        "E006",
+        "E007",
+        "E008",
+        "E009"
+      ],
+      "invalid_citations": [],
+      "dimension_scores": {
+        "problem_evidence": 65.0,
+        "demand_signals": 60.4,
+        "competitive_gap": 51.5,
+        "distribution_feasibility": 38.2,
+        "unit_economics": 67.5,
+        "founder_fit": 66.0,
+        "legal_operational_risk": 65.0
+      },
+      "most_dangerous_assumption": "Scope management: Launch single core value loop for LegalMind Local within founder budget ($15,000 runway for 6 months)."
+    }
+  ],
+  "models_used": [
+    "Assumption Zero Evidence Engine"
+  ],
+  "opportunity_score": {
+    "total": 56.2,
+    "dimensions": [
+      {
+        "dimension": "problem_evidence",
+        "display_name": "Problem Evidence",
+        "raw_score": 62.8,
+        "weight": 20,
+        "weighted_score": 12.6,
+        "explanation": "Problem Evidence: moderate signal (score 63/100). See cited evidence for details.",
+        "supporting_evidence_ids": [
+          "E001",
+          "E002",
+          "E003"
+        ],
+        "contradicting_evidence_ids": [],
+        "confidence": "high",
+        "missing_information": []
+      },
+      {
+        "dimension": "demand_signals",
+        "display_name": "Demand Signals",
+        "raw_score": 61.5,
+        "weight": 20,
+        "weighted_score": 12.3,
+        "explanation": "Demand Signals: moderate signal (score 62/100). See cited evidence for details.",
+        "supporting_evidence_ids": [
+          "E001",
+          "E002",
+          "E003"
+        ],
+        "contradicting_evidence_ids": [],
+        "confidence": "high",
+        "missing_information": []
+      },
+      {
+        "dimension": "competitive_gap",
+        "display_name": "Competitive Gap",
+        "raw_score": 44.7,
+        "weight": 15,
+        "weighted_score": 6.7,
+        "explanation": "Competitive Gap: weak signal (score 45/100). See cited evidence for details.",
+        "supporting_evidence_ids": [],
+        "contradicting_evidence_ids": [
+          "E001",
+          "E002",
+          "E003"
+        ],
+        "confidence": "low",
+        "missing_information": []
+      },
+      {
+        "dimension": "distribution_feasibility",
+        "display_name": "Distribution Feasibility",
+        "raw_score": 39.7,
+        "weight": 15,
+        "weighted_score": 6.0,
+        "explanation": "Distribution Feasibility: weak signal (score 40/100). See cited evidence for details.",
+        "supporting_evidence_ids": [],
+        "contradicting_evidence_ids": [
+          "E001",
+          "E002",
+          "E003"
+        ],
+        "confidence": "low",
+        "missing_information": []
+      },
+      {
+        "dimension": "unit_economics",
+        "display_name": "Unit Economics",
+        "raw_score": 67.5,
+        "weight": 15,
+        "weighted_score": 10.1,
+        "explanation": "Unit Economics: strong signal (score 68/100). See cited evidence for details.",
+        "supporting_evidence_ids": [
+          "E001",
+          "E002",
+          "E003"
+        ],
+        "contradicting_evidence_ids": [],
+        "confidence": "high",
+        "missing_information": []
+      },
+      {
+        "dimension": "founder_fit",
+        "display_name": "Founder / Project Fit",
+        "raw_score": 55.0,
+        "weight": 10,
+        "weighted_score": 5.5,
+        "explanation": "Founder / Project Fit: moderate signal (score 55/100). See cited evidence for details.",
+        "supporting_evidence_ids": [
+          "E001",
+          "E002",
+          "E003"
+        ],
+        "contradicting_evidence_ids": [],
+        "confidence": "high",
+        "missing_information": []
+      },
+      {
+        "dimension": "legal_operational_risk",
+        "display_name": "Legal & Operational Risk",
+        "raw_score": 60.7,
+        "weight": 5,
+        "weighted_score": 3.0,
+        "explanation": "Legal & Operational Risk: moderate signal (score 61/100). See cited evidence for details.",
+        "supporting_evidence_ids": [
+          "E001",
+          "E002",
+          "E003"
+        ],
+        "contradicting_evidence_ids": [],
+        "confidence": "high",
+        "missing_information": []
+      }
+    ]
+  },
+  "evidence_confidence": "high",
+  "recommendation": "Test First",
+  "most_dangerous_assumption": "Distribution & CAC: Can LegalMind Local acquire target customers in United States within $15,000 runway for 6 months?",
+  "strongest_supporting": "[E004] Otter.ai privacy policy: meeting and uploaded information: Otter privacy policy explains that its service processes meeting audio, transcripts, uploaded content, speaker information, and other personal information. Sensitive legal users must evaluate these da",
+  "strongest_contradicting": "[E001] Otter.ai pricing and product capabilities: Otter offers cloud meeting transcription, automated summaries, team collaboration, and paid per-user plans, establishing a mature alternative with broad integrations.",
+  "missing_information": [
+    "No competitor pricing evidence found"
+  ],
+  "experiments": [
+    {
+      "title": "7-Day Manual Concierge / Smoke Test (Pre-Build Validation)",
+      "assumption_tested": "Target customers will pay real money for the core outcome delivered manually before code is written",
+      "why_it_matters": "Building full automated software (OAuth, cloud connectors, background jobs) before testing willingness to pay wastes 90% of founder time. Manual concierge disproves indifference in 7 days.",
+      "procedure": "Offer the core outcome manually as a 1-on-1 audit or service (e.g. run open-source CLI scanners manually, format into a PDF audit report). Pitch to 10 target business founders. Request a small deposit or upfront fee ($49-$99). Do NOT build full software.",
+      "estimated_time": "5-7 days",
+      "estimated_cost_range": "$0 — $50 (manual effort)",
+      "success_threshold": "At least 3 paying customers accept manual delivery with positive feedback",
+      "failure_threshold": "0 paying customers after 15 direct pitches or calls",
+      "decision_after": "If SUCCESS: Automate core manual workflow into lightweight MVP. If FAILURE: ABANDON core idea or PIVOT target segment immediately.",
+      "legal_ethical": "Be transparent that delivery is manual concierge. Offer full refunds if dissatisfied.",
+      "priority": 1
+    },
+    {
+      "title": "Customer Discovery & Problem Severity Interviews",
+      "assumption_tested": "The target problem is urgent, top-3 priority, and currently costs real time or money",
+      "why_it_matters": "Most startups fail because they solve a 'nice-to-have' problem. 5 customer interviews reveal if this is a top-3 priority.",
+      "procedure": "Recruit 5-10 target founders/decision makers via LinkedIn or community groups. Conduct 30-minute calls focused on: current workflow, existing tools, annual spend, and biggest pain points. Do NOT pitch your solution until the final 5 minutes.",
+      "estimated_time": "1-2 weeks",
+      "estimated_cost_range": "$0 — $100 (gift cards)",
+      "success_threshold": "7 out of 10 describe the problem as an active pain point and cite current manual/paid workarounds",
+      "failure_threshold": "Fewer than 4 out of 10 cite the problem as urgent or worth paying to fix",
+      "decision_after": "If SUCCESS: proceed to smoke test. If FAILURE: NARROW SCOPE or PIVOT to a specific niche.",
+      "legal_ethical": "No deception. Disclose research intent. Do not collect payment.",
+      "priority": 2
+    },
+    {
+      "title": "Landing Page + Pre-Order / Waitlist Test",
+      "assumption_tested": "Cold traffic converts into real email signups and pre-order interest",
+      "why_it_matters": "Measures customer acquisition feasibility and message-market fit before building features.",
+      "procedure": "Build a single-page landing page (Carrd, Webflow, or HTML). Clearly explain the narrow value proposition. Include a 'Join Waitlist' or 'Pre-order for 50% off' call to action. Drive 300-500 targeted visitors via Google/LinkedIn/Reddit ads.",
+      "estimated_time": "1 week to build, 1 week to run",
+      "estimated_cost_range": "$100 — $250 (hosting + ad spend)",
+      "success_threshold": "Conversion rate > 8% for email signups or > 2% pre-order deposit clicks",
+      "failure_threshold": "Conversion rate < 3% after 500 visitors",
+      "decision_after": "If SUCCESS: Proceed to build narrowest MVP. If FAILURE: Re-position messaging or PIVOT target customer.",
+      "legal_ethical": "Label as 'coming soon / early access'. Inform signups clearly.",
+      "priority": 3
+    },
+    {
+      "title": "Willingness-to-Pay Benchmark & Price Sensitivity Test",
+      "assumption_tested": "Customers will pay the target price point (e.g. $49-$199/month)",
+      "why_it_matters": "Under-pricing or over-pricing by 3x destroys unit economics. Van Westendorp survey measures exact price elasticity.",
+      "procedure": "Present 20 target customers with the product spec and ask Van Westendorp price elasticity questions (Too Expensive, Bargain, Fair, Too Cheap). Measure acceptable pricing floor and ceiling.",
+      "estimated_time": "1 week",
+      "estimated_cost_range": "$0 — $50",
+      "success_threshold": "Target price sits within the acceptable range for > 65% of respondents",
+      "failure_threshold": "Majority cite planned price as 'too expensive' or willingness-to-pay is below unit cost",
+      "decision_after": "Adjust pricing model or cost structure before building.",
+      "legal_ethical": "Clear survey disclosure — no deceptive pricing claims.",
+      "priority": 4
+    },
+    {
+      "title": "Targeted Channel Customer Acquisition Test",
+      "assumption_tested": "Cost per customer acquisition (CAC) is economically viable relative to LTV",
+      "why_it_matters": "Proves at least one repeatable customer acquisition channel exists.",
+      "procedure": "Run $200 of targeted ads or direct cold outreach across 2 specific channels (e.g. LinkedIn InMail vs Niche Community Ads). Track conversion rates and cost per signup.",
+      "estimated_time": "2 weeks",
+      "estimated_cost_range": "$150 — $300",
+      "success_threshold": "Cost per signup < 20% of estimated first-year customer value",
+      "failure_threshold": "Cost per signup exceeds first-year customer value or CTR < 0.8%",
+      "decision_after": "If SUCCESS: Double down on channel. If FAILURE: PIVOT acquisition channel.",
+      "legal_ethical": "Standard advertising compliance. No misleading claims.",
+      "priority": 5
+    }
+  ],
+  "founder_toolkit": {
+    "one_sentence_pitch": "For Solo practitioners and small law firms (1-20 attorneys) in United States, LegalMind Local helps solve Legal professionals have confidential client meetings that cannot be transcribed using cloud AI tools due to attorney-client privilege and data sovereignty concerns. Existing tools like Otter.ai send audio to remote servers, creating compliance risks through Private on-device transcription and summarization with no client audio sent to cloud services, unlike Otter.ai, Fireflies.ai, Whisper (open source), Tactiq.",
+    "ideal_customer_profile": "Solo practitioners and small law firms (1-20 attorneys); initially focused on United States in Legal technology. Current company stage: Idea validation.",
+    "beachhead_market": "Start with the narrowest reachable subset of Solo practitioners and small law firms (1-20 attorneys) in United States that already pays or uses a workaround.",
+    "recommended_channels": [
+      "Founder-led LinkedIn outreach",
+      "local bar associations",
+      "legal-tech consultants"
+    ],
+    "key_metrics": [
+      "Problem interview confirmation rate",
+      "Qualified visitor-to-commitment conversion",
+      "Activation: users who complete the core value loop",
+      "Time to first value",
+      "Four-week retention or repeat-use rate",
+      "Customer acquisition cost versus first-year gross profit"
+    ],
+    "roadmap": [
+      {
+        "phase": "Days 1-3",
+        "objective": "Define the beachhead and recruit interviews",
+        "actions": [
+          "Build a list of 30 prospects matching: Solo practitioners and small law firms (1-20 attorneys)",
+          "Write a neutral interview script and schedule at least ten calls",
+          "Record the current workflow, frequency, cost, urgency, and buying authority"
+        ],
+        "success_metric": "10 interviews booked with qualified prospects",
+        "stop_condition": "Fewer than 5 qualified prospects can be reached after 30 targeted attempts",
+        "budget_hint": "$0-$50"
+      },
+      {
+        "phase": "Days 4-10",
+        "objective": "Prove the problem before pitching the product",
+        "actions": [
+          "Run ten problem interviews without leading with the solution",
+          "Compare the current workflow against Otter.ai, Fireflies.ai, Whisper (open source), Tactiq",
+          "Rank repeated pains by frequency, severity, and existing spend"
+        ],
+        "success_metric": "7 out of 10 describe the problem as an active pain point and cite current manual/paid workarounds",
+        "stop_condition": "Fewer than 4 of 10 prospects rank the problem among their top three priorities",
+        "budget_hint": "$0-$100"
+      },
+      {
+        "phase": "Days 11-20",
+        "objective": "Test willingness to commit before building",
+        "actions": [
+          "Offer the outcome manually: Private on-device transcription and summarization with no client audio sent to cloud services",
+          "Ask for a paid pilot, refundable deposit, signed letter of intent, or scheduled onboarding",
+          "Test the first channel: Founder-led LinkedIn outreach"
+        ],
+        "success_metric": "At least 3 paying customers accept manual delivery with positive feedback",
+        "stop_condition": "Zero meaningful commitments after 15 qualified offers",
+        "budget_hint": "$0-$250"
+      },
+      {
+        "phase": "Days 21-30",
+        "objective": "Decide, scope, and launch the smallest viable pilot",
+        "actions": [
+          "Build only the single value loop required to deliver the promised outcome",
+          "Onboard pilots manually and measure activation, time-to-value, and weekly use",
+          "Set the next milestone around 10 paid law-firm pilots and $500 MRR within Paid pilot within 30 days"
+        ],
+        "success_metric": "A repeatable pilot plan with owners, dates, and a path to 10 paid law-firm pilots and $500 MRR",
+        "stop_condition": "Pilot users do not complete the core value loop or refuse a second use",
+        "budget_hint": "$15,000 runway for 6 months"
+      }
+    ],
+    "interview_questions": [
+      "Tell me about the last time you experienced: Legal professionals have confidential client meetings that cannot be transcribed using cloud AI tools due to attorney-client privilege and data sovereignty concerns. Existing tools like Otter.ai send audio to remote servers, creating compliance risks.",
+      "How do you solve this today, and what does that cost in time or money?",
+      "How often does this happen, and what happens if you do nothing?",
+      "Who owns the budget and what would make this urgent enough to buy?",
+      "What would make you switch away from Otter.ai, Fireflies.ai, Whisper (open source), Tactiq?",
+      "What proof, security, integration, or compliance requirement would block adoption?"
+    ],
+    "decision_rules": [
+      "TEST FIRST: do not begin full product development until the commitment threshold is met.",
+      "Continue when at least 7 of 10 qualified interviews confirm an urgent recurring problem.",
+      "Build a pilot only after at least 3 prospects make a meaningful commitment.",
+      "Change the message or channel when qualified traffic does not convert after a defined sample.",
+      "Stop or pivot when two consecutive tests miss their pre-written failure thresholds."
+    ]
+  },
+  "regional_analysis": {
+    "geography": "United States",
+    "demand_score": 41.4,
+    "confidence": "low",
+    "evidence_count": 2,
+    "source_count": 2,
+    "summary": "Some evidence specific to United States was found, but coverage is not yet strong enough for a confident demand claim. Use the cited signals as hypotheses and close the listed research gaps locally.",
+    "demand_signals": [
+      {
+        "evidence_id": "E006",
+        "category": "demand",
+        "title": "Clio Legal Trends Report",
+        "source_name": "Public demo source - Clio Legal Trends Report",
+        "relevance_score": 0.92
+      }
+    ],
+    "pricing_signals": [],
+    "regulatory_signals": [
+      {
+        "evidence_id": "E008",
+        "category": "regulatory",
+        "title": "ABA Formal Opinion 512: Generative Artificial Intelligence Tools",
+        "source_name": "Public demo source - ABA Formal Opinion 512: Generative Artificial Intelligence Tools",
+        "relevance_score": 0.92
+      }
+    ],
+    "distribution_signals": [],
+    "localization_requirements": [
+      "Validate pricing and purchasing power in USD.",
+      "Test acquisition messages in English.",
+      "Interview buyers in at least two sub-markets within United States before generalizing demand.",
+      "Verify with a qualified local expert: Attorney-client privilege, data residency, consent to recording, and local device security.",
+      "Benchmark the stated channels locally: Founder-led LinkedIn outreach, local bar associations, legal-tech consultants."
+    ],
+    "research_gaps": [
+      "Collect at least five independent demand or pain signals from United States.",
+      "Find local competitor prices and willingness-to-pay evidence in USD.",
+      "Identify locally trusted communities, partners, directories, and acquisition benchmarks in United States.",
+      "Triangulate regional claims across at least three independent source types."
+    ]
+  },
+  "research_coverage": {
+    "depth": "standard",
+    "queries_generated": 49,
+    "queries_executed": 12,
+    "providers_used": [
+      "Curated public sources"
+    ],
+    "evidence_collected": 9,
+    "regional_evidence_count": 2
+  },
+  "disagreements": [
+    {
+      "topic": "Overall Recommendation",
+      "positions": [
+        {
+          "perspective": "Market Analyst",
+          "model_id": "Assumption Zero Evidence Engine",
+          "position": "Recommendation: Test First",
+          "evidence_ids": [
+            "E001",
+            "E002",
+            "E003"
+          ]
+        },
+        {
+          "perspective": "Skeptical Investor",
+          "model_id": "Assumption Zero Evidence Engine",
+          "position": "Recommendation: Pivot",
+          "evidence_ids": [
+            "E001",
+            "E002",
+            "E003"
+          ]
+        },
+        {
+          "perspective": "Practical Builder",
+          "model_id": "Assumption Zero Evidence Engine",
+          "position": "Recommendation: Test First",
+          "evidence_ids": [
+            "E001",
+            "E002",
+            "E003"
+          ]
+        }
+      ],
+      "stronger_position": "Test First",
+      "requires_human_research": true
+    },
+    {
+      "topic": "Most Dangerous Assumption",
+      "positions": [
+        {
+          "perspective": "Market Analyst",
+          "model_id": "Assumption Zero Evidence Engine",
+          "position": "Unvalidated assumption: Solo practitioners and small law firms (1-20 attorneys) will switch to LegalMind Local from Otter.ai, Fireflies.ai, Whisper (open source), Tactiq.",
+          "evidence_ids": []
+        },
+        {
+          "perspective": "Skeptical Investor",
+          "model_id": "Assumption Zero Evidence Engine",
+          "position": "Distribution & CAC: Can LegalMind Local acquire target customers in United States within $15,000 runway for 6 months?",
+          "evidence_ids": []
+        },
+        {
+          "perspective": "Practical Builder",
+          "model_id": "Assumption Zero Evidence Engine",
+          "position": "Scope management: Launch single core value loop for LegalMind Local within founder budget ($15,000 runway for 6 months).",
+          "evidence_ids": []
+        }
+      ],
+      "stronger_position": null,
+      "requires_human_research": true
+    }
+  ],
+  "is_demo": true,
+  "error_message": null
+}
