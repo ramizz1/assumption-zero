@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import logging
 
+import httpx
 from fastapi import APIRouter, BackgroundTasks, HTTPException, Query, Request, status
 
 from assumption_zero import __version__
@@ -42,6 +43,60 @@ from assumption_zero.services.analysis_service import (
 
 router = APIRouter(prefix="/api")
 logger = logging.getLogger(__name__)
+
+
+async def _probe_provider_connection(
+    provider: str,
+    api_key: str | None,
+    base_url: str | None,
+) -> None:
+    """Verify provider authentication without running a paid generation."""
+    settings = get_settings()
+    normalized = provider.casefold()
+
+    if normalized == "openrouter":
+        url = "https://openrouter.ai/api/v1/auth/key"
+    elif normalized == "groq":
+        url = "https://api.groq.com/openai/v1/models"
+    elif normalized == "opencode":
+        url = f"{(base_url or settings.opencode_base_url).rstrip('/')}/models"
+    elif normalized in ("openai", "openai_compat", "custom"):
+        resolved_base = base_url or settings.openai_compatible_base_url or "https://api.openai.com/v1"
+        url = f"{resolved_base.rstrip('/')}/models"
+    elif normalized == "ollama":
+        url = f"{(base_url or settings.ollama_base_url).rstrip('/')}/api/tags"
+    else:
+        return
+
+    headers = {"Accept": "application/json"}
+    if api_key:
+        headers["Authorization"] = f"Bearer {api_key}"
+
+    try:
+        async with httpx.AsyncClient(timeout=15.0, follow_redirects=False) as client:
+            response = await client.get(url, headers=headers)
+    except httpx.RequestError as exc:
+        logger.info("Provider connectivity check failed for %s: %s", normalized, type(exc).__name__)
+        raise HTTPException(
+            status_code=400,
+            detail=f"Could not reach {normalized.upper()}. Check the endpoint and try again.",
+        ) from exc
+
+    if response.status_code in (401, 403):
+        raise HTTPException(
+            status_code=400,
+            detail=f"{normalized.upper()} rejected the API key. Check the key and try again.",
+        )
+    if response.status_code == 429:
+        raise HTTPException(
+            status_code=400,
+            detail=f"{normalized.upper()} is rate-limiting this key. Wait briefly and try again.",
+        )
+    if response.status_code >= 400:
+        raise HTTPException(
+            status_code=400,
+            detail=f"{normalized.upper()} returned HTTP {response.status_code}. Check the endpoint and provider status.",
+        )
 
 
 # ── Demo idea ─────────────────────────────────────────────────────
@@ -202,21 +257,30 @@ async def verify_keys_endpoint(body: dict) -> dict:
                 detail=f"Invalid API key or endpoint for {provider.upper()}.",
             )
 
+        if provider != "mock":
+            await _probe_provider_connection(
+                provider=provider,
+                api_key=effective_key if provider in key_required_providers else api_key_override,
+                base_url=base_url_override,
+            )
+
         return {
             "status": "ok",
             "provider": provider,
             "message": (
-                f"Successfully validated {provider.upper()} configuration. "
-                "Live connectivity is confirmed when an analysis starts."
+                "The deterministic baseline is ready; no external AI provider was contacted."
+                if provider == "mock"
+                else f"Connected to {provider.upper()} successfully. No generation tokens were used."
             ),
         }
     except HTTPException:
         raise
     except Exception as exc:
+        logger.info("Provider verification failed for %s: %s", provider, type(exc).__name__)
         raise HTTPException(
             status_code=400,
-            detail=f"Connection verification failed for {provider}: {exc}",
-        )
+            detail=f"Could not verify {provider.upper()}. Check the key and endpoint, then try again.",
+        ) from exc
 
 
 @router.post("/analyses", response_model=dict, status_code=status.HTTP_202_ACCEPTED)

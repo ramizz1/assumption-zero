@@ -1,0 +1,17 @@
+{
+  "name": "Assumption Zero",
+  "short_name": "A0",
+  "description": "Evidence-first startup and MVP validation.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0d0d0f",
+  "icons": [
+    {
+      "src": "/logo.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

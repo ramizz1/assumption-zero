@@ -51,7 +51,7 @@ def test_verify_keys_endpoint_success():
     data = response.json()
     assert data["status"] == "ok"
     assert data["provider"] == "mock"
-    assert "Successfully" in data["message"]
+    assert "no external AI provider" in data["message"]
 
 
 def test_verify_keys_missing_key_returns_400():
@@ -59,6 +59,35 @@ def test_verify_keys_missing_key_returns_400():
     assert response.status_code == 400
     data = response.json()
     assert "API key is missing" in data["detail"]
+
+
+def test_provider_probe_rejects_bad_key_without_echoing_it(monkeypatch):
+    class FakeResponse:
+        status_code = 401
+
+    class FakeAsyncClient:
+        def __init__(self, **_kwargs):
+            pass
+
+        async def __aenter__(self):
+            return self
+
+        async def __aexit__(self, *_args):
+            return None
+
+        async def get(self, _url, **_kwargs):
+            return FakeResponse()
+
+    monkeypatch.setattr("assumption_zero.api.routes.httpx.AsyncClient", FakeAsyncClient)
+    sentinel = "TEST_KEY_MUST_NOT_BE_ECHOED"
+    response = client.post(
+        "/api/verify-keys",
+        json={"provider": "groq", "groqKey": sentinel},
+    )
+
+    assert response.status_code == 400
+    assert "rejected the API key" in response.json()["detail"]
+    assert sentinel not in response.text
 
 
 def test_release_debug_value_does_not_break_startup():
