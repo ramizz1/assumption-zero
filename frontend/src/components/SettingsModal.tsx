@@ -153,7 +153,9 @@ export const SettingsModal: React.FC<Props> = ({ isOpen, onClose, onSave, backen
         groqKey: settings.groqKey,
         openrouterKey: settings.openrouterKey,
         opencodeKey: settings.opencodeKey,
-        openaiKey: settings.openaiKey,
+        openaiKey: settings.provider === 'custom'
+          ? settings.customKey || settings.openaiKey
+          : settings.openaiKey,
         ollamaUrl: settings.ollamaUrl,
         customUrl: settings.customUrl,
       })
