@@ -103,3 +103,24 @@ def test_build_is_downgraded_without_strong_commercial_evidence(sample_idea, sam
     )
 
     assert recommendation == Recommendation.TEST_FIRST
+
+
+def test_open_source_score_names_maintenance_not_unit_economics(
+    sample_idea, sample_evidence, sample_perspectives
+):
+    open_idea = sample_idea.model_copy(
+        update={
+            "description": "A free and open-source test automation project with no payments",
+            "business_model": "Free and open source; no payments",
+            "price": None,
+            "revenue_goal": None,
+        }
+    )
+
+    result = calculate_opportunity_score(sample_perspectives, sample_evidence, open_idea)
+    sustainability = next(
+        item for item in result.dimensions if item.dimension == "unit_economics"
+    )
+
+    assert sustainability.display_name == "Sustainability & Maintenance"
+    assert sustainability.explanation.startswith("Sustainability & Maintenance:")

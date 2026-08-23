@@ -4,7 +4,14 @@ from __future__ import annotations
 import re
 from typing import List
 
-from assumption_zero.schemas import AnalysisPerspective, EvidenceItem, EvidenceType, IdeaInput, ValidationExperiment
+from assumption_zero.analysis.idea_context import is_noncommercial
+from assumption_zero.schemas import (
+    AnalysisPerspective,
+    EvidenceItem,
+    EvidenceType,
+    IdeaInput,
+    ValidationExperiment,
+)
 
 
 def _profile(idea: IdeaInput) -> str:
@@ -50,6 +57,7 @@ def _channel(idea: IdeaInput, profile: str) -> str:
 
 def budget_guidance(idea: IdeaInput) -> tuple[list[str], str, list[str]]:
     """Cap the complete sequence at roughly 15% of a parseable founder budget."""
+    noncommercial = is_noncommercial(idea)
     raw = f"{idea.currency or ''} {idea.budget or ''}".strip()
     match = re.search(r"(?<!\d)(\d[\d,.]*)(?!\d)", idea.budget or "")
     total = float(match.group(1).replace(",", "")) if match else None
@@ -72,20 +80,34 @@ def budget_guidance(idea: IdeaInput) -> tuple[list[str], str, list[str]]:
             f"Behavior/workflow proof: up to {costs[1].split('–')[-1]}",
             f"Reach or transaction test: up to {costs[2].split('–')[-1]}",
             f"Commitment/value test: up to {costs[3].split('–')[-1]}",
-            f"Pilot/retention test: up to {costs[4].split('–')[-1]}, released only after commitment",
+            (
+                f"Repeat-use/community-health test: up to {costs[4].split('–')[-1]}, "
+                "released only after independent activation"
+                if noncommercial
+                else f"Pilot/retention test: up to {costs[4].split('–')[-1]}, released only after commitment"
+            ),
         ]
         return costs, summary, allocations
 
-    costs = ["$0–$30", "$0–$75", "$0–$100", "$0–$200", "$0–$400 after commitment"]
+    final_cost = "$0–$400 after activation" if noncommercial else "$0–$400 after commitment"
+    costs = ["$0–$30", "$0–$75", "$0–$100", "$0–$200", final_cost]
     return costs, (
         "No reliable numeric budget was supplied. Start free, authorize one test at a time, "
-        "and do not exceed $300 before a buyer makes a meaningful commitment."
+        + (
+            "and do not exceed $300 before qualified users independently activate."
+            if noncommercial
+            else "and do not exceed $300 before a buyer makes a meaningful commitment."
+        )
     ), [
         "Problem research: $0–$30",
         "Behavior/workflow proof: $0–$75",
         "Reach test: $0–$100",
         "Commitment test: $0–$200",
-        "Pilot/retention: up to $400, released only after commitment",
+        (
+            "Repeat-use/community health: up to $400, released only after independent activation"
+            if noncommercial
+            else "Pilot/retention: up to $400, released only after commitment"
+        ),
     ]
 
 
@@ -93,10 +115,94 @@ def _evidence_counts(evidence: List[EvidenceItem]) -> dict[EvidenceType, int]:
     return {kind: sum(item.evidence_type == kind for item in evidence) for kind in EvidenceType}
 
 
+def _evidence_anchor(
+    idea: IdeaInput,
+    evidence: list[EvidenceItem],
+    preferred: tuple[EvidenceType, ...],
+) -> EvidenceItem | None:
+    ignored = {
+        "about", "after", "business", "customer", "customers", "from", "have",
+        "helps", "project", "service", "software", "solution", "that", "their",
+        "this", "tool", "tools", "using", "with",
+    }
+    idea_text = " ".join(
+        (idea.name, idea.problem, idea.description, idea.target_customer, idea.solution or "")
+    ).casefold()
+    idea_terms = {
+        token
+        for token in re.findall(r"[^\W\d_]{4,}", idea_text, flags=re.UNICODE)
+        if token not in ignored
+    }
+    candidates = []
+    for item in evidence:
+        source_text = f"{item.title} {item.passage} {item.search_query}".casefold()
+        source_terms = set(re.findall(r"[^\W\d_]{4,}", source_text, flags=re.UNICODE))
+        if (
+            item.evidence_type in preferred
+            and item.relevance_score >= 0.6
+            and idea_terms & source_terms
+        ):
+            candidates.append(item)
+    if not candidates:
+        return None
+    reliability = {"high": 3, "medium": 2, "low": 1}
+    return max(
+        candidates,
+        key=lambda item: (reliability[item.reliability.value], item.relevance_score),
+    )
+
+
+def _tailor_to_evidence(
+    idea: IdeaInput,
+    tests: list[ValidationExperiment],
+    evidence: list[EvidenceItem],
+) -> list[ValidationExperiment]:
+    """Bind every gate to this idea and the strongest relevant collected source."""
+    preferred_by_type: dict[str, tuple[EvidenceType, ...]] = {
+        "problem_frequency": (EvidenceType.DEMAND, EvidenceType.COMPLAINT),
+        "existing_behavior": (EvidenceType.MANUAL_WORKFLOW, EvidenceType.COMPLAINT),
+        "distribution": (EvidenceType.DISTRIBUTION, EvidenceType.GEOGRAPHIC),
+        "adoption_friction": (EvidenceType.OSS_ALTERNATIVE, EvidenceType.COMPLAINT),
+        "adoption_commitment": (EvidenceType.DEMAND, EvidenceType.OSS_ALTERNATIVE),
+        "willingness_to_pay": (EvidenceType.PRICING, EvidenceType.DEMAND),
+        "marketplace_transaction": (EvidenceType.DEMAND, EvidenceType.MANUAL_WORKFLOW),
+        "delivered_value": (EvidenceType.DEMAND, EvidenceType.COMPLAINT),
+        "delivered_value_and_retention": (EvidenceType.DEMAND, EvidenceType.COMPLAINT),
+        "retention": (EvidenceType.DEMAND, EvidenceType.COMPLAINT),
+        "retention_and_liquidity": (EvidenceType.DEMAND, EvidenceType.DISTRIBUTION),
+        "community_retention": (EvidenceType.OSS_ALTERNATIVE, EvidenceType.DISTRIBUTION),
+    }
+    for test in tests:
+        test.title = f"{idea.name}: {test.title}"
+        anchor = _evidence_anchor(
+            idea,
+            evidence,
+            preferred_by_type.get(
+                test.test_type,
+                (EvidenceType.DEMAND, EvidenceType.COMPLAINT),
+            ),
+        )
+        if anchor:
+            test.why_it_matters += (
+                f" Strongest relevant source: [{anchor.evidence_id}] {anchor.title} "
+                f"({anchor.source_name}); the test checks whether it applies to "
+                f"{idea.target_customer} in {idea.geography}."
+            )
+        else:
+            test.why_it_matters += (
+                f" No direct source closed this question for {idea.target_customer} in "
+                f"{idea.geography}, so this gate measures that exact evidence gap."
+            )
+        segment_field = f"Segment/geography match: {idea.target_customer} — {idea.geography}"
+        if segment_field not in test.data_to_capture:
+            test.data_to_capture.append(segment_field)
+    return tests
+
+
 def _make(*, title: str, test_type: str, assumption: str, why: str, procedure: str,
           time: str, cost: str, target: str, metric: str, capture: list[str],
           success: str, failure: str, decision: str, budget_rationale: str,
-          priority: int, legal: str = "Be transparent that this is validation research; collect only necessary data and honor opt-outs and refunds.") -> ValidationExperiment:
+          priority: int, legal: str = "Be transparent that this is validation research; collect only necessary data, honor opt-outs, and state any commercial terms clearly.") -> ValidationExperiment:
     return ValidationExperiment(
         title=title, test_type=test_type, assumption_tested=assumption,
         why_it_matters=why, procedure=procedure, estimated_time=time,
@@ -319,16 +425,187 @@ def _marketplace_tests(idea: IdeaInput, costs: list[str], counts: dict[EvidenceT
     return tests
 
 
+def _open_source_tests(
+    idea: IdeaInput,
+    costs: list[str],
+    counts: dict[EvidenceType, int],
+    risky_claim: str,
+) -> list[ValidationExperiment]:
+    """Validate free/open-source demand through behavior, adoption, and contribution."""
+    profile = _profile(idea)
+    customer = idea.target_customer
+    problem = idea.problem.rstrip(".")
+    solution = _solution(idea)
+    channel = _channel(idea, profile)
+    regulated = _is_regulated(idea)
+    qualification = (
+        "deployment owners or maintainers"
+        if profile == "b2b"
+        else "people who experienced the problem recently"
+    )
+    return [
+        _make(
+            title="last-event need interviews",
+            test_type="problem_frequency",
+            assumption=f"{customer} encounter ‘{problem}’ often enough to seek a free/open-source solution.",
+            why=(
+                f"Research found {counts[EvidenceType.DEMAND] + counts[EvidenceType.COMPLAINT]} "
+                "demand or complaint signals, but only recent behavior establishes urgency."
+            ),
+            procedure=(
+                f"Interview 10 qualified {qualification} from {customer}. Ask for the last occurrence, "
+                "current workaround, consequence, failed alternatives, and who can approve installation. "
+                f"Do not describe {idea.name} until the end."
+            ),
+            time="3–5 days",
+            cost=costs[0],
+            target=f"10 qualified {qualification}",
+            metric="Recent-problem confirmation rate",
+            capture=[
+                "Date and trigger of the last occurrence",
+                "Frequency and measurable consequence",
+                "Current workaround or repository",
+                "Person able to approve installation",
+            ],
+            success="At least 7/10 provide a recent example and at least 5 already attempt a workaround.",
+            failure="Fewer than 4/10 experienced the problem in the last 90 days or consequences are minor.",
+            decision="Pass → test installation and first value. Fail → narrow the user/problem pair.",
+            budget_rationale="Use direct community outreach first; do not buy broad traffic.",
+            priority=1,
+            legal="Explain that this is research, collect only necessary data, and honor opt-outs.",
+        ),
+        _make(
+            title="README-to-first-value test",
+            test_type="adoption_friction",
+            assumption=f"A qualified user can understand, install, and reach first value from {solution} without founder rescue.",
+            why="Open-source interest is weak evidence unless a user completes setup and the core action.",
+            procedure=(
+                f"Give 6 qualified users a minimal README, runnable proof, or guided manual version of {idea.name}. "
+                "Observe silently from discovery through the first useful result. Record every abandoned step, "
+                "question, permission problem, dependency, and support request."
+            ),
+            time="2–4 days",
+            cost=costs[1],
+            target="6 qualified users on their own devices or environments",
+            metric="Independent activation rate and time to first value",
+            capture=[
+                "Discovery source",
+                "Install started/completed",
+                "Time to first useful result",
+                "Blocking step and support minutes",
+            ],
+            success="At least 4/6 activate independently and median time to first value is under 30 minutes.",
+            failure="Fewer than 2/6 activate or every successful setup requires founder intervention.",
+            decision="Pass → test repeatable distribution. Fail → fix documentation, packaging, or scope before adding features.",
+            budget_rationale="Spend only on packaging or test environments required to observe real setup.",
+            priority=2,
+            legal=(
+                "Use test data and least-privilege access; document permissions, telemetry, and deletion."
+                if regulated
+                else "Disclose telemetry and permissions; use test data and provide complete uninstall instructions."
+            ),
+        ),
+        _make(
+            title=f"qualified discovery through {channel}",
+            test_type="distribution",
+            assumption=f"{customer} can discover {idea.name} through {channel} and take a real setup action.",
+            why="Stars and page views are weak; qualified installation attempts reveal whether distribution works.",
+            procedure=(
+                f"Publish one problem-specific example through {channel}. Route users to one README action for "
+                f"{idea.name}; tag source, qualified visits, clone/download attempts, setup starts, and activations. "
+                "Keep the audience and message fixed for the test."
+            ),
+            time="5–7 days",
+            cost=costs[2],
+            target="50 qualified repository or documentation visits",
+            metric="Qualified visit-to-setup-start rate",
+            capture=[
+                "Qualified visits by source",
+                "README action clicks",
+                "Clone/download or setup starts",
+                "Completed activations and rejection reasons",
+            ],
+            success="At least 10/50 start setup and at least 5 reach the core value event.",
+            failure="Fewer than 3/50 start setup after one message revision.",
+            decision="Pass → ask for a concrete adoption commitment. Fail → change channel or narrow the use case.",
+            budget_rationale="Do not count or purchase generic impressions; spend only on reaching qualified users.",
+            priority=3,
+            legal="Use relevant outreach, disclose measurement, collect minimal data, and honor opt-outs.",
+        ),
+        _make(
+            title="maintainer and adopter commitment test",
+            test_type="adoption_commitment",
+            assumption=risky_claim,
+            why="A real installation, integration slot, issue, example, or contribution is stronger than a star or compliment.",
+            procedure=(
+                f"Show the same scoped {idea.name} adoption proposal to 12 qualified users. Ask each for one "
+                "observable commitment: install by a date, connect a real workflow, open a reproducible issue, "
+                "publish an example, designate a maintainer, or contribute a small fix."
+            ),
+            time="5–7 days",
+            cost=costs[3],
+            target="12 qualified users, maintainers, or deployment owners",
+            metric="Observable adoption/contribution commitment rate",
+            capture=[
+                "Commitment type and due date",
+                "Environment or workflow selected",
+                "Blocking objection",
+                "Maintainer or contributor identified",
+            ],
+            success="At least 4/12 commit to a dated adoption action and at least 2 complete it.",
+            failure="0/12 commit or fewer than 2 complete an action by the agreed date.",
+            decision="Pass → run a repeat-use cohort. Fail → revise scope, packaging, trust proof, or target user.",
+            budget_rationale="Do not build a broad feature backlog before qualified users complete an adoption action.",
+            priority=4,
+            legal="State the license, support expectations, data handling, security scope, and maintainer responsibilities clearly.",
+        ),
+        _make(
+            title="repeat-use and community-health cohort",
+            test_type="community_retention",
+            assumption=f"Users return to {idea.name} and create external maintenance signals when the problem recurs.",
+            why="Durable open-source demand appears as repeated core use, useful issues, integrations, referrals, and outside contributions.",
+            procedure=(
+                "Track the first 8 activated users for 21 days without reminders for the core action. Measure second use, "
+                "successful upgrades, useful issues, shared examples, integrations, referrals, and outside contributions. "
+                "Separate product defects from documentation and maintenance gaps."
+            ),
+            time="21 days",
+            cost=costs[4],
+            target="8 independently activated users",
+            metric="Unprompted repeat-use plus external maintenance signal rate",
+            capture=[
+                "Second core action and date",
+                "Upgrade or reinstall success",
+                "Useful issue, example, integration, or contribution",
+                "Reason for abandonment",
+            ],
+            success="At least 5/8 repeat the core action and at least 2 create a useful external maintenance signal.",
+            failure="Fewer than 3/8 return or every maintenance signal comes from the founder.",
+            decision="Pass → automate the repeated bottleneck and publish the roadmap. Fail → fix retained value before expanding scope.",
+            budget_rationale="Release effort for maintenance and reliability only after repeat use is observed.",
+            priority=5,
+            legal="Publish contribution, security-reporting, support, privacy, and governance expectations before recruiting maintainers.",
+        ),
+    ]
+
+
 def generate_experiments(idea: IdeaInput, perspectives: List[AnalysisPerspective], evidence: List[EvidenceItem]) -> List[ValidationExperiment]:
     """Return five sequential tests that answer different demand questions."""
     profile = _profile(idea)
     costs, _, _ = budget_guidance(idea)
     counts = _evidence_counts(evidence)
+    default_claim = (
+        f"{idea.target_customer} will install, activate, and help sustain {_solution(idea)}."
+        if is_noncommercial(idea)
+        else f"{idea.target_customer} will make a real commitment for {_solution(idea)} at {_price(idea)}."
+    )
     risky_claim = idea.key_assumptions or next(
         (perspective.most_dangerous_assumption for perspective in perspectives if perspective.most_dangerous_assumption),
-        f"{idea.target_customer} will make a real commitment for {_solution(idea)} at {_price(idea)}.",
+        default_claim,
     )
-    if profile == "marketplace":
+    if is_noncommercial(idea):
+        tests = _open_source_tests(idea, costs, counts, risky_claim)
+    elif profile == "marketplace":
         tests = _marketplace_tests(idea, costs, counts, risky_claim)
     elif profile == "b2b":
         tests = _b2b_tests(idea, costs, counts, risky_claim)
@@ -338,4 +615,4 @@ def generate_experiments(idea: IdeaInput, perspectives: List[AnalysisPerspective
         tests[1].procedure += " Before proceeding, ask one qualified domain/compliance expert to identify any rule that would prevent this workflow or evidence collection."
         tests[1].data_to_capture.append("Blocking compliance or consent requirement")
         tests[1].legal_ethical = "Use redacted artifacts and appropriate consent. Verify sector-specific requirements with a qualified local professional."
-    return tests
+    return _tailor_to_evidence(idea, tests, evidence)

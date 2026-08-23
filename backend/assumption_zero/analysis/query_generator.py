@@ -10,6 +10,7 @@ from __future__ import annotations
 import re
 from datetime import date
 
+from assumption_zero.analysis.idea_context import is_noncommercial
 from assumption_zero.schemas import IdeaInput
 
 IGNORE_COMPETITOR_WORDS = {
@@ -71,6 +72,7 @@ def generate_queries(idea: IdeaInput) -> list[dict[str, str]]:
     channels = _clean_phrase(idea.acquisition_channels or "", max_words=5)
     known_comps = idea.known_competitors or ""
     current_year = date.today().year
+    noncommercial = is_noncommercial(idea)
 
     queries: list[dict[str, str]] = []
 
@@ -97,8 +99,18 @@ def generate_queries(idea: IdeaInput) -> list[dict[str, str]]:
 
     if valid_comps:
         for comp in valid_comps[:4]:
-            queries.append({"query": f"{comp} software features pricing", "type": "competitor"})
-            queries.append({"query": f"{comp} vs {name} comparison", "type": "pricing"})
+            queries.append({
+                "query": (
+                    f"{comp} software features maintenance activity"
+                    if noncommercial
+                    else f"{comp} software features pricing"
+                ),
+                "type": "competitor",
+            })
+            queries.append({
+                "query": f"{comp} vs {name} comparison",
+                "type": "competitor" if noncommercial else "pricing",
+            })
             queries.append(
                 {"query": f"{comp} customer complaints limitations", "type": "complaint"}
             )
@@ -106,7 +118,14 @@ def generate_queries(idea: IdeaInput) -> list[dict[str, str]]:
         queries.append(
             {"query": f"top {problem[:40]} software {current_year}", "type": "competitor"}
         )
-        queries.append({"query": f"SaaS tools for {problem[:40]}", "type": "competitor"})
+        queries.append({
+            "query": (
+                f"maintained open source tools for {problem[:40]}"
+                if noncommercial
+                else f"SaaS tools for {problem[:40]}"
+            ),
+            "type": "competitor",
+        })
 
     # ── Open-source alternatives ──────────────────────────────────
     queries.append({"query": f"open source {problem[:40]} github", "type": "oss_alternative"})
@@ -120,9 +139,15 @@ def generate_queries(idea: IdeaInput) -> list[dict[str, str]]:
     queries.append({"query": f"{problem[:35]} complaints forum {geography}", "type": "complaint"})
 
     # ── Demand indicators ─────────────────────────────────────────
-    queries.append({"query": f"{customer[:30]} {problem[:35]} spending survey {geography}", "type": "demand"})
-    queries.append({"query": f"{customer[:30]} {problem[:35]} requests recommendations", "type": "demand"})
-    queries.append({"query": f"{problem[:35]} budget purchase adoption {geography}", "type": "demand"})
+    if noncommercial:
+        queries.append({"query": f"{customer[:30]} {problem[:35]} open source adoption {geography}", "type": "demand"})
+        queries.append({"query": f"{customer[:30]} request open source {problem[:35]} tool", "type": "demand"})
+        queries.append({"query": f"{problem[:35]} installation usage integrations github", "type": "demand"})
+        queries.append({"query": f"{problem[:35]} maintainers contributors community", "type": "distribution"})
+    else:
+        queries.append({"query": f"{customer[:30]} {problem[:35]} spending survey {geography}", "type": "demand"})
+        queries.append({"query": f"{customer[:30]} {problem[:35]} requests recommendations", "type": "demand"})
+        queries.append({"query": f"{problem[:35]} budget purchase adoption {geography}", "type": "demand"})
     queries.append({"query": f"{customer[:30]} population statistics {geography} {current_year}", "type": "demand"})
     queries.append({"query": f"{problem[:35]} survey adoption {geography}", "type": "demand"})
     if industry:
@@ -131,11 +156,16 @@ def generate_queries(idea: IdeaInput) -> list[dict[str, str]]:
         )
 
     # ── Pricing evidence ──────────────────────────────────────────
-    queries.append({"query": f"{problem[:40]} pricing {geography} {currency}", "type": "pricing"})
-    queries.append({"query": f"{problem[:40]} SaaS pricing tiers", "type": "pricing"})
-    queries.append({"query": f"{customer[:30]} willingness to pay {geography}", "type": "pricing"})
-    if model:
-        queries.append({"query": f"{model} pricing {customer[:30]}", "type": "pricing"})
+    if noncommercial:
+        queries.append({"query": f"{problem[:40]} open source installation barriers", "type": "oss_alternative"})
+        queries.append({"query": f"{problem[:40]} github issues feature requests", "type": "complaint"})
+        queries.append({"query": f"{customer[:30]} open source maintenance adoption", "type": "demand"})
+    else:
+        queries.append({"query": f"{problem[:40]} pricing {geography} {currency}", "type": "pricing"})
+        queries.append({"query": f"{problem[:40]} SaaS pricing tiers", "type": "pricing"})
+        queries.append({"query": f"{customer[:30]} willingness to pay {geography}", "type": "pricing"})
+        if model:
+            queries.append({"query": f"{model} pricing {customer[:30]}", "type": "pricing"})
 
     # ── Existing manual workflows ─────────────────────────────────
     queries.append(
@@ -162,7 +192,11 @@ def generate_queries(idea: IdeaInput) -> list[dict[str, str]]:
         )
         queries.append(
             {
-                "query": f"digital adoption purchasing behavior {geography} {industry}",
+                "query": (
+                    f"open source adoption developer community {geography} {industry}"
+                    if noncommercial
+                    else f"digital adoption purchasing behavior {geography} {industry}"
+                ),
                 "type": "geographic",
             }
         )
@@ -190,26 +224,53 @@ def generate_queries(idea: IdeaInput) -> list[dict[str, str]]:
         )
 
     # ── Failed products ───────────────────────────────────────────
-    queries.append({"query": f"failed {problem[:30]} startup reasons", "type": "failed_product"})
+    queries.append({
+        "query": (
+            f"abandoned open source {problem[:30]} projects reasons"
+            if noncommercial
+            else f"failed {problem[:30]} startup reasons"
+        ),
+        "type": "failed_product",
+    })
     queries.append(
         {
-            "query": f"failed {industry or problem[:25]} startups {geography}",
+            "query": (
+                f"unmaintained {industry or problem[:25]} open source projects {geography}"
+                if noncommercial
+                else f"failed {industry or problem[:25]} startups {geography}"
+            ),
             "type": "failed_product",
         }
     )
 
     # ── Common failure reasons ────────────────────────────────────
     queries.append(
-        {"query": f"why startups fail in {problem[:30]} space", "type": "failure_reason"}
+        {
+            "query": (
+                f"why open source {problem[:30]} projects lose maintainers users"
+                if noncommercial
+                else f"why startups fail in {problem[:30]} space"
+            ),
+            "type": "failure_reason",
+        }
     )
 
     # ── Distribution channels ─────────────────────────────────────
-    queries.append(
-        {"query": f"how to reach {customer[:30]} buyers {geography}", "type": "distribution"}
-    )
+    queries.append({
+        "query": (
+            f"how to reach {customer[:30]} users maintainers {geography}"
+            if noncommercial
+            else f"how to reach {customer[:30]} buyers {geography}"
+        ),
+        "type": "distribution",
+    })
     queries.append(
         {
-            "query": f"how to acquire {customer[:30]} customers {problem[:25]}",
+            "query": (
+                f"how to reach {customer[:30]} open source users {problem[:25]}"
+                if noncommercial
+                else f"how to acquire {customer[:30]} customers {problem[:25]}"
+            ),
             "type": "distribution",
         }
     )

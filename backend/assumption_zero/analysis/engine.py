@@ -33,8 +33,12 @@ from assumption_zero.analysis.confidence import calculate_evidence_confidence
 from assumption_zero.analysis.disagreement import detect_disagreements
 from assumption_zero.analysis.experiment_generator import generate_experiments
 from assumption_zero.analysis.founder_toolkit import generate_founder_toolkit
+from assumption_zero.analysis.idea_context import is_noncommercial
 from assumption_zero.analysis.query_generator import generate_queries
-from assumption_zero.analysis.regional_analysis import generate_regional_analysis, is_commercial_demand_signal
+from assumption_zero.analysis.regional_analysis import (
+    generate_regional_analysis,
+    is_commercial_demand_signal,
+)
 from assumption_zero.analysis.scoring import calculate_opportunity_score
 from assumption_zero.llm.base import DiscoveredCompetitor, LLMAdapter, PerspectiveOutput
 from assumption_zero.research.base import ResearchProvider
@@ -430,11 +434,27 @@ def _select_recommendation(
             competitor.evidence_ids and competitor.confidence != ConfidenceLevel.LOW
             for competitor in competitors
         )
+        demand_ready = (
+            len(demand_sources) >= 2
+            and sum(is_commercial_demand_signal(item, idea) for item in evidence) >= 3
+        )
+        model_ready = (
+            any(
+                item.evidence_type
+                in {
+                    EvidenceType.OSS_ALTERNATIVE,
+                    EvidenceType.DISTRIBUTION,
+                    EvidenceType.MANUAL_WORKFLOW,
+                }
+                for item in evidence
+            )
+            if is_noncommercial(idea)
+            else any(item.evidence_type == EvidenceType.PRICING for item in evidence)
+        )
         evidence_ready = (
             confidence == ConfidenceLevel.HIGH
-            and len(demand_sources) >= 2
-            and sum(is_commercial_demand_signal(item, idea) for item in evidence) >= 3
-            and any(item.evidence_type == EvidenceType.PRICING for item in evidence)
+            and demand_ready
+            and model_ready
             and has_verified_competitor
             and regional_analysis.confidence != ConfidenceLevel.LOW
         )
@@ -476,6 +496,7 @@ def _find_strongest(
 def _collect_missing_info(
     perspectives: list[AnalysisPerspective],
     evidence: list[EvidenceItem],
+    idea: IdeaInput,
     competitors: list[Competitor] | None = None,
 ) -> list[str]:
     missing: list[str] = []
@@ -493,7 +514,20 @@ def _collect_missing_info(
             )
             break
 
-    if not any(e.evidence_type == EvidenceType.PRICING for e in evidence):
+    if is_noncommercial(idea):
+        if not any(
+            e.evidence_type
+            in {
+                EvidenceType.OSS_ALTERNATIVE,
+                EvidenceType.DISTRIBUTION,
+                EvidenceType.MANUAL_WORKFLOW,
+            }
+            for e in evidence
+        ):
+            missing.append(
+                "No independent installation, integration, distribution, or maintainer evidence found"
+            )
+    elif not any(e.evidence_type == EvidenceType.PRICING for e in evidence):
         missing.append("No competitor pricing evidence found")
     if not any(e.evidence_type == EvidenceType.DEMAND for e in evidence):
         missing.append("No direct demand signal evidence found")
@@ -682,7 +716,7 @@ class AnalysisEngine:
         most_dangerous = _select_most_dangerous_assumption(perspectives)
         strongest_sup = _find_strongest(evidence, good=True)
         strongest_con = _find_strongest(evidence, good=False)
-        missing_info = _collect_missing_info(perspectives, evidence, competitors)
+        missing_info = _collect_missing_info(perspectives, evidence, idea, competitors)
 
         await _progress(AnalysisStage.COMPLETE)
 
@@ -847,7 +881,7 @@ class AnalysisEngine:
     ) -> PerspectiveOutput | None:
         try:
             return await self._llm.analyze_perspective(name, idea, evidence)
-        except Exception as exc:
+        except Exception:
             safe_error = public_provider_error(self._llm.model_id)
             err_msg = f"Perspective {name.value} failed: {safe_error}"
             logger.error(err_msg)

@@ -1,9 +1,11 @@
 import type { AnalysisResult } from '../types'
+import { isNoncommercialIdea } from './ideaContext'
 
 const list = (items?: string[]) => items?.length ? items.map((item) => `- ${item}`).join('\n') : '- None recorded'
 
 export function generateMarkdownReport(result: AnalysisResult): string {
   const score = result.opportunity_score
+  const noncommercial = isNoncommercialIdea(result.idea_input)
   const lines: string[] = [
     `# ${result.idea_input.name} — Validation Report`,
     '',
@@ -46,7 +48,7 @@ export function generateMarkdownReport(result: AnalysisResult): string {
       result.research_coverage ? `- Research depth: ${result.research_coverage.depth}; ${result.research_coverage.queries_executed} balanced queries executed` : '',
       '', regional.summary, '',
       '### Regional demand signals', '', signalList(regional.demand_signals), '',
-      '### Regional pricing signals', '', signalList(regional.pricing_signals), '',
+      ...(noncommercial ? [] : ['### Regional pricing signals', '', signalList(regional.pricing_signals), '']),
       '### Regional regulatory signals', '', signalList(regional.regulatory_signals), '',
       '### Regional distribution signals', '', signalList(regional.distribution_signals), '',
       '### Localization requirements', '', list(regional.localization_requirements), '',

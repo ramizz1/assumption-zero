@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { lazy, Suspense, useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { api } from '../lib/api'
 import type { AnalysisResult } from '../types'
@@ -8,14 +8,15 @@ import PerspectiveExplorer from '../components/PerspectiveExplorer'
 import CompetitorCard from '../components/CompetitorCard'
 import ExperimentCard from '../components/ExperimentCard'
 import ProgressView from './ProgressView'
-import FinancialSimulator from '../components/FinancialSimulator'
 import ScoreBreakdown from '../components/ScoreBreakdown'
 import FounderToolkit from '../components/FounderToolkit'
 import RegionalMarketPanel from '../components/RegionalMarketPanel'
 import { recommendationBg, recommendationColor, safeExternalUrl } from '../lib/utils'
 import { generateMarkdownReport } from '../lib/report'
+import { isNoncommercialIdea } from '../lib/ideaContext'
 
 const DISCLAIMER = "AI analysis is based on available web data and pattern recognition. It is not financial or definitive business advice. Always perform your own due diligence."
+const FinancialSimulator = lazy(() => import('../components/FinancialSimulator'))
 
 interface Props {
   initialResult?: AnalysisResult
@@ -99,6 +100,7 @@ export default function ReportView({ initialResult }: Props) {
 
   const rec = result.recommendation
   const conf = result.evidence_confidence
+  const noncommercial = isNoncommercialIdea(result.idea_input)
   const normalizedEvidenceQuery = evidenceQuery.trim().toLowerCase()
   const baselineModels = result.models_used.filter((model) => {
     const normalized = model.toLowerCase()
@@ -259,7 +261,11 @@ export default function ReportView({ initialResult }: Props) {
           <section className="verseo-card p-6 space-y-5">
             <div>
               <h2 className="text-xl font-display font-black text-gray-900">What to resolve before building</h2>
-              <p className="text-xs text-gray-500 mt-1">Turn these unknowns into interviews, landing-page tests, or pricing probes.</p>
+              <p className="text-xs text-gray-500 mt-1">
+                {noncommercial
+                  ? 'Turn these unknowns into interviews, installation tests, integrations, and repeat-use cohorts.'
+                  : 'Turn these unknowns into interviews, landing-page tests, or pricing probes.'}
+              </p>
             </div>
             {result.missing_information.length > 0 && (
               <ul className="grid grid-cols-1 md:grid-cols-2 gap-2">
@@ -281,10 +287,14 @@ export default function ReportView({ initialResult }: Props) {
         )}
 
         {/* 1.5 Unit Economics Simulator */}
-        <FinancialSimulator idea={result.idea_input} />
+        {noncommercial ? null : (
+          <Suspense fallback={null}>
+            <FinancialSimulator idea={result.idea_input} />
+          </Suspense>
+        )}
 
         {result.regional_analysis && (
-          <RegionalMarketPanel analysis={result.regional_analysis} coverage={result.research_coverage} />
+          <RegionalMarketPanel analysis={result.regional_analysis} coverage={result.research_coverage} noncommercial={noncommercial} />
         )}
 
         {result.founder_toolkit && <FounderToolkit toolkit={result.founder_toolkit} />}

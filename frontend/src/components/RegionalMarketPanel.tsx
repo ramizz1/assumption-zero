@@ -3,6 +3,7 @@ import type { RegionalEvidenceSignal, RegionalMarketAnalysis, ResearchCoverage }
 interface Props {
   analysis: RegionalMarketAnalysis
   coverage?: ResearchCoverage
+  noncommercial?: boolean
 }
 
 const SignalList = ({ title, items }: { title: string; items: RegionalEvidenceSignal[] }) => (
@@ -24,7 +25,7 @@ const SignalList = ({ title, items }: { title: string; items: RegionalEvidenceSi
   </div>
 )
 
-export default function RegionalMarketPanel({ analysis, coverage }: Props) {
+export default function RegionalMarketPanel({ analysis, coverage, noncommercial = false }: Props) {
   const scoreTone = analysis.demand_score >= 70 ? 'text-emerald-700' : analysis.demand_score >= 45 ? 'text-amber-700' : 'text-rose-700'
 
   return (
@@ -32,7 +33,11 @@ export default function RegionalMarketPanel({ analysis, coverage }: Props) {
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
         <div>
           <h2 className="section-title text-zinc-900 font-display font-black tracking-tight"><span className="text-zinc-400">01 /</span> Regional Market Reality</h2>
-          <p className="text-xs text-zinc-500 mt-1">Idea-relevant demand, pricing, regulation, and distribution evidence tied to {analysis.geography}.</p>
+          <p className="text-xs text-zinc-500 mt-1">
+            {noncommercial
+              ? `Idea-relevant adoption, regulation, and distribution evidence tied to ${analysis.geography}.`
+              : `Idea-relevant demand, pricing, regulation, and distribution evidence tied to ${analysis.geography}.`}
+          </p>
         </div>
         {coverage && <span className="text-[10px] font-mono font-bold uppercase tracking-wider rounded-full border border-zinc-200 bg-zinc-50 px-3 py-1.5">{coverage.depth} research</span>}
       </div>
@@ -63,11 +68,15 @@ export default function RegionalMarketPanel({ analysis, coverage }: Props) {
         </div>
       </div>
 
-      <p className="text-[11px] text-zinc-500 text-center">Evidence strength is not market demand percentage or success probability. Only direct commitments and repeat use can validate the offer.</p>
+      <p className="text-[11px] text-zinc-500 text-center">
+        {noncommercial
+          ? 'Evidence strength is not an adoption or success probability. Only independent activation, integration, contribution, and repeat use validate the project.'
+          : 'Evidence strength is not market demand percentage or success probability. Only direct commitments and repeat use can validate the offer.'}
+      </p>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-        <SignalList title="Demand and buyer pain" items={analysis.demand_signals} />
-        <SignalList title="Local pricing" items={analysis.pricing_signals} />
+        <SignalList title={noncommercial ? 'Demand and user pain' : 'Demand and buyer pain'} items={analysis.demand_signals} />
+        {noncommercial ? null : <SignalList title="Local pricing" items={analysis.pricing_signals} />}
         <SignalList title="Regulation and compliance" items={analysis.regulatory_signals} />
         <SignalList title="Distribution and channels" items={analysis.distribution_signals} />
       </div>

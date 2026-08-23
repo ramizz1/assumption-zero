@@ -15,9 +15,9 @@ import httpx
 from assumption_zero.config import get_settings
 from assumption_zero.llm.base import (
     PERSPECTIVE_SYSTEM_PROMPTS,
+    UNTRUSTED_CONTENT_RULES,
     LLMAdapter,
     PerspectiveOutput,
-    UNTRUSTED_CONTENT_RULES,
     build_analysis_prompt,
     build_clarification_messages,
     build_raw_idea_message,

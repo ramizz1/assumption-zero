@@ -1,5 +1,9 @@
+import json
+import re
+
 from assumption_zero.analysis.experiment_generator import generate_experiments
 from assumption_zero.analysis.founder_toolkit import generate_founder_toolkit
+from assumption_zero.analysis.query_generator import generate_queries
 from assumption_zero.schemas import IdeaInput, Recommendation
 
 
@@ -62,9 +66,92 @@ def test_experiments_are_distinct_and_specific_to_business_shape() -> None:
 
     assert len({experiment.test_type for experiment in b2b_tests}) == 5
     assert len({experiment.test_type for experiment in marketplace_tests}) == 5
-    assert b2b_tests[0].title == "Last-event buyer interviews"
-    assert marketplace_tests[0].title == "Supply-side commitment test"
+    assert b2b_tests[0].title == "ClinicFlow: Last-event buyer interviews"
+    assert marketplace_tests[0].title == "CareMatch: Supply-side commitment test"
     assert "Independent clinics" in b2b_tests[0].assumption_tested
+
+
+def test_each_idea_gets_evidence_bound_unique_analytics(sample_evidence) -> None:
+    clinic = _idea()
+    warehouse = _idea(
+        name="StockSignal",
+        description="Inventory alerting for independent hardware stores",
+        problem="Hardware stores discover stockouts too late",
+        target_customer="Independent hardware store operators",
+        geography="Canada",
+        industry="Retail operations",
+        solution="A daily inventory risk digest",
+    )
+
+    clinic_evidence = sample_evidence[0].model_copy(
+        update={
+            "title": "Independent clinic scheduling workflow survey",
+            "passage": "Independent clinics report recurring scheduling workflow failures.",
+            "search_query": "independent clinic scheduling United Kingdom",
+        }
+    )
+    clinic_tests = generate_experiments(clinic, [], [clinic_evidence])
+    warehouse_tests = generate_experiments(warehouse, [], sample_evidence)
+
+    assert clinic_tests != warehouse_tests
+    assert len({item.test_type for item in clinic_tests}) == 5
+    assert len({item.title for item in clinic_tests}) == 5
+    assert all(item.title.startswith("ClinicFlow: ") for item in clinic_tests)
+    assert all("Independent clinics" in item.data_to_capture[-1] for item in clinic_tests)
+    assert any(
+        "[E001] Independent clinic scheduling workflow survey (GitHub)"
+        in item.why_it_matters
+        for item in clinic_tests
+    )
+    assert "StockSignal" in json.dumps(
+        [item.model_dump(mode="json") for item in warehouse_tests]
+    )
+    assert "Canada" in json.dumps(
+        [item.model_dump(mode="json") for item in warehouse_tests]
+    )
+
+
+def test_free_open_source_toolkit_uses_adoption_not_payment_advice(sample_evidence) -> None:
+    idea = _idea(
+        name="OpenClinic",
+        description="A free and open-source clinic scheduling project with no payments",
+        solution="A self-hosted scheduling workspace maintained by its community",
+        business_model="Free and open source; no payments",
+        price=None,
+        revenue_goal=None,
+    )
+
+    experiments = generate_experiments(idea, [], sample_evidence)
+    toolkit = generate_founder_toolkit(
+        idea,
+        Recommendation.TEST_FIRST,
+        experiments,
+        sample_evidence,
+    )
+    queries = generate_queries(idea)
+    output = json.dumps(
+        {
+            "experiments": [item.model_dump(mode="json") for item in experiments],
+            "toolkit": toolkit.model_dump(mode="json"),
+            "queries": queries,
+        }
+    ).lower()
+
+    assert [item.test_type for item in experiments] == [
+        "problem_frequency",
+        "adoption_friction",
+        "distribution",
+        "adoption_commitment",
+        "community_retention",
+    ]
+    assert all(item.title.startswith("OpenClinic: ") for item in experiments)
+    assert not any(item["type"] == "pricing" for item in queries)
+    assert "independent activation rate" in output
+    assert "external maintenance signal rate" in output
+    assert not re.search(
+        r"\b(paid|pricing|revenue|deposit|prepay|buyer|cac|ltv|refunds?)\b",
+        output,
+    )
 
 
 def test_budget_is_capped_and_released_sequentially() -> None:

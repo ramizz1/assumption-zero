@@ -6,6 +6,7 @@ Weights must sum exactly to 100. This is enforced at import time.
 
 from __future__ import annotations
 
+from assumption_zero.analysis.idea_context import is_noncommercial
 from assumption_zero.schemas import (
     AnalysisPerspective,
     ConfidenceLevel,
@@ -131,7 +132,11 @@ def _find_evidence_for_dimension(
 
 def _dimension_explanation(dim: str, raw: float, idea: IdeaInput) -> str:
     """Generate a short evidence-based explanation for a dimension score."""
-    name = DIMENSION_DISPLAY_NAMES[dim]
+    name = (
+        "Sustainability & Maintenance"
+        if dim == "unit_economics" and is_noncommercial(idea)
+        else DIMENSION_DISPLAY_NAMES[dim]
+    )
     level = "strong" if raw >= 65 else ("moderate" if raw >= 45 else "weak")
     return f"{name}: {level} signal (score {raw:.0f}/100). See cited evidence for details."
 
@@ -165,7 +170,11 @@ def calculate_opportunity_score(
         dimensions.append(
             DimensionScore(
                 dimension=dim,
-                display_name=DIMENSION_DISPLAY_NAMES[dim],
+                display_name=(
+                    "Sustainability & Maintenance"
+                    if dim == "unit_economics" and is_noncommercial(idea)
+                    else DIMENSION_DISPLAY_NAMES[dim]
+                ),
                 weight=weight,
                 raw_score=round(raw_val, 1),
                 weighted_score=round(weighted_val, 1),

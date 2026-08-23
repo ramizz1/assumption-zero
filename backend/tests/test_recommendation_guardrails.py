@@ -126,3 +126,52 @@ def test_tied_perspectives_default_to_test_first(
     )
 
     assert result == Recommendation.TEST_FIRST
+
+
+def test_open_source_build_gate_uses_adoption_evidence_not_pricing(
+    sample_idea, sample_perspectives, sample_evidence
+):
+    idea = sample_idea.model_copy(
+        update={
+            "description": "A free and open-source automation project with no payments",
+            "business_model": "Free and open source; no payments",
+            "price": None,
+            "revenue_goal": None,
+        }
+    )
+    perspectives = deepcopy(sample_perspectives)
+    for perspective in perspectives:
+        perspective.recommendation = Recommendation.BUILD
+
+    support = []
+    for index, source in enumerate(
+        ("Maintainer Survey", "QA Community", "Adoption Study"), 30
+    ):
+        signal = sample_evidence[0].model_copy(deep=True)
+        signal.evidence_id = f"E{index:03d}"
+        signal.source_name = source
+        signal.evidence_origin = source
+        signal.evidence_type = EvidenceType.DEMAND
+        signal.relevance_score = 0.9
+        signal.passage = (
+            "QA engineers at small software companies report test automation adoption, "
+            "repeat use, integrations, and active maintainer involvement."
+        )
+        support.append(signal)
+    alternative = sample_evidence[0].model_copy(deep=True)
+    alternative.evidence_id = "E040"
+    alternative.source_name = "Repository Census"
+    alternative.evidence_origin = "Repository Census"
+    alternative.evidence_type = EvidenceType.OSS_ALTERNATIVE
+    alternative.passage = "Maintained open-source automation repositories used by QA engineers."
+
+    result = _select_recommendation(
+        perspectives,
+        ConfidenceLevel.HIGH,
+        idea,
+        sample_evidence + support + [alternative],
+        [_verified_competitor()],
+        _region(ConfidenceLevel.MEDIUM),
+    )
+
+    assert result == Recommendation.BUILD

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import re
 
+from assumption_zero.analysis.idea_context import is_noncommercial
 from assumption_zero.schemas import (
     ConfidenceLevel,
     EvidenceItem,
@@ -22,12 +23,18 @@ _REGIONAL_TYPES = {
     EvidenceType.REGULATORY,
     EvidenceType.DISTRIBUTION,
     EvidenceType.MARKET_DIRECTION,
+    EvidenceType.OSS_ALTERNATIVE,
 }
 
 _DEMAND_PHRASES = (
     "adoption", "budget", "buyer", "buying", "customer demand", "complaint",
     "manual workflow", "pain point", "pay for", "purchase", "shortage", "spend",
     "switching", "time-consuming", "willingness to pay",
+)
+_ADOPTION_PHRASES = (
+    "active users", "adoption", "clone", "community", "contributor", "download",
+    "feature request", "github issue", "install", "integration", "maintainer",
+    "manual workflow", "migration", "repeat use", "self-hosted", "usage",
 )
 _IDEA_STOPWORDS = {
     "about", "after", "also", "because", "before", "business", "customer",
@@ -64,14 +71,17 @@ def _idea_tokens(idea: IdeaInput) -> set[str]:
 
 
 def is_commercial_demand_signal(item: EvidenceItem, idea: IdeaInput) -> bool:
-    """Reject generic industry coverage and technically related papers as demand proof."""
+    """Reject generic coverage; adapt the behavioral bar to the submitted model."""
     if item.evidence_type not in {EvidenceType.DEMAND, EvidenceType.COMPLAINT}:
         return False
     content = f"{item.title} {item.passage}".casefold()
     content_tokens = set(re.findall(r"[^\W\d_]{4,}", content, flags=re.UNICODE))
     idea_overlap = len(_idea_tokens(idea) & content_tokens)
-    has_commercial_language = any(phrase in content for phrase in _DEMAND_PHRASES)
-    return idea_overlap >= 2 and (item.evidence_type == EvidenceType.COMPLAINT or has_commercial_language)
+    required_phrases = _ADOPTION_PHRASES if is_noncommercial(idea) else _DEMAND_PHRASES
+    has_behavioral_language = any(phrase in content for phrase in required_phrases)
+    return idea_overlap >= 2 and (
+        item.evidence_type == EvidenceType.COMPLAINT or has_behavioral_language
+    )
 
 
 def _signals(
@@ -103,6 +113,10 @@ def generate_regional_analysis(
     pricing = [item for item in regional if item.evidence_type == EvidenceType.PRICING]
     regulatory = [item for item in regional if item.evidence_type == EvidenceType.REGULATORY]
     distribution = [item for item in regional if item.evidence_type == EvidenceType.DISTRIBUTION]
+    open_source_alternatives = [
+        item for item in regional if item.evidence_type == EvidenceType.OSS_ALTERNATIVE
+    ]
+    noncommercial = is_noncommercial(idea)
     sources = {item.source_name for item in regional}
     demand_sources = {item.source_name for item in demand}
 
@@ -113,7 +127,8 @@ def generate_regional_analysis(
         score += min(20.0, len(demand_sources) * 7.0)
         score += min(15.0, high_reliability * 4.0)
         score += avg_relevance * 15.0
-        score += min(10.0, len(pricing) * 5.0)
+        model_signals = distribution + open_source_alternatives if noncommercial else pricing
+        score += min(10.0, len(model_signals) * 5.0)
         demand_score = round(min(100.0, score), 1)
     else:
         demand_score = 0.0
@@ -127,26 +142,34 @@ def generate_regional_analysis(
 
     if confidence == ConfidenceLevel.HIGH:
         summary = (
-            f"Commercial demand evidence for {idea.geography} is well covered across {len(demand_sources)} relevant sources. "
-            "This measures evidence strength, not the probability of success; confirm willingness to pay with local buyers."
+            f"Idea-relevant demand evidence for {idea.geography} is well covered across {len(demand_sources)} relevant sources. "
+            + (
+                "This measures evidence strength, not success probability; confirm independent installation and repeat use with local users."
+                if noncommercial
+                else "This measures evidence strength, not success probability; confirm willingness to pay with local buyers."
+            )
         )
     elif demand:
         summary = (
-            f"Some idea-relevant commercial evidence specific to {idea.geography} was found, but coverage is not strong enough for a confident demand claim. "
+            f"Some idea-relevant evidence specific to {idea.geography} was found, but coverage is not strong enough for a confident demand claim. "
             "Use the cited signals as hypotheses and close the listed research gaps locally."
         )
     elif regional:
         summary = (
-            f"Sources related to {idea.geography} were collected, but none met the stricter bar for idea-specific commercial demand. "
-            "General market growth, technical research, and regulation are context—not proof that buyers want this offer."
+            f"Sources related to {idea.geography} were collected, but none met the stricter bar for idea-specific behavioral demand. "
+            "General market growth, technical research, and regulation are context—not proof that target users will adopt this offer."
         )
     else:
         summary = f"No evidence explicitly tied to {idea.geography} was collected. Global category evidence must not be treated as proof of regional demand."
 
     localization = [
-        f"Validate pricing and purchasing power in {idea.currency or 'the local currency'}.",
-        f"Test acquisition messages in {idea.market_language or 'the language used by local buyers'}.",
-        f"Interview buyers in at least two sub-markets within {idea.geography} before generalizing demand.",
+        (
+            "Validate installation environments, dependency constraints, and maintainer availability locally."
+            if noncommercial
+            else f"Validate pricing and purchasing power in {idea.currency or 'the local currency'}."
+        ),
+        f"Test adoption messages in {idea.market_language or 'the language used by target users'}.",
+        f"Interview target users in at least two sub-markets within {idea.geography} before generalizing demand.",
     ]
     if idea.regulatory_constraints:
         localization.append(f"Verify with a qualified local expert: {idea.regulatory_constraints}.")
@@ -158,7 +181,11 @@ def generate_regional_analysis(
         gaps.append(
             f"Collect at least five independent demand or pain signals from {idea.geography}."
         )
-    if not pricing:
+    if noncommercial and not (distribution or open_source_alternatives):
+        gaps.append(
+            f"Find local installation, integration, distribution, and maintainer evidence in {idea.geography}."
+        )
+    elif not noncommercial and not pricing:
         gaps.append(
             f"Find local competitor prices and willingness-to-pay evidence in {idea.currency or idea.geography}."
         )
