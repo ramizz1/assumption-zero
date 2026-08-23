@@ -7,6 +7,9 @@ interface Props {
 }
 
 export default function ExperimentCard({ experiment, index }: Props) {
+  const testType = experiment.test_type || 'validation_gate'
+  const dataToCapture = experiment.data_to_capture ?? []
+
   return (
     <div id={`experiment-${index}`} className="verseo-card p-6 bg-white hover:border-gray-400 hover:shadow-lg transition-all duration-300 relative overflow-hidden">
       <span className="verseo-corner-tl">+</span>
@@ -19,6 +22,7 @@ export default function ExperimentCard({ experiment, index }: Props) {
           <span className="text-xs font-mono font-bold text-gray-900">{index + 1}</span>
         </div>
         <div>
+          <p className="text-[10px] font-mono font-bold uppercase tracking-wider text-blue-700 mb-1">Gate {index + 1} · {testType.replace(/_/g, ' ')}</p>
           <h3 className="font-display font-bold text-gray-900 tracking-tight text-lg leading-tight">{experiment.title}</h3>
           <div className="flex gap-4 mt-2">
             <span className="text-xs font-mono text-gray-500 font-medium">⏱ {experiment.estimated_time}</span>
@@ -35,11 +39,15 @@ export default function ExperimentCard({ experiment, index }: Props) {
           <p className="text-sm text-gray-900 font-medium leading-relaxed">{experiment.assumption_tested}</p>
         </div>
 
-        <div>
-          <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wider mb-1.5">
-            Why It Matters
-          </p>
-          <p className="text-sm text-gray-600 leading-relaxed">{experiment.why_it_matters}</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="rounded-xl border border-gray-200 bg-gray-50 p-3">
+            <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wider mb-1">Target sample</p>
+            <p className="text-xs text-gray-800 font-medium">{experiment.target_sample}</p>
+          </div>
+          <div className="rounded-xl border border-gray-200 bg-gray-50 p-3">
+            <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wider mb-1">Primary metric</p>
+            <p className="text-xs text-gray-800 font-medium">{experiment.primary_metric}</p>
+          </div>
         </div>
 
         <div>
@@ -65,11 +73,15 @@ export default function ExperimentCard({ experiment, index }: Props) {
           <p className="text-xs text-blue-900 font-medium">{experiment.decision_after}</p>
         </div>
 
-        {experiment.legal_ethical && (
-          <p className="text-[11px] text-amber-700 font-medium italic pt-2">
-            <span className="not-italic mr-1">⚖️</span> {experiment.legal_ethical}
-          </p>
-        )}
+        <details className="rounded-xl border border-gray-200 bg-white p-3 text-xs text-gray-700">
+          <summary className="cursor-pointer font-bold text-gray-900">What to record, why this test, and spending rule</summary>
+          <p className="mt-3 leading-relaxed">{experiment.why_it_matters}</p>
+          <ul className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-2">
+            {dataToCapture.map((item) => <li key={item} className="rounded-lg bg-gray-50 px-3 py-2">+ {item}</li>)}
+          </ul>
+          <p className="mt-3"><strong>Budget rule:</strong> {experiment.budget_rationale}</p>
+          {experiment.legal_ethical && <p className="mt-2 text-amber-800"><strong>Safety:</strong> {experiment.legal_ethical}</p>}
+        </details>
       </div>
     </div>
   )

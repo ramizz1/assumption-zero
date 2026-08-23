@@ -14,6 +14,7 @@ No database, no migrations, no setup. Everything is human-readable.
 from __future__ import annotations
 
 import csv
+import hmac
 import json
 import os
 import shutil
@@ -42,7 +43,13 @@ CSV_FIELDS = [
     "idea_name",
     "is_demo",
     "error_message",
+    "owner_hash",
 ]
+
+
+def _spreadsheet_safe(value: str) -> str:
+    """Prevent saved CSV metadata from becoming a spreadsheet formula."""
+    return f"'{value}" if value.lstrip().startswith(("=", "+", "-", "@")) else value
 
 
 def _ensure_dirs() -> None:
@@ -112,9 +119,21 @@ def _write_all(rows: list[dict]) -> None:
     os.replace(tmp_path, _CSV_PATH)
 
 
-def resolve_id(query: str) -> str | None:
-    """Resolve a full UUID, short prefix (e.g. b28a73fb), or 1-based index (e.g. 1) to a full analysis ID."""
+def _owned_rows(owner_hash: str | None = None) -> list[dict]:
     rows = _read_all()
+    if owner_hash is None:
+        return rows
+    return [
+        row
+        for row in rows
+        if row.get("owner_hash")
+        and hmac.compare_digest(row.get("owner_hash", ""), owner_hash)
+    ]
+
+
+def resolve_id(query: str, owner_hash: str | None = None) -> str | None:
+    """Resolve a full UUID, short prefix (e.g. b28a73fb), or 1-based index (e.g. 1) to a full analysis ID."""
+    rows = _owned_rows(owner_hash)
     if not rows:
         return None
 
@@ -163,6 +182,7 @@ def create_record(
     idea_name: str,
     input_data: dict,
     is_demo: bool = False,
+    owner_hash: str | None = None,
 ) -> None:
     """Insert a new analysis row and write the input JSON."""
     _ensure_dirs()
@@ -180,9 +200,10 @@ def create_record(
             "stage": "clarifying_idea",
             "created_at": datetime.utcnow().isoformat(timespec="seconds"),
             "completed_at": "",
-            "idea_name": idea_name,
+            "idea_name": _spreadsheet_safe(idea_name),
             "is_demo": "true" if is_demo else "false",
             "error_message": "",
+            "owner_hash": owner_hash or "",
         },
     )
     _write_all(rows)
@@ -231,12 +252,12 @@ def fail_record(analysis_id: str, error: str) -> None:
     _write_all(rows)
 
 
-def get_record(analysis_id: str) -> dict | None:
+def get_record(analysis_id: str, owner_hash: str | None = None) -> dict | None:
     """Return the CSV row dict for an analysis, or None."""
-    full_id = resolve_id(analysis_id)
+    full_id = resolve_id(analysis_id, owner_hash)
     if not full_id:
         return None
-    for row in _read_all():
+    for row in _owned_rows(owner_hash):
         if row["id"] == full_id:
             return row
     return None
@@ -258,19 +279,27 @@ def get_result(analysis_id: str) -> dict | None:
     return None
 
 
-def list_records(limit: int = 50) -> list[dict]:
+def list_records(limit: int = 50, owner_hash: str | None = None) -> list[dict]:
     """Return rows newest-first."""
-    rows = _read_all()
+    rows = _owned_rows(owner_hash)
     return rows[:limit]
 
 
-def delete_record(analysis_id: str) -> bool:
+def delete_record(analysis_id: str, owner_hash: str | None = None) -> bool:
     """Delete analysis row + JSON files. Returns True if found."""
-    full_id = resolve_id(analysis_id)
+    full_id = resolve_id(analysis_id, owner_hash)
     if not full_id:
         return False
     rows = _read_all()
-    new_rows = [r for r in rows if r["id"] != full_id]
+    new_rows = [
+        row
+        for row in rows
+        if row["id"] != full_id
+        or (
+            owner_hash is not None
+            and not hmac.compare_digest(row.get("owner_hash", ""), owner_hash)
+        )
+    ]
     if len(new_rows) == len(rows):
         return False
     _write_all(new_rows)

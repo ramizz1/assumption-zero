@@ -13,9 +13,11 @@ Routes:
 from __future__ import annotations
 
 import logging
+from typing import Annotated
 
 import httpx
-from fastapi import APIRouter, BackgroundTasks, HTTPException, Query, Request, status
+from fastapi import APIRouter, BackgroundTasks, Depends, Header, HTTPException, Query, status
+from pydantic import SecretStr
 
 from assumption_zero import __version__
 from assumption_zero.config import get_settings, is_public_http_url
@@ -31,6 +33,13 @@ from assumption_zero.schemas import (
     DemoAnalysisRequest,
     HealthResponse,
     PromptAnalysisRequest,
+    VerifyKeysRequest,
+)
+from assumption_zero.security import (
+    OWNER_HEADER,
+    hash_owner_token,
+    public_provider_error,
+    redact_sensitive_text,
 )
 from assumption_zero.services.analysis_service import (
     build_llm_adapter,
@@ -113,6 +122,19 @@ def _available_providers() -> list[str]:
 ProviderRequest = AnalysisCreateRequest | DemoAnalysisRequest | PromptAnalysisRequest
 
 
+def _secret_value(value: SecretStr | None) -> str | None:
+    return value.get_secret_value() if value else None
+
+
+def require_owner_hash(
+    owner_token: Annotated[str | None, Header(alias=OWNER_HEADER)] = None,
+) -> str:
+    try:
+        return hash_owner_token(owner_token)
+    except ValueError as exc:
+        raise HTTPException(status_code=401, detail=str(exc)) from exc
+
+
 def _llm_options(body: ProviderRequest) -> tuple[str | None, str | None, str | None]:
     """Resolve the provider and only the credential that belongs to it.
 
@@ -133,22 +155,39 @@ def _llm_options(body: ProviderRequest) -> tuple[str | None, str | None, str | N
     api_key = None
     base_url = None
     if provider == "groq":
-        api_key = body.groq_api_key
+        api_key = _secret_value(body.groq_api_key)
     elif provider == "openrouter":
-        api_key = body.openrouter_api_key
+        api_key = _secret_value(body.openrouter_api_key)
     elif provider == "opencode":
-        api_key = body.opencode_api_key
+        api_key = _secret_value(body.opencode_api_key)
     elif provider in ("openai", "openai_compat", "custom"):
-        api_key = body.openai_api_key
+        api_key = _secret_value(body.openai_api_key)
         base_url = body.custom_base_url
     elif provider == "ollama":
         base_url = body.ollama_base_url
     return provider, api_key, base_url
 
 
+def _validate_runtime_provider_url(base_url: str | None) -> None:
+    if not base_url:
+        return
+    settings = get_settings()
+    if not settings.allow_runtime_provider_urls:
+        raise HTTPException(
+            status_code=400,
+            detail="Runtime provider URL overrides are disabled on this deployment.",
+        )
+    if settings.ssrf_protection_enabled and not is_public_http_url(base_url):
+        raise HTTPException(
+            status_code=400,
+            detail="Only public HTTP(S) provider URLs are allowed in hosted mode.",
+        )
+
+
 def _validate_selected_provider(body: ProviderRequest) -> str | None:
     """Reject an unconfigured explicit provider before starting a long research run."""
     provider, api_key, base_url = _llm_options(body)
+    _validate_runtime_provider_url(base_url)
     if provider == "mock":
         raise HTTPException(
             status_code=400,
@@ -162,7 +201,12 @@ def _validate_selected_provider(body: ProviderRequest) -> str | None:
             allow_mock_fallback=False,
         )
     except ValueError as exc:
-        raise HTTPException(status_code=400, detail=str(exc)) from exc
+        logger.warning(
+            "Provider selection failed for %s: %s",
+            provider,
+            redact_sensitive_text(exc),
+        )
+        raise HTTPException(status_code=400, detail=public_provider_error(provider)) from None
     return provider
 
 
@@ -179,15 +223,19 @@ async def health() -> HealthResponse:
 
 
 @router.post("/verify-keys", response_model=dict)
-async def verify_keys_endpoint(body: dict) -> dict:
+async def verify_keys_endpoint(
+    body: VerifyKeysRequest,
+    owner_hash: str = Depends(require_owner_hash),
+) -> dict:
     """Verify if the selected AI provider credentials/endpoints are valid."""
-    provider = body.get("provider", "mock")
-    groq_api_key = body.get("groqKey") or body.get("groq_api_key")
-    openrouter_api_key = body.get("openrouterKey") or body.get("openrouter_api_key")
-    opencode_api_key = body.get("opencodeKey") or body.get("opencode_api_key")
-    openai_api_key = body.get("openaiKey") or body.get("openai_api_key")
-    ollama_base_url = body.get("ollamaUrl") or body.get("ollama_base_url")
-    custom_base_url = body.get("customUrl") or body.get("custom_base_url")
+    del owner_hash  # The dependency enforces a valid capability; no value is persisted here.
+    provider = body.ai_provider or "mock"
+    groq_api_key = _secret_value(body.groq_api_key)
+    openrouter_api_key = _secret_value(body.openrouter_api_key)
+    opencode_api_key = _secret_value(body.opencode_api_key)
+    openai_api_key = _secret_value(body.openai_api_key)
+    ollama_base_url = body.ollama_base_url
+    custom_base_url = body.custom_base_url
 
     if provider in ("auto", "beta"):
         if groq_api_key:
@@ -219,12 +267,7 @@ async def verify_keys_endpoint(body: dict) -> dict:
     key_required_providers = ("groq", "openrouter", "opencode", "openai", "openai_compat", "custom")
     settings = get_settings()
 
-    if settings.ssrf_protection_enabled and base_url_override:
-        if not is_public_http_url(base_url_override):
-            raise HTTPException(
-                status_code=400,
-                detail="Only public HTTP(S) provider URLs are allowed in hosted mode.",
-            )
+    _validate_runtime_provider_url(base_url_override)
 
     if provider in key_required_providers:
         env_key = None
@@ -276,18 +319,22 @@ async def verify_keys_endpoint(body: dict) -> dict:
     except HTTPException:
         raise
     except Exception as exc:
-        logger.info("Provider verification failed for %s: %s", provider, type(exc).__name__)
+        logger.warning(
+            "Provider verification failed for %s: %s",
+            provider,
+            redact_sensitive_text(exc),
+        )
         raise HTTPException(
             status_code=400,
-            detail=f"Could not verify {provider.upper()}. Check the key and endpoint, then try again.",
-        ) from exc
+            detail=public_provider_error(provider),
+        ) from None
 
 
 @router.post("/analyses", response_model=dict, status_code=status.HTTP_202_ACCEPTED)
 async def create_analysis_endpoint(
-    request: Request,
     body: AnalysisCreateRequest,
     background_tasks: BackgroundTasks,
+    owner_hash: str = Depends(require_owner_hash),
 ) -> dict:
     """Start a new analysis. Returns immediately with analysis_id; poll GET /analyses/{id}."""
     provider = _validate_selected_provider(body)
@@ -296,16 +343,17 @@ async def create_analysis_endpoint(
         ai_provider_override=provider,
         research_providers_override=body.research_providers,
         is_demo=False,
+        owner_hash=owner_hash,
     )
     background_tasks.add_task(
         run_analysis,
         analysis_id=analysis_id,
         idea=body.idea,
         ai_provider_override=provider,
-        openrouter_api_key=body.openrouter_api_key,
-        groq_api_key=body.groq_api_key,
-        opencode_api_key=body.opencode_api_key,
-        openai_api_key=body.openai_api_key,
+        openrouter_api_key=_secret_value(body.openrouter_api_key),
+        groq_api_key=_secret_value(body.groq_api_key),
+        opencode_api_key=_secret_value(body.opencode_api_key),
+        openai_api_key=_secret_value(body.openai_api_key),
         custom_base_url=body.custom_base_url,
         ollama_base_url=body.ollama_base_url,
         research_providers_override=body.research_providers,
@@ -319,6 +367,7 @@ async def _run_analysis_in_request(
     body: ProviderRequest,
     idea,
     provider: str | None,
+    owner_hash: str,
 ) -> AnalysisResult:
     """Complete an analysis within one request for serverless production hosts."""
     analysis_id = await create_analysis(
@@ -326,22 +375,23 @@ async def _run_analysis_in_request(
         ai_provider_override=provider,
         research_providers_override=body.research_providers,
         is_demo=False,
+        owner_hash=owner_hash,
     )
     await run_analysis(
         analysis_id=analysis_id,
         idea=idea,
         ai_provider_override=provider,
-        openrouter_api_key=body.openrouter_api_key,
-        groq_api_key=body.groq_api_key,
-        opencode_api_key=body.opencode_api_key,
-        openai_api_key=body.openai_api_key,
+        openrouter_api_key=_secret_value(body.openrouter_api_key),
+        groq_api_key=_secret_value(body.groq_api_key),
+        opencode_api_key=_secret_value(body.opencode_api_key),
+        openai_api_key=_secret_value(body.openai_api_key),
         custom_base_url=body.custom_base_url,
         ollama_base_url=body.ollama_base_url,
         research_providers_override=body.research_providers,
         research_depth=body.research_depth,
         is_demo=False,
     )
-    result = await get_analysis(analysis_id)
+    result = await get_analysis(analysis_id, owner_hash=owner_hash)
     if result is None:
         raise HTTPException(
             status_code=500,
@@ -351,32 +401,26 @@ async def _run_analysis_in_request(
 
 
 @router.post("/analyses/sync", response_model=AnalysisResult)
-async def create_analysis_sync_endpoint(body: AnalysisCreateRequest) -> AnalysisResult:
+async def create_analysis_sync_endpoint(
+    body: AnalysisCreateRequest,
+    owner_hash: str = Depends(require_owner_hash),
+) -> AnalysisResult:
     """Run a real AI analysis synchronously so the host cannot drop background work."""
     provider = _validate_selected_provider(body)
-    return await _run_analysis_in_request(body, body.idea, provider)
+    return await _run_analysis_in_request(body, body.idea, provider, owner_hash)
 
 
 @router.post("/analyses/from-prompt", response_model=dict, status_code=status.HTTP_202_ACCEPTED)
 async def create_analysis_from_prompt_endpoint(
-    request: Request,
     body: PromptAnalysisRequest,
     background_tasks: BackgroundTasks,
+    owner_hash: str = Depends(require_owner_hash),
 ) -> dict:
     """Analyze a startup idea from a single freeform text prompt."""
 
     provider, api_key_override, base_url_override = _llm_options(body)
 
-    # SSRF Protection
-    from assumption_zero.config import get_settings
-
-    settings = get_settings()
-    if settings.ssrf_protection_enabled and base_url_override:
-        if not is_public_http_url(base_url_override):
-            raise HTTPException(
-                status_code=400,
-                detail="Only public HTTP(S) provider URLs are allowed in hosted mode.",
-            )
+    _validate_runtime_provider_url(base_url_override)
 
     try:
         llm = build_llm_adapter(
@@ -386,28 +430,37 @@ async def create_analysis_from_prompt_endpoint(
         )
         parsed_idea = await llm.parse_raw_prompt(body.prompt)
     except ValueError as exc:
-        raise HTTPException(status_code=400, detail=str(exc))
+        logger.info("Prompt validation failed: %s", redact_sensitive_text(exc))
+        raise HTTPException(
+            status_code=400,
+            detail="The startup idea could not be parsed. Add the customer, problem, and solution.",
+        ) from None
     except RuntimeError as exc:
-        raise HTTPException(status_code=429, detail=f"No AI tokens available: {exc}")
+        logger.warning("Prompt provider unavailable: %s", redact_sensitive_text(exc))
+        raise HTTPException(status_code=429, detail=public_provider_error(provider)) from None
     except Exception as exc:
-        logger.error("Error creating analysis from prompt: %s", exc)
-        raise HTTPException(status_code=500, detail=f"Failed to process prompt: {exc}")
+        logger.error("Prompt parsing failed: %s", redact_sensitive_text(exc))
+        raise HTTPException(
+            status_code=500,
+            detail="The startup idea could not be parsed. Try the structured form instead.",
+        ) from None
 
     analysis_id = await create_analysis(
         idea=parsed_idea,
         ai_provider_override=provider,
         research_providers_override=body.research_providers,
         is_demo=False,
+        owner_hash=owner_hash,
     )
     background_tasks.add_task(
         run_analysis,
         analysis_id=analysis_id,
         idea=parsed_idea,
         ai_provider_override=provider,
-        openrouter_api_key=body.openrouter_api_key,
-        groq_api_key=body.groq_api_key,
-        opencode_api_key=body.opencode_api_key,
-        openai_api_key=body.openai_api_key,
+        openrouter_api_key=_secret_value(body.openrouter_api_key),
+        groq_api_key=_secret_value(body.groq_api_key),
+        opencode_api_key=_secret_value(body.opencode_api_key),
+        openai_api_key=_secret_value(body.openai_api_key),
         custom_base_url=body.custom_base_url,
         ollama_base_url=body.ollama_base_url,
         research_providers_override=body.research_providers,
@@ -424,16 +477,11 @@ async def create_analysis_from_prompt_endpoint(
 @router.post("/analyses/from-prompt/sync", response_model=AnalysisResult)
 async def create_analysis_from_prompt_sync_endpoint(
     body: PromptAnalysisRequest,
+    owner_hash: str = Depends(require_owner_hash),
 ) -> AnalysisResult:
     """Parse a prompt with real AI, then return the completed analysis."""
     provider, api_key_override, base_url_override = _llm_options(body)
-    settings = get_settings()
-    if settings.ssrf_protection_enabled and base_url_override:
-        if not is_public_http_url(base_url_override):
-            raise HTTPException(
-                status_code=400,
-                detail="Only public HTTP(S) provider URLs are allowed in hosted mode.",
-            )
+    _validate_runtime_provider_url(base_url_override)
     try:
         llm = build_llm_adapter(
             provider_override=provider,
@@ -443,19 +491,21 @@ async def create_analysis_from_prompt_sync_endpoint(
         )
         parsed_idea = await llm.parse_raw_prompt(body.prompt)
     except ValueError as exc:
-        raise HTTPException(status_code=400, detail=str(exc)) from exc
-    except RuntimeError as exc:
+        logger.info("Prompt validation failed: %s", redact_sensitive_text(exc))
         raise HTTPException(
-            status_code=429,
-            detail=f"AI provider could not complete the request: {exc}",
-        ) from exc
+            status_code=400,
+            detail="The startup idea could not be parsed. Add the customer, problem, and solution.",
+        ) from None
+    except RuntimeError as exc:
+        logger.warning("Prompt provider unavailable: %s", redact_sensitive_text(exc))
+        raise HTTPException(status_code=429, detail=public_provider_error(provider)) from None
     except Exception as exc:
-        logger.exception("Prompt parsing failed")
+        logger.error("Prompt parsing failed: %s", redact_sensitive_text(exc))
         raise HTTPException(
             status_code=502,
             detail="The selected AI provider could not process this prompt. Verify the key and try again.",
-        ) from exc
-    return await _run_analysis_in_request(body, parsed_idea, provider)
+        ) from None
+    return await _run_analysis_in_request(body, parsed_idea, provider, owner_hash)
 
 
 @router.get("/analyses", response_model=list[AnalysisListItem])
@@ -463,23 +513,35 @@ async def list_analyses_endpoint(
     search: str | None = None,
     status: str | None = None,
     limit: int = Query(default=100, ge=1, le=100),
+    owner_hash: str = Depends(require_owner_hash),
 ) -> list[AnalysisListItem]:
-    return await list_analyses(search=search, status_filter=status, limit=limit)
+    return await list_analyses(
+        search=search,
+        status_filter=status,
+        limit=limit,
+        owner_hash=owner_hash,
+    )
 
 
 @router.get("/analyses/{analysis_id}", response_model=AnalysisResult)
-async def get_analysis_endpoint(analysis_id: str) -> AnalysisResult:
-    result = await get_analysis(analysis_id)
+async def get_analysis_endpoint(
+    analysis_id: str,
+    owner_hash: str = Depends(require_owner_hash),
+) -> AnalysisResult:
+    result = await get_analysis(analysis_id, owner_hash=owner_hash)
     if result is None:
-        raise HTTPException(status_code=404, detail=f"Analysis {analysis_id!r} not found")
+        raise HTTPException(status_code=404, detail="Analysis not found")
     return result
 
 
 @router.delete("/analyses/{analysis_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_analysis_endpoint(analysis_id: str) -> None:
-    deleted = await delete_analysis(analysis_id)
+async def delete_analysis_endpoint(
+    analysis_id: str,
+    owner_hash: str = Depends(require_owner_hash),
+) -> None:
+    deleted = await delete_analysis(analysis_id, owner_hash=owner_hash)
     if not deleted:
-        raise HTTPException(status_code=404, detail=f"Analysis {analysis_id!r} not found")
+        raise HTTPException(status_code=404, detail="Analysis not found")
 
 
 @router.post("/demo", response_model=dict)

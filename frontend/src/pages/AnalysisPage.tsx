@@ -96,7 +96,7 @@ export default function AnalysisPage() {
               <p className="text-zinc-500 text-sm mb-6 max-w-lg mx-auto leading-relaxed">{safeAnalysisMessage(data.error_message)}</p>
               {(data.error_message?.includes('402') || data.error_message?.includes('429') || data.error_message?.includes('quota') || data.error_message?.includes('token')) && (
                 <div className="mb-6 p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-700 text-left max-w-lg mx-auto">
-                  <strong>Tip:</strong> Return home, open Configure Keys, and validate a provider. Keys stay in session storage and are never included in the public site bundle.
+                  <strong>Tip:</strong> Return home, open Configure Keys, and validate a provider. Keys stay only in this page's memory and are never included in the public site bundle.
                 </div>
               )}
               <Link to="/" className="btn-primary">← Start New Analysis</Link>

@@ -71,15 +71,52 @@ function friendlyApiMessage(status: number, raw: string): string {
   return message || 'The request could not be completed. Please check your setup and try again.'
 }
 
+const OWNER_STORAGE_KEY = 'azero_analysis_owner_v1'
+const OWNER_TOKEN_PATTERN = /^[A-Za-z0-9_-]{32,128}$/
+let volatileOwnerToken = ''
+
+function createOwnerToken(): string {
+  const bytes = new Uint8Array(32)
+  crypto.getRandomValues(bytes)
+  const binary = Array.from(bytes, (byte) => String.fromCharCode(byte)).join('')
+  return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '')
+}
+
+export function getAnalysisOwnerToken(): string {
+  if (volatileOwnerToken) return volatileOwnerToken
+
+  try {
+    const stored = localStorage.getItem(OWNER_STORAGE_KEY) || ''
+    if (OWNER_TOKEN_PATTERN.test(stored)) {
+      volatileOwnerToken = stored
+      return stored
+    }
+    localStorage.removeItem(OWNER_STORAGE_KEY)
+  } catch {
+    // Private browsing can disable persistent storage; an in-memory token still isolates the tab.
+  }
+
+  volatileOwnerToken = createOwnerToken()
+  try {
+    localStorage.setItem(OWNER_STORAGE_KEY, volatileOwnerToken)
+  } catch {
+    // The analysis remains available for the current page lifetime.
+  }
+  return volatileOwnerToken
+}
+
 async function request<T>(
   path: string,
   options?: RequestInit,
 ): Promise<T> {
+  const headers = new Headers(options?.headers)
+  headers.set('Content-Type', 'application/json')
+  headers.set('X-Analysis-Owner', getAnalysisOwnerToken())
   let res: Response
   try {
     res = await fetch(`${BASE}${path}`, {
-      headers: { 'Content-Type': 'application/json' },
       ...options,
+      headers,
     })
   } catch {
     throw new ApiRequestError(SERVICE_UNAVAILABLE_MESSAGE)
@@ -143,11 +180,11 @@ export const api = {
   },
 
   getAnalysis(id: string): Promise<AnalysisResult> {
-    return request(`/analyses/${id}`)
+    return request(`/analyses/${encodeURIComponent(id)}`)
   },
 
   deleteAnalysis(id: string): Promise<void> {
-    return request(`/analyses/${id}`, { method: 'DELETE' })
+    return request(`/analyses/${encodeURIComponent(id)}`, { method: 'DELETE' })
   },
 
   runDemo(settings?: DemoAnalysisRequest): Promise<{ analysis_id: string; status: string; demo: boolean }> {
@@ -157,7 +194,7 @@ export const api = {
     })
   },
 
-  verifyKeys(settings: Record<string, any>): Promise<{ status: string; provider: string; message: string }> {
+  verifyKeys(settings: Partial<AnalysisCreateRequest>): Promise<{ status: string; provider: string; message: string }> {
     return request('/verify-keys', { method: 'POST', body: JSON.stringify(settings) })
   },
 }

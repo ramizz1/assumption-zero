@@ -120,14 +120,10 @@ def generate_queries(idea: IdeaInput) -> list[dict[str, str]]:
     queries.append({"query": f"{problem[:35]} complaints forum {geography}", "type": "complaint"})
 
     # ── Demand indicators ─────────────────────────────────────────
-    queries.append({"query": f"market demand {problem[:40]} {geography}", "type": "demand"})
-    queries.append({"query": f"{customer[:30]} need {problem[:30]}", "type": "demand"})
-    queries.append(
-        {
-            "query": f"{customer[:30]} population statistics {geography} {current_year}",
-            "type": "demand",
-        }
-    )
+    queries.append({"query": f"{customer[:30]} {problem[:35]} spending survey {geography}", "type": "demand"})
+    queries.append({"query": f"{customer[:30]} {problem[:35]} requests recommendations", "type": "demand"})
+    queries.append({"query": f"{problem[:35]} budget purchase adoption {geography}", "type": "demand"})
+    queries.append({"query": f"{customer[:30]} population statistics {geography} {current_year}", "type": "demand"})
     queries.append({"query": f"{problem[:35]} survey adoption {geography}", "type": "demand"})
     if industry:
         queries.append(

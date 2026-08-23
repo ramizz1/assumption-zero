@@ -9,10 +9,13 @@ from __future__ import annotations
 
 import pytest
 
+from assumption_zero.analysis.engine import _select_recommendation
+from assumption_zero.analysis.regional_analysis import generate_regional_analysis
 from assumption_zero.analysis.scoring import (
     DIMENSION_WEIGHTS,
     calculate_opportunity_score,
 )
+from assumption_zero.schemas import ConfidenceLevel, Recommendation
 
 
 def test_weights_sum_to_100():
@@ -84,3 +87,19 @@ def test_score_all_low(sample_idea, sample_evidence, sample_perspectives):
             p.dimension_scores[k] = 10.0
     result = calculate_opportunity_score(sample_perspectives, sample_evidence, sample_idea)
     assert result.total <= 20.0
+
+
+def test_build_is_downgraded_without_strong_commercial_evidence(sample_idea, sample_evidence, sample_perspectives):
+    for perspective in sample_perspectives:
+        perspective.recommendation = Recommendation.BUILD
+
+    recommendation = _select_recommendation(
+        sample_perspectives,
+        ConfidenceLevel.MEDIUM,
+        sample_idea,
+        sample_evidence,
+        [],
+        generate_regional_analysis(sample_idea, sample_evidence),
+    )
+
+    assert recommendation == Recommendation.TEST_FIRST

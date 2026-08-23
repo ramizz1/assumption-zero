@@ -19,7 +19,7 @@ export default function OpportunityGauge({ score, size = 140 }: Props) {
       id="opportunity-gauge"
       className="relative flex items-center justify-center"
       style={{ width: size, height: size }}
-      aria-label={`Opportunity Score: ${score.toFixed(0)} out of 100`}
+      aria-label={`Research score: ${score.toFixed(0)} out of 100`}
     >
       <svg
         width={size}
@@ -61,7 +61,7 @@ export default function OpportunityGauge({ score, size = 140 }: Props) {
         <span className={`text-3xl font-bold tabular-nums ${colorClass}`}>
           {score.toFixed(0)}
         </span>
-        <span className="text-xs text-gray-500 mt-0.5">/ 100</span>
+        <span className="text-xs text-gray-500 mt-0.5">/ 100 research</span>
       </div>
     </div>
   )

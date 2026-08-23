@@ -41,6 +41,7 @@ from assumption_zero.schemas import (
     Recommendation,
     ResearchDepth,
 )
+from assumption_zero.security import public_provider_error, redact_sensitive_text
 
 logger = logging.getLogger(__name__)
 
@@ -159,6 +160,7 @@ async def create_analysis(
     ai_provider_override: str | None = None,
     research_providers_override: list[str] | None = None,
     is_demo: bool = False,
+    owner_hash: str | None = None,
 ) -> str:
     """Create a new analysis record and return its ID."""
     analysis_id = str(uuid.uuid4())
@@ -167,6 +169,7 @@ async def create_analysis(
         idea_name=idea.name or "Unnamed Idea",
         input_data=idea.model_dump(mode="json"),
         is_demo=is_demo,
+        owner_hash=owner_hash,
     )
     logger.info("Created analysis %s", analysis_id)
     return analysis_id
@@ -204,8 +207,14 @@ async def run_analysis(
         base_url_override = ollama_base_url
 
     settings = get_settings()
-    if settings.ssrf_protection_enabled and base_url_override:
-        if not is_public_http_url(base_url_override):
+    if base_url_override:
+        if not settings.allow_runtime_provider_urls:
+            store.fail_record(
+                analysis_id,
+                "Runtime provider URL overrides are disabled on this deployment.",
+            )
+            return
+        if settings.ssrf_protection_enabled and not is_public_http_url(base_url_override):
             store.fail_record(
                 analysis_id,
                 "Only public HTTP(S) provider URLs are allowed in hosted mode.",
@@ -242,17 +251,22 @@ async def run_analysis(
         logger.info("Analysis %s complete", analysis_id)
 
     except Exception as exc:
-        logger.exception("Analysis %s failed: %s", analysis_id, exc)
-        store.fail_record(analysis_id, str(exc))
+        logger.error("Analysis %s failed: %s", analysis_id, redact_sensitive_text(exc))
+        store.fail_record(analysis_id, public_provider_error(ai_provider_override))
 
 
-async def get_analysis(analysis_id: str) -> AnalysisResult | None:
+async def get_analysis(
+    analysis_id: str,
+    owner_hash: str | None = None,
+) -> AnalysisResult | None:
     """Retrieve a full AnalysisResult (in-progress or complete)."""
-    row = store.get_record(analysis_id)
+    row = store.get_record(analysis_id, owner_hash=owner_hash)
     if not row:
         return None
 
-    input_data = store.get_input(analysis_id)
+    full_id = row["id"]
+
+    input_data = store.get_input(full_id)
     if not input_data:
         return None
     # Use model_construct to skip validators — data was already validated on submission.
@@ -263,7 +277,7 @@ async def get_analysis(analysis_id: str) -> AnalysisResult | None:
         idea = IdeaInput.model_construct(**{k: v for k, v in input_data.items() if v is not None})
 
     # Full result available — patch idea_input to skip re-validation of stored names
-    result_data = store.get_result(analysis_id)
+    result_data = store.get_result(full_id)
     if result_data:
         try:
             patched = dict(result_data)
@@ -280,7 +294,7 @@ async def get_analysis(analysis_id: str) -> AnalysisResult | None:
     stage_val = row.get("stage", "clarifying_idea")
 
     return AnalysisResult(
-        analysis_id=analysis_id,
+        analysis_id=full_id,
         status=AnalysisStatus(row.get("status", "pending")),
         stage=AnalysisStage(stage_val),
         stage_description=STAGE_DESCRIPTIONS.get(stage_val, ""),
@@ -296,9 +310,10 @@ async def list_analyses(
     search: str | None = None,
     status_filter: str | None = None,
     limit: int = 100,
+    owner_hash: str | None = None,
 ) -> list[AnalysisListItem]:
     """Return all analyses as list items, newest first."""
-    rows = store.list_records(limit=limit)
+    rows = store.list_records(limit=limit, owner_hash=owner_hash)
     items: list[AnalysisListItem] = []
 
     search_clean = search.strip().lower() if search else None
@@ -370,9 +385,12 @@ async def list_analyses(
     return items
 
 
-async def delete_analysis(analysis_id: str) -> bool:
+async def delete_analysis(
+    analysis_id: str,
+    owner_hash: str | None = None,
+) -> bool:
     """Delete an analysis. Returns True if found and deleted."""
-    return store.delete_record(analysis_id)
+    return store.delete_record(analysis_id, owner_hash=owner_hash)
 
 
 # ── Helpers ───────────────────────────────────────────────────────────────────

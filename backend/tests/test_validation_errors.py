@@ -7,7 +7,10 @@ from fastapi.testclient import TestClient
 from assumption_zero.config import Settings, is_public_http_url
 from assumption_zero.main import app, clean_error_message
 
-client = TestClient(app)
+client = TestClient(
+    app,
+    headers={"X-Analysis-Owner": "test_owner_token_0123456789_ABCDEFGH"},
+)
 
 
 def test_clean_error_message_helper():
@@ -46,7 +49,7 @@ def test_empty_prompt_returns_clean_error():
 
 
 def test_verify_keys_endpoint_success():
-    response = client.post("/api/verify-keys", json={"provider": "mock"})
+    response = client.post("/api/verify-keys", json={"ai_provider": "mock"})
     assert response.status_code == 200
     data = response.json()
     assert data["status"] == "ok"
@@ -55,7 +58,10 @@ def test_verify_keys_endpoint_success():
 
 
 def test_verify_keys_missing_key_returns_400():
-    response = client.post("/api/verify-keys", json={"provider": "openai_compat", "openaiKey": ""})
+    response = client.post(
+        "/api/verify-keys",
+        json={"ai_provider": "openai_compat", "openai_api_key": ""},
+    )
     assert response.status_code == 400
     data = response.json()
     assert "API key is missing" in data["detail"]
@@ -82,7 +88,7 @@ def test_provider_probe_rejects_bad_key_without_echoing_it(monkeypatch):
     sentinel = "TEST_KEY_MUST_NOT_BE_ECHOED"
     response = client.post(
         "/api/verify-keys",
-        json={"provider": "groq", "groqKey": sentinel},
+        json={"ai_provider": "groq", "groq_api_key": sentinel},
     )
 
     assert response.status_code == 400

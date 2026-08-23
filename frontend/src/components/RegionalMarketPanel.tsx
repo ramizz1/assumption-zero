@@ -32,7 +32,7 @@ export default function RegionalMarketPanel({ analysis, coverage }: Props) {
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
         <div>
           <h2 className="section-title text-zinc-900 font-display font-black tracking-tight"><span className="text-zinc-400">01 /</span> Regional Market Reality</h2>
-          <p className="text-xs text-zinc-500 mt-1">Demand, pricing, regulation, and distribution evidence specifically tied to {analysis.geography}.</p>
+          <p className="text-xs text-zinc-500 mt-1">Idea-relevant demand, pricing, regulation, and distribution evidence tied to {analysis.geography}.</p>
         </div>
         {coverage && <span className="text-[10px] font-mono font-bold uppercase tracking-wider rounded-full border border-zinc-200 bg-zinc-50 px-3 py-1.5">{coverage.depth} research</span>}
       </div>
@@ -41,7 +41,7 @@ export default function RegionalMarketPanel({ analysis, coverage }: Props) {
         <div className="grid grid-cols-1 md:grid-cols-[150px_1fr] gap-6 items-center">
           <div className="text-center md:text-left">
             <p className={`text-5xl font-black tabular-nums ${scoreTone}`}>{analysis.demand_score.toFixed(0)}</p>
-            <p className="text-[10px] font-mono font-bold uppercase tracking-wider text-zinc-500 mt-1">Regional evidence score</p>
+            <p className="text-[10px] font-mono font-bold uppercase tracking-wider text-zinc-500 mt-1">Demand evidence strength</p>
             <p className="text-[10px] font-mono text-zinc-400 mt-2">{analysis.confidence} confidence</p>
           </div>
           <div>
@@ -62,6 +62,8 @@ export default function RegionalMarketPanel({ analysis, coverage }: Props) {
           </div>
         </div>
       </div>
+
+      <p className="text-[11px] text-zinc-500 text-center">Evidence strength is not market demand percentage or success probability. Only direct commitments and repeat use can validate the offer.</p>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         <SignalList title="Demand and buyer pain" items={analysis.demand_signals} />

@@ -31,6 +31,7 @@ from assumption_zero.llm.base import (
     LLMAdapter,
     PerspectiveOutput,
     build_analysis_prompt,
+    build_clarification_messages,
 )
 from assumption_zero.schemas import EvidenceItem, IdeaInput, PerspectiveName, Recommendation
 
@@ -194,13 +195,8 @@ class OpenAICompatAdapter(LLMAdapter):
             raise ValueError(f"OpenAI-compat returned unparseable output: {exc}") from exc
 
     async def clarify_idea(self, idea: IdeaInput) -> str:
-        prompt = (
-            f"In 2-3 sentences describe what this startup idea is evaluating. Be concise and factual.\n"
-            f"Name: {idea.name}\nDescription: {idea.description}\n"
-            f"Problem: {idea.problem}\nCustomer: {idea.target_customer} in {idea.geography}"
-        )
         try:
-            raw = await self._chat([{"role": "user", "content": prompt}])
+            raw = await self._chat(build_clarification_messages(idea))
             return raw.strip()
         except Exception as exc:
             logger.warning("OpenAI-compat clarify_idea failed: %s", exc)

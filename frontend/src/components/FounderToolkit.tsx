@@ -1,115 +1,108 @@
 import { useState } from 'react'
 import type { FounderToolkit as FounderToolkitType } from '../types'
 
-interface Props {
-  toolkit: FounderToolkitType
-}
+interface Props { toolkit: FounderToolkitType }
 
 export default function FounderToolkit({ toolkit }: Props) {
   const [copied, setCopied] = useState(false)
+  const demandSnapshot = toolkit.demand_snapshot ?? []
+  const budgetAllocation = toolkit.budget_allocation ?? []
+  const budgetReleaseRules = toolkit.budget_release_rules ?? []
+  const interviewQuestions = toolkit.interview_questions ?? []
+  const decisionRules = toolkit.decision_rules ?? []
+  const recommendedChannels = toolkit.recommended_channels ?? []
+  const keyMetrics = toolkit.key_metrics ?? []
 
   const copyInterviewScript = async () => {
-    const script = [
-      'Customer discovery interview script',
-      '',
-      ...toolkit.interview_questions.map((question, index) => `${index + 1}. ${question}`),
-    ].join('\n')
+    const script = ['Customer discovery interview script', '', ...interviewQuestions.map((question, index) => `${index + 1}. ${question}`)].join('\n')
     try {
       await navigator.clipboard.writeText(script)
       setCopied(true)
       window.setTimeout(() => setCopied(false), 2000)
-    } catch {
-      setCopied(false)
-    }
+    } catch { setCopied(false) }
   }
 
   return (
     <section id="founder-toolkit" className="space-y-4 pt-4 border-t border-gray-200">
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
         <div>
-          <h2 className="section-title text-gray-900 font-display font-black tracking-tight"><span className="text-gray-400">02 /</span> Founder Action Plan</h2>
-          <p className="text-xs text-gray-500 mt-1">A practical validation plan generated from your inputs and the analysis decision.</p>
+          <h2 className="section-title text-gray-900 font-display font-black tracking-tight"><span className="text-gray-400">02 /</span> Demand Proof Dashboard</h2>
+          <p className="text-xs text-gray-500 mt-1">What the research knows, what only customers can prove, and how much to risk next.</p>
         </div>
-        <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-full px-3 py-1.5">30-day operating plan</span>
+        <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-amber-800 bg-amber-50 border border-amber-200 rounded-full px-3 py-1.5">Signals are not sales</span>
       </div>
 
-      <div className="verseo-card p-5 sm:p-6 bg-zinc-950 text-white border-zinc-800">
-        <p className="text-[10px] uppercase tracking-[0.18em] font-mono font-bold text-zinc-400 mb-2">Positioning statement</p>
-        <p className="text-base sm:text-lg font-semibold leading-relaxed">{toolkit.one_sentence_pitch}</p>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <div className="verseo-card p-5">
-          <p className="text-[10px] uppercase tracking-wider font-mono font-bold text-zinc-500 mb-2">Ideal customer profile</p>
-          <p className="text-sm leading-relaxed text-zinc-800">{toolkit.ideal_customer_profile}</p>
-        </div>
-        <div className="verseo-card p-5">
-          <p className="text-[10px] uppercase tracking-wider font-mono font-bold text-zinc-500 mb-2">Beachhead market</p>
-          <p className="text-sm leading-relaxed text-zinc-800">{toolkit.beachhead_market}</p>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <div className="verseo-card p-5">
-          <h3 className="font-bold text-zinc-900 mb-3">Recommended acquisition channels</h3>
-          <ol className="space-y-2">
-            {toolkit.recommended_channels.map((channel, index) => (
-              <li key={channel} className="flex gap-3 text-sm text-zinc-700">
-                <span className="shrink-0 w-6 h-6 rounded-lg bg-zinc-100 border border-zinc-200 grid place-items-center text-[10px] font-mono font-bold">{index + 1}</span>
-                <span className="leading-relaxed">{channel}</span>
+      <div className="grid grid-cols-1 lg:grid-cols-[1.2fr_0.8fr] gap-4">
+        <article className="verseo-card p-5 sm:p-6">
+          <h3 className="font-bold text-zinc-950">Demand evidence ladder</h3>
+          <p className="mt-1 text-xs text-zinc-500">The first two rows come from research. The remaining rows require you to run tests.</p>
+          <ol className="mt-4 space-y-2">
+            {demandSnapshot.map((item, index) => (
+              <li key={item} className={`flex gap-3 rounded-xl border p-3 text-xs leading-relaxed ${index < 2 ? 'border-blue-100 bg-blue-50 text-blue-950' : 'border-amber-100 bg-amber-50 text-amber-950'}`}>
+                <span className="shrink-0 w-6 h-6 rounded-lg bg-white/70 border border-current/10 grid place-items-center font-mono font-bold">{index + 1}</span>
+                <span>{item}</span>
               </li>
             ))}
           </ol>
-        </div>
-        <div className="verseo-card p-5">
-          <h3 className="font-bold text-zinc-900 mb-3">Metrics to instrument from day one</h3>
-          <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            {toolkit.key_metrics.map((metric) => (
-              <li key={metric} className="text-xs text-zinc-700 bg-zinc-50 border border-zinc-200 rounded-xl px-3 py-2.5 flex gap-2"><span className="text-emerald-600">+</span>{metric}</li>
-            ))}
-          </ul>
-        </div>
-      </div>
+        </article>
 
-      <div className="space-y-3">
-        <h3 className="font-display font-black text-xl text-zinc-900">Validation roadmap</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {toolkit.roadmap.map((action, index) => (
-            <article key={action.phase} className="verseo-card p-5 relative overflow-hidden">
-              <span className="absolute top-3 right-4 text-5xl font-black text-zinc-100 select-none">{index + 1}</span>
-              <p className="text-[10px] font-mono font-bold uppercase tracking-wider text-zinc-500 mb-1">{action.phase} · {action.budget_hint}</p>
-              <h4 className="font-bold text-zinc-900 mb-3 pr-10">{action.objective}</h4>
-              <ul className="space-y-2 mb-4">
-                {action.actions.map((step) => <li key={step} className="text-xs text-zinc-600 leading-relaxed flex gap-2"><span aria-hidden="true">→</span><span>{step}</span></li>)}
-              </ul>
-              <div className="space-y-2 border-t border-zinc-100 pt-3">
-                <p className="text-[11px] text-emerald-800 bg-emerald-50 rounded-lg p-2"><strong>Advance when:</strong> {action.success_metric}</p>
-                <p className="text-[11px] text-rose-800 bg-rose-50 rounded-lg p-2"><strong>Stop when:</strong> {action.stop_condition}</p>
-              </div>
-            </article>
-          ))}
-        </div>
+        <article className="verseo-card p-5 sm:p-6 bg-zinc-950 text-white border-zinc-800">
+          <p className="text-[10px] uppercase tracking-wider font-mono font-bold text-zinc-400">Validation budget</p>
+          <p className="mt-2 text-sm font-semibold leading-relaxed">{toolkit.validation_budget}</p>
+          <ul className="mt-4 space-y-2">
+            {budgetAllocation.map((item) => <li key={item} className="text-xs text-zinc-300 flex gap-2"><span className="text-emerald-400">+</span>{item}</li>)}
+          </ul>
+        </article>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <div className="verseo-card p-5">
+        <article className="verseo-card p-5">
+          <p className="text-[10px] uppercase tracking-wider font-mono font-bold text-zinc-500 mb-2">Who to test first</p>
+          <p className="text-sm leading-relaxed text-zinc-800">{toolkit.ideal_customer_profile}</p>
+          <p className="mt-3 text-xs leading-relaxed text-zinc-600"><strong>Beachhead:</strong> {toolkit.beachhead_market}</p>
+        </article>
+        <article className="verseo-card p-5">
+          <p className="text-[10px] uppercase tracking-wider font-mono font-bold text-zinc-500 mb-2">Budget release rules</p>
+          <ul className="space-y-2">
+            {budgetReleaseRules.map((rule) => <li key={rule} className="text-xs text-zinc-700 flex gap-2"><span className="text-rose-600">→</span>{rule}</li>)}
+          </ul>
+        </article>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <article className="verseo-card p-5">
           <div className="flex items-center justify-between gap-3 mb-3">
-            <h3 className="font-bold text-zinc-900">Customer interview script</h3>
+            <div>
+              <h3 className="font-bold text-zinc-900">Customer interview script</h3>
+              <p className="text-[11px] text-zinc-500 mt-0.5">Ask about past behavior; do not pitch until the end.</p>
+            </div>
             <button type="button" onClick={copyInterviewScript} className="btn-ghost px-3 py-1.5 text-xs">{copied ? 'Copied' : 'Copy script'}</button>
           </div>
           <ol className="space-y-2 list-decimal pl-5">
-            {toolkit.interview_questions.map((question) => <li key={question} className="text-xs text-zinc-700 leading-relaxed pl-1">{question}</li>)}
+            {interviewQuestions.map((question) => <li key={question} className="text-xs text-zinc-700 leading-relaxed pl-1">{question}</li>)}
           </ol>
-        </div>
-        <div className="verseo-card p-5">
-          <h3 className="font-bold text-zinc-900 mb-3">Evidence-based decision rules</h3>
+        </article>
+        <article className="verseo-card p-5">
+          <h3 className="font-bold text-zinc-900 mb-3">Decision rules</h3>
           <ul className="space-y-2">
-            {toolkit.decision_rules.map((rule, index) => (
+            {decisionRules.map((rule, index) => (
               <li key={rule} className={`text-xs leading-relaxed rounded-xl p-3 border ${index === 0 ? 'bg-amber-50 border-amber-200 text-amber-900 font-semibold' : 'bg-zinc-50 border-zinc-200 text-zinc-700'}`}>{rule}</li>
             ))}
           </ul>
-        </div>
+        </article>
       </div>
+
+      <details className="verseo-card p-5">
+        <summary className="cursor-pointer font-bold text-sm text-zinc-900">Channels and metrics to track</summary>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mt-4">
+          <ol className="space-y-2">
+            {recommendedChannels.map((channel, index) => <li key={channel} className="text-xs text-zinc-700"><strong>{index + 1}.</strong> {channel}</li>)}
+          </ol>
+          <ul className="space-y-2">
+            {keyMetrics.map((metric) => <li key={metric} className="text-xs text-zinc-700">+ {metric}</li>)}
+          </ul>
+        </div>
+      </details>
     </section>
   )
 }

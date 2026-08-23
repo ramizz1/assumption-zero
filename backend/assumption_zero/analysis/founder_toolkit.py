@@ -5,12 +5,16 @@ from __future__ import annotations
 import re
 
 from assumption_zero.schemas import (
+    EvidenceItem,
+    EvidenceType,
     FounderAction,
     FounderToolkit,
     IdeaInput,
     Recommendation,
     ValidationExperiment,
 )
+from assumption_zero.analysis.experiment_generator import budget_guidance
+from assumption_zero.analysis.regional_analysis import is_commercial_demand_signal
 
 
 def _split_channels(value: str | None) -> list[str]:
@@ -41,6 +45,7 @@ def generate_founder_toolkit(
     idea: IdeaInput,
     recommendation: Recommendation,
     experiments: list[ValidationExperiment],
+    evidence: list[EvidenceItem] | None = None,
 ) -> FounderToolkit:
     """Turn known user inputs and validation thresholds into a practical roadmap."""
     channels = _split_channels(idea.acquisition_channels) or _default_channels(idea)
@@ -48,19 +53,17 @@ def generate_founder_toolkit(
     solution = idea.solution or idea.description
     stage = idea.startup_stage or "validation stage"
     timeline = idea.launch_timeline or "30 days"
-    budget = idea.budget or "a tightly capped validation budget"
     goal = idea.revenue_goal or "three committed pilot customers"
+    evidence = evidence or []
+    _, validation_budget, budget_allocation = budget_guidance(idea)
+    pain_count = sum(is_commercial_demand_signal(item, idea) for item in evidence)
+    pricing_count = sum(item.evidence_type == EvidenceType.PRICING for item in evidence)
+    workflow_count = sum(item.evidence_type == EvidenceType.MANUAL_WORKFLOW for item in evidence)
+    source_count = len({item.source_name for item in evidence})
 
-    interview_metric = (
-        experiments[1].success_threshold
-        if len(experiments) > 1
-        else "At least 7 of 10 buyers confirm an urgent problem"
-    )
-    smoke_metric = (
-        experiments[0].success_threshold
-        if experiments
-        else "At least 3 buyers commit time, data, or money"
-    )
+    reach_metric = experiments[2].success_threshold if len(experiments) > 2 else "At least four qualified conversations"
+    commitment_metric = experiments[3].success_threshold if len(experiments) > 3 else "At least three meaningful commitments"
+    retention_metric = experiments[4].success_threshold if len(experiments) > 4 else "At least two customers repeat or renew"
 
     roadmap = [
         FounderAction(
@@ -73,19 +76,19 @@ def generate_founder_toolkit(
             ],
             success_metric="10 interviews booked with qualified prospects",
             stop_condition="Fewer than 5 qualified prospects can be reached after 30 targeted attempts",
-            budget_hint="$0-$50",
+            budget_hint=experiments[0].estimated_cost_range if experiments else "$0-$50",
         ),
         FounderAction(
             phase="Days 4-10",
-            objective="Prove the problem before pitching the product",
+            objective="Verify behavior and find a reachable channel",
             actions=[
-                "Run ten problem interviews without leading with the solution",
                 f"Compare the current workflow against {alternative}",
-                "Rank repeated pains by frequency, severity, and existing spend",
+                "Verify current spend, time, and switching constraints with real artifacts",
+                f"Test the first channel: {channels[0]}",
             ],
-            success_metric=interview_metric,
-            stop_condition="Fewer than 4 of 10 prospects rank the problem among their top three priorities",
-            budget_hint="$0-$100",
+            success_metric=reach_metric,
+            stop_condition=experiments[2].failure_threshold if len(experiments) > 2 else "The segment cannot be reached after a bounded test",
+            budget_hint=experiments[1].estimated_cost_range if len(experiments) > 1 else "$0-$100",
         ),
         FounderAction(
             phase="Days 11-20",
@@ -93,11 +96,11 @@ def generate_founder_toolkit(
             actions=[
                 f"Offer the outcome manually: {solution}",
                 "Ask for a paid pilot, refundable deposit, signed letter of intent, or scheduled onboarding",
-                f"Test the first channel: {channels[0]}",
+                "Use the exact same scope and price for every qualified prospect",
             ],
-            success_metric=smoke_metric,
-            stop_condition="Zero meaningful commitments after 15 qualified offers",
-            budget_hint="$0-$250",
+            success_metric=commitment_metric,
+            stop_condition=experiments[3].failure_threshold if len(experiments) > 3 else "Zero meaningful commitments after 15 qualified offers",
+            budget_hint=experiments[3].estimated_cost_range if len(experiments) > 3 else "$0-$250",
         ),
         FounderAction(
             phase="Days 21-30",
@@ -107,9 +110,9 @@ def generate_founder_toolkit(
                 "Onboard pilots manually and measure activation, time-to-value, and weekly use",
                 f"Set the next milestone around {goal} within {timeline}",
             ],
-            success_metric=f"A repeatable pilot plan with owners, dates, and a path to {goal}",
-            stop_condition="Pilot users do not complete the core value loop or refuse a second use",
-            budget_hint=budget,
+            success_metric=retention_metric,
+            stop_condition=experiments[4].failure_threshold if len(experiments) > 4 else "Pilot users do not repeat the core value loop",
+            budget_hint=experiments[4].estimated_cost_range if len(experiments) > 4 else "Release only after commitment",
         ),
     ]
 
@@ -139,6 +142,21 @@ def generate_founder_toolkit(
             "Time to first value",
             "Four-week retention or repeat-use rate",
             "Customer acquisition cost versus first-year gross profit",
+        ],
+        demand_snapshot=[
+            f"Secondary research: {pain_count} demand/complaint signals across {source_count} collected sources.",
+            f"Commercial evidence: {pricing_count} pricing signals and {workflow_count} current-workflow signals.",
+            "Direct buyer evidence: not collected by web analysis; interviews must verify recent events and existing behavior.",
+            "Commitment evidence: not proven until a qualified buyer signs, deposits, schedules onboarding, or pays.",
+            "Retention evidence: not proven until pilot users repeat, renew, expand, or refer without prompting.",
+        ],
+        validation_budget=validation_budget,
+        budget_allocation=budget_allocation,
+        budget_release_rules=[
+            "Run tests in order and stop spending when a failure threshold is reached.",
+            "Do not buy broad traffic before a manual channel reaches qualified people.",
+            "Do not fund product development from the validation reserve before commitment passes.",
+            "Release pilot money only for delivering the promised outcome; postpone polish and automation.",
         ],
         roadmap=roadmap,
         interview_questions=[

@@ -45,18 +45,42 @@ def _second_demand_source(item: EvidenceItem) -> EvidenceItem:
     second.evidence_origin = "Independent Survey"
     second.evidence_type = EvidenceType.DEMAND
     second.relevance_score = 0.85
+    second.passage = (
+        "QA engineers at small companies report a time-consuming testing workflow, "
+        "an approved budget, and active purchase intent."
+    )
     return second
 
 
-def test_build_is_downgraded_when_regional_evidence_is_weak(sample_perspectives, sample_evidence):
+def _complete_commercial_support(item: EvidenceItem) -> list[EvidenceItem]:
+    support = []
+    for index, source in enumerate(("Buyer Survey", "Industry Association", "Procurement Study"), 10):
+        signal = _second_demand_source(item)
+        signal.evidence_id = f"E{index:03d}"
+        signal.source_name = source
+        signal.evidence_origin = source
+        support.append(signal)
+    pricing = item.model_copy(deep=True)
+    pricing.evidence_id = "E020"
+    pricing.source_name = "Pricing Study"
+    pricing.evidence_type = EvidenceType.PRICING
+    pricing.passage = "QA engineers at small companies have an approved $29 monthly budget."
+    support.append(pricing)
+    return support
+
+
+def test_build_is_downgraded_when_regional_evidence_is_weak(
+    sample_idea, sample_perspectives, sample_evidence
+):
     perspectives = deepcopy(sample_perspectives)
     for perspective in perspectives:
         perspective.recommendation = Recommendation.BUILD
-    evidence = sample_evidence + [_second_demand_source(sample_evidence[0])]
+    evidence = sample_evidence + _complete_commercial_support(sample_evidence[0])
 
     result = _select_recommendation(
         perspectives,
         ConfidenceLevel.HIGH,
+        sample_idea,
         evidence,
         [_verified_competitor()],
         _region(ConfidenceLevel.LOW),
@@ -66,16 +90,17 @@ def test_build_is_downgraded_when_regional_evidence_is_weak(sample_perspectives,
 
 
 def test_build_requires_and_accepts_complete_independent_support(
-    sample_perspectives, sample_evidence
+    sample_idea, sample_perspectives, sample_evidence
 ):
     perspectives = deepcopy(sample_perspectives)
     for perspective in perspectives:
         perspective.recommendation = Recommendation.BUILD
-    evidence = sample_evidence + [_second_demand_source(sample_evidence[0])]
+    evidence = sample_evidence + _complete_commercial_support(sample_evidence[0])
 
     result = _select_recommendation(
         perspectives,
         ConfidenceLevel.HIGH,
+        sample_idea,
         evidence,
         [_verified_competitor()],
         _region(ConfidenceLevel.MEDIUM),
@@ -84,7 +109,9 @@ def test_build_requires_and_accepts_complete_independent_support(
     assert result == Recommendation.BUILD
 
 
-def test_tied_perspectives_default_to_test_first(sample_perspectives, sample_evidence):
+def test_tied_perspectives_default_to_test_first(
+    sample_idea, sample_perspectives, sample_evidence
+):
     perspectives = deepcopy(sample_perspectives[:2])
     perspectives[0].recommendation = Recommendation.BUILD
     perspectives[1].recommendation = Recommendation.PIVOT
@@ -92,6 +119,7 @@ def test_tied_perspectives_default_to_test_first(sample_perspectives, sample_evi
     result = _select_recommendation(
         perspectives,
         ConfidenceLevel.HIGH,
+        sample_idea,
         sample_evidence,
         [_verified_competitor()],
         _region(ConfidenceLevel.HIGH),

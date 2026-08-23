@@ -34,7 +34,7 @@ from assumption_zero.analysis.disagreement import detect_disagreements
 from assumption_zero.analysis.experiment_generator import generate_experiments
 from assumption_zero.analysis.founder_toolkit import generate_founder_toolkit
 from assumption_zero.analysis.query_generator import generate_queries
-from assumption_zero.analysis.regional_analysis import generate_regional_analysis
+from assumption_zero.analysis.regional_analysis import generate_regional_analysis, is_commercial_demand_signal
 from assumption_zero.analysis.scoring import calculate_opportunity_score
 from assumption_zero.llm.base import DiscoveredCompetitor, LLMAdapter, PerspectiveOutput
 from assumption_zero.research.base import ResearchProvider
@@ -57,6 +57,7 @@ from assumption_zero.schemas import (
     ResearchCoverage,
     ResearchDepth,
 )
+from assumption_zero.security import public_provider_error, redact_sensitive_text
 
 logger = logging.getLogger(__name__)
 
@@ -404,11 +405,12 @@ def _validated_ai_competitors(
 def _select_recommendation(
     perspectives: list[AnalysisPerspective],
     confidence: ConfidenceLevel,
+    idea: IdeaInput,
     evidence: list[EvidenceItem],
     competitors: list[Competitor],
     regional_analysis: RegionalMarketAnalysis,
 ) -> Recommendation:
-    """Choose the majority verdict while keeping unsupported builds behind validation gates."""
+    """Choose the majority verdict while keeping unsupported builds behind strict gates."""
     if not perspectives:
         return Recommendation.TEST_FIRST
     counts = Counter(p.recommendation.value for p in perspectives)
@@ -431,12 +433,13 @@ def _select_recommendation(
         evidence_ready = (
             confidence == ConfidenceLevel.HIGH
             and len(demand_sources) >= 2
+            and sum(is_commercial_demand_signal(item, idea) for item in evidence) >= 3
+            and any(item.evidence_type == EvidenceType.PRICING for item in evidence)
             and has_verified_competitor
             and regional_analysis.confidence != ConfidenceLevel.LOW
         )
         if not evidence_ready:
             return Recommendation.TEST_FIRST
-
     return rec
 
 
@@ -567,9 +570,9 @@ class AnalysisEngine:
         try:
             interpreted_idea = await self._llm.clarify_idea(idea)
         except Exception as exc:
-            logger.warning("Idea clarification failed: %s", exc)
+            logger.warning("Idea clarification failed: %s", redact_sensitive_text(exc))
             interpreted_idea = f"{idea.name}: {idea.description}"
-            provider_errors.append(f"Idea clarification: {exc}")
+            provider_errors.append(public_provider_error("idea clarification"))
 
         # ── Stage 2: Generate research queries ────────────────────
         await _progress(AnalysisStage.GENERATING_QUERIES)
@@ -663,6 +666,7 @@ class AnalysisEngine:
         recommendation = _select_recommendation(
             perspectives,
             evidence_confidence,
+            idea,
             evidence,
             competitors,
             regional_analysis,
@@ -671,7 +675,7 @@ class AnalysisEngine:
         # ── Stage 8: Generate experiments ─────────────────────────
         await _progress(AnalysisStage.GENERATING_EXPERIMENTS)
         experiments = generate_experiments(idea, perspectives, evidence)
-        founder_toolkit = generate_founder_toolkit(idea, recommendation, experiments)
+        founder_toolkit = generate_founder_toolkit(idea, recommendation, experiments, evidence)
 
         # ── Synthesis ─────────────────────────────────────────────
         disagreements = detect_disagreements(perspectives)
@@ -769,7 +773,7 @@ class AnalysisEngine:
                 "Provider %s failed for query %r: %s",
                 provider.name,
                 query,
-                exc,
+                redact_sensitive_text(exc),
             )
             return []
 
@@ -844,7 +848,8 @@ class AnalysisEngine:
         try:
             return await self._llm.analyze_perspective(name, idea, evidence)
         except Exception as exc:
-            err_msg = f"Perspective {name.value} failed ({self._llm.model_id}): {exc}"
+            safe_error = public_provider_error(self._llm.model_id)
+            err_msg = f"Perspective {name.value} failed: {safe_error}"
             logger.error(err_msg)
             errors.append(err_msg)
             return None

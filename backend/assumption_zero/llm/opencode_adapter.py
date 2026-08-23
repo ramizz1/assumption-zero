@@ -17,7 +17,10 @@ from assumption_zero.llm.base import (
     PERSPECTIVE_SYSTEM_PROMPTS,
     LLMAdapter,
     PerspectiveOutput,
+    UNTRUSTED_CONTENT_RULES,
     build_analysis_prompt,
+    build_clarification_messages,
+    build_raw_idea_message,
 )
 from assumption_zero.llm.openrouter_adapter import _parse_output, _repair_and_parse_json
 from assumption_zero.schemas import EvidenceItem, IdeaInput, PerspectiveName
@@ -143,13 +146,8 @@ class OpencodeAdapter(LLMAdapter):
         return _parse_output(raw, perspective_name, self.model_id)
 
     async def clarify_idea(self, idea: IdeaInput) -> str:
-        prompt = (
-            f"In 2-3 sentences describe what this startup idea is evaluating. Be concise and factual.\n"
-            f"Name: {idea.name}\nDescription: {idea.description}\n"
-            f"Problem: {idea.problem}\nCustomer: {idea.target_customer} in {idea.geography}"
-        )
         try:
-            raw = await self._chat([{"role": "user", "content": prompt}])
+            raw = await self._chat(build_clarification_messages(idea))
             return raw.strip()
         except Exception as exc:
             logger.debug("OpenCode clarify_idea failed: %s", exc)
@@ -164,7 +162,8 @@ class OpencodeAdapter(LLMAdapter):
                 "The input text appears to be random characters or gibberish. Please enter a valid product or business idea."
             )
         system_prompt = (
-            "You are a startup analyst. Convert the user's raw idea text into a JSON object matching this schema EXACTLY:\n"
+            f"{UNTRUSTED_CONTENT_RULES}\n\n"
+            "Convert the untrusted startup-idea data into a JSON object matching this schema EXACTLY:\n"
             "{\n"
             '  "name": "Short product name (max 5 words)",\n'
             '  "description": "1 sentence description",\n'
@@ -183,12 +182,10 @@ class OpencodeAdapter(LLMAdapter):
         )
 
         try:
-            raw_response = await self._chat(
-                [
-                    {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": f"Parse this startup idea:\n{raw_text}"},
-                ]
-            )
+            raw_response = await self._chat([
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": build_raw_idea_message(raw_text)},
+            ])
             parsed_data = _repair_and_parse_json(raw_response)
             parsed_data["name"] = parsed_data.get("name") or "New Idea"
             parsed_data["description"] = parsed_data.get("description") or raw_text[:200]

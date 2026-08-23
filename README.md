@@ -159,7 +159,7 @@ azero analyze --provider ollama --model llama3.1
 
 Keep secrets in your local `.env`; never commit API keys. See [.env.example](.env.example) for available settings.
 
-Keys entered in web settings are kept in `sessionStorage`, sent only with analysis requests, and cleared when the browser session ends. Non-secret provider preferences may persist locally. Keys do not modify the backend `.env`. Use `.env` for a server-wide or CLI key; use web settings for a temporary per-browser key. In `Auto` mode, a browser-supplied key takes priority, starting with Groq.
+Keys entered in web settings stay only in page memory, are sent only with analysis requests, and disappear on reload or close. Legacy browser-stored keys are purged automatically. Only the non-secret provider preference may persist locally. Keys do not modify the backend `.env`. Use `.env` for a server-wide or CLI key; use web settings for a temporary per-page key. In `Auto` mode, a browser-supplied key takes priority, starting with Groq.
 
 Without a working generative-AI provider, the clearly labelled **Assumption Zero Evidence Engine** can still collect live public search results. It generates deterministic queries, runs the enabled research providers in parallel, normalizes and deduplicates their result snippets, assigns evidence IDs, and applies fixed scoring rules. It does not generate new facts or semantically reason over full sources like an LLM; its qualitative text is template-based and should be treated as a research baseline.
 

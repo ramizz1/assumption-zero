@@ -9,7 +9,8 @@ interface Props {
 export default function ScoreBreakdown({ score }: Props) {
   return (
     <div id="score-breakdown" className="verseo-card p-5">
-      <h2 className="section-title">Score Breakdown</h2>
+      <h2 className="section-title">Research score breakdown</h2>
+      <p className="text-xs text-zinc-500 mt-1 mb-4">Directional synthesis of available evidence—not demand percentage, revenue forecast, or success probability.</p>
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>

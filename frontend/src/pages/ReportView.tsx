@@ -289,34 +289,32 @@ export default function ReportView({ initialResult }: Props) {
 
         {result.founder_toolkit && <FounderToolkit toolkit={result.founder_toolkit} />}
 
-        {/* 2. AI Perspectives */}
-        <section id="perspectives" className="space-y-4">
-          <div>
-            <h2 className="section-title text-gray-900 font-display font-black tracking-tight"><span className="text-gray-400">03 /</span> AI Perspectives</h2>
-            <p className="text-xs text-gray-500 mt-1">Compare each independent view without scrolling through every analysis at once.</p>
-          </div>
-          <PerspectiveExplorer perspectives={result.perspectives} evidence={result.evidence} />
-        </section>
-
-        {/* 3. Competitor Intelligence */}
-        {result.competitors.length > 0 && (
-          <section id="competitors" className="space-y-4 pt-4 border-t border-gray-200">
-            <h2 className="section-title text-gray-900 font-display font-black tracking-tight"><span className="text-gray-400">04 /</span> Competitor Intelligence</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {result.competitors.map((comp) => (
-                <CompetitorCard key={comp.name} competitor={comp} evidence={result.evidence} />
-              ))}
+        {result.experiments.length > 0 && (
+          <section id="experiments" className="space-y-4 pt-4 border-t border-gray-200">
+            <div>
+              <h2 className="section-title text-gray-900 font-display font-black tracking-tight"><span className="text-gray-400">03 /</span> Demand Validation Gates</h2>
+              <p className="text-xs text-gray-500 mt-1">Run in order. Each gate tests a different unknown; stop when a failure threshold is reached.</p>
+            </div>
+            <div className="grid grid-cols-1 gap-4">
+              {result.experiments.map((exp, idx) => <ExperimentCard key={`${exp.test_type}-${exp.title}`} experiment={exp} index={idx} />)}
             </div>
           </section>
         )}
 
-        {/* 4. Validation Experiments */}
-        {result.experiments.length > 0 && (
-          <section id="experiments" className="space-y-4 pt-4 border-t border-gray-200">
-            <h2 className="section-title text-gray-900 font-display font-black tracking-tight"><span className="text-gray-400">05 /</span> Validation Experiments</h2>
-            <div className="grid grid-cols-1 gap-4">
-              {result.experiments.map((exp, idx) => (
-                <ExperimentCard key={exp.title} experiment={exp} index={idx} />
+        {/* 2. AI Perspectives */}
+        <details id="perspectives" className="verseo-card p-5">
+          <summary className="cursor-pointer font-display font-black text-gray-900">04 / Independent analysis details</summary>
+          <p className="text-xs text-gray-500 mt-2 mb-4">Optional: compare the model perspectives behind the verdict.</p>
+          <PerspectiveExplorer perspectives={result.perspectives} evidence={result.evidence} />
+        </details>
+
+        {/* 3. Competitor Intelligence */}
+        {result.competitors.length > 0 && (
+          <section id="competitors" className="space-y-4 pt-4 border-t border-gray-200">
+            <h2 className="section-title text-gray-900 font-display font-black tracking-tight"><span className="text-gray-400">05 /</span> Competitor Intelligence</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {result.competitors.map((comp) => (
+                <CompetitorCard key={comp.name} competitor={comp} evidence={result.evidence} />
               ))}
             </div>
           </section>

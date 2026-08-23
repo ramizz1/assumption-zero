@@ -62,34 +62,10 @@ def _evidence(
 def test_regional_analysis_counts_only_market_specific_evidence():
     idea = _idea()
     items = [
-        _evidence(
-            "E001",
-            EvidenceType.DEMAND,
-            "Clinic digitization survey",
-            "Statistics agency",
-            "dental Azerbaijan",
-        ),
-        _evidence(
-            "E002",
-            EvidenceType.PRICING,
-            "Local clinic software prices",
-            "Trade directory",
-            "pricing Azerbaijan AZN",
-        ),
-        _evidence(
-            "E003",
-            EvidenceType.REGULATORY,
-            "Patient data rules",
-            "Health regulator",
-            "health privacy Azerbaijan",
-        ),
-        _evidence(
-            "E004",
-            EvidenceType.DISTRIBUTION,
-            "Dental association directory",
-            "Dental association",
-            "clinics Azerbaijan",
-        ),
+        _evidence("E001", EvidenceType.DEMAND, "Dental clinic booking adoption and spending survey", "Statistics agency", "dental Azerbaijan"),
+        _evidence("E002", EvidenceType.PRICING, "Local clinic software prices", "Trade directory", "pricing Azerbaijan AZN"),
+        _evidence("E003", EvidenceType.REGULATORY, "Patient data rules", "Health regulator", "health privacy Azerbaijan"),
+        _evidence("E004", EvidenceType.DISTRIBUTION, "Dental association directory", "Dental association", "clinics Azerbaijan"),
         EvidenceItem(
             **{
                 **_evidence(
@@ -115,6 +91,23 @@ def test_regional_analysis_counts_only_market_specific_evidence():
     assert result.regulatory_signals[0].evidence_id == "E003"
     assert result.distribution_signals[0].evidence_id == "E004"
     assert all("E005" != signal.evidence_id for signal in result.demand_signals)
+
+
+def test_generic_regional_or_technical_sources_do_not_inflate_demand() -> None:
+    idea = _idea()
+    items = [
+        _evidence("E001", EvidenceType.MARKET_DIRECTION, "Azerbaijan technology sector growth", "News", "technology Azerbaijan"),
+        _evidence("E002", EvidenceType.DEMAND, "Machine learning benchmark research paper", "Research", "software Azerbaijan"),
+        _evidence("E003", EvidenceType.REGULATORY, "Azerbaijan patient data rules", "Regulator", "privacy Azerbaijan"),
+    ]
+
+    result = generate_regional_analysis(idea, items)
+
+    assert result.evidence_count == 3
+    assert result.demand_signals == []
+    assert result.demand_score == 0
+    assert result.confidence.value == "low"
+    assert "none met the stricter bar" in result.summary
 
 
 @pytest.mark.parametrize(

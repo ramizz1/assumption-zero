@@ -131,14 +131,19 @@ export interface ModelDisagreement {
 
 export interface ValidationExperiment {
   title: string
+  test_type: string
   assumption_tested: string
   why_it_matters: string
   procedure: string
   estimated_time: string
   estimated_cost_range: string
+  target_sample: string
+  primary_metric: string
+  data_to_capture: string[]
   success_threshold: string
   failure_threshold: string
   decision_after: string
+  budget_rationale: string
   legal_ethical: string
   priority: number
 }
@@ -158,6 +163,10 @@ export interface FounderToolkit {
   beachhead_market: string
   recommended_channels: string[]
   key_metrics: string[]
+  demand_snapshot: string[]
+  validation_budget: string
+  budget_allocation: string[]
+  budget_release_rules: string[]
   roadmap: FounderAction[]
   interview_questions: string[]
   decision_rules: string[]

@@ -11,7 +11,9 @@ import re
 from datetime import date, datetime
 from enum import Enum
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, SecretStr, field_validator
+
+from assumption_zero.security import sanitize_untrusted_text
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Enumerations
@@ -231,6 +233,11 @@ class IdeaInput(BaseModel):
     )
     additional_context: str | None = Field(None, max_length=3000)
 
+    @field_validator("*", mode="before")
+    @classmethod
+    def sanitize_text(cls, value: object) -> object:
+        return sanitize_untrusted_text(value) if isinstance(value, str) else value
+
     @field_validator("name", "description", "problem")
     @classmethod
     def validate_not_gibberish(cls, v: str) -> str:
@@ -365,14 +372,19 @@ class ModelDisagreement(BaseModel):
 
 class ValidationExperiment(BaseModel):
     title: str
+    test_type: str = "validation"
     assumption_tested: str
     why_it_matters: str
     procedure: str
     estimated_time: str
     estimated_cost_range: str
+    target_sample: str = ""
+    primary_metric: str = ""
+    data_to_capture: list[str] = []
     success_threshold: str
     failure_threshold: str
     decision_after: str
+    budget_rationale: str = ""
     legal_ethical: str
     priority: int = Field(ge=1, le=5)  # 1 = highest priority / lowest cost
 
@@ -396,6 +408,10 @@ class FounderToolkit(BaseModel):
     beachhead_market: str
     recommended_channels: list[str] = []
     key_metrics: list[str] = []
+    demand_snapshot: list[str] = []
+    validation_budget: str = ""
+    budget_allocation: list[str] = []
+    budget_release_rules: list[str] = []
     roadmap: list[FounderAction] = []
     interview_questions: list[str] = []
     decision_rules: list[str] = []
@@ -489,18 +505,50 @@ class AnalysisResult(BaseModel):
 # API Request / Response schemas
 # ─────────────────────────────────────────────────────────────────────────────
 
+class ProviderOptions(BaseModel):
+    """Bounded, non-persistent provider options accepted from one API request."""
 
-class AnalysisCreateRequest(BaseModel):
-    idea: IdeaInput
+    model_config = ConfigDict(extra="forbid")
+
     ai_provider: str | None = None  # Overrides the configured provider for this run
-    openrouter_api_key: str | None = None  # Custom OpenRouter API key for this run
-    groq_api_key: str | None = None  # Custom Groq API key for this run
-    opencode_api_key: str | None = None
-    openai_api_key: str | None = None
-    custom_base_url: str | None = None
-    ollama_base_url: str | None = None
-    research_providers: list[str] | None = None  # Pin specific providers; None = all enabled
+    openrouter_api_key: SecretStr | None = Field(None, min_length=8, max_length=500)
+    groq_api_key: SecretStr | None = Field(None, min_length=8, max_length=500)
+    opencode_api_key: SecretStr | None = Field(None, min_length=8, max_length=500)
+    openai_api_key: SecretStr | None = Field(None, min_length=8, max_length=500)
+    custom_base_url: str | None = Field(None, max_length=2048)
+    ollama_base_url: str | None = Field(None, max_length=2048)
+    research_providers: list[str] | None = Field(None, max_length=10)
     research_depth: ResearchDepth = ResearchDepth.DEEP
+
+    @field_validator(
+        "openrouter_api_key",
+        "groq_api_key",
+        "opencode_api_key",
+        "openai_api_key",
+        "custom_base_url",
+        "ollama_base_url",
+        mode="before",
+    )
+    @classmethod
+    def empty_provider_value_is_none(cls, value: object) -> object:
+        if isinstance(value, str):
+            cleaned = sanitize_untrusted_text(value)
+            return cleaned or None
+        return value
+
+    @field_validator("research_providers")
+    @classmethod
+    def validate_research_providers(cls, value: list[str] | None) -> list[str] | None:
+        if value is None:
+            return None
+        normalized: list[str] = []
+        for provider in value:
+            cleaned = sanitize_untrusted_text(provider)
+            if not cleaned or len(cleaned) > 80:
+                raise ValueError("Research provider names must be between 1 and 80 characters.")
+            if cleaned not in normalized:
+                normalized.append(cleaned)
+        return normalized
 
     @field_validator("ai_provider")
     @classmethod
@@ -527,41 +575,23 @@ class AnalysisCreateRequest(BaseModel):
         return normalized
 
 
-class DemoAnalysisRequest(BaseModel):
+class AnalysisCreateRequest(ProviderOptions):
+    idea: IdeaInput
+
+
+class DemoAnalysisRequest(ProviderOptions):
     """Provider options for running the canonical example idea."""
 
-    ai_provider: str | None = None
-    openrouter_api_key: str | None = None
-    groq_api_key: str | None = None
-    opencode_api_key: str | None = None
-    openai_api_key: str | None = None
-    custom_base_url: str | None = None
-    ollama_base_url: str | None = None
-    research_providers: list[str] | None = None
-    research_depth: ResearchDepth = ResearchDepth.DEEP
-
-    @field_validator("ai_provider")
-    @classmethod
-    def validate_requested_provider(cls, value: str | None) -> str | None:
-        return AnalysisCreateRequest.validate_requested_provider(value)
+    pass
 
 
-class PromptAnalysisRequest(BaseModel):
+class PromptAnalysisRequest(ProviderOptions):
     prompt: str = Field(..., min_length=1, max_length=5000)
-    ai_provider: str | None = None
-    openrouter_api_key: str | None = None
-    groq_api_key: str | None = None
-    opencode_api_key: str | None = None
-    openai_api_key: str | None = None
-    custom_base_url: str | None = None
-    ollama_base_url: str | None = None
-    research_providers: list[str] | None = None
-    research_depth: ResearchDepth = ResearchDepth.DEEP
 
     @field_validator("prompt")
     @classmethod
     def validate_prompt(cls, value: str) -> str:
-        normalized = value.strip()
+        normalized = sanitize_untrusted_text(value)
         if len(normalized) < 20 or is_gibberish(normalized):
             raise ValueError(
                 "The startup idea appears too vague or like gibberish. Describe the customer, "
@@ -569,10 +599,10 @@ class PromptAnalysisRequest(BaseModel):
             )
         return normalized
 
-    @field_validator("ai_provider")
-    @classmethod
-    def validate_requested_provider(cls, value: str | None) -> str | None:
-        return AnalysisCreateRequest.validate_requested_provider(value)
+class VerifyKeysRequest(ProviderOptions):
+    """Credential check request; secrets are masked in repr and never persisted."""
+
+    ai_provider: str | None = "mock"
 
 
 class AnalysisListItem(BaseModel):

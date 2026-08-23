@@ -4,6 +4,7 @@ FastAPI endpoint tests.
 
 from __future__ import annotations
 
+import secrets
 from unittest.mock import AsyncMock, patch
 
 import pytest
@@ -15,6 +16,7 @@ from assumption_zero.main import app
 @pytest.fixture
 def client():
     with TestClient(app) as c:
+        c.headers.update({"X-Analysis-Owner": secrets.token_urlsafe(32)})
         yield c
 
 

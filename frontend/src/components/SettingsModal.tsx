@@ -32,60 +32,56 @@ export interface AISettings {
 const LEGACY_STORAGE_KEY = 'azero_ai_settings'
 const PREFERENCES_STORAGE_KEY = 'azero_ai_preferences'
 const SECRETS_STORAGE_KEY = 'azero_ai_session_secrets'
+let volatileSettings: Partial<AISettings> = {}
 
-type AISecrets = Pick<AISettings, 'groqKey' | 'openrouterKey' | 'opencodeKey' | 'openaiKey' | 'customKey'>
-
-const splitSettings = (settings: AISettings): { preferences: Omit<AISettings, keyof AISecrets>; secrets: AISecrets } => {
-  const { groqKey, openrouterKey, opencodeKey, openaiKey, customKey, ...preferences } = settings
-  return {
-    preferences,
-    secrets: { groqKey, openrouterKey, opencodeKey, openaiKey, customKey },
-  }
-}
-
-export const saveAISettings = (settings: AISettings): void => {
-  const { preferences, secrets } = splitSettings(settings)
-  localStorage.setItem(PREFERENCES_STORAGE_KEY, JSON.stringify(preferences))
-  sessionStorage.setItem(SECRETS_STORAGE_KEY, JSON.stringify(secrets))
-  localStorage.removeItem(LEGACY_STORAGE_KEY)
+const DEFAULT_SETTINGS: AISettings = {
+  provider: 'auto',
+  groqKey: '',
+  openrouterKey: '',
+  opencodeKey: '',
+  openaiKey: '',
+  ollamaUrl: 'http://localhost:11434',
+  customKey: '',
+  customUrl: 'http://localhost:8000/v1',
 }
 
 export const getStoredAISettings = (): AISettings => {
-  const defaults: AISettings = {
-    provider: 'auto',
-    groqKey: '',
-    openrouterKey: '',
-    opencodeKey: '',
-    openaiKey: '',
-    ollamaUrl: 'http://localhost:11434',
-    customKey: '',
-    customUrl: 'http://localhost:8000/v1',
-  }
+  let provider = DEFAULT_SETTINGS.provider
   try {
     const legacyRaw = localStorage.getItem(LEGACY_STORAGE_KEY)
     const preferencesRaw = localStorage.getItem(PREFERENCES_STORAGE_KEY)
-    const secretsRaw = sessionStorage.getItem(SECRETS_STORAGE_KEY)
     const legacy = legacyRaw ? JSON.parse(legacyRaw) as Partial<AISettings> : {}
     const preferences = preferencesRaw ? JSON.parse(preferencesRaw) as Partial<AISettings> : {}
-    const secrets = secretsRaw ? JSON.parse(secretsRaw) as Partial<AISecrets> : {}
-    const stored = { ...legacy, ...preferences, ...secrets }
-
-    if (legacyRaw) {
-      const migrated = splitSettings({ ...defaults, ...legacy, provider: legacy.provider === 'beta' ? 'auto' : (legacy.provider || defaults.provider) })
-      localStorage.setItem(PREFERENCES_STORAGE_KEY, JSON.stringify(migrated.preferences))
-      sessionStorage.setItem(SECRETS_STORAGE_KEY, JSON.stringify(migrated.secrets))
-      localStorage.removeItem(LEGACY_STORAGE_KEY)
-    }
-
-    return {
-      ...defaults,
-      ...stored,
-      provider: stored.provider === 'beta' ? 'auto' : (stored.provider || defaults.provider),
-    }
+    const storedProvider = preferences.provider || legacy.provider
+    provider = storedProvider === 'beta' ? 'auto' : (storedProvider || provider)
+    // Purge keys/URLs written by older releases; only the provider preference may persist.
+    localStorage.setItem(PREFERENCES_STORAGE_KEY, JSON.stringify({ provider }))
+    localStorage.removeItem(LEGACY_STORAGE_KEY)
+    sessionStorage.removeItem(SECRETS_STORAGE_KEY)
   } catch {
-    // fallback
+    // Storage can be unavailable in private browsing; use memory-only values.
   }
-  return defaults
+  return { ...DEFAULT_SETTINGS, provider, ...volatileSettings }
+}
+
+export const saveAISettings = (settings: AISettings) => {
+  volatileSettings = { ...settings }
+  try {
+    localStorage.setItem(PREFERENCES_STORAGE_KEY, JSON.stringify({ provider: settings.provider }))
+    localStorage.removeItem(LEGACY_STORAGE_KEY)
+    sessionStorage.removeItem(SECRETS_STORAGE_KEY)
+  } catch {
+    // Keys and URLs intentionally remain memory-only when storage is unavailable.
+  }
+}
+
+export const clearInMemoryAISettings = () => {
+  volatileSettings = {}
+  try {
+    sessionStorage.removeItem(SECRETS_STORAGE_KEY)
+  } catch {
+    // Memory is already cleared even when storage is blocked.
+  }
 }
 
 export const SettingsModal: React.FC<Props> = ({ isOpen, onClose, onSave, backendOnline = true }) => {
@@ -132,7 +128,7 @@ export const SettingsModal: React.FC<Props> = ({ isOpen, onClose, onSave, backen
     } catch {
       setTestResult({
         status: 'error',
-        message: 'This browser blocked session storage. The key was not saved.',
+        message: 'Settings remain active for this page, but the provider preference could not be saved.',
       })
     }
   }
@@ -149,15 +145,13 @@ export const SettingsModal: React.FC<Props> = ({ isOpen, onClose, onSave, backen
     setTestResult(null)
     try {
       const res = await api.verifyKeys({
-        provider: settings.provider,
-        groqKey: settings.groqKey,
-        openrouterKey: settings.openrouterKey,
-        opencodeKey: settings.opencodeKey,
-        openaiKey: settings.provider === 'custom'
-          ? settings.customKey || settings.openaiKey
-          : settings.openaiKey,
-        ollamaUrl: settings.ollamaUrl,
-        customUrl: settings.customUrl,
+        ai_provider: settings.provider,
+        groq_api_key: settings.groqKey || undefined,
+        openrouter_api_key: settings.openrouterKey || undefined,
+        opencode_api_key: settings.opencodeKey || undefined,
+        openai_api_key: (settings.provider === 'custom' ? settings.customKey : settings.openaiKey) || undefined,
+        ollama_base_url: settings.provider === 'ollama' ? settings.ollamaUrl : undefined,
+        custom_base_url: settings.provider === 'custom' ? settings.customUrl : undefined,
       })
       setTestResult({ status: 'ok', message: res.message || `Successfully connected to ${settings.provider}!` })
     } catch (err: any) {
@@ -187,7 +181,7 @@ export const SettingsModal: React.FC<Props> = ({ isOpen, onClose, onSave, backen
                 AI Provider API Keys & Settings
               </h2>
               <p className="text-xs text-gray-500 font-mono">
-                API keys are kept only for this browser session; this does not edit the server .env
+                Keys stay in memory for this page only and are never saved to browser storage
               </p>
             </div>
           </div>
@@ -426,9 +420,9 @@ export const SettingsModal: React.FC<Props> = ({ isOpen, onClose, onSave, backen
           <div className="pt-4 border-t border-gray-200 flex items-center justify-between">
             <span className="text-xs text-gray-500 font-mono flex items-center gap-1.5">
               {savedStatus ? (
-                <span className="text-emerald-600 font-bold">✓ Settings Saved!</span>
+                <span className="text-emerald-600 font-bold">✓ Settings active for this page</span>
               ) : (
-                'Keys saved for this browser session'
+                'Reloading clears every API key'
               )}
             </span>
             <div className="flex gap-2">
@@ -443,7 +437,7 @@ export const SettingsModal: React.FC<Props> = ({ isOpen, onClose, onSave, backen
                 type="submit"
                 className="btn-primary text-xs px-5 py-2 font-bold"
               >
-                Save API Keys
+                Apply Settings
               </button>
             </div>
           </div>

@@ -53,7 +53,9 @@ class Settings(BaseSettings):
     app_name: str = "Assumption Zero"
     app_version: str = "0.1.0"
     debug: bool = False
-    ssrf_protection_enabled: bool = False
+    enable_api_docs: bool = False
+    ssrf_protection_enabled: bool = True
+    allow_runtime_provider_urls: bool = False
 
     # ── AI Providers ──────────────────────────────────────────────
     # Selects which adapter to use as the primary provider.
@@ -93,6 +95,8 @@ class Settings(BaseSettings):
     github_token: str | None = None
 
     # ── Rate limiting & timeouts ──────────────────────────────────
+    rate_limit_per_minute: int = 10
+    read_rate_limit_per_minute: int = 120
     request_timeout: int = 30
 
     # ── CORS ──────────────────────────────────────────────────────
@@ -100,10 +104,17 @@ class Settings(BaseSettings):
 
     # ── Limits ────────────────────────────────────────────────────
     max_idea_length: int = 5000
+    max_request_body_bytes: int = 65_536
     max_evidence_items: int = 50
     max_search_results_per_query: int = 10
 
-    @field_validator("debug", "ssrf_protection_enabled", mode="before")
+    @field_validator(
+        "debug",
+        "enable_api_docs",
+        "ssrf_protection_enabled",
+        "allow_runtime_provider_urls",
+        mode="before",
+    )
     @classmethod
     def parse_environment_mode_as_bool(cls, value: object) -> object:
         """Accept common deployment-mode values without crashing at import time.
@@ -136,6 +147,7 @@ class Settings(BaseSettings):
             "openai_compat",
             "openai",
             "opencode",
+            "custom",
         }
         if v not in allowed:
             raise ValueError(f"ai_provider must be one of {allowed}, got: {v!r}")

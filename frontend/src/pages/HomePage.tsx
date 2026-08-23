@@ -199,7 +199,7 @@ export const HomePage: React.FC = () => {
         openrouter_api_key: aiSettings.openrouterKey || undefined,
         opencode_api_key: aiSettings.opencodeKey || undefined,
         openai_api_key: (provider === 'openai_compat') ? (aiSettings.customKey || aiSettings.openaiKey || undefined) : (aiSettings.openaiKey || undefined),
-        custom_base_url: (provider === 'openai_compat') ? (aiSettings.customUrl || undefined) : undefined,
+        custom_base_url: aiSettings.provider === 'custom' ? (aiSettings.customUrl || undefined) : undefined,
         ollama_base_url: aiSettings.ollamaUrl || undefined,
         research_depth: researchDepth,
       })
@@ -251,7 +251,7 @@ export const HomePage: React.FC = () => {
         openrouter_api_key: aiSettings.openrouterKey || undefined,
         opencode_api_key: aiSettings.opencodeKey || undefined,
         openai_api_key: (provider === 'openai_compat') ? (aiSettings.customKey || aiSettings.openaiKey || undefined) : (aiSettings.openaiKey || undefined),
-        custom_base_url: (provider === 'openai_compat') ? (aiSettings.customUrl || undefined) : undefined,
+        custom_base_url: aiSettings.provider === 'custom' ? (aiSettings.customUrl || undefined) : undefined,
         ollama_base_url: aiSettings.ollamaUrl || undefined,
         research_depth: researchDepth,
       })
@@ -421,18 +421,18 @@ export const HomePage: React.FC = () => {
         <div className="max-w-4xl mx-auto space-y-5">
           <div className="inline-flex items-center gap-2 verseo-badge shadow-sm">
             <span className="w-2 h-2 rounded-full animate-pulse" style={{backgroundColor: '#18181b'}} />
-            <span>[ ✦ DEEP REGIONAL RESEARCH · UP TO 5 PERSPECTIVES · DETERMINISTIC SCORING ]</span>
+            <span>[ ✦ EVIDENCE · REAL DEMAND TESTS · BUDGET GUARDRAILS ]</span>
           </div>
 
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-display font-black tracking-tight leading-[1.1]" style={{color: '#09090b'}}>
-            Stress-test your MVP idea <br />
+            Find out if people <br />
             <span style={{color: '#52525b'}}>
-              before you build it.
+              actually want your idea.
             </span>
           </h1>
 
           <p className="text-base sm:text-lg max-w-2xl mx-auto font-normal leading-relaxed" style={{color: '#71717a'}}>
-            Assumption Zero evaluates startup ideas against primary web research, identifies competitor complaints, challenges moat assumptions, and crafts 7-day validation experiments.
+            Research the market, see what is still unproven, and get a tailored sequence of tests that moves from real customer pain to payment and repeat use—without wasting your build budget.
           </p>
         </div>
       </section>
@@ -595,7 +595,7 @@ export const HomePage: React.FC = () => {
                   Describe Your Startup or Product Idea
                 </label>
                 <p className="text-xs text-gray-500">
-                  Describe what you're building, target audience, problem solved, pricing, or competitors in plain natural text.
+                  For the strongest demand test, include the customer, painful current behavior, geography, price, how you can reach them, and your validation budget.
                 </p>
 
                 <textarea
@@ -884,10 +884,10 @@ export const HomePage: React.FC = () => {
           <div className="text-center space-y-2">
             <span className="verseo-badge">[ ✦ HOW IT WORKS ]</span>
             <h2 className="text-3xl font-display font-black text-gray-900 tracking-tight">
-              Source-backed MVP evaluation pipeline.
+              From market signals to real demand proof.
             </h2>
             <p className="text-sm text-gray-500 max-w-lg mx-auto">
-              Automated research and multi-perspectives designed to eliminate founder bias.
+              Research tells you where to look. Customer behavior, commitment, and retention tell you whether to build.
             </p>
           </div>
 
@@ -902,9 +902,9 @@ export const HomePage: React.FC = () => {
                 <div className="w-10 h-10 rounded-xl bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-700 group-hover:bg-gray-900 group-hover:text-white transition-colors duration-300">
                   <LucideGlobe />
                 </div>
-                <h3 className="text-lg font-display font-bold text-gray-900">Live Multi-Source Research</h3>
+                <h3 className="text-lg font-display font-bold text-gray-900">Category evidence, clearly labeled</h3>
                 <p className="text-xs text-gray-500 leading-relaxed">
-                  Queries primary web sources across GitHub, HackerNews, Wikipedia, Reddit, and SearXNG to gather live competitor complaints, pricing models, and market demand.
+                  Finds complaints, current workflows, prices, competitors, and regional signals—without pretending web evidence is the same as customer validation.
                 </p>
               </div>
               <div className="mt-4 pt-3 border-t border-gray-100 flex items-center gap-2 font-mono text-[11px] text-gray-400">
@@ -922,13 +922,13 @@ export const HomePage: React.FC = () => {
                 <div className="w-10 h-10 rounded-xl bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-700 group-hover:bg-gray-900 group-hover:text-white transition-colors duration-300">
                   <LucideBrain />
                 </div>
-                <h3 className="text-lg font-display font-bold text-gray-900">Up to 5 Independent Perspectives</h3>
+                <h3 className="text-lg font-display font-bold text-gray-900">A visible demand evidence ladder</h3>
                 <p className="text-xs text-gray-500 leading-relaxed">
-                  Adds regional-market and customer-research specialists in deeper modes alongside the market analyst, skeptical investor, and practical builder.
+                  Separates secondary research, direct problem proof, meaningful commitments, delivered value, and repeat use so you can see exactly what is missing.
                 </p>
               </div>
               <div className="mt-4 pt-3 border-t border-gray-100 flex items-center gap-2 font-mono text-[11px] text-gray-400">
-                <span>[ Analyst · VC Skeptic · Builder ]</span>
+                <span>[ Signals → Behavior → Payment → Retention ]</span>
               </div>
             </div>
 
@@ -942,13 +942,13 @@ export const HomePage: React.FC = () => {
                 <div className="w-10 h-10 rounded-xl bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-700 group-hover:bg-gray-900 group-hover:text-white transition-colors duration-300">
                   <LucideTarget />
                 </div>
-                <h3 className="text-lg font-display font-bold text-gray-900">Deterministic Scoring Engine</h3>
+                <h3 className="text-lg font-display font-bold text-gray-900">Idea-specific test paths</h3>
                 <p className="text-xs text-gray-500 leading-relaxed">
-                  Computes an objective 0–100 opportunity score weighing execution difficulty, competitor saturation, founder skills, pricing sustainability, and evidence confidence.
+                  B2B, consumer, local, and marketplace ideas receive different samples, metrics, pass/fail thresholds, and next decisions—not five recycled templates.
                 </p>
               </div>
               <div className="mt-4 pt-3 border-t border-gray-100 flex items-center gap-2 font-mono text-[11px] text-gray-400">
-                <span>[ Build · Test First · Pivot · Avoid ]</span>
+                <span>[ Different idea · Different proof ]</span>
               </div>
             </div>
 
@@ -962,13 +962,13 @@ export const HomePage: React.FC = () => {
                 <div className="w-10 h-10 rounded-xl bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-700 group-hover:bg-gray-900 group-hover:text-white transition-colors duration-300">
                   <LucideFlask />
                 </div>
-                <h3 className="text-lg font-display font-bold text-gray-900">7-Day Validation Experiments</h3>
+                <h3 className="text-lg font-display font-bold text-gray-900">Budget released by evidence</h3>
                 <p className="text-xs text-gray-500 leading-relaxed">
-                  Generates low-cost, high-velocity micro-experiments with clear success metrics so you can validate customer demand before writing code.
+                  Turns your stated budget into capped stages. Later pilot spend stays locked until earlier problem, reach, and commitment gates pass.
                 </p>
               </div>
               <div className="mt-4 pt-3 border-t border-gray-100 flex items-center gap-2 font-mono text-[11px] text-gray-400">
-                <span>[ Actionable Test Plans ]</span>
+                <span>[ Stop rules · Spend caps · No-build gates ]</span>
               </div>
             </div>
           </div>

@@ -1,6 +1,6 @@
 import type { AnalysisResult } from '../types'
 
-const list = (items: string[]) => items.length ? items.map((item) => `- ${item}`).join('\n') : '- None recorded'
+const list = (items?: string[]) => items?.length ? items.map((item) => `- ${item}`).join('\n') : '- None recorded'
 
 export function generateMarkdownReport(result: AnalysisResult): string {
   const score = result.opportunity_score
@@ -12,7 +12,7 @@ export function generateMarkdownReport(result: AnalysisResult): string {
     '',
     '## Executive verdict',
     '',
-    `- Opportunity score: ${score ? `${score.total.toFixed(1)}/100` : 'Not available'}`,
+    `- Research score (not success probability): ${score ? `${score.total.toFixed(1)}/100` : 'Not available'}`,
     `- Recommendation: ${result.recommendation || 'Not available'}`,
     `- Evidence confidence: ${result.evidence_confidence || 'Not available'}`,
     `- Analysis mode: ${result.models_used.join(', ') || 'Evidence baseline'}`,
@@ -57,23 +57,16 @@ export function generateMarkdownReport(result: AnalysisResult): string {
   if (result.founder_toolkit) {
     const toolkit = result.founder_toolkit
     lines.push(
-      '## Founder toolkit', '',
-      `**Positioning:** ${toolkit.one_sentence_pitch}`, '',
+      '## Demand proof dashboard', '',
       `**Ideal customer:** ${toolkit.ideal_customer_profile}`, '',
       `**Beachhead:** ${toolkit.beachhead_market}`, '',
+      '### Evidence ladder', '', list(toolkit.demand_snapshot), '',
+      '### Validation budget', '', toolkit.validation_budget, '',
+      ...(toolkit.budget_allocation ?? []).map((item) => `- ${item}`), '',
+      '### Budget release rules', '', list(toolkit.budget_release_rules), '',
       '### Recommended channels', '', list(toolkit.recommended_channels), '',
       '### Key metrics', '', list(toolkit.key_metrics), '',
-      '### 30-day roadmap', '',
     )
-    toolkit.roadmap.forEach((action) => {
-      lines.push(
-        `#### ${action.phase}: ${action.objective}`, '',
-        list(action.actions), '',
-        `- Success metric: ${action.success_metric}`,
-        `- Stop condition: ${action.stop_condition}`,
-        `- Budget: ${action.budget_hint}`, '',
-      )
-    })
     lines.push(
       '### Customer interview questions', '', list(toolkit.interview_questions), '',
       '### Decision rules', '', list(toolkit.decision_rules), '',
@@ -139,9 +132,13 @@ export function generateMarkdownReport(result: AnalysisResult): string {
       `- Assumption: ${experiment.assumption_tested}`,
       `- Time: ${experiment.estimated_time}`,
       `- Cost: ${experiment.estimated_cost_range}`,
+      `- Target sample: ${experiment.target_sample}`,
+      `- Primary metric: ${experiment.primary_metric}`,
       `- Success threshold: ${experiment.success_threshold}`,
       `- Failure threshold: ${experiment.failure_threshold}`,
       `- Decision: ${experiment.decision_after}`,
+      `- Budget rule: ${experiment.budget_rationale}`,
+      `- Record: ${(experiment.data_to_capture ?? []).join('; ') || 'Not specified'}`,
       '',
       experiment.procedure,
       '',

@@ -18,6 +18,7 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 from assumption_zero import __version__
 from assumption_zero.api.routes import router
 from assumption_zero.config import get_settings
+from assumption_zero.security import SecurityMiddleware, redact_sensitive_text
 from assumption_zero.storage import init_storage
 
 logging.basicConfig(
@@ -37,7 +38,7 @@ def clean_error_message(msg: str) -> str:
     msg = re.sub(r"For further information visit https://errors\.pydantic\.dev/[^\s]+", "", msg)
     msg = re.sub(r"\[type=[^\]]+\]", "", msg)
     msg = re.sub(r"^\d+ validation error(s)? for [^\n:]+:\s*", "", msg, flags=re.IGNORECASE)
-    return msg.strip()
+    return redact_sensitive_text(msg).strip()
 
 
 def create_app() -> FastAPI:
@@ -52,8 +53,9 @@ def create_app() -> FastAPI:
             "or substitute for real customer validation."
         ),
         version=__version__,
-        docs_url="/docs",
-        redoc_url="/redoc",
+        docs_url="/docs" if settings.enable_api_docs else None,
+        redoc_url="/redoc" if settings.enable_api_docs else None,
+        openapi_url="/openapi.json" if settings.enable_api_docs else None,
     )
 
     # Clean Exception Handlers
@@ -95,13 +97,33 @@ def create_app() -> FastAPI:
             headers=exc.headers,
         )
 
+    @app.exception_handler(Exception)
+    async def unexpected_exception_handler(request: Request, exc: Exception):
+        logger.error(
+            "Unhandled request failure on %s: %s",
+            request.url.path,
+            redact_sensitive_text(exc),
+        )
+        detail = "The request could not be completed. Try again shortly."
+        return JSONResponse(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            content={"detail": detail, "message": detail},
+        )
+
     # CORS
     app.add_middleware(
         CORSMiddleware,
         allow_origins=settings.cors_origins,
         allow_credentials=False,
         allow_methods=["GET", "POST", "DELETE"],
-        allow_headers=["Content-Type", "Accept"],
+        allow_headers=["Content-Type", "Accept", "X-Analysis-Owner"],
+    )
+
+    app.add_middleware(
+        SecurityMiddleware,
+        max_body_bytes=settings.max_request_body_bytes,
+        write_limit_per_minute=settings.rate_limit_per_minute,
+        read_limit_per_minute=settings.read_rate_limit_per_minute,
     )
 
     # Routes
@@ -123,7 +145,7 @@ def create_app() -> FastAPI:
             "product": "Assumption Zero",
             "descriptor": "The open-source MVP validation engine",
             "version": __version__,
-            "docs": "/docs",
+            "docs": "/docs" if settings.enable_api_docs else None,
             "disclaimer": (
                 "Assumption Zero provides decision support, not a prediction "
                 "or substitute for real customer validation."
