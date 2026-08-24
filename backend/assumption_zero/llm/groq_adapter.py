@@ -7,6 +7,7 @@ https://console.groq.com/keys
 
 from __future__ import annotations
 
+import asyncio
 import logging
 import os
 from typing import Any
@@ -32,9 +33,9 @@ _GROQ_BASE = "https://api.groq.com/openai/v1"
 _DEFAULT_MODEL = "llama-3.3-70b-versatile"
 _FALLBACK_MODELS = [
     "llama-3.3-70b-versatile",
-    "llama-3.1-70b-versatile",
+    "openai/gpt-oss-120b",
+    "qwen/qwen3-32b",
     "llama-3.1-8b-instant",
-    "gemma2-9b-it",
 ]
 
 
@@ -47,6 +48,7 @@ class GroqAdapter(LLMAdapter):
         self._settings = get_settings()
         self._api_key_override = api_key
         self._model_override = model
+        self._request_slots = asyncio.Semaphore(2)
 
     def _api_key(self) -> str:
         key = (
@@ -76,7 +78,7 @@ class GroqAdapter(LLMAdapter):
             "Content-Type": "application/json",
         }
 
-    async def _chat(self, messages: list[dict[str, str]]) -> str:
+    async def _chat(self, messages: list[dict[str, str]]) -> tuple[str, str]:
         url = f"{_GROQ_BASE}/chat/completions"
         primary = self._model()
         models_to_try = [primary] + [m for m in _FALLBACK_MODELS if m != primary]
@@ -84,54 +86,57 @@ class GroqAdapter(LLMAdapter):
         last_error: Exception | None = None
         timeout = max(30.0, float(self._settings.request_timeout))
 
-        async with httpx.AsyncClient(
-            timeout=timeout,
-            headers=self._headers(),
-        ) as client:
-            for model_name in models_to_try:
-                payload: dict[str, Any] = {
-                    "model": model_name,
-                    "messages": messages,
-                    "temperature": 0.2,
-                }
-                try:
-                    resp = await client.post(url, json=payload)
-                    if resp.status_code == 200:
-                        data = resp.json()
-                        if "choices" in data and len(data["choices"]) > 0:
-                            content = data["choices"][0]["message"]["content"]
-                            if content:
-                                return content
-                        if "error" in data:
-                            err_msg = data["error"].get("message", str(data["error"]))
-                            logger.debug("Groq model %s error payload: %s", model_name, err_msg)
-                            last_error = RuntimeError(f"Groq model {model_name} error: {err_msg}")
+        async with self._request_slots:
+            async with httpx.AsyncClient(
+                timeout=timeout,
+                headers=self._headers(),
+            ) as client:
+                for model_name in models_to_try:
+                    payload: dict[str, Any] = {
+                        "model": model_name,
+                        "messages": messages,
+                        "temperature": 0.2,
+                    }
+                    try:
+                        resp = await client.post(url, json=payload)
+                        if resp.status_code == 200:
+                            data = resp.json()
+                            if "choices" in data and len(data["choices"]) > 0:
+                                content = data["choices"][0]["message"]["content"]
+                                if content:
+                                    return content, str(data.get("model") or model_name)
+                            if "error" in data:
+                                err_msg = data["error"].get("message", str(data["error"]))
+                                logger.debug("Groq model %s error payload: %s", model_name, err_msg)
+                                last_error = RuntimeError(
+                                    f"Groq model {model_name} error: {err_msg}"
+                                )
+                                continue
+                        elif resp.status_code == 401:
+                            raise RuntimeError(
+                                "Groq API key is invalid or unauthorized (HTTP 401). "
+                                "Please check your GROQ_API_KEY at https://console.groq.com/keys"
+                            )
+                        elif resp.status_code in (402, 429):
+                            logger.debug(
+                                "Groq model %s rate limited (HTTP %s) — trying fallback model...",
+                                model_name,
+                                resp.status_code,
+                            )
+                            last_error = RuntimeError(
+                                f"Groq API quota or rate limit exceeded on {model_name} "
+                                f"(HTTP {resp.status_code})."
+                            )
                             continue
-                    elif resp.status_code == 401:
-                        raise RuntimeError(
-                            "Groq API key is invalid or unauthorized (HTTP 401). "
-                            "Please check your GROQ_API_KEY at https://console.groq.com/keys"
-                        )
-                    elif resp.status_code in (402, 429):
-                        logger.debug(
-                            "Groq model %s rate limited (HTTP %s) — trying fallback model...",
-                            model_name,
-                            resp.status_code,
-                        )
-                        last_error = RuntimeError(
-                            f"Groq API quota or rate limit exceeded on {model_name} (HTTP {resp.status_code}). "
-                            "Please check your limit at https://console.groq.com"
-                        )
-                        continue
-                    else:
-                        error_msg = f"HTTP {resp.status_code} for {model_name}: {resp.text[:150]}"
-                        logger.debug("Groq model %s failed: %s", model_name, error_msg)
-                        last_error = RuntimeError(error_msg)
-                except RuntimeError:
-                    raise
-                except Exception as exc:
-                    logger.debug("Groq model %s exception: %s", model_name, exc)
-                    last_error = exc
+                        else:
+                            error_msg = f"HTTP {resp.status_code} for {model_name}"
+                            logger.debug("Groq model %s failed: %s", model_name, error_msg)
+                            last_error = RuntimeError(error_msg)
+                    except RuntimeError:
+                        raise
+                    except Exception as exc:
+                        logger.debug("Groq model %s exception: %s", model_name, exc)
+                        last_error = exc
 
         raise RuntimeError(f"All Groq models failed. Last error: {last_error}")
 
@@ -148,12 +153,12 @@ class GroqAdapter(LLMAdapter):
                 "content": build_analysis_prompt(perspective_name.value, idea, evidence),
             },
         ]
-        raw = await self._chat(messages)
-        return _parse_output(raw, perspective_name, self.model_id)
+        raw, actual_model = await self._chat(messages)
+        return _parse_output(raw, perspective_name, f"groq/{actual_model}")
 
     async def clarify_idea(self, idea: IdeaInput) -> str:
         try:
-            raw = await self._chat(build_clarification_messages(idea))
+            raw, _ = await self._chat(build_clarification_messages(idea))
             return raw.strip()
         except Exception as exc:
             logger.debug("Groq clarify_idea failed: %s", exc)
@@ -188,7 +193,7 @@ class GroqAdapter(LLMAdapter):
         )
 
         try:
-            raw_response = await self._chat([
+            raw_response, _ = await self._chat([
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": build_raw_idea_message(raw_text)},
             ])

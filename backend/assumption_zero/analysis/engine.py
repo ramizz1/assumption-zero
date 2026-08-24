@@ -606,7 +606,7 @@ class AnalysisEngine:
         except Exception as exc:
             logger.warning("Idea clarification failed: %s", redact_sensitive_text(exc))
             interpreted_idea = f"{idea.name}: {idea.description}"
-            provider_errors.append(public_provider_error("idea clarification"))
+            provider_errors.append(public_provider_error(exc))
 
         # ── Stage 2: Generate research queries ────────────────────
         await _progress(AnalysisStage.GENERATING_QUERIES)
@@ -656,7 +656,9 @@ class AnalysisEngine:
         )
 
         if not perspectives:
-            err = provider_errors[0] if provider_errors else "AI perspective analysis failed."
+            # Perspective errors are appended after research diagnostics, so the
+            # last item is the most accurate reason the report could not finish.
+            err = provider_errors[-1] if provider_errors else public_provider_error()
             logger.error("Analysis failed: no perspectives generated. Error: %s", err)
             return AnalysisResult(
                 analysis_id=analysis_id,
@@ -881,9 +883,14 @@ class AnalysisEngine:
     ) -> PerspectiveOutput | None:
         try:
             return await self._llm.analyze_perspective(name, idea, evidence)
-        except Exception:
-            safe_error = public_provider_error(self._llm.model_id)
-            err_msg = f"Perspective {name.value} failed: {safe_error}"
-            logger.error(err_msg)
-            errors.append(err_msg)
+        except Exception as exc:
+            logger.error(
+                "Perspective %s failed via %s: %s",
+                name.value,
+                self._llm.model_id,
+                redact_sensitive_text(exc),
+            )
+            safe_error = public_provider_error(exc)
+            if safe_error not in errors:
+                errors.append(safe_error)
             return None

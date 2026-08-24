@@ -77,10 +77,65 @@ def hash_owner_token(token: str | None) -> str:
     return hashlib.sha256(candidate.encode("utf-8")).hexdigest()
 
 
-def public_provider_error(provider: str | None = None) -> str:
-    """Return a stable client message that cannot expose an upstream response."""
-    label = (provider or "AI provider").replace("_", " ").strip().title()
-    return f"{label} could not complete the request. Check its configuration and try again."
+_AI_CAPACITY_MESSAGE = (
+    "No AI generation capacity is available for this key right now. It may have reached "
+    "its token or rate limit. Wait briefly, check the provider balance, or choose another provider."
+)
+_AI_AUTH_MESSAGE = (
+    "The AI provider rejected the configured key. Re-enter or verify it in AI Setup."
+)
+_AI_UNAVAILABLE_MESSAGE = (
+    "The AI service is temporarily unavailable. Your key was not stored or exposed. "
+    "Try again shortly or choose another provider."
+)
+_AI_GENERIC_MESSAGE = (
+    "The AI service could not complete the analysis. Verify AI Setup and try again."
+)
+
+
+def public_provider_error(error: object | None = None) -> str:
+    """Classify an internal provider failure into a fixed, non-sensitive message.
+
+    Upstream response bodies, URLs, provider names, model IDs, and perspective names
+    are deliberately never copied into client-visible text.
+    """
+    text = str(error or "").casefold()
+    if any(
+        marker in text
+        for marker in ("http 402", "http 429", "rate limit", "ratelimit", "quota", "credit")
+    ):
+        return _AI_CAPACITY_MESSAGE
+    if any(
+        marker in text
+        for marker in ("http 401", "unauthorized", "invalid api key", "key rejected")
+    ):
+        return _AI_AUTH_MESSAGE
+    if any(
+        marker in text
+        for marker in (
+            "timeout",
+            "timed out",
+            "connection",
+            "network",
+            "unreachable",
+            "http 500",
+            "http 502",
+            "http 503",
+            "http 504",
+        )
+    ):
+        return _AI_UNAVAILABLE_MESSAGE
+    return _AI_GENERIC_MESSAGE
+
+
+def public_provider_status(error: object | None = None) -> int:
+    """Map an internal provider failure to an honest HTTP status without leaking it."""
+    message = public_provider_error(error)
+    if message == _AI_CAPACITY_MESSAGE:
+        return 429
+    if message == _AI_AUTH_MESSAGE:
+        return 400
+    return 502
 
 
 class SecurityMiddleware:

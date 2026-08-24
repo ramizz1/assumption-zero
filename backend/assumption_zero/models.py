@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 from datetime import datetime
+from typing import cast
 
 from sqlalchemy import Boolean, Column, DateTime, String, Text, create_engine
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
@@ -32,11 +33,11 @@ class AnalysisRecord(Base):
     error_message = Column(Text, nullable=True)
 
     def set_result(self, result_dict: dict) -> None:
-        self.result_data = json.dumps(result_dict, default=str)
+        self.result_data = json.dumps(result_dict, default=str)  # type: ignore[assignment]
 
     def get_result(self) -> dict | None:
         if self.result_data:
-            return json.loads(self.result_data)
+            return json.loads(cast(str, self.result_data))
         return None
 
 

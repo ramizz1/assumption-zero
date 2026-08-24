@@ -7,6 +7,7 @@ import type {
   IdeaInput,
   ResearchDepth,
 } from '../types'
+import { safeRequestMessage } from './errors'
 
 export interface AnalysisCreateRequest {
   idea: IdeaInput
@@ -68,7 +69,9 @@ function friendlyApiMessage(status: number, raw: string): string {
     .trim()
 
   if (message.startsWith('Value error, ')) message = message.slice('Value error, '.length)
-  return message || 'The request could not be completed. Please check your setup and try again.'
+  return safeRequestMessage(
+    message || 'The request could not be completed. Please check your setup and try again.',
+  )
 }
 
 const OWNER_STORAGE_KEY = 'azero_analysis_owner_v1'

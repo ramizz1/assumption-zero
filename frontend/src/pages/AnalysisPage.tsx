@@ -4,14 +4,7 @@ import { useAnalysis } from '../hooks/useAnalysis'
 import ProgressView from './ProgressView'
 import ReportView from './ReportView'
 import DisclaimerBanner from '../components/DisclaimerBanner'
-
-function safeAnalysisMessage(value?: string | null): string {
-  const message = (value || '').replace(/<[^>]+>/g, '').trim()
-  if (!message || /unexpected error occurred/i.test(message)) {
-    return 'The analysis could not be completed. Verify your AI provider setup and try again.'
-  }
-  return message.slice(0, 500)
-}
+import { analysisErrorTitle, isAiCapacityError, safeAnalysisMessage } from '../lib/errors'
 
 export default function AnalysisPage() {
   const { id } = useParams<{ id: string }>()
@@ -69,9 +62,7 @@ export default function AnalysisPage() {
             <div className="verseo-card p-8">
               <div className="text-3xl mb-3">⚠️</div>
               <p className="text-red-600 font-bold text-lg mb-2">
-                {error.includes('402') || error.includes('429') || error.includes('quota') || error.includes('token') || error.includes('credit')
-                  ? 'No AI Tokens Available (Quota / Rate Limit Exceeded)'
-                  : 'Analysis Error'}
+                {analysisErrorTitle(error)}
               </p>
               <p className="text-zinc-500 text-sm mb-6 max-w-lg mx-auto leading-relaxed">{safeAnalysisMessage(error)}</p>
               <Link to="/" className="btn-primary">← Start New Analysis</Link>
@@ -89,12 +80,10 @@ export default function AnalysisPage() {
             <div className="verseo-card p-8">
               <div className="text-3xl mb-3">⚠️</div>
               <p className="text-red-600 font-bold text-lg mb-2">
-                {data.error_message?.includes('402') || data.error_message?.includes('429') || data.error_message?.includes('quota') || data.error_message?.includes('token') || data.error_message?.includes('credit')
-                  ? 'No AI Tokens Available (Quota Exceeded)'
-                  : 'Analysis Failed'}
+                {analysisErrorTitle(data.error_message)}
               </p>
               <p className="text-zinc-500 text-sm mb-6 max-w-lg mx-auto leading-relaxed">{safeAnalysisMessage(data.error_message)}</p>
-              {(data.error_message?.includes('402') || data.error_message?.includes('429') || data.error_message?.includes('quota') || data.error_message?.includes('token')) && (
+              {isAiCapacityError(data.error_message) && (
                 <div className="mb-6 p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-700 text-left max-w-lg mx-auto">
                   <strong>Tip:</strong> Return home, open Configure Keys, and validate a provider. Keys stay only in this page's memory and are never included in the public site bundle.
                 </div>

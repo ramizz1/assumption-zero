@@ -12,6 +12,7 @@ import logging
 
 from assumption_zero.llm.base import LLMAdapter, PerspectiveName, PerspectiveOutput
 from assumption_zero.schemas import EvidenceItem, IdeaInput
+from assumption_zero.security import public_provider_error, redact_sensitive_text
 
 logger = logging.getLogger(__name__)
 
@@ -27,10 +28,7 @@ class FallbackChainAdapter(LLMAdapter):
         # Filter down to adapters that report is_available == True
         self.adapters = [a for a in adapters if a.is_available]
         if not self.adapters:
-            # Fallback to mock adapter if no key adapters are available
-            from assumption_zero.llm.mock_adapter import MockAdapter
-
-            self.adapters = [MockAdapter()]
+            raise ValueError("No configured AI provider is available.")
 
     @property
     def model_id(self) -> str:
@@ -60,27 +58,12 @@ class FallbackChainAdapter(LLMAdapter):
                     "Adapter %s failed for perspective '%s': %s. Failing over to next provider in chain...",
                     adapter.model_id,
                     perspective_name,
-                    exc,
+                    redact_sensitive_text(exc),
                 )
                 continue
 
-        # If all adapters failed, raise clean user-shielded message
         if last_error:
-            err_text = str(last_error)
-            if "429" in err_text or "rate limit" in err_text.lower():
-                raise RuntimeError(
-                    "API Key Rate Limit Reached for selected providers. "
-                    "Please check your API key quota or switch to another provider."
-                )
-            if "402" in err_text or "quota" in err_text.lower() or "credit" in err_text.lower():
-                raise RuntimeError(
-                    "API Key Quota Exceeded for selected providers. "
-                    "Please check your account balance or switch provider."
-                )
-            raise RuntimeError(
-                "All configured AI providers were unreachable or returned an error. "
-                "Please verify your API keys and internet connection."
-            )
+            raise RuntimeError(public_provider_error(last_error))
         raise RuntimeError("No available LLM provider could complete the request.")
 
     async def parse_raw_prompt(self, raw_text: str) -> IdeaInput:
@@ -97,17 +80,12 @@ class FallbackChainAdapter(LLMAdapter):
                 logger.warning(
                     "Adapter %s failed prompt parsing: %s. Failing over...",
                     adapter.model_id,
-                    exc,
+                    redact_sensitive_text(exc),
                 )
                 continue
 
         if last_error:
-            err_text = str(last_error)
-            if "429" in err_text or "rate limit" in err_text.lower():
-                raise RuntimeError("API Key Rate Limit Reached for AI provider.")
-            if "402" in err_text or "quota" in err_text.lower():
-                raise RuntimeError("API Key Quota Exceeded for AI provider.")
-            raise RuntimeError("Selected AI providers were unreachable.")
+            raise RuntimeError(public_provider_error(last_error))
         raise RuntimeError("Failed to parse prompt across all available AI providers.")
 
     async def clarify_idea(self, idea: IdeaInput) -> str:

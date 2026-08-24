@@ -52,6 +52,7 @@ logger = logging.getLogger(__name__)
 def build_llm_adapter(
     provider_override: str | None = None,
     api_key_override: str | None = None,
+    api_keys: dict[str, str | None] | None = None,
     model_override: str | None = None,
     base_url_override: str | None = None,
     allow_mock_fallback: bool = True,
@@ -64,21 +65,35 @@ def build_llm_adapter(
 
     Args:
         provider_override: Force a specific provider (groq, openrouter, openai_compat, opencode, ollama, mock)
-        api_key_override:  Inject an API key at runtime.
+        api_key_override:  Inject an API key for an explicitly selected provider.
+        api_keys:          Provider-specific runtime keys used by automatic failover.
         model_override:    Override the model name.
         base_url_override: Override base URL.
     """
     settings = get_settings()
     provider = (provider_override or settings.ai_provider).lower()
+    runtime_keys = api_keys or {}
 
-    # Instantiate candidate adapters with injected key/URL overrides
-    groq = GroqAdapter(api_key=api_key_override, model=model_override)
-    openrouter = OpenRouterAdapter(api_key=api_key_override, model=model_override)
+    def provider_key(name: str) -> str | None:
+        specific = runtime_keys.get(name)
+        if specific:
+            return specific
+        # A generic override is safe only when the caller selected the provider
+        # it belongs to. Never spray one provider's key at every API in Auto mode.
+        if provider == name:
+            return api_key_override
+        if name == "openai_compat" and provider in ("openai", "custom"):
+            return api_key_override
+        return None
+
+    # Instantiate every candidate with only its own credential.
+    groq = GroqAdapter(api_key=provider_key("groq"), model=model_override)
+    openrouter = OpenRouterAdapter(api_key=provider_key("openrouter"), model=model_override)
     openai_compat = OpenAICompatAdapter(
-        api_key=api_key_override, model=model_override, base_url=base_url_override
+        api_key=provider_key("openai_compat"), model=model_override, base_url=base_url_override
     )
     opencode = OpencodeAdapter(
-        api_key=api_key_override, model=model_override, base_url=base_url_override
+        api_key=provider_key("opencode"), model=model_override
     )
     ollama = OllamaAdapter(model=model_override, base_url=base_url_override)
     mock = MockAdapter()
@@ -191,20 +206,18 @@ async def run_analysis(
 ) -> None:
     """Run the full analysis pipeline. Called as a FastAPI BackgroundTask."""
 
-    api_key_override = None
     base_url_override = None
-
-    if ai_provider_override == "groq" and groq_api_key:
-        api_key_override = groq_api_key
-    elif ai_provider_override == "openrouter" and openrouter_api_key:
-        api_key_override = openrouter_api_key
-    elif ai_provider_override == "opencode" and opencode_api_key:
-        api_key_override = opencode_api_key
-    elif ai_provider_override in ("openai", "openai_compat", "custom") and openai_api_key:
-        api_key_override = openai_api_key
+    if ai_provider_override in ("openai", "openai_compat", "custom"):
         base_url_override = custom_base_url
     elif ai_provider_override == "ollama":
         base_url_override = ollama_base_url
+
+    api_keys = {
+        "groq": groq_api_key,
+        "openrouter": openrouter_api_key,
+        "opencode": opencode_api_key,
+        "openai_compat": openai_api_key,
+    }
 
     settings = get_settings()
     if base_url_override:
@@ -227,7 +240,7 @@ async def run_analysis(
     try:
         llm = build_llm_adapter(
             provider_override=ai_provider_override,
-            api_key_override=api_key_override,
+            api_keys=api_keys,
             base_url_override=base_url_override,
             allow_mock_fallback=is_demo,
         )
@@ -247,12 +260,17 @@ async def run_analysis(
 
         store.complete_record(analysis_id, result.model_dump(mode="json"))
         if result.status == AnalysisStatus.FAILED:
-            store.fail_record(analysis_id, result.error_message or "Analysis failed")
-        logger.info("Analysis %s complete", analysis_id)
+            store.fail_record(
+                analysis_id,
+                public_provider_error(result.error_message),
+            )
+            logger.warning("Analysis %s finished without AI perspectives", analysis_id)
+        else:
+            logger.info("Analysis %s complete", analysis_id)
 
     except Exception as exc:
         logger.error("Analysis %s failed: %s", analysis_id, redact_sensitive_text(exc))
-        store.fail_record(analysis_id, public_provider_error(ai_provider_override))
+        store.fail_record(analysis_id, public_provider_error(exc))
 
 
 async def get_analysis(

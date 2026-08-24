@@ -268,7 +268,7 @@ export const SettingsModal: React.FC<Props> = ({ isOpen, onClose, onSave, backen
             </div>
             {settings.provider === 'auto' && (
               <p className="text-[11px] text-gray-500 leading-relaxed">
-                Uses your first browser key (Groq first), then configured server providers. Real analyses never fall back to a simulated result.
+                Tries every configured real provider and each provider's model fallbacks. Your keys stay in memory and real analyses never use simulated output.
               </p>
             )}
           </div>

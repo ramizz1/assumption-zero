@@ -27,6 +27,12 @@ def test_build_all_llm_adapters():
         adapter = build_llm_adapter(
             provider_override=p,
             api_key_override="test_key_123",
+            api_keys={
+                "groq": "test_groq_key",
+                "openrouter": "test_openrouter_key",
+                "opencode": "test_opencode_key",
+                "openai_compat": "test_openai_key",
+            },
             base_url_override="http://localhost:11434",
         )
         assert adapter is not None

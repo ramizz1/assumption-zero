@@ -39,6 +39,7 @@ from assumption_zero.security import (
     OWNER_HEADER,
     hash_owner_token,
     public_provider_error,
+    public_provider_status,
     redact_sensitive_text,
 )
 from assumption_zero.services.analysis_service import (
@@ -119,11 +120,23 @@ def _available_providers() -> list[str]:
     return [p.name for p in providers if p.is_available]
 
 
-ProviderRequest = AnalysisCreateRequest | DemoAnalysisRequest | PromptAnalysisRequest
+ProviderRequest = (
+    AnalysisCreateRequest | DemoAnalysisRequest | PromptAnalysisRequest | VerifyKeysRequest
+)
 
 
 def _secret_value(value: SecretStr | None) -> str | None:
     return value.get_secret_value() if value else None
+
+
+def _provider_keys(body: ProviderRequest) -> dict[str, str | None]:
+    """Return an isolated credential map; values are used only in memory."""
+    return {
+        "groq": _secret_value(body.groq_api_key),
+        "openrouter": _secret_value(body.openrouter_api_key),
+        "opencode": _secret_value(body.opencode_api_key),
+        "openai_compat": _secret_value(body.openai_api_key),
+    }
 
 
 def require_owner_hash(
@@ -136,21 +149,8 @@ def require_owner_hash(
 
 
 def _llm_options(body: ProviderRequest) -> tuple[str | None, str | None, str | None]:
-    """Resolve the provider and only the credential that belongs to it.
-
-    In Auto mode, a runtime/browser key takes priority over server-side
-    discovery so a key entered by the user is never silently ignored.
-    """
-    provider = body.ai_provider
-    if provider in (None, "auto"):
-        if body.groq_api_key:
-            provider = "groq"
-        elif body.openrouter_api_key:
-            provider = "openrouter"
-        elif body.opencode_api_key:
-            provider = "opencode"
-        elif body.openai_api_key:
-            provider = "openai_compat"
+    """Resolve an explicit provider override without collapsing Auto mode."""
+    provider = body.ai_provider or "auto"
 
     api_key = None
     base_url = None
@@ -197,6 +197,7 @@ def _validate_selected_provider(body: ProviderRequest) -> str | None:
         build_llm_adapter(
             provider_override=provider,
             api_key_override=api_key,
+            api_keys=_provider_keys(body),
             base_url_override=base_url,
             allow_mock_fallback=False,
         )
@@ -206,7 +207,7 @@ def _validate_selected_provider(body: ProviderRequest) -> str | None:
             provider,
             redact_sensitive_text(exc),
         )
-        raise HTTPException(status_code=400, detail=public_provider_error(provider)) from None
+        raise HTTPException(status_code=400, detail=public_provider_error(exc)) from None
     return provider
 
 
@@ -238,16 +239,45 @@ async def verify_keys_endpoint(
     custom_base_url = body.custom_base_url
 
     if provider in ("auto", "beta"):
-        if groq_api_key:
-            provider = "groq"
-        elif openrouter_api_key:
-            provider = "openrouter"
-        elif opencode_api_key:
-            provider = "opencode"
-        elif openai_api_key:
-            provider = "openai_compat"
-        else:
-            provider = "auto"
+        settings = get_settings()
+        probes = [
+            ("groq", groq_api_key or settings.groq_api_key, None),
+            ("openrouter", openrouter_api_key or settings.openrouter_api_key, None),
+            ("opencode", opencode_api_key or settings.opencode_api_key, None),
+            (
+                "openai_compat",
+                openai_api_key or settings.openai_compatible_api_key,
+                settings.openai_compatible_base_url,
+            ),
+        ]
+        configured = [probe for probe in probes if probe[1]]
+        if not configured:
+            raise HTTPException(
+                status_code=400,
+                detail="Add at least one AI provider key before testing Auto mode.",
+            )
+
+        connected: list[str] = []
+        last_error: HTTPException | None = None
+        for probe_provider, probe_key, probe_url in configured:
+            try:
+                await _probe_provider_connection(probe_provider, probe_key, probe_url)
+                connected.append(probe_provider.replace("_compat", "").upper())
+            except HTTPException as exc:
+                last_error = exc
+        if connected:
+            return {
+                "status": "ok",
+                "provider": "auto",
+                "message": (
+                    f"Auto failover is ready across {', '.join(connected)}. "
+                    "No generation tokens were used."
+                ),
+            }
+        raise last_error or HTTPException(
+            status_code=400,
+            detail="No configured AI provider accepted its connection test.",
+        )
 
     api_key_override = None
     base_url_override = None
@@ -291,6 +321,7 @@ async def verify_keys_endpoint(
         llm = build_llm_adapter(
             provider_override=provider,
             api_key_override=api_key_override,
+            api_keys=_provider_keys(body),
             base_url_override=base_url_override,
             allow_mock_fallback=False,
         )
@@ -326,7 +357,7 @@ async def verify_keys_endpoint(
         )
         raise HTTPException(
             status_code=400,
-            detail=public_provider_error(provider),
+            detail=public_provider_error(exc),
         ) from None
 
 
@@ -426,6 +457,7 @@ async def create_analysis_from_prompt_endpoint(
         llm = build_llm_adapter(
             provider_override=provider,
             api_key_override=api_key_override,
+            api_keys=_provider_keys(body),
             base_url_override=base_url_override,
         )
         parsed_idea = await llm.parse_raw_prompt(body.prompt)
@@ -437,7 +469,10 @@ async def create_analysis_from_prompt_endpoint(
         ) from None
     except RuntimeError as exc:
         logger.warning("Prompt provider unavailable: %s", redact_sensitive_text(exc))
-        raise HTTPException(status_code=429, detail=public_provider_error(provider)) from None
+        raise HTTPException(
+            status_code=public_provider_status(exc),
+            detail=public_provider_error(exc),
+        ) from None
     except Exception as exc:
         logger.error("Prompt parsing failed: %s", redact_sensitive_text(exc))
         raise HTTPException(
@@ -486,6 +521,7 @@ async def create_analysis_from_prompt_sync_endpoint(
         llm = build_llm_adapter(
             provider_override=provider,
             api_key_override=api_key_override,
+            api_keys=_provider_keys(body),
             base_url_override=base_url_override,
             allow_mock_fallback=False,
         )
@@ -498,7 +534,10 @@ async def create_analysis_from_prompt_sync_endpoint(
         ) from None
     except RuntimeError as exc:
         logger.warning("Prompt provider unavailable: %s", redact_sensitive_text(exc))
-        raise HTTPException(status_code=429, detail=public_provider_error(provider)) from None
+        raise HTTPException(
+            status_code=public_provider_status(exc),
+            detail=public_provider_error(exc),
+        ) from None
     except Exception as exc:
         logger.error("Prompt parsing failed: %s", redact_sensitive_text(exc))
         raise HTTPException(

@@ -66,7 +66,7 @@ class Settings(BaseSettings):
     # ── Assumption Zero Beta / OpenRouter ────────────────────────
     # OpenRouter routes to 200+ open models via a single API.
     openrouter_api_key: str | None = None
-    openrouter_model: str = "google/gemma-4-26b-a4b-it:free"
+    openrouter_model: str = "nvidia/nemotron-3-super-120b-a12b:free"
 
     # ── Groq (Ultra-fast Llama 3.3 models) ──────────────────────
     # https://console.groq.com/keys

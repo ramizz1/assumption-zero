@@ -8,6 +8,7 @@ import { assessFormReadiness, assessPromptReadiness, type ReadinessResult } from
 import type { ResearchDepth } from '../types'
 import { BUNDLED_DEMO_ID } from '../lib/bundledDemo'
 import { getSessionAnalyses, saveSessionAnalysis } from '../lib/sessionAnalysis'
+import { safeRequestMessage } from '../lib/errors'
 
 // SVG Icons
 const LucideGlobe = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
@@ -19,14 +20,6 @@ const LucideCode = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" heig
 const LucideZap = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
 const LucideBot = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="14" x="3" y="7" rx="2" ry="2"/><path d="M12 3v4"/><path d="M8 3h8"/><path d="M15 12v.01"/><path d="M9 12v.01"/></svg>
 const LucideCloud = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></svg>
-
-function safeRequestMessage(value: string): string {
-  const message = value.replace(/<[^>]+>/g, '').trim()
-  if (!message || /unexpected error occurred/i.test(message)) {
-    return 'The live AI analysis could not start. Verify your provider setup and try again.'
-  }
-  return message.slice(0, 500)
-}
 
 const ReadinessPanel = ({ readiness }: { readiness: ReadinessResult }) => {
   const missing = readiness.checks.filter((check) => !check.complete)

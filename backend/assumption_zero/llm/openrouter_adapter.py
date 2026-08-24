@@ -9,6 +9,7 @@ This adapter requires an OPENROUTER_API_KEY supplied in configuration or at runt
 
 from __future__ import annotations
 
+import asyncio
 import json
 import logging
 import re
@@ -37,11 +38,11 @@ _OPENROUTER_BASE = "https://openrouter.ai/api/v1"
 # Primary default model & fallback list of verified free models on OpenRouter
 _DEFAULT_MODEL = "openrouter/free"
 _FALLBACK_MODELS = [
-    "openrouter/free",
+    "nvidia/nemotron-3-super-120b-a12b:free",
+    "z-ai/glm-5.2:free",
     "google/gemma-4-31b-it:free",
     "google/gemma-4-26b-a4b-it:free",
-    "inclusionai/ling-3.0-flash:free",
-    "poolside/laguna-s-2.1:free",
+    "openrouter/free",
 ]
 
 
@@ -179,6 +180,9 @@ class OpenRouterAdapter(LLMAdapter):
         self._settings = get_settings()
         self._api_key_override = api_key
         self._model_override = model
+        # Free-tier providers are more reliable with bounded concurrency. This
+        # semaphore is per analysis adapter, so different users do not share state.
+        self._request_slots = asyncio.Semaphore(2)
 
     def _api_key(self) -> str:
         import os
@@ -215,62 +219,44 @@ class OpenRouterAdapter(LLMAdapter):
             "X-Title": "Assumption Zero",
         }
 
-    async def _chat(self, messages: list[dict[str, str]]) -> str:
+    async def _chat(self, messages: list[dict[str, str]]) -> tuple[str, str]:
         url = f"{_OPENROUTER_BASE}/chat/completions"
         primary = self._model()
         models_to_try = [primary] + [m for m in _FALLBACK_MODELS if m != primary]
-
-        last_error: Exception | None = None
         timeout = max(30.0, float(self._settings.request_timeout))
+        # OpenRouter's `models` field performs server-side ordered failover when
+        # a model is unavailable, rate-limited, or removed. The final free router
+        # keeps this list resilient as the free catalog changes.
+        payload: dict[str, Any] = {
+            "models": models_to_try,
+            "messages": messages,
+            "temperature": 0.3,
+        }
 
-        async with httpx.AsyncClient(
-            timeout=timeout,
-            headers=self._headers(),
-        ) as client:
-            for model_name in models_to_try:
-                payload: dict[str, Any] = {
-                    "model": model_name,
-                    "messages": messages,
-                    "temperature": 0.3,
-                }
-                try:
-                    resp = await client.post(url, json=payload)
-                    if resp.status_code == 200:
-                        data = resp.json()
-                        if "choices" in data and len(data["choices"]) > 0:
-                            content = data["choices"][0]["message"]["content"]
-                            if content:
-                                return content
-                        if "error" in data:
-                            err_msg = data["error"].get("message", str(data["error"]))
-                            logger.debug(
-                                "OpenRouter model %s error payload: %s", model_name, err_msg
-                            )
-                            last_error = RuntimeError(
-                                f"OpenRouter model {model_name} error: {err_msg}"
-                            )
-                            continue
-                    elif resp.status_code == 401:
-                        raise RuntimeError(
-                            "OpenRouter API key is invalid or unauthorized (HTTP 401). "
-                            "Please check your OPENROUTER_API_KEY at https://openrouter.ai/keys"
-                        )
-                    elif resp.status_code in (402, 429):
-                        raise RuntimeError(
-                            f"OpenRouter API quota or rate limit exceeded (HTTP {resp.status_code}). "
-                            "You are out of credits or rate limited. Please check your credit balance at https://openrouter.ai/credits"
-                        )
-                    else:
-                        error_msg = f"HTTP {resp.status_code} for {model_name}: {resp.text[:150]}"
-                        logger.debug("OpenRouter model %s failed: %s", model_name, error_msg)
-                        last_error = RuntimeError(error_msg)
-                except RuntimeError:
-                    raise
-                except Exception as exc:
-                    logger.debug("OpenRouter model %s exception: %s", model_name, exc)
-                    last_error = exc
+        async with self._request_slots:
+            async with httpx.AsyncClient(
+                timeout=timeout,
+                headers=self._headers(),
+            ) as client:
+                resp = await client.post(url, json=payload)
 
-        raise RuntimeError(f"All OpenRouter models failed. Last error: {last_error}")
+        if resp.status_code == 401:
+            raise RuntimeError("AI provider rejected the API key (HTTP 401).")
+        if resp.status_code in (402, 429):
+            raise RuntimeError(f"AI provider quota or rate limit exceeded (HTTP {resp.status_code}).")
+        if resp.status_code >= 400:
+            logger.warning("OpenRouter request failed with HTTP %s", resp.status_code)
+            raise RuntimeError(f"AI provider request failed (HTTP {resp.status_code}).")
+
+        data = resp.json()
+        choices = data.get("choices") or []
+        if choices:
+            content = choices[0].get("message", {}).get("content")
+            if content:
+                actual_model = str(data.get("model") or primary)
+                return content, actual_model
+        logger.warning("OpenRouter returned no completion content")
+        raise RuntimeError("AI provider returned an empty response.")
 
     async def analyze_perspective(
         self,
@@ -285,12 +271,12 @@ class OpenRouterAdapter(LLMAdapter):
                 "content": build_analysis_prompt(perspective_name.value, idea, evidence),
             },
         ]
-        raw = await self._chat(messages)
-        return _parse_output(raw, perspective_name, self.model_id)
+        raw, actual_model = await self._chat(messages)
+        return _parse_output(raw, perspective_name, f"openrouter/{actual_model}")
 
     async def clarify_idea(self, idea: IdeaInput) -> str:
         try:
-            raw = await self._chat(build_clarification_messages(idea))
+            raw, _ = await self._chat(build_clarification_messages(idea))
             return raw.strip()
         except Exception as exc:
             logger.debug("OpenRouter clarify_idea failed: %s", exc)
@@ -325,7 +311,7 @@ class OpenRouterAdapter(LLMAdapter):
         )
 
         try:
-            raw_response = await self._chat([
+            raw_response, _ = await self._chat([
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": build_raw_idea_message(raw_text)},
             ])
