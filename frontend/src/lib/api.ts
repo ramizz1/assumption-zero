@@ -121,7 +121,8 @@ async function request<T>(
       ...options,
       headers,
     })
-  } catch {
+  } catch (error) {
+    if (error instanceof Error && error.name === 'AbortError') throw error
     throw new ApiRequestError(SERVICE_UNAVAILABLE_MESSAGE)
   }
 
@@ -165,12 +166,12 @@ export const api = {
     return request('/analyses/from-prompt', { method: 'POST', body: JSON.stringify(body) })
   },
 
-  runAnalysisSync(body: AnalysisCreateRequest): Promise<AnalysisResult> {
-    return request('/analyses/sync', { method: 'POST', body: JSON.stringify(body) })
+  runAnalysisSync(body: AnalysisCreateRequest, signal?: AbortSignal): Promise<AnalysisResult> {
+    return request('/analyses/sync', { method: 'POST', body: JSON.stringify(body), signal })
   },
 
-  runAnalysisFromPromptSync(body: PromptAnalysisRequest): Promise<AnalysisResult> {
-    return request('/analyses/from-prompt/sync', { method: 'POST', body: JSON.stringify(body) })
+  runAnalysisFromPromptSync(body: PromptAnalysisRequest, signal?: AbortSignal): Promise<AnalysisResult> {
+    return request('/analyses/from-prompt/sync', { method: 'POST', body: JSON.stringify(body), signal })
   },
 
   listAnalyses(params?: { search?: string; status?: string; limit?: number }): Promise<AnalysisListItem[]> {

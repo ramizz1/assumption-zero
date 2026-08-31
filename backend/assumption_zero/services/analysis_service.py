@@ -8,6 +8,7 @@ No database required.
 from __future__ import annotations
 
 import logging
+import time
 import uuid
 from datetime import datetime
 
@@ -213,6 +214,8 @@ async def run_analysis(
 ) -> None:
     """Run the full analysis pipeline. Called as a FastAPI BackgroundTask."""
 
+    started_at = time.monotonic()
+
     base_url_override = None
     if ai_provider_override in ("openai", "openai_compat", "custom"):
         base_url_override = custom_base_url
@@ -251,6 +254,12 @@ async def run_analysis(
 
     async def progress_callback(stage: AnalysisStage, desc: str) -> None:
         store.update_stage(analysis_id, "running", stage.value)
+        logger.info(
+            "Analysis %s progress stage=%s elapsed_seconds=%.1f",
+            analysis_id,
+            stage.value,
+            time.monotonic() - started_at,
+        )
 
     try:
         llm = build_llm_adapter(
@@ -281,10 +290,19 @@ async def run_analysis(
             )
             logger.warning("Analysis %s finished without AI perspectives", analysis_id)
         else:
-            logger.info("Analysis %s complete", analysis_id)
+            logger.info(
+                "Analysis %s complete elapsed_seconds=%.1f",
+                analysis_id,
+                time.monotonic() - started_at,
+            )
 
     except Exception as exc:
-        logger.error("Analysis %s failed: %s", analysis_id, redact_sensitive_text(exc))
+        logger.error(
+            "Analysis %s failed elapsed_seconds=%.1f: %s",
+            analysis_id,
+            time.monotonic() - started_at,
+            redact_sensitive_text(exc),
+        )
         store.fail_record(analysis_id, public_provider_error(exc))
 
 

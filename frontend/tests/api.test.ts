@@ -31,4 +31,13 @@ describe('API error handling', () => {
       expect(message).not.toContain('private platform error')
     }
   })
+
+  it('preserves abort errors so the UI can distinguish cancel and timeout', async () => {
+    const abortError = new Error('aborted')
+    abortError.name = 'AbortError'
+    vi.stubGlobal('fetch', vi.fn().mockRejectedValue(abortError))
+
+    await expect(api.runAnalysisFromPromptSync({ prompt: 'A sufficiently detailed startup idea prompt' }))
+      .rejects.toMatchObject({ name: 'AbortError' })
+  })
 })

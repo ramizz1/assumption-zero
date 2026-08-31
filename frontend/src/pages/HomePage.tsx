@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { api } from '../lib/api'
 import SavedAnalysesModal from '../components/SavedAnalysesModal'
@@ -9,6 +9,7 @@ import type { ResearchDepth } from '../types'
 import { BUNDLED_DEMO_ID } from '../lib/bundledDemo'
 import { getSessionAnalyses, saveSessionAnalysis } from '../lib/sessionAnalysis'
 import { safeRequestMessage } from '../lib/errors'
+import AnalysisRunProgress, { ANALYSIS_REQUEST_TIMEOUT_MS } from '../components/AnalysisRunProgress'
 
 // SVG Icons
 const LucideGlobe = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
@@ -101,7 +102,11 @@ export const HomePage: React.FC = () => {
 
   const [aiSettings, setAiSettings] = useState<AISettings>(getStoredAISettings)
   const [inputMode, setInputMode] = useState<'prompt' | 'form'>('prompt')
-  const [researchDepth, setResearchDepth] = useState<ResearchDepth>('exhaustive')
+  const [researchDepth, setResearchDepth] = useState<ResearchDepth>('deep')
+  const [runElapsedSeconds, setRunElapsedSeconds] = useState(0)
+  const activeRequestRef = useRef<AbortController | null>(null)
+  const requestTimeoutRef = useRef<number | null>(null)
+  const runTimedOutRef = useRef(false)
 
   const [rawPromptText, setRawPromptText] = useState('')
 
@@ -161,6 +166,71 @@ export const HomePage: React.FC = () => {
     }
   }, [])
 
+  useEffect(() => {
+    if (!loading) {
+      setRunElapsedSeconds(0)
+      return
+    }
+
+    const startedAt = Date.now()
+    const updateElapsed = () => {
+      setRunElapsedSeconds(Math.floor((Date.now() - startedAt) / 1000))
+    }
+    updateElapsed()
+    const interval = window.setInterval(updateElapsed, 1000)
+    return () => window.clearInterval(interval)
+  }, [loading])
+
+  useEffect(() => () => {
+    activeRequestRef.current?.abort()
+    if (requestTimeoutRef.current !== null) {
+      window.clearTimeout(requestTimeoutRef.current)
+    }
+  }, [])
+
+  const beginAnalysisRequest = (): AbortController => {
+    activeRequestRef.current?.abort()
+    if (requestTimeoutRef.current !== null) {
+      window.clearTimeout(requestTimeoutRef.current)
+    }
+
+    const controller = new AbortController()
+    activeRequestRef.current = controller
+    runTimedOutRef.current = false
+    requestTimeoutRef.current = window.setTimeout(() => {
+      runTimedOutRef.current = true
+      controller.abort()
+    }, ANALYSIS_REQUEST_TIMEOUT_MS)
+    return controller
+  }
+
+  const finishAnalysisRequest = (controller: AbortController) => {
+    if (activeRequestRef.current !== controller) return
+    activeRequestRef.current = null
+    if (requestTimeoutRef.current !== null) {
+      window.clearTimeout(requestTimeoutRef.current)
+      requestTimeoutRef.current = null
+    }
+  }
+
+  const cancelAnalysis = () => {
+    runTimedOutRef.current = false
+    activeRequestRef.current?.abort()
+  }
+
+  const handleAnalysisError = (err: unknown, fallback: string) => {
+    if (err instanceof Error && err.name === 'AbortError') {
+      setError(
+        runTimedOutRef.current
+          ? 'The analysis reached the 4m 30s safety limit. Choose Standard or Deep research and try again; your API key remains only in this page.'
+          : 'Analysis canceled. You can adjust the research depth or idea brief and run it again.',
+      )
+    } else {
+      setError(err instanceof Error ? err.message : fallback)
+    }
+    setLoading(false)
+  }
+
   const update = (field: keyof typeof idea) => (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
@@ -182,6 +252,7 @@ export const HomePage: React.FC = () => {
     if (!rawPromptText.trim()) return
     setLoading(true)
     setError(null)
+    const controller = beginAnalysisRequest()
 
     try {
       const provider = aiSettings.provider === 'custom' ? 'openai_compat' : aiSettings.provider
@@ -195,12 +266,13 @@ export const HomePage: React.FC = () => {
         custom_base_url: aiSettings.provider === 'custom' ? (aiSettings.customUrl || undefined) : undefined,
         ollama_base_url: aiSettings.ollamaUrl || undefined,
         research_depth: researchDepth,
-      })
+      }, controller.signal)
       saveSessionAnalysis(result)
       navigate(`/analysis/${result.analysis_id}`)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to start prompt analysis')
-      setLoading(false)
+      handleAnalysisError(err, 'Failed to start prompt analysis')
+    } finally {
+      finishAnalysisRequest(controller)
     }
   }
 
@@ -208,6 +280,7 @@ export const HomePage: React.FC = () => {
     e.preventDefault()
     setLoading(true)
     setError(null)
+    const controller = beginAnalysisRequest()
 
     try {
       const provider = aiSettings.provider === 'custom' ? 'openai_compat' : aiSettings.provider
@@ -247,12 +320,13 @@ export const HomePage: React.FC = () => {
         custom_base_url: aiSettings.provider === 'custom' ? (aiSettings.customUrl || undefined) : undefined,
         ollama_base_url: aiSettings.ollamaUrl || undefined,
         research_depth: researchDepth,
-      })
+      }, controller.signal)
       saveSessionAnalysis(result)
       navigate(`/analysis/${result.analysis_id}`)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to start analysis')
-      setLoading(false)
+      handleAnalysisError(err, 'Failed to start analysis')
+    } finally {
+      finishAnalysisRequest(controller)
     }
   }
 
@@ -559,9 +633,9 @@ export const HomePage: React.FC = () => {
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
               {([
-                { id: 'standard', label: 'Standard', detail: 'Fast · 3 perspectives' },
-                { id: 'deep', label: 'Deep regional', detail: 'Default · 4 perspectives' },
-                { id: 'exhaustive', label: 'Exhaustive', detail: 'Maximum · 5 perspectives' },
+                { id: 'standard', label: 'Standard', detail: 'Usually 45–90 sec · 3 perspectives' },
+                { id: 'deep', label: 'Deep regional', detail: 'Recommended · 1–3 min · 4 perspectives' },
+                { id: 'exhaustive', label: 'Exhaustive', detail: 'Slow · 3–5 min · 5 perspectives' },
               ] as const).map((option) => (
                 <button
                   key={option.id}
@@ -576,7 +650,7 @@ export const HomePage: React.FC = () => {
               ))}
             </div>
             {researchDepth === 'exhaustive' && (
-              <p className="text-[11px] text-amber-800 bg-amber-50 border border-amber-200 rounded-xl p-2.5 mt-3">Runs the largest balanced query set and five independent perspectives. Expect more time and AI-provider usage.</p>
+              <p className="text-[11px] text-amber-800 bg-amber-50 border border-amber-200 rounded-xl p-2.5 mt-3">Runs the largest query set and five independent perspectives. It can approach the hosted five-minute limit; Deep is safer for normal use.</p>
             )}
           </div>
 
@@ -628,6 +702,13 @@ export const HomePage: React.FC = () => {
                   View token-free example
                 </button>
               </div>
+              {loading && (
+                <AnalysisRunProgress
+                  depth={researchDepth}
+                  elapsedSeconds={runElapsedSeconds}
+                  onCancel={cancelAnalysis}
+                />
+              )}
               <p className="text-center text-[11px] text-zinc-500">
                 The example is a precomputed report and uses 0 AI credits. Your own analysis always uses a real configured AI provider.
               </p>
@@ -865,6 +946,13 @@ export const HomePage: React.FC = () => {
                   View token-free example
                 </button>
               </div>
+              {loading && (
+                <AnalysisRunProgress
+                  depth={researchDepth}
+                  elapsedSeconds={runElapsedSeconds}
+                  onCancel={cancelAnalysis}
+                />
+              )}
               <p className="text-center text-[11px] text-zinc-500">
                 The example is a precomputed report and uses 0 AI credits. Your own analysis always uses a real configured AI provider.
               </p>
