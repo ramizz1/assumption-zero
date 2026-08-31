@@ -39,6 +39,19 @@ class FallbackChainAdapter(LLMAdapter):
     def is_available(self) -> bool:
         return any(a.is_available for a in self.adapters)
 
+    async def verify_connection(self) -> str:
+        last_error: Exception | None = None
+        for adapter in self.adapters:
+            try:
+                return await adapter.verify_connection()
+            except Exception as exc:
+                last_error = exc
+                logger.info(
+                    "Provider verification failed for %s; trying next configured provider",
+                    adapter.model_id,
+                )
+        raise RuntimeError(public_provider_error(last_error))
+
     async def analyze_perspective(
         self,
         perspective_name: PerspectiveName,

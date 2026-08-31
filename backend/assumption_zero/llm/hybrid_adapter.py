@@ -40,6 +40,15 @@ class HybridLLMAdapter(LLMAdapter):
     def is_available(self) -> bool:
         return self.groq.is_available or self.openrouter.is_available
 
+    async def verify_connection(self) -> str:
+        for adapter in (self.groq, self.openrouter):
+            if adapter.is_available:
+                try:
+                    return await adapter.verify_connection()
+                except Exception:
+                    continue
+        raise RuntimeError("No configured AI provider could complete a verification request.")
+
     async def analyze_perspective(
         self,
         perspective_name: PerspectiveName,

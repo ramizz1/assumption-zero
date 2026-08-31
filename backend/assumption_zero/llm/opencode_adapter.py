@@ -22,13 +22,32 @@ from assumption_zero.llm.base import (
     build_clarification_messages,
     build_raw_idea_message,
 )
+from assumption_zero.llm.model_catalog import catalog_model_ids, completion_content, ordered_models
 from assumption_zero.llm.openrouter_adapter import _parse_output, _repair_and_parse_json
 from assumption_zero.schemas import EvidenceItem, IdeaInput, PerspectiveName
 
 logger = logging.getLogger(__name__)
 
-_DEFAULT_BASE_URL = "https://opencode.ai/api/v1"
-_DEFAULT_MODEL = "opencode/claude-3.5-sonnet"
+_DEFAULT_BASE_URL = "https://opencode.ai/zen/v1"
+_LEGACY_BASE_URLS = {
+    "https://opencode.ai/api/v1",
+}
+_DEFAULT_MODEL = "auto"
+_PREFERRED_CHAT_MODELS = [
+    "nemotron-3-ultra-free",
+    "nemotron-3.5-lightning-free",
+    "mimo-v2.5-free",
+    "ling-3.0-flash-fin-free",
+    "big-pickle",
+]
+
+
+def _is_opencode_chat_model(model_id: str) -> bool:
+    """Keep models served by Zen's OpenAI-compatible chat endpoint."""
+    normalized = model_id.casefold()
+    return normalized == "big-pickle" or normalized.endswith("-free") or normalized.startswith(
+        ("deepseek-", "glm-", "kimi-", "minimax-")
+    )
 
 
 class OpencodeAdapter(LLMAdapter):
@@ -64,7 +83,10 @@ class OpencodeAdapter(LLMAdapter):
             or getattr(self._settings, "opencode_base_url", None)
             or _DEFAULT_BASE_URL
         )
-        return url.rstrip("/")
+        normalized = url.rstrip("/")
+        # Existing deployments may still carry the old documented URL in an
+        # environment variable. Migrate it in memory so a new key works now.
+        return _DEFAULT_BASE_URL if normalized in _LEGACY_BASE_URLS else normalized
 
     def _model(self) -> str:
         return (
@@ -73,6 +95,31 @@ class OpencodeAdapter(LLMAdapter):
             or getattr(self._settings, "opencode_model", None)
             or _DEFAULT_MODEL
         )
+
+    async def _models(self, client: httpx.AsyncClient) -> list[str]:
+        discovered: list[str] = []
+        try:
+            response = await client.get(f"{self._base_url()}/models")
+            if response.status_code == 401:
+                raise RuntimeError("AI provider rejected the API key (HTTP 401).")
+            if response.status_code == 200:
+                discovered = catalog_model_ids(response.json())
+        except RuntimeError:
+            raise
+        except Exception as exc:
+            logger.info(
+                "OpenCode model discovery unavailable (%s); using safe fallbacks",
+                type(exc).__name__,
+            )
+
+        configured = self._model()
+        models = ordered_models(
+            discovered,
+            configured=None if configured.casefold() == "auto" else configured,
+            preferred=_PREFERRED_CHAT_MODELS,
+            compatible=_is_opencode_chat_model,
+        )
+        return models or list(_PREFERRED_CHAT_MODELS)
 
     @property
     def model_id(self) -> str:
@@ -93,41 +140,51 @@ class OpencodeAdapter(LLMAdapter):
             "Content-Type": "application/json",
         }
 
-    async def _chat(self, messages: list[dict[str, str]]) -> str:
+    async def _chat(self, messages: list[dict[str, str]]) -> tuple[str, str]:
         base = self._base_url()
         url = f"{base}/chat/completions"
-        model_name = self._model()
         timeout = max(60.0, float(self._settings.request_timeout))
-
-        payload: dict[str, Any] = {
-            "model": model_name,
-            "messages": messages,
-            "temperature": 0.2,
-        }
+        last_status: int | None = None
 
         async with httpx.AsyncClient(timeout=timeout, headers=self._headers()) as client:
-            try:
-                resp = await client.post(url, json=payload)
-                if resp.status_code == 200:
-                    data = resp.json()
-                    if "choices" in data and len(data["choices"]) > 0:
-                        content = data["choices"][0]["message"]["content"]
-                        if content:
-                            return content
-                elif resp.status_code == 401:
-                    raise RuntimeError(
-                        "OpenCode API key is invalid or unauthorized (HTTP 401). "
-                        "Please check your OPENCODE_API_KEY setting."
+            models_to_try = await self._models(client)
+            for model_name in models_to_try:
+                payload: dict[str, Any] = {
+                    "model": model_name,
+                    "messages": messages,
+                    "temperature": 0.2,
+                }
+                try:
+                    resp = await client.post(url, json=payload)
+                except Exception as exc:
+                    logger.info("OpenCode request transport failed (%s)", type(exc).__name__)
+                    continue
+                last_status = resp.status_code
+                if resp.status_code == 401:
+                    raise RuntimeError("AI provider rejected the API key (HTTP 401).")
+                if resp.status_code >= 400:
+                    logger.info(
+                        "OpenCode model %s unavailable (HTTP %s); trying next model",
+                        model_name,
+                        resp.status_code,
                     )
-                else:
-                    resp.raise_for_status()
-            except RuntimeError:
-                raise
-            except Exception as exc:
-                logger.error("OpenCode API error for %s: %s", model_name, exc)
-                raise RuntimeError(f"OpenCode API request failed: {exc}") from exc
+                    continue
+                data = resp.json()
+                content = completion_content(data)
+                if content:
+                    actual_model = str(data.get("model") or model_name)
+                    logger.info("OpenCode selected model %s", actual_model)
+                    return content, actual_model
 
-        raise RuntimeError("OpenCode API returned empty content")
+        if last_status in (402, 429):
+            raise RuntimeError(f"AI provider quota or rate limit exceeded (HTTP {last_status}).")
+        if last_status and last_status >= 400:
+            raise RuntimeError(f"AI provider request failed (HTTP {last_status}).")
+        raise RuntimeError("AI provider returned an empty response.")
+
+    async def verify_connection(self) -> str:
+        _, model = await self._chat([{"role": "user", "content": "Reply with OK only."}])
+        return model
 
     async def analyze_perspective(
         self,
@@ -142,12 +199,12 @@ class OpencodeAdapter(LLMAdapter):
                 "content": build_analysis_prompt(perspective_name.value, idea, evidence),
             },
         ]
-        raw = await self._chat(messages)
-        return _parse_output(raw, perspective_name, self.model_id)
+        raw, actual_model = await self._chat(messages)
+        return _parse_output(raw, perspective_name, f"opencode/{actual_model}")
 
     async def clarify_idea(self, idea: IdeaInput) -> str:
         try:
-            raw = await self._chat(build_clarification_messages(idea))
+            raw, _ = await self._chat(build_clarification_messages(idea))
             return raw.strip()
         except Exception as exc:
             logger.debug("OpenCode clarify_idea failed: %s", exc)
@@ -182,7 +239,7 @@ class OpencodeAdapter(LLMAdapter):
         )
 
         try:
-            raw_response = await self._chat([
+            raw_response, _ = await self._chat([
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": build_raw_idea_message(raw_text)},
             ])

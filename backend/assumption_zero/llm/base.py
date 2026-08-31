@@ -282,6 +282,10 @@ class LLMAdapter(ABC):
         """Return True if the adapter is configured and ready."""
         ...
 
+    async def verify_connection(self) -> str:
+        """Run a minimal real inference and return the model that answered."""
+        raise RuntimeError("This AI provider does not support live connection verification.")
+
     @abstractmethod
     async def analyze_perspective(
         self,

@@ -68,23 +68,12 @@ def test_verify_keys_missing_key_returns_400():
 
 
 def test_provider_probe_rejects_bad_key_without_echoing_it(monkeypatch):
-    class FakeResponse:
-        status_code = 401
+    from assumption_zero.llm.groq_adapter import GroqAdapter
 
-    class FakeAsyncClient:
-        def __init__(self, **_kwargs):
-            pass
+    async def reject_key(_self):
+        raise RuntimeError("AI provider rejected the API key (HTTP 401).")
 
-        async def __aenter__(self):
-            return self
-
-        async def __aexit__(self, *_args):
-            return None
-
-        async def get(self, _url, **_kwargs):
-            return FakeResponse()
-
-    monkeypatch.setattr("assumption_zero.api.routes.httpx.AsyncClient", FakeAsyncClient)
+    monkeypatch.setattr(GroqAdapter, "verify_connection", reject_key)
     sentinel = "TEST_KEY_MUST_NOT_BE_ECHOED"
     response = client.post(
         "/api/verify-keys",
@@ -92,8 +81,27 @@ def test_provider_probe_rejects_bad_key_without_echoing_it(monkeypatch):
     )
 
     assert response.status_code == 400
-    assert "rejected the API key" in response.json()["detail"]
+    assert "rejected" in response.json()["detail"].casefold()
     assert sentinel not in response.text
+
+
+def test_ollama_configured_default_url_is_not_rejected_as_runtime_override(monkeypatch):
+    from assumption_zero.llm.ollama_adapter import OllamaAdapter
+
+    async def verify_local_model(_self):
+        return "installed-local-model"
+
+    monkeypatch.setattr(OllamaAdapter, "verify_connection", verify_local_model)
+    response = client.post(
+        "/api/verify-keys",
+        json={
+            "ai_provider": "ollama",
+            "ollama_base_url": "http://localhost:11434",
+        },
+    )
+
+    assert response.status_code == 200
+    assert "installed-local-model" in response.json()["message"]
 
 
 def test_release_debug_value_does_not_break_startup():

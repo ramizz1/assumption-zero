@@ -66,21 +66,23 @@ class Settings(BaseSettings):
     # ── Assumption Zero Beta / OpenRouter ────────────────────────
     # OpenRouter routes to 200+ open models via a single API.
     openrouter_api_key: str | None = None
-    openrouter_model: str = "nvidia/nemotron-3-super-120b-a12b:free"
+    # Provider adapters discover live catalogs when set to "auto". OpenRouter's
+    # smart router falls back to its free router when a key has no paid credits.
+    openrouter_model: str = "openrouter/auto"
 
     # ── Groq (Ultra-fast Llama 3.3 models) ──────────────────────
     # https://console.groq.com/keys
     groq_api_key: str | None = None
-    groq_model: str = "llama-3.3-70b-versatile"
+    groq_model: str = "auto"
 
     # ── OpenCode AI ──────────────────────────────────────────────
     opencode_api_key: str | None = None
-    opencode_base_url: str = "https://opencode.ai/api/v1"
-    opencode_model: str = "opencode/claude-3.5-sonnet"
+    opencode_base_url: str = "https://opencode.ai/zen/v1"
+    opencode_model: str = "auto"
 
     # ── Ollama (local models) ────────────────────────────────────
     ollama_base_url: str = "http://localhost:11434"
-    ollama_model: str = "llama3.2"
+    ollama_model: str = "auto"
 
     # ── Custom / OpenAI-Compatible Provider ──────────────────────
     # Use this to plug in ChatGPT, Claude (via compatible proxy), Together AI,
@@ -88,7 +90,7 @@ class Settings(BaseSettings):
     # Set AI_PROVIDER=openai_compat to activate.
     openai_compatible_base_url: str | None = None  # e.g. https://api.openai.com/v1
     openai_compatible_api_key: str | None = None  # your API key
-    openai_compatible_model: str = "gpt-4o-mini"  # model name to pass in the request
+    openai_compatible_model: str = "auto"  # discover a usable chat model from /models
 
     # ── Research Providers ────────────────────────────────────────
     searxng_base_url: str | None = None

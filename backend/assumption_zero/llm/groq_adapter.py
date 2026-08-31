@@ -24,6 +24,7 @@ from assumption_zero.llm.base import (
     build_clarification_messages,
     build_raw_idea_message,
 )
+from assumption_zero.llm.model_catalog import catalog_model_ids, completion_content, ordered_models
 from assumption_zero.llm.openrouter_adapter import _parse_output, _repair_and_parse_json
 from assumption_zero.schemas import EvidenceItem, IdeaInput, PerspectiveName
 
@@ -31,10 +32,11 @@ logger = logging.getLogger(__name__)
 
 _GROQ_BASE = "https://api.groq.com/openai/v1"
 _DEFAULT_MODEL = "llama-3.3-70b-versatile"
-_FALLBACK_MODELS = [
-    "llama-3.3-70b-versatile",
+_PREFERRED_MODELS = [
     "openai/gpt-oss-120b",
+    "llama-3.3-70b-versatile",
     "qwen/qwen3-32b",
+    "openai/gpt-oss-20b",
     "llama-3.1-8b-instant",
 ]
 
@@ -59,6 +61,27 @@ class GroqAdapter(LLMAdapter):
     def _model(self) -> str:
         return self._model_override or self._settings.groq_model or _DEFAULT_MODEL
 
+    async def _models(self, client: httpx.AsyncClient) -> list[str]:
+        discovered: list[str] = []
+        try:
+            response = await client.get(f"{_GROQ_BASE}/models")
+            if response.status_code == 401:
+                raise RuntimeError("AI provider rejected the API key (HTTP 401).")
+            if response.status_code == 200:
+                discovered = catalog_model_ids(response.json())
+        except RuntimeError:
+            raise
+        except Exception as exc:
+            logger.info("Groq model discovery unavailable (%s); using safe fallbacks", type(exc).__name__)
+
+        configured = self._model()
+        models = ordered_models(
+            discovered,
+            configured=None if configured.casefold() == "auto" else configured,
+            preferred=_PREFERRED_MODELS,
+        )
+        return models or list(_PREFERRED_MODELS)
+
     @property
     def model_id(self) -> str:
         return f"groq/{self._model()}"
@@ -80,9 +103,6 @@ class GroqAdapter(LLMAdapter):
 
     async def _chat(self, messages: list[dict[str, str]]) -> tuple[str, str]:
         url = f"{_GROQ_BASE}/chat/completions"
-        primary = self._model()
-        models_to_try = [primary] + [m for m in _FALLBACK_MODELS if m != primary]
-
         last_error: Exception | None = None
         timeout = max(30.0, float(self._settings.request_timeout))
 
@@ -91,6 +111,7 @@ class GroqAdapter(LLMAdapter):
                 timeout=timeout,
                 headers=self._headers(),
             ) as client:
+                models_to_try = await self._models(client)
                 for model_name in models_to_try:
                     payload: dict[str, Any] = {
                         "model": model_name,
@@ -101,10 +122,11 @@ class GroqAdapter(LLMAdapter):
                         resp = await client.post(url, json=payload)
                         if resp.status_code == 200:
                             data = resp.json()
-                            if "choices" in data and len(data["choices"]) > 0:
-                                content = data["choices"][0]["message"]["content"]
-                                if content:
-                                    return content, str(data.get("model") or model_name)
+                            content = completion_content(data)
+                            if content:
+                                actual_model = str(data.get("model") or model_name)
+                                logger.info("Groq selected model %s", actual_model)
+                                return content, actual_model
                             if "error" in data:
                                 err_msg = data["error"].get("message", str(data["error"]))
                                 logger.debug("Groq model %s error payload: %s", model_name, err_msg)
@@ -139,6 +161,10 @@ class GroqAdapter(LLMAdapter):
                         last_error = exc
 
         raise RuntimeError(f"All Groq models failed. Last error: {last_error}")
+
+    async def verify_connection(self) -> str:
+        _, model = await self._chat([{"role": "user", "content": "Reply with OK only."}])
+        return model
 
     async def analyze_perspective(
         self,

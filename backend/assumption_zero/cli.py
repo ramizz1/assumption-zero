@@ -1512,21 +1512,21 @@ _PROVIDER_PRESETS = {
         "Local Ollama (http://localhost:11434)",
         "ollama",
         None,
-        "llama3.2",
+        "auto",
         "http://localhost:11434",
     ),
     "2": (
         "OpenCode AI (your key)",
         "opencode",
         None,
-        "opencode/claude-3.5-sonnet",
-        "https://opencode.ai/api/v1",
+        "auto",
+        "https://opencode.ai/zen/v1",
     ),
     "3": (
-        "OpenAI ChatGPT (your key — gpt-4o-mini)",
+        "OpenAI ChatGPT (your key — automatic model)",
         "openai_compat",
         None,
-        "gpt-4o-mini",
+        "auto",
         "https://api.openai.com/v1",
     ),
     "4": (
@@ -1536,8 +1536,8 @@ _PROVIDER_PRESETS = {
         "gpt-4o",
         "https://api.openai.com/v1",
     ),
-    "5": ("Groq — llama-3.3-70b (your key)", "groq", None, "llama-3.3-70b-versatile", None),
-    "6": ("OpenRouter — 200+ models (your key)", "openrouter", None, None, None),
+    "5": ("Groq — automatic available model (your key)", "groq", None, "auto", None),
+    "6": ("OpenRouter — smart model router (your key)", "openrouter", None, "auto", None),
     "7": ("Offline Mock Demo (free, instant)", "mock", None, None, None),
     "8": ("Custom / self-hosted (any OpenAI-spec API)", "openai_compat", None, None, None),
 }
@@ -1688,7 +1688,7 @@ def _ask_idea_with_key(
         if not final_model:
             final_model = Prompt.ask(
                 "  [bold #D97706]›[/] [bold white]Model name[/] [bright_white](e.g. gpt-4o-mini, claude-3-haiku)[/]",
-                default="gpt-4o-mini",
+                default="auto",
                 console=console,
             ).strip()
 
@@ -2184,9 +2184,16 @@ def verify_provider(
     if not adapter.is_available:
         err_console.print(f"Provider {provider!r} is not configured or available.")
         raise typer.Exit(1)
+    try:
+        verified_model = asyncio.run(adapter.verify_connection())
+    except Exception as exc:
+        from assumption_zero.security import public_provider_error
+
+        err_console.print(public_provider_error(exc))
+        raise typer.Exit(1) from None
     console.print(
-        f"[bold green]Configuration accepted.[/] Provider: [bold cyan]{provider}[/]  Model: [bold white]{adapter.model_id}[/]\n"
-        "[bright_white]Live connectivity is confirmed when an analysis starts.[/]"
+        f"[bold green]Live connection verified.[/] Provider: [bold cyan]{provider}[/]  "
+        f"Model: [bold white]{verified_model}[/]"
     )
 
 
@@ -2365,11 +2372,14 @@ AI_PROVIDER={provider}
 OPENAI_COMPATIBLE_API_KEY={openai_key}
 OPENAI_COMPATIBLE_BASE_URL={curr_openai_base}
 OPENCODE_API_KEY={opencode_key}
-OPENCODE_BASE_URL=https://opencode.ai/api/v1
+OPENCODE_BASE_URL=https://opencode.ai/zen/v1
+OPENCODE_MODEL=auto
 GROQ_API_KEY={groq_key}
+GROQ_MODEL=auto
 OPENROUTER_API_KEY={openrouter_key}
+OPENROUTER_MODEL=openrouter/auto
 OLLAMA_BASE_URL={ollama_url}
-OLLAMA_MODEL=llama3.2
+OLLAMA_MODEL=auto
 GITHUB_TOKEN={github_token}
 REQUEST_TIMEOUT=30
 """

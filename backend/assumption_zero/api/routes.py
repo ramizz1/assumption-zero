@@ -15,7 +15,6 @@ from __future__ import annotations
 import logging
 from typing import Annotated
 
-import httpx
 from fastapi import APIRouter, BackgroundTasks, Depends, Header, HTTPException, Query, status
 from pydantic import SecretStr
 
@@ -59,54 +58,29 @@ async def _probe_provider_connection(
     provider: str,
     api_key: str | None,
     base_url: str | None,
-) -> None:
-    """Verify provider authentication without running a paid generation."""
-    settings = get_settings()
+) -> str:
+    """Verify credentials and prove that one selected model can generate text."""
     normalized = provider.casefold()
-
-    if normalized == "openrouter":
-        url = "https://openrouter.ai/api/v1/auth/key"
-    elif normalized == "groq":
-        url = "https://api.groq.com/openai/v1/models"
-    elif normalized == "opencode":
-        url = f"{(base_url or settings.opencode_base_url).rstrip('/')}/models"
-    elif normalized in ("openai", "openai_compat", "custom"):
-        resolved_base = base_url or settings.openai_compatible_base_url or "https://api.openai.com/v1"
-        url = f"{resolved_base.rstrip('/')}/models"
-    elif normalized == "ollama":
-        url = f"{(base_url or settings.ollama_base_url).rstrip('/')}/api/tags"
-    else:
-        return
-
-    headers = {"Accept": "application/json"}
-    if api_key:
-        headers["Authorization"] = f"Bearer {api_key}"
-
     try:
-        async with httpx.AsyncClient(timeout=15.0, follow_redirects=False) as client:
-            response = await client.get(url, headers=headers)
-    except httpx.RequestError as exc:
+        key_name = "openai_compat" if normalized in ("openai", "custom") else normalized
+        adapter = build_llm_adapter(
+            provider_override=normalized,
+            api_key_override=api_key,
+            api_keys={key_name: api_key},
+            base_url_override=base_url,
+            allow_mock_fallback=False,
+        )
+        model = await adapter.verify_connection()
+        logger.info("Provider %s verified with model %s", normalized, model)
+        return model
+    except HTTPException:
+        raise
+    except Exception as exc:
         logger.info("Provider connectivity check failed for %s: %s", normalized, type(exc).__name__)
         raise HTTPException(
-            status_code=400,
-            detail=f"Could not reach {normalized.upper()}. Check the endpoint and try again.",
-        ) from exc
-
-    if response.status_code in (401, 403):
-        raise HTTPException(
-            status_code=400,
-            detail=f"{normalized.upper()} rejected the API key. Check the key and try again.",
-        )
-    if response.status_code == 429:
-        raise HTTPException(
-            status_code=400,
-            detail=f"{normalized.upper()} is rate-limiting this key. Wait briefly and try again.",
-        )
-    if response.status_code >= 400:
-        raise HTTPException(
-            status_code=400,
-            detail=f"{normalized.upper()} returned HTTP {response.status_code}. Check the endpoint and provider status.",
-        )
+            status_code=public_provider_status(exc),
+            detail=public_provider_error(exc),
+        ) from None
 
 
 # ── Demo idea ─────────────────────────────────────────────────────
@@ -165,6 +139,17 @@ def _llm_options(body: ProviderRequest) -> tuple[str | None, str | None, str | N
         base_url = body.custom_base_url
     elif provider == "ollama":
         base_url = body.ollama_base_url
+    if base_url:
+        settings = get_settings()
+        configured_base = (
+            settings.ollama_base_url
+            if provider == "ollama"
+            else settings.openai_compatible_base_url
+        )
+        # A request repeating the server's configured URL is not a runtime
+        # override. Ignore it so the safe default works with the web form.
+        if configured_base and base_url.rstrip("/") == configured_base.rstrip("/"):
+            base_url = None
     return provider, api_key, base_url
 
 
@@ -235,10 +220,8 @@ async def verify_keys_endpoint(
     openrouter_api_key = _secret_value(body.openrouter_api_key)
     opencode_api_key = _secret_value(body.opencode_api_key)
     openai_api_key = _secret_value(body.openai_api_key)
-    ollama_base_url = body.ollama_base_url
-    custom_base_url = body.custom_base_url
 
-    if provider in ("auto", "beta"):
+    if provider in ("auto", "beta", "hybrid", "dual"):
         settings = get_settings()
         probes = [
             ("groq", groq_api_key or settings.groq_api_key, None),
@@ -261,17 +244,19 @@ async def verify_keys_endpoint(
         last_error: HTTPException | None = None
         for probe_provider, probe_key, probe_url in configured:
             try:
-                await _probe_provider_connection(probe_provider, probe_key, probe_url)
-                connected.append(probe_provider.replace("_compat", "").upper())
+                model = await _probe_provider_connection(probe_provider, probe_key, probe_url)
+                connected.append(
+                    f"{probe_provider.replace('_compat', '').upper()} ({model})"
+                )
             except HTTPException as exc:
                 last_error = exc
         if connected:
             return {
                 "status": "ok",
-                "provider": "auto",
+                "provider": provider,
                 "message": (
-                    f"Auto failover is ready across {', '.join(connected)}. "
-                    "No generation tokens were used."
+                    f"Automatic failover is ready across {', '.join(connected)}. "
+                    "Each connection completed a minimal live response."
                 ),
             }
         raise last_error or HTTPException(
@@ -289,9 +274,9 @@ async def verify_keys_endpoint(
         api_key_override = opencode_api_key
     elif provider in ("openai", "openai_compat", "custom"):
         api_key_override = openai_api_key
-        base_url_override = custom_base_url
+        _, _, base_url_override = _llm_options(body)
     elif provider == "ollama":
-        base_url_override = ollama_base_url
+        _, _, base_url_override = _llm_options(body)
 
     # Require explicit API key for providers that require authentication
     key_required_providers = ("groq", "openrouter", "opencode", "openai", "openai_compat", "custom")
@@ -332,11 +317,13 @@ async def verify_keys_endpoint(
             )
 
         if provider != "mock":
-            await _probe_provider_connection(
+            verified_model = await _probe_provider_connection(
                 provider=provider,
                 api_key=effective_key if provider in key_required_providers else api_key_override,
                 base_url=base_url_override,
             )
+        else:
+            verified_model = llm.model_id
 
         return {
             "status": "ok",
@@ -344,7 +331,7 @@ async def verify_keys_endpoint(
             "message": (
                 "The deterministic baseline is ready; no external AI provider was contacted."
                 if provider == "mock"
-                else f"Connected to {provider.upper()} successfully. No generation tokens were used."
+                else f"Connected to {provider.upper()} successfully using {verified_model}."
             ),
         }
     except HTTPException:

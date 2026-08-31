@@ -210,6 +210,10 @@ export const SettingsModal: React.FC<Props> = ({ isOpen, onClose, onSave, backen
               <span>{showKeys ? '🙈 Hide API Keys' : '👁️ Show API Keys'}</span>
             </label>
 
+            <span className="text-[10px] text-gray-500 font-mono">
+              Validation sends one minimal live response
+            </span>
+
             <button
               type="button"
               onClick={handleTestConnection}
@@ -310,7 +314,7 @@ export const SettingsModal: React.FC<Props> = ({ isOpen, onClose, onSave, backen
                 className="w-full bg-white border border-emerald-300 rounded-xl px-3.5 py-2.5 text-sm text-gray-900 focus:outline-none focus:border-emerald-500 font-mono shadow-inner"
               />
               <p className="text-[11px] text-emerald-700 font-medium">
-                Get your key at <a href="https://opencode.ai" target="_blank" rel="noreferrer" className="text-emerald-800 underline font-bold">opencode.ai</a>
+                Uses OpenCode's current Zen model catalog and retries another compatible model when needed. Get your key at <a href="https://opencode.ai" target="_blank" rel="noreferrer" className="text-emerald-800 underline font-bold">opencode.ai</a>
               </p>
             </div>
           )}
@@ -333,7 +337,7 @@ export const SettingsModal: React.FC<Props> = ({ isOpen, onClose, onSave, backen
                 className="w-full bg-white border border-orange-300 rounded-xl px-3.5 py-2.5 text-sm text-gray-900 focus:outline-none focus:border-orange-500 font-mono shadow-inner"
               />
               <p className="text-[11px] text-orange-700 font-medium">
-                Uses OpenAI ChatGPT models (gpt-4o-mini, gpt-4o).
+                Discovers the models your key can access and selects a compatible chat model automatically.
               </p>
             </div>
           )}
@@ -356,7 +360,7 @@ export const SettingsModal: React.FC<Props> = ({ isOpen, onClose, onSave, backen
                 className="w-full bg-white border border-red-300 rounded-xl px-3.5 py-2.5 text-sm text-gray-900 focus:outline-none focus:border-red-500 font-mono shadow-inner"
               />
               <p className="text-[11px] text-red-700 font-medium">
-                Free key at <a href="https://console.groq.com/keys" target="_blank" rel="noreferrer" className="text-red-800 underline font-bold">console.groq.com</a>
+                Discovers Groq's active models and retries another compatible model when needed. Free key at <a href="https://console.groq.com/keys" target="_blank" rel="noreferrer" className="text-red-800 underline font-bold">console.groq.com</a>
               </p>
             </div>
           )}
@@ -379,7 +383,7 @@ export const SettingsModal: React.FC<Props> = ({ isOpen, onClose, onSave, backen
                 className="w-full bg-white border border-indigo-300 rounded-xl px-3.5 py-2.5 text-sm text-gray-900 focus:outline-none focus:border-indigo-500 font-mono shadow-inner"
               />
               <p className="text-[11px] text-indigo-700 font-medium">
-                Access 200+ open models at <a href="https://openrouter.ai/keys" target="_blank" rel="noreferrer" className="text-indigo-800 underline font-bold">openrouter.ai</a>
+                OpenRouter chooses a model for each task and automatically falls back to its live free-model pool. Get a key at <a href="https://openrouter.ai/keys" target="_blank" rel="noreferrer" className="text-indigo-800 underline font-bold">openrouter.ai</a>
               </p>
             </div>
           )}

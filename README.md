@@ -152,6 +152,8 @@ The in-app founder guide and CLI/API reference are available at [http://localhos
 
 Use `azero config` for the interactive setup. Supported configurations include OpenRouter, Groq, OpenAI-compatible endpoints, OpenCode, Ollama, and the no-key deterministic baseline.
 
+Provider models default to `auto`. OpenRouter uses its task-aware router and falls back to `openrouter/free`; Groq, OpenCode, OpenAI-compatible endpoints, and Ollama discover their current model catalogs and retry another compatible model when one is unavailable. Set a provider's model variable only when you intentionally want to prefer a specific model—the discovered catalog remains available as fallback.
+
 ```bash
 azero verify-provider openrouter --api-key sk-or-v1-your-key
 azero analyze --provider ollama --model llama3.1

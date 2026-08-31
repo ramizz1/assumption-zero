@@ -90,12 +90,19 @@ def build_llm_adapter(
     groq = GroqAdapter(api_key=provider_key("groq"), model=model_override)
     openrouter = OpenRouterAdapter(api_key=provider_key("openrouter"), model=model_override)
     openai_compat = OpenAICompatAdapter(
-        api_key=provider_key("openai_compat"), model=model_override, base_url=base_url_override
+        api_key=provider_key("openai_compat"),
+        model=model_override,
+        base_url=base_url_override if provider in ("openai", "openai_compat", "custom") else None,
     )
     opencode = OpencodeAdapter(
-        api_key=provider_key("opencode"), model=model_override
+        api_key=provider_key("opencode"),
+        model=model_override,
+        base_url=base_url_override if provider == "opencode" else None,
     )
-    ollama = OllamaAdapter(model=model_override, base_url=base_url_override)
+    ollama = OllamaAdapter(
+        model=model_override,
+        base_url=base_url_override if provider == "ollama" else None,
+    )
     mock = MockAdapter()
 
     # An explicitly selected provider is strict: never disguise a failed AI
@@ -220,6 +227,14 @@ async def run_analysis(
     }
 
     settings = get_settings()
+    if base_url_override:
+        configured_base = (
+            settings.ollama_base_url
+            if ai_provider_override == "ollama"
+            else settings.openai_compatible_base_url
+        )
+        if configured_base and base_url_override.rstrip("/") == configured_base.rstrip("/"):
+            base_url_override = None
     if base_url_override:
         if not settings.allow_runtime_provider_urls:
             store.fail_record(

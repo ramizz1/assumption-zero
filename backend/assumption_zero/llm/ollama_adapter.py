@@ -9,7 +9,6 @@ from __future__ import annotations
 
 import logging
 import os
-from typing import Any
 
 import httpx
 
@@ -23,6 +22,7 @@ from assumption_zero.llm.base import (
     build_clarification_messages,
     build_raw_idea_message,
 )
+from assumption_zero.llm.model_catalog import catalog_model_ids, completion_content, ordered_models
 from assumption_zero.llm.openrouter_adapter import _parse_output, _repair_and_parse_json
 from assumption_zero.schemas import EvidenceItem, IdeaInput, PerspectiveName
 
@@ -60,6 +60,44 @@ class OllamaAdapter(LLMAdapter):
             or _DEFAULT_MODEL
         )
 
+    async def _models(self, client: httpx.AsyncClient) -> list[str]:
+        base = self._base_url()
+        discovered_with_size: list[tuple[str, int]] = []
+        try:
+            response = await client.get(f"{base}/api/tags")
+            if response.status_code == 200:
+                data = response.json()
+                for item in data.get("models", []) if isinstance(data, dict) else []:
+                    if not isinstance(item, dict):
+                        continue
+                    name = item.get("name") or item.get("model")
+                    if isinstance(name, str) and name.strip():
+                        discovered_with_size.append((name.strip(), int(item.get("size") or 0)))
+        except Exception as exc:
+            logger.info("Ollama model discovery via /api/tags failed (%s)", type(exc).__name__)
+
+        if not discovered_with_size:
+            try:
+                response = await client.get(f"{base}/v1/models")
+                if response.status_code == 200:
+                    discovered_with_size = [
+                        (model_id, 0) for model_id in catalog_model_ids(response.json())
+                    ]
+            except Exception as exc:
+                logger.info("Ollama model discovery via /v1/models failed (%s)", type(exc).__name__)
+
+        # Larger installed models are generally the strongest local choice. An
+        # explicit model remains first and every other installed model is fallback.
+        discovered = [
+            name for name, _size in sorted(discovered_with_size, key=lambda item: item[1], reverse=True)
+        ]
+        configured = self._model()
+        models = ordered_models(
+            discovered,
+            configured=None if configured.casefold() == "auto" else configured,
+        )
+        return models or [_DEFAULT_MODEL]
+
     @property
     def model_id(self) -> str:
         return f"ollama/{self._model()}"
@@ -69,58 +107,65 @@ class OllamaAdapter(LLMAdapter):
         # Local Ollama is assumed available if base_url is set
         return bool(self._base_url())
 
-    async def _chat(self, messages: list[dict[str, str]]) -> str:
+    async def _chat(self, messages: list[dict[str, str]]) -> tuple[str, str]:
         base = self._base_url()
-        model_name = self._model()
         timeout = max(90.0, float(self._settings.request_timeout))
-
-        # Attempt 1: OpenAI-compatible endpoint (/v1/chat/completions) available in Ollama >= 0.1.24
-        v1_url = f"{base}/v1/chat/completions"
-        v1_payload: dict[str, Any] = {
-            "model": model_name,
-            "messages": messages,
-            "temperature": 0.2,
-        }
+        last_error: Exception | None = None
 
         async with httpx.AsyncClient(timeout=timeout) as client:
-            try:
-                resp = await client.post(v1_url, json=v1_payload)
-                if resp.status_code == 200:
-                    data = resp.json()
-                    if "choices" in data and len(data["choices"]) > 0:
-                        content = data["choices"][0]["message"]["content"]
+            models_to_try = await self._models(client)
+            for model_name in models_to_try:
+                # Attempt 1: OpenAI-compatible endpoint available in modern Ollama.
+                try:
+                    resp = await client.post(
+                        f"{base}/v1/chat/completions",
+                        json={
+                            "model": model_name,
+                            "messages": messages,
+                            "temperature": 0.2,
+                        },
+                    )
+                    if resp.status_code == 200:
+                        data = resp.json()
+                        content = completion_content(data)
                         if content:
-                            return content
-            except Exception as exc:
-                logger.debug(
-                    "Ollama /v1/chat/completions failed (%s) — trying /api/chat fallback...", exc
-                )
+                            actual_model = str(data.get("model") or model_name)
+                            logger.info("Ollama selected model %s", actual_model)
+                            return content, actual_model
+                except Exception as exc:
+                    last_error = exc
 
-            # Attempt 2: Native Ollama endpoint (/api/chat)
-            native_url = f"{base}/api/chat"
-            native_payload = {
-                "model": model_name,
-                "messages": messages,
-                "stream": False,
-                "options": {"temperature": 0.2},
-            }
-            try:
-                resp = await client.post(native_url, json=native_payload)
-                if resp.status_code == 200:
-                    data = resp.json()
-                    msg = data.get("message", {})
-                    content = msg.get("content")
-                    if content:
-                        return content
-                resp.raise_for_status()
-            except Exception as exc:
-                raise RuntimeError(
-                    f"Could not connect to Ollama at {base} for model {model_name}. "
-                    f"Ensure Ollama is running (`ollama serve`) and model '{model_name}' is pulled (`ollama pull {model_name}`). "
-                    f"Error: {exc}"
-                ) from exc
+                # Attempt 2: Native Ollama endpoint.
+                try:
+                    resp = await client.post(
+                        f"{base}/api/chat",
+                        json={
+                            "model": model_name,
+                            "messages": messages,
+                            "stream": False,
+                            "options": {"temperature": 0.2},
+                        },
+                    )
+                    if resp.status_code == 200:
+                        data = resp.json()
+                        message = data.get("message", {}) if isinstance(data, dict) else {}
+                        content = message.get("content") if isinstance(message, dict) else None
+                        if isinstance(content, str) and content.strip():
+                            logger.info("Ollama selected model %s", model_name)
+                            return content, model_name
+                    last_error = RuntimeError(f"Ollama request failed (HTTP {resp.status_code}).")
+                except Exception as exc:
+                    last_error = exc
+                logger.info("Ollama model %s could not answer; trying next installed model", model_name)
 
-        raise RuntimeError(f"Ollama returned empty response for model {model_name}")
+        raise RuntimeError(
+            "Could not connect to Ollama or no installed text model could answer. "
+            f"Ensure Ollama is running and at least one model is pulled. ({type(last_error).__name__})"
+        )
+
+    async def verify_connection(self) -> str:
+        _, model = await self._chat([{"role": "user", "content": "Reply with OK only."}])
+        return model
 
     async def analyze_perspective(
         self,
@@ -135,12 +180,12 @@ class OllamaAdapter(LLMAdapter):
                 "content": build_analysis_prompt(perspective_name.value, idea, evidence),
             },
         ]
-        raw = await self._chat(messages)
-        return _parse_output(raw, perspective_name, self.model_id)
+        raw, actual_model = await self._chat(messages)
+        return _parse_output(raw, perspective_name, f"ollama/{actual_model}")
 
     async def clarify_idea(self, idea: IdeaInput) -> str:
         try:
-            raw = await self._chat(build_clarification_messages(idea))
+            raw, _ = await self._chat(build_clarification_messages(idea))
             return raw.strip()
         except Exception as exc:
             logger.debug("Ollama clarify_idea failed: %s", exc)
@@ -175,7 +220,7 @@ class OllamaAdapter(LLMAdapter):
         )
 
         try:
-            raw_response = await self._chat([
+            raw_response, _ = await self._chat([
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": build_raw_idea_message(raw_text)},
             ])

@@ -33,11 +33,20 @@ from assumption_zero.llm.base import (
     build_analysis_prompt,
     build_clarification_messages,
 )
+from assumption_zero.llm.model_catalog import catalog_model_ids, completion_content, ordered_models
 from assumption_zero.schemas import EvidenceItem, IdeaInput, PerspectiveName, Recommendation
 
 logger = logging.getLogger(__name__)
 
 _VALID_RECOMMENDATIONS = {r.value for r in Recommendation}
+_PREFERRED_CHAT_MODELS = (
+    "gpt-4o-mini",
+    "gpt-4.1-mini",
+    "gpt-4o",
+    "deepseek-chat",
+    "mistral-small-latest",
+    "meta-llama/Llama-3.3-70B-Instruct-Turbo",
+)
 
 
 def _parse_output(raw: str, perspective_name: PerspectiveName, model_id: str) -> PerspectiveOutput:
@@ -124,8 +133,32 @@ class OpenAICompatAdapter(LLMAdapter):
             model
             or os.environ.get("OPENAI_COMPATIBLE_MODEL")
             or self._settings.openai_compatible_model
-            or "gpt-4o-mini"
+            or "auto"
         )
+
+    async def _models(self, client: httpx.AsyncClient) -> list[str]:
+        discovered: list[str] = []
+        try:
+            response = await client.get(f"{self._base_url}/models")
+            if response.status_code == 401:
+                raise RuntimeError("AI provider rejected the API key (HTTP 401).")
+            if response.status_code == 200:
+                discovered = catalog_model_ids(response.json())
+        except RuntimeError:
+            raise
+        except Exception as exc:
+            logger.info(
+                "OpenAI-compatible model discovery unavailable (%s); using configured fallbacks",
+                type(exc).__name__,
+            )
+
+        models = ordered_models(
+            discovered,
+            configured=None if self._model.casefold() == "auto" else self._model,
+            preferred=_PREFERRED_CHAT_MODELS,
+        )
+        # Bound retries for catalogs that contain hundreds of historical models.
+        return (models or list(_PREFERRED_CHAT_MODELS))[:12]
 
     @property
     def model_id(self) -> str:
@@ -146,29 +179,62 @@ class OpenAICompatAdapter(LLMAdapter):
             "Content-Type": "application/json",
         }
 
-    async def _chat(self, messages: list[dict[str, str]]) -> str:
+    async def _chat(
+        self,
+        messages: list[dict[str, str]],
+        *,
+        json_mode: bool = False,
+    ) -> tuple[str, str]:
         url = f"{self._base_url}/chat/completions"
-        payload: dict[str, Any] = {
-            "model": self._model,
-            "messages": messages,
-            "temperature": 0.3,
-        }
-        # json_object response_format not supported by all providers, skip for non-OpenAI
-        if "openai.com" in self._base_url:
-            payload["response_format"] = {"type": "json_object"}
+        last_status: int | None = None
         async with httpx.AsyncClient(
             timeout=max(60.0, float(self._settings.request_timeout)),
             headers=self._headers(),
         ) as client:
-            resp = await client.post(url, json=payload)
-            if resp.status_code == 401:
-                raise RuntimeError(
-                    f"API key rejected (HTTP 401) for {self._base_url}. "
-                    "Please check your --api-key or OPENAI_COMPATIBLE_API_KEY."
-                )
-            resp.raise_for_status()
-            data = resp.json()
-            return data["choices"][0]["message"]["content"]
+            models_to_try = await self._models(client)
+            for model_name in models_to_try:
+                payload: dict[str, Any] = {
+                    "model": model_name,
+                    "messages": messages,
+                    "temperature": 0.3,
+                }
+                # JSON mode is useful for analysis, but only send it to OpenAI's
+                # own endpoint where support is known.
+                if json_mode and "api.openai.com" in self._base_url:
+                    payload["response_format"] = {"type": "json_object"}
+                try:
+                    resp = await client.post(url, json=payload)
+                except Exception as exc:
+                    logger.info(
+                        "OpenAI-compatible request transport failed (%s)", type(exc).__name__
+                    )
+                    continue
+                last_status = resp.status_code
+                if resp.status_code == 401:
+                    raise RuntimeError("AI provider rejected the API key (HTTP 401).")
+                if resp.status_code >= 400:
+                    logger.info(
+                        "OpenAI-compatible model %s unavailable (HTTP %s); trying next model",
+                        model_name,
+                        resp.status_code,
+                    )
+                    continue
+                data = resp.json()
+                content = completion_content(data)
+                if content:
+                    actual_model = str(data.get("model") or model_name)
+                    logger.info("OpenAI-compatible provider selected model %s", actual_model)
+                    return content, actual_model
+
+        if last_status in (402, 429):
+            raise RuntimeError(f"AI provider quota or rate limit exceeded (HTTP {last_status}).")
+        if last_status and last_status >= 400:
+            raise RuntimeError(f"AI provider request failed (HTTP {last_status}).")
+        raise RuntimeError("AI provider returned an empty response.")
+
+    async def verify_connection(self) -> str:
+        _, model = await self._chat([{"role": "user", "content": "Reply with OK only."}])
+        return model
 
     async def analyze_perspective(
         self,
@@ -184,19 +250,19 @@ class OpenAICompatAdapter(LLMAdapter):
             },
         ]
         try:
-            raw = await self._chat(messages)
+            raw, actual_model = await self._chat(messages, json_mode=True)
         except Exception as exc:
             logger.error("OpenAI-compat API error for %s: %s", perspective_name.value, exc)
             raise
 
         try:
-            return _parse_output(raw, perspective_name, self.model_id)
+            return _parse_output(raw, perspective_name, f"openai-compat/{actual_model}")
         except Exception as exc:
             raise ValueError(f"OpenAI-compat returned unparseable output: {exc}") from exc
 
     async def clarify_idea(self, idea: IdeaInput) -> str:
         try:
-            raw = await self._chat(build_clarification_messages(idea))
+            raw, _ = await self._chat(build_clarification_messages(idea))
             return raw.strip()
         except Exception as exc:
             logger.warning("OpenAI-compat clarify_idea failed: %s", exc)

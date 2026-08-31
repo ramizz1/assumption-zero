@@ -27,6 +27,7 @@ from assumption_zero.llm.base import (
     build_clarification_messages,
     build_raw_idea_message,
 )
+from assumption_zero.llm.model_catalog import completion_content
 from assumption_zero.schemas import EvidenceItem, IdeaInput, PerspectiveName, Recommendation
 
 logger = logging.getLogger(__name__)
@@ -35,15 +36,11 @@ _VALID_RECOMMENDATIONS = {r.value for r in Recommendation}
 
 _OPENROUTER_BASE = "https://openrouter.ai/api/v1"
 
-# Primary default model & fallback list of verified free models on OpenRouter
-_DEFAULT_MODEL = "openrouter/free"
-_FALLBACK_MODELS = [
-    "nvidia/nemotron-3-super-120b-a12b:free",
-    "z-ai/glm-5.2:free",
-    "google/gemma-4-31b-it:free",
-    "google/gemma-4-26b-a4b-it:free",
-    "openrouter/free",
-]
+# OpenRouter owns this router and keeps its candidate pool current. Using it as
+# the default avoids pinning new API keys to a model slug that may have been
+# removed, rate-limited, or made unavailable after this app was deployed.
+_DEFAULT_MODEL = "openrouter/auto"
+_DYNAMIC_FALLBACK_MODEL = "openrouter/free"
 
 
 def _repair_and_parse_json(text: str) -> dict:
@@ -198,9 +195,19 @@ class OpenRouterAdapter(LLMAdapter):
     def _model(self) -> str:
         return self._model_override or self._settings.openrouter_model or _DEFAULT_MODEL
 
+    def _models(self) -> list[str]:
+        """Return a live routing policy instead of a stale concrete-model list."""
+        primary = self._model().strip() or _DEFAULT_MODEL
+        if primary.casefold() == "auto":
+            primary = _DEFAULT_MODEL
+        if primary == _DYNAMIC_FALLBACK_MODEL:
+            return [primary]
+        return [primary, _DYNAMIC_FALLBACK_MODEL]
+
     @property
     def model_id(self) -> str:
-        return f"openrouter/{self._model()}"
+        model = self._model()
+        return model if model.startswith("openrouter/") else f"openrouter/{model}"
 
     @property
     def is_available(self) -> bool:
@@ -221,42 +228,50 @@ class OpenRouterAdapter(LLMAdapter):
 
     async def _chat(self, messages: list[dict[str, str]]) -> tuple[str, str]:
         url = f"{_OPENROUTER_BASE}/chat/completions"
-        primary = self._model()
-        models_to_try = [primary] + [m for m in _FALLBACK_MODELS if m != primary]
+        models_to_try = self._models()
         timeout = max(30.0, float(self._settings.request_timeout))
-        # OpenRouter's `models` field performs server-side ordered failover when
-        # a model is unavailable, rate-limited, or removed. The final free router
-        # keeps this list resilient as the free catalog changes.
-        payload: dict[str, Any] = {
-            "models": models_to_try,
-            "messages": messages,
-            "temperature": 0.3,
-        }
+        last_status: int | None = None
 
         async with self._request_slots:
             async with httpx.AsyncClient(
                 timeout=timeout,
                 headers=self._headers(),
             ) as client:
-                resp = await client.post(url, json=payload)
+                for model_name in models_to_try:
+                    payload: dict[str, Any] = {
+                        "model": model_name,
+                        "messages": messages,
+                        "temperature": 0.3,
+                    }
+                    resp = await client.post(url, json=payload)
+                    last_status = resp.status_code
+                    if resp.status_code == 401:
+                        raise RuntimeError("AI provider rejected the API key (HTTP 401).")
+                    if resp.status_code >= 400:
+                        logger.info(
+                            "OpenRouter route %s unavailable (HTTP %s); trying next route",
+                            model_name,
+                            resp.status_code,
+                        )
+                        continue
 
-        if resp.status_code == 401:
-            raise RuntimeError("AI provider rejected the API key (HTTP 401).")
-        if resp.status_code in (402, 429):
-            raise RuntimeError(f"AI provider quota or rate limit exceeded (HTTP {resp.status_code}).")
-        if resp.status_code >= 400:
-            logger.warning("OpenRouter request failed with HTTP %s", resp.status_code)
-            raise RuntimeError(f"AI provider request failed (HTTP {resp.status_code}).")
+                    data = resp.json()
+                    content = completion_content(data)
+                    if content:
+                        actual_model = str(data.get("model") or model_name)
+                        logger.info("OpenRouter selected model %s", actual_model)
+                        return content, actual_model
+                    logger.info("OpenRouter route %s returned no text; trying next route", model_name)
 
-        data = resp.json()
-        choices = data.get("choices") or []
-        if choices:
-            content = choices[0].get("message", {}).get("content")
-            if content:
-                actual_model = str(data.get("model") or primary)
-                return content, actual_model
-        logger.warning("OpenRouter returned no completion content")
+        if last_status in (402, 429):
+            raise RuntimeError(f"AI provider quota or rate limit exceeded (HTTP {last_status}).")
+        if last_status and last_status >= 400:
+            raise RuntimeError(f"AI provider request failed (HTTP {last_status}).")
         raise RuntimeError("AI provider returned an empty response.")
+
+    async def verify_connection(self) -> str:
+        _, model = await self._chat([{"role": "user", "content": "Reply with OK only."}])
+        return model
 
     async def analyze_perspective(
         self,
