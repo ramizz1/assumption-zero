@@ -23,6 +23,9 @@ report.html
 .env.local
 .env.*.local
 
+# Vercel project metadata
+.vercel/
+
 # Node
 node_modules/
 dist/
