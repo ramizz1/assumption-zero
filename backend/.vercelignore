@@ -1,0 +1,14 @@
+.venv/
+venv/
+env/
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+tests/
+azero_data/
+report.html
+.env*
