@@ -1,0 +1,1494 @@
+{
+  "nodes": [
+    {
+      "id": "file:backend/tests/test_competitors.py",
+      "type": "file",
+      "name": "test_competitors.py",
+      "filePath": "backend/tests/test_competitors.py",
+      "summary": "Tests competitor normalization and merging plus evidence-grounding rules for AI-discovered and user-supplied competitors.",
+      "tags": [
+        "test",
+        "competitor-research",
+        "evidence-grounding",
+        "pytest"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:backend/tests/test_competitors.py:_comp",
+      "type": "function",
+      "name": "_comp",
+      "filePath": "backend/tests/test_competitors.py",
+      "lineRange": [
+        25,
+        38
+      ],
+      "summary": "Supports comp as an internal step in tests competitor normalization and merging plus evidence-grounding rules for ai-discovered and user-supplied competitors.",
+      "tags": [
+        "test",
+        "pytest",
+        "validation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/tests/test_competitors.py:test_exact_duplicates_merged",
+      "type": "function",
+      "name": "test_exact_duplicates_merged",
+      "filePath": "backend/tests/test_competitors.py",
+      "lineRange": [
+        41,
+        49
+      ],
+      "summary": "Verifies that exact duplicates merged.",
+      "tags": [
+        "test",
+        "pytest",
+        "validation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/tests/test_competitors.py:test_name_variant_merged",
+      "type": "function",
+      "name": "test_name_variant_merged",
+      "filePath": "backend/tests/test_competitors.py",
+      "lineRange": [
+        52,
+        59
+      ],
+      "summary": "Verifies that name variant merged.",
+      "tags": [
+        "test",
+        "pytest",
+        "validation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/tests/test_competitors.py:test_different_companies_not_merged",
+      "type": "function",
+      "name": "test_different_companies_not_merged",
+      "filePath": "backend/tests/test_competitors.py",
+      "lineRange": [
+        62,
+        68
+      ],
+      "summary": "Verifies that different companies not merged.",
+      "tags": [
+        "test",
+        "pytest",
+        "validation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/tests/test_competitors.py:test_empty_list",
+      "type": "function",
+      "name": "test_empty_list",
+      "filePath": "backend/tests/test_competitors.py",
+      "lineRange": [
+        71,
+        72
+      ],
+      "summary": "Verifies that empty list.",
+      "tags": [
+        "test",
+        "pytest",
+        "validation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/tests/test_competitors.py:test_single_competitor",
+      "type": "function",
+      "name": "test_single_competitor",
+      "filePath": "backend/tests/test_competitors.py",
+      "lineRange": [
+        75,
+        78
+      ],
+      "summary": "Verifies that single competitor.",
+      "tags": [
+        "test",
+        "pytest",
+        "validation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/tests/test_competitors.py:test_evidence_ids_deduplicated",
+      "type": "function",
+      "name": "test_evidence_ids_deduplicated",
+      "filePath": "backend/tests/test_competitors.py",
+      "lineRange": [
+        81,
+        89
+      ],
+      "summary": "Verifies that evidence ids deduplicated.",
+      "tags": [
+        "test",
+        "pytest",
+        "validation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/tests/test_competitors.py:_idea",
+      "type": "function",
+      "name": "_idea",
+      "filePath": "backend/tests/test_competitors.py",
+      "lineRange": [
+        92,
+        100
+      ],
+      "summary": "Supports idea as an internal step in tests competitor normalization and merging plus evidence-grounding rules for ai-discovered and user-supplied competitors.",
+      "tags": [
+        "test",
+        "pytest",
+        "validation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/tests/test_competitors.py:_evidence",
+      "type": "function",
+      "name": "_evidence",
+      "filePath": "backend/tests/test_competitors.py",
+      "lineRange": [
+        103,
+        123
+      ],
+      "summary": "Supports evidence as an internal step in tests competitor normalization and merging plus evidence-grounding rules for ai-discovered and user-supplied competitors.",
+      "tags": [
+        "test",
+        "pytest",
+        "validation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/tests/test_competitors.py:test_ai_competitor_requires_real_supporting_citation",
+      "type": "function",
+      "name": "test_ai_competitor_requires_real_supporting_citation",
+      "filePath": "backend/tests/test_competitors.py",
+      "lineRange": [
+        126,
+        139
+      ],
+      "summary": "Verifies that ai competitor requires real supporting citation.",
+      "tags": [
+        "test",
+        "pytest",
+        "validation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/tests/test_competitors.py:test_ai_competitor_is_grounded_and_uses_evidence_url",
+      "type": "function",
+      "name": "test_ai_competitor_is_grounded_and_uses_evidence_url",
+      "filePath": "backend/tests/test_competitors.py",
+      "lineRange": [
+        142,
+        160
+      ],
+      "summary": "Verifies that ai competitor is grounded and uses evidence url.",
+      "tags": [
+        "test",
+        "pytest",
+        "validation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/tests/test_competitors.py:test_user_competitor_without_evidence_is_low_confidence_and_has_no_fake_url",
+      "type": "function",
+      "name": "test_user_competitor_without_evidence_is_low_confidence_and_has_no_fake_url",
+      "filePath": "backend/tests/test_competitors.py",
+      "lineRange": [
+        163,
+        169
+      ],
+      "summary": "Verifies that user competitor without evidence is low confidence and has no fake url.",
+      "tags": [
+        "test",
+        "pytest",
+        "validation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/tests/test_competitors.py:test_prefix_names_are_not_accidentally_merged",
+      "type": "function",
+      "name": "test_prefix_names_are_not_accidentally_merged",
+      "filePath": "backend/tests/test_competitors.py",
+      "lineRange": [
+        172,
+        174
+      ],
+      "summary": "Verifies that prefix names are not accidentally merged.",
+      "tags": [
+        "test",
+        "pytest",
+        "validation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/tests/test_competitors.py:test_merge_promotes_better_supported_entry",
+      "type": "function",
+      "name": "test_merge_promotes_better_supported_entry",
+      "filePath": "backend/tests/test_competitors.py",
+      "lineRange": [
+        177,
+        185
+      ],
+      "summary": "Verifies that merge promotes better supported entry.",
+      "tags": [
+        "test",
+        "pytest",
+        "validation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/tests/test_confidence.py",
+      "type": "file",
+      "name": "test_confidence.py",
+      "filePath": "backend/tests/test_confidence.py",
+      "summary": "Tests evidence-confidence behavior across empty, sparse, and high-quality evidence sets and confirms independence from opportunity scores.",
+      "tags": [
+        "test",
+        "confidence-scoring",
+        "evidence",
+        "pytest"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/tests/test_confidence.py:test_no_evidence_returns_low",
+      "type": "function",
+      "name": "test_no_evidence_returns_low",
+      "filePath": "backend/tests/test_confidence.py",
+      "lineRange": [
+        8,
+        10
+      ],
+      "summary": "Verifies that no evidence returns low.",
+      "tags": [
+        "test",
+        "pytest",
+        "validation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/tests/test_confidence.py:test_many_high_quality_items_returns_high",
+      "type": "function",
+      "name": "test_many_high_quality_items_returns_high",
+      "filePath": "backend/tests/test_confidence.py",
+      "lineRange": [
+        13,
+        33
+      ],
+      "summary": "Verifies that many high quality items returns high.",
+      "tags": [
+        "test",
+        "pytest",
+        "validation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/tests/test_confidence.py:test_single_item_returns_low",
+      "type": "function",
+      "name": "test_single_item_returns_low",
+      "filePath": "backend/tests/test_confidence.py",
+      "lineRange": [
+        36,
+        38
+      ],
+      "summary": "Verifies that single item returns low.",
+      "tags": [
+        "test",
+        "pytest",
+        "validation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/tests/test_confidence.py:test_confidence_is_independent_of_score",
+      "type": "function",
+      "name": "test_confidence_is_independent_of_score",
+      "filePath": "backend/tests/test_confidence.py",
+      "lineRange": [
+        41,
+        49
+      ],
+      "summary": "Verifies that confidence is independent of score.",
+      "tags": [
+        "test",
+        "pytest",
+        "validation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/tests/test_engine_e2e.py",
+      "type": "file",
+      "name": "test_engine_e2e.py",
+      "filePath": "backend/tests/test_engine_e2e.py",
+      "summary": "Exercises the analysis engine end to end with deterministic adapter and research-provider doubles, including grounded competitor survival through the full pipeline.",
+      "tags": [
+        "test",
+        "end-to-end",
+        "analysis-engine",
+        "test-doubles"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:backend/tests/test_engine_e2e.py:test_engine_end_to_end",
+      "type": "function",
+      "name": "test_engine_end_to_end",
+      "filePath": "backend/tests/test_engine_e2e.py",
+      "lineRange": [
+        96,
+        138
+      ],
+      "summary": "Verifies that engine end to end.",
+      "tags": [
+        "test",
+        "pytest",
+        "validation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/tests/test_engine_e2e.py:test_ai_competitor_survives_grounded_end_to_end_pipeline",
+      "type": "function",
+      "name": "test_ai_competitor_survives_grounded_end_to_end_pipeline",
+      "filePath": "backend/tests/test_engine_e2e.py",
+      "lineRange": [
+        142,
+        165
+      ],
+      "summary": "Verifies that ai competitor survives grounded end to end pipeline.",
+      "tags": [
+        "test",
+        "pytest",
+        "validation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/tests/test_engine_e2e.py:MockAdapter",
+      "type": "class",
+      "name": "MockAdapter",
+      "filePath": "backend/tests/test_engine_e2e.py",
+      "lineRange": [
+        12,
+        44
+      ],
+      "summary": "Deterministic model-adapter test double used to exercise the engine without an external LLM.",
+      "tags": [
+        "test",
+        "test-double",
+        "class"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/tests/test_engine_e2e.py:MockProvider",
+      "type": "class",
+      "name": "MockProvider",
+      "filePath": "backend/tests/test_engine_e2e.py",
+      "lineRange": [
+        46,
+        56
+      ],
+      "summary": "Research-provider test double that returns predictable evidence to engine tests.",
+      "tags": [
+        "test",
+        "test-double",
+        "class"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/tests/test_engine_e2e.py:CompetitorProvider",
+      "type": "class",
+      "name": "CompetitorProvider",
+      "filePath": "backend/tests/test_engine_e2e.py",
+      "lineRange": [
+        59,
+        78
+      ],
+      "summary": "Test research provider that emits evidence naming a competitor.",
+      "tags": [
+        "test",
+        "test-double",
+        "class"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/tests/test_engine_e2e.py:CompetitorAIAdapter",
+      "type": "class",
+      "name": "CompetitorAIAdapter",
+      "filePath": "backend/tests/test_engine_e2e.py",
+      "lineRange": [
+        81,
+        93
+      ],
+      "summary": "Test model adapter that augments deterministic perspective output with an AI-discovered competitor.",
+      "tags": [
+        "test",
+        "test-double",
+        "class"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/tests/test_founder_toolkit.py",
+      "type": "file",
+      "name": "test_founder_toolkit.py",
+      "filePath": "backend/tests/test_founder_toolkit.py",
+      "summary": "Verifies that generated founder toolkits contain measurable roadmaps and honor the acquisition channels declared in the idea.",
+      "tags": [
+        "test",
+        "founder-toolkit",
+        "roadmap",
+        "pytest"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/tests/test_founder_toolkit.py:_idea",
+      "type": "function",
+      "name": "_idea",
+      "filePath": "backend/tests/test_founder_toolkit.py",
+      "lineRange": [
+        6,
+        22
+      ],
+      "summary": "Supports idea as an internal step in verifies that generated founder toolkits contain measurable roadmaps and honor the acquisition channels declared in the idea.",
+      "tags": [
+        "test",
+        "pytest",
+        "validation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/tests/test_founder_toolkit.py:test_founder_toolkit_contains_measurable_roadmap",
+      "type": "function",
+      "name": "test_founder_toolkit_contains_measurable_roadmap",
+      "filePath": "backend/tests/test_founder_toolkit.py",
+      "lineRange": [
+        25,
+        36
+      ],
+      "summary": "Verifies that founder toolkit contains measurable roadmap.",
+      "tags": [
+        "test",
+        "pytest",
+        "validation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/tests/test_founder_toolkit.py:test_founder_toolkit_uses_declared_acquisition_channels",
+      "type": "function",
+      "name": "test_founder_toolkit_uses_declared_acquisition_channels",
+      "filePath": "backend/tests/test_founder_toolkit.py",
+      "lineRange": [
+        39,
+        49
+      ],
+      "summary": "Verifies that founder toolkit uses declared acquisition channels.",
+      "tags": [
+        "test",
+        "pytest",
+        "validation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/tests/test_regional_research.py",
+      "type": "file",
+      "name": "test_regional_research.py",
+      "filePath": "backend/tests/test_regional_research.py",
+      "summary": "Tests regional evidence filtering, research-depth controls, perspective volume, and fallback parsing of user-supplied competitor and geography details.",
+      "tags": [
+        "test",
+        "regional-analysis",
+        "research-depth",
+        "pytest"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:backend/tests/test_regional_research.py:_idea",
+      "type": "function",
+      "name": "_idea",
+      "filePath": "backend/tests/test_regional_research.py",
+      "lineRange": [
+        23,
+        35
+      ],
+      "summary": "Supports idea as an internal step in tests regional evidence filtering, research-depth controls, perspective volume, and fallback parsing of user-supplied competitor and geography details.",
+      "tags": [
+        "test",
+        "pytest",
+        "validation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/tests/test_regional_research.py:_evidence",
+      "type": "function",
+      "name": "_evidence",
+      "filePath": "backend/tests/test_regional_research.py",
+      "lineRange": [
+        38,
+        58
+      ],
+      "summary": "Supports evidence as an internal step in tests regional evidence filtering, research-depth controls, perspective volume, and fallback parsing of user-supplied competitor and geography details.",
+      "tags": [
+        "test",
+        "pytest",
+        "validation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/tests/test_regional_research.py:test_regional_analysis_counts_only_market_specific_evidence",
+      "type": "function",
+      "name": "test_regional_analysis_counts_only_market_specific_evidence",
+      "filePath": "backend/tests/test_regional_research.py",
+      "lineRange": [
+        61,
+        86
+      ],
+      "summary": "Verifies that regional analysis counts only market specific evidence.",
+      "tags": [
+        "test",
+        "pytest",
+        "validation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/tests/test_regional_research.py:test_research_depth_controls_query_and_perspective_volume",
+      "type": "function",
+      "name": "test_research_depth_controls_query_and_perspective_volume",
+      "filePath": "backend/tests/test_regional_research.py",
+      "lineRange": [
+        98,
+        115
+      ],
+      "summary": "Verifies that research depth controls query and perspective volume.",
+      "tags": [
+        "test",
+        "pytest",
+        "validation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/tests/test_regional_research.py:test_no_key_parser_uses_only_user_supplied_competitors_and_region",
+      "type": "function",
+      "name": "test_no_key_parser_uses_only_user_supplied_competitors_and_region",
+      "filePath": "backend/tests/test_regional_research.py",
+      "lineRange": [
+        119,
+        138
+      ],
+      "summary": "Verifies that no key parser uses only user supplied competitors and region.",
+      "tags": [
+        "test",
+        "pytest",
+        "validation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/tests/test_scoring.py",
+      "type": "file",
+      "name": "test_scoring.py",
+      "filePath": "backend/tests/test_scoring.py",
+      "summary": "Validates scoring weights, dimension coverage, determinism, bounds, weighted totals, and extreme or missing-perspective behavior.",
+      "tags": [
+        "test",
+        "opportunity-scoring",
+        "aggregation",
+        "pytest"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:backend/tests/test_scoring.py:test_weights_sum_to_100",
+      "type": "function",
+      "name": "test_weights_sum_to_100",
+      "filePath": "backend/tests/test_scoring.py",
+      "lineRange": [
+        17,
+        21
+      ],
+      "summary": "Verifies that weights sum to 100.",
+      "tags": [
+        "test",
+        "pytest",
+        "validation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/tests/test_scoring.py:test_all_seven_dimensions_present",
+      "type": "function",
+      "name": "test_all_seven_dimensions_present",
+      "filePath": "backend/tests/test_scoring.py",
+      "lineRange": [
+        24,
+        34
+      ],
+      "summary": "Verifies that all seven dimensions present.",
+      "tags": [
+        "test",
+        "pytest",
+        "validation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/tests/test_scoring.py:test_score_calculation_deterministic",
+      "type": "function",
+      "name": "test_score_calculation_deterministic",
+      "filePath": "backend/tests/test_scoring.py",
+      "lineRange": [
+        37,
+        41
+      ],
+      "summary": "Verifies that score calculation deterministic.",
+      "tags": [
+        "test",
+        "pytest",
+        "validation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/tests/test_scoring.py:test_score_is_within_bounds",
+      "type": "function",
+      "name": "test_score_is_within_bounds",
+      "filePath": "backend/tests/test_scoring.py",
+      "lineRange": [
+        44,
+        46
+      ],
+      "summary": "Verifies that score is within bounds.",
+      "tags": [
+        "test",
+        "pytest",
+        "validation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/tests/test_scoring.py:test_score_has_correct_dimension_count",
+      "type": "function",
+      "name": "test_score_has_correct_dimension_count",
+      "filePath": "backend/tests/test_scoring.py",
+      "lineRange": [
+        49,
+        51
+      ],
+      "summary": "Verifies that score has correct dimension count.",
+      "tags": [
+        "test",
+        "pytest",
+        "validation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/tests/test_scoring.py:test_weighted_scores_sum_to_total",
+      "type": "function",
+      "name": "test_weighted_scores_sum_to_total",
+      "filePath": "backend/tests/test_scoring.py",
+      "lineRange": [
+        54,
+        60
+      ],
+      "summary": "Verifies that weighted scores sum to total.",
+      "tags": [
+        "test",
+        "pytest",
+        "validation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/tests/test_scoring.py:test_score_no_perspectives",
+      "type": "function",
+      "name": "test_score_no_perspectives",
+      "filePath": "backend/tests/test_scoring.py",
+      "lineRange": [
+        63,
+        67
+      ],
+      "summary": "Verifies that score no perspectives.",
+      "tags": [
+        "test",
+        "pytest",
+        "validation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/tests/test_scoring.py:test_score_all_high",
+      "type": "function",
+      "name": "test_score_all_high",
+      "filePath": "backend/tests/test_scoring.py",
+      "lineRange": [
+        70,
+        76
+      ],
+      "summary": "Verifies that score all high.",
+      "tags": [
+        "test",
+        "pytest",
+        "validation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/tests/test_scoring.py:test_score_all_low",
+      "type": "function",
+      "name": "test_score_all_low",
+      "filePath": "backend/tests/test_scoring.py",
+      "lineRange": [
+        79,
+        85
+      ],
+      "summary": "Verifies that score all low.",
+      "tags": [
+        "test",
+        "pytest",
+        "validation"
+      ],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:backend/tests/test_competitors.py",
+      "target": "function:backend/tests/test_competitors.py:_comp",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_competitors.py",
+      "target": "function:backend/tests/test_competitors.py:_comp",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/tests/test_competitors.py",
+      "target": "function:backend/tests/test_competitors.py:test_exact_duplicates_merged",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_competitors.py",
+      "target": "function:backend/tests/test_competitors.py:test_exact_duplicates_merged",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/tests/test_competitors.py",
+      "target": "function:backend/tests/test_competitors.py:test_name_variant_merged",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_competitors.py",
+      "target": "function:backend/tests/test_competitors.py:test_name_variant_merged",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/tests/test_competitors.py",
+      "target": "function:backend/tests/test_competitors.py:test_different_companies_not_merged",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_competitors.py",
+      "target": "function:backend/tests/test_competitors.py:test_different_companies_not_merged",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/tests/test_competitors.py",
+      "target": "function:backend/tests/test_competitors.py:test_empty_list",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_competitors.py",
+      "target": "function:backend/tests/test_competitors.py:test_empty_list",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/tests/test_competitors.py",
+      "target": "function:backend/tests/test_competitors.py:test_single_competitor",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_competitors.py",
+      "target": "function:backend/tests/test_competitors.py:test_single_competitor",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/tests/test_competitors.py",
+      "target": "function:backend/tests/test_competitors.py:test_evidence_ids_deduplicated",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_competitors.py",
+      "target": "function:backend/tests/test_competitors.py:test_evidence_ids_deduplicated",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/tests/test_competitors.py",
+      "target": "function:backend/tests/test_competitors.py:_idea",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_competitors.py",
+      "target": "function:backend/tests/test_competitors.py:_idea",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/tests/test_competitors.py",
+      "target": "function:backend/tests/test_competitors.py:_evidence",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_competitors.py",
+      "target": "function:backend/tests/test_competitors.py:_evidence",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/tests/test_competitors.py",
+      "target": "function:backend/tests/test_competitors.py:test_ai_competitor_requires_real_supporting_citation",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_competitors.py",
+      "target": "function:backend/tests/test_competitors.py:test_ai_competitor_requires_real_supporting_citation",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/tests/test_competitors.py",
+      "target": "function:backend/tests/test_competitors.py:test_ai_competitor_is_grounded_and_uses_evidence_url",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_competitors.py",
+      "target": "function:backend/tests/test_competitors.py:test_ai_competitor_is_grounded_and_uses_evidence_url",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/tests/test_competitors.py",
+      "target": "function:backend/tests/test_competitors.py:test_user_competitor_without_evidence_is_low_confidence_and_has_no_fake_url",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_competitors.py",
+      "target": "function:backend/tests/test_competitors.py:test_user_competitor_without_evidence_is_low_confidence_and_has_no_fake_url",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/tests/test_competitors.py",
+      "target": "function:backend/tests/test_competitors.py:test_prefix_names_are_not_accidentally_merged",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_competitors.py",
+      "target": "function:backend/tests/test_competitors.py:test_prefix_names_are_not_accidentally_merged",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/tests/test_competitors.py",
+      "target": "function:backend/tests/test_competitors.py:test_merge_promotes_better_supported_entry",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_competitors.py",
+      "target": "function:backend/tests/test_competitors.py:test_merge_promotes_better_supported_entry",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/tests/test_competitors.py",
+      "target": "file:backend/assumption_zero/analysis/competitor_merger.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/tests/test_competitors.py",
+      "target": "file:backend/assumption_zero/analysis/engine.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/tests/test_competitors.py",
+      "target": "file:backend/assumption_zero/llm/base.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/tests/test_competitors.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/tests/test_confidence.py",
+      "target": "function:backend/tests/test_confidence.py:test_no_evidence_returns_low",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_confidence.py",
+      "target": "function:backend/tests/test_confidence.py:test_no_evidence_returns_low",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/tests/test_confidence.py",
+      "target": "function:backend/tests/test_confidence.py:test_many_high_quality_items_returns_high",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_confidence.py",
+      "target": "function:backend/tests/test_confidence.py:test_many_high_quality_items_returns_high",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/tests/test_confidence.py",
+      "target": "function:backend/tests/test_confidence.py:test_single_item_returns_low",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_confidence.py",
+      "target": "function:backend/tests/test_confidence.py:test_single_item_returns_low",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/tests/test_confidence.py",
+      "target": "function:backend/tests/test_confidence.py:test_confidence_is_independent_of_score",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_confidence.py",
+      "target": "function:backend/tests/test_confidence.py:test_confidence_is_independent_of_score",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/tests/test_confidence.py",
+      "target": "file:backend/assumption_zero/analysis/confidence.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/tests/test_confidence.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/tests/test_engine_e2e.py",
+      "target": "function:backend/tests/test_engine_e2e.py:test_engine_end_to_end",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_engine_e2e.py",
+      "target": "function:backend/tests/test_engine_e2e.py:test_engine_end_to_end",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/tests/test_engine_e2e.py",
+      "target": "function:backend/tests/test_engine_e2e.py:test_ai_competitor_survives_grounded_end_to_end_pipeline",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_engine_e2e.py",
+      "target": "function:backend/tests/test_engine_e2e.py:test_ai_competitor_survives_grounded_end_to_end_pipeline",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/tests/test_engine_e2e.py",
+      "target": "class:backend/tests/test_engine_e2e.py:MockAdapter",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_engine_e2e.py",
+      "target": "class:backend/tests/test_engine_e2e.py:MockAdapter",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/tests/test_engine_e2e.py",
+      "target": "class:backend/tests/test_engine_e2e.py:MockProvider",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_engine_e2e.py",
+      "target": "class:backend/tests/test_engine_e2e.py:MockProvider",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/tests/test_engine_e2e.py",
+      "target": "class:backend/tests/test_engine_e2e.py:CompetitorProvider",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_engine_e2e.py",
+      "target": "class:backend/tests/test_engine_e2e.py:CompetitorProvider",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/tests/test_engine_e2e.py",
+      "target": "class:backend/tests/test_engine_e2e.py:CompetitorAIAdapter",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_engine_e2e.py",
+      "target": "class:backend/tests/test_engine_e2e.py:CompetitorAIAdapter",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/tests/test_engine_e2e.py",
+      "target": "file:backend/assumption_zero/analysis/engine.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/tests/test_engine_e2e.py",
+      "target": "file:backend/assumption_zero/llm/base.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/tests/test_engine_e2e.py",
+      "target": "file:backend/assumption_zero/research/base.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/tests/test_engine_e2e.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/tests/test_founder_toolkit.py",
+      "target": "function:backend/tests/test_founder_toolkit.py:_idea",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_founder_toolkit.py",
+      "target": "function:backend/tests/test_founder_toolkit.py:_idea",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/tests/test_founder_toolkit.py",
+      "target": "function:backend/tests/test_founder_toolkit.py:test_founder_toolkit_contains_measurable_roadmap",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_founder_toolkit.py",
+      "target": "function:backend/tests/test_founder_toolkit.py:test_founder_toolkit_contains_measurable_roadmap",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/tests/test_founder_toolkit.py",
+      "target": "function:backend/tests/test_founder_toolkit.py:test_founder_toolkit_uses_declared_acquisition_channels",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_founder_toolkit.py",
+      "target": "function:backend/tests/test_founder_toolkit.py:test_founder_toolkit_uses_declared_acquisition_channels",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/tests/test_founder_toolkit.py",
+      "target": "file:backend/assumption_zero/analysis/experiment_generator.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/tests/test_founder_toolkit.py",
+      "target": "file:backend/assumption_zero/analysis/founder_toolkit.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/tests/test_founder_toolkit.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/tests/test_regional_research.py",
+      "target": "function:backend/tests/test_regional_research.py:_idea",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_regional_research.py",
+      "target": "function:backend/tests/test_regional_research.py:_idea",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/tests/test_regional_research.py",
+      "target": "function:backend/tests/test_regional_research.py:_evidence",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_regional_research.py",
+      "target": "function:backend/tests/test_regional_research.py:_evidence",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/tests/test_regional_research.py",
+      "target": "function:backend/tests/test_regional_research.py:test_regional_analysis_counts_only_market_specific_evidence",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_regional_research.py",
+      "target": "function:backend/tests/test_regional_research.py:test_regional_analysis_counts_only_market_specific_evidence",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/tests/test_regional_research.py",
+      "target": "function:backend/tests/test_regional_research.py:test_research_depth_controls_query_and_perspective_volume",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_regional_research.py",
+      "target": "function:backend/tests/test_regional_research.py:test_research_depth_controls_query_and_perspective_volume",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/tests/test_regional_research.py",
+      "target": "function:backend/tests/test_regional_research.py:test_no_key_parser_uses_only_user_supplied_competitors_and_region",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_regional_research.py",
+      "target": "function:backend/tests/test_regional_research.py:test_no_key_parser_uses_only_user_supplied_competitors_and_region",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/tests/test_regional_research.py",
+      "target": "file:backend/assumption_zero/analysis/engine.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/tests/test_regional_research.py",
+      "target": "file:backend/assumption_zero/analysis/query_generator.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/tests/test_regional_research.py",
+      "target": "file:backend/assumption_zero/analysis/regional_analysis.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/tests/test_regional_research.py",
+      "target": "file:backend/assumption_zero/llm/mock_adapter.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/tests/test_regional_research.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/tests/test_scoring.py",
+      "target": "function:backend/tests/test_scoring.py:test_weights_sum_to_100",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_scoring.py",
+      "target": "function:backend/tests/test_scoring.py:test_weights_sum_to_100",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/tests/test_scoring.py",
+      "target": "function:backend/tests/test_scoring.py:test_all_seven_dimensions_present",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_scoring.py",
+      "target": "function:backend/tests/test_scoring.py:test_all_seven_dimensions_present",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/tests/test_scoring.py",
+      "target": "function:backend/tests/test_scoring.py:test_score_calculation_deterministic",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_scoring.py",
+      "target": "function:backend/tests/test_scoring.py:test_score_calculation_deterministic",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/tests/test_scoring.py",
+      "target": "function:backend/tests/test_scoring.py:test_score_is_within_bounds",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_scoring.py",
+      "target": "function:backend/tests/test_scoring.py:test_score_is_within_bounds",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/tests/test_scoring.py",
+      "target": "function:backend/tests/test_scoring.py:test_score_has_correct_dimension_count",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_scoring.py",
+      "target": "function:backend/tests/test_scoring.py:test_score_has_correct_dimension_count",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/tests/test_scoring.py",
+      "target": "function:backend/tests/test_scoring.py:test_weighted_scores_sum_to_total",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_scoring.py",
+      "target": "function:backend/tests/test_scoring.py:test_weighted_scores_sum_to_total",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/tests/test_scoring.py",
+      "target": "function:backend/tests/test_scoring.py:test_score_no_perspectives",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_scoring.py",
+      "target": "function:backend/tests/test_scoring.py:test_score_no_perspectives",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/tests/test_scoring.py",
+      "target": "function:backend/tests/test_scoring.py:test_score_all_high",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_scoring.py",
+      "target": "function:backend/tests/test_scoring.py:test_score_all_high",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/tests/test_scoring.py",
+      "target": "function:backend/tests/test_scoring.py:test_score_all_low",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_scoring.py",
+      "target": "function:backend/tests/test_scoring.py:test_score_all_low",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/tests/test_scoring.py",
+      "target": "file:backend/assumption_zero/analysis/scoring.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    }
+  ]
+}

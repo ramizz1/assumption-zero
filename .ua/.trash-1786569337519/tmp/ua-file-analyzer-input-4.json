@@ -1,0 +1,31 @@
+{
+  "projectRoot": "C:\\Users\\user\\Desktop\\idea\\assumption-zero",
+  "batchFiles": [
+    {"path":"backend/assumption_zero/llm/__init__.py","language":"python","sizeLines":23,"fileCategory":"code"},
+    {"path":"backend/assumption_zero/llm/base.py","language":"python","sizeLines":446,"fileCategory":"code"},
+    {"path":"backend/assumption_zero/llm/beta_adapter.py","language":"python","sizeLines":40,"fileCategory":"code"},
+    {"path":"backend/assumption_zero/llm/fallback_adapter.py","language":"python","sizeLines":116,"fileCategory":"code"},
+    {"path":"backend/assumption_zero/llm/groq_adapter.py","language":"python","sizeLines":201,"fileCategory":"code"},
+    {"path":"backend/assumption_zero/llm/hybrid_adapter.py","language":"python","sizeLines":131,"fileCategory":"code"},
+    {"path":"backend/assumption_zero/llm/mock_adapter.py","language":"python","sizeLines":455,"fileCategory":"code"},
+    {"path":"backend/assumption_zero/llm/ollama_adapter.py","language":"python","sizeLines":188,"fileCategory":"code"},
+    {"path":"backend/assumption_zero/llm/openai_compat_adapter.py","language":"python","sizeLines":197,"fileCategory":"code"},
+    {"path":"backend/assumption_zero/llm/opencode_adapter.py","language":"python","sizeLines":191,"fileCategory":"code"},
+    {"path":"backend/assumption_zero/llm/openrouter_adapter.py","language":"python","sizeLines":332,"fileCategory":"code"},
+    {"path":"backend/tests/test_llm_adapters.py","language":"python","sizeLines":63,"fileCategory":"code"}
+  ],
+  "batchImportData": {
+    "backend/assumption_zero/llm/__init__.py":["backend/assumption_zero/llm/base.py","backend/assumption_zero/llm/beta_adapter.py","backend/assumption_zero/llm/groq_adapter.py","backend/assumption_zero/llm/hybrid_adapter.py","backend/assumption_zero/llm/mock_adapter.py","backend/assumption_zero/llm/ollama_adapter.py","backend/assumption_zero/llm/openai_compat_adapter.py","backend/assumption_zero/llm/opencode_adapter.py","backend/assumption_zero/llm/openrouter_adapter.py"],
+    "backend/assumption_zero/llm/base.py":["backend/assumption_zero/schemas.py"],
+    "backend/assumption_zero/llm/beta_adapter.py":["backend/assumption_zero/llm/openrouter_adapter.py","backend/assumption_zero/schemas.py"],
+    "backend/assumption_zero/llm/fallback_adapter.py":["backend/assumption_zero/llm/base.py","backend/assumption_zero/schemas.py"],
+    "backend/assumption_zero/llm/groq_adapter.py":["backend/assumption_zero/config.py","backend/assumption_zero/llm/base.py","backend/assumption_zero/llm/openrouter_adapter.py","backend/assumption_zero/schemas.py"],
+    "backend/assumption_zero/llm/hybrid_adapter.py":["backend/assumption_zero/llm/base.py","backend/assumption_zero/llm/groq_adapter.py","backend/assumption_zero/llm/openrouter_adapter.py","backend/assumption_zero/schemas.py"],
+    "backend/assumption_zero/llm/mock_adapter.py":["backend/assumption_zero/llm/base.py","backend/assumption_zero/schemas.py"],
+    "backend/assumption_zero/llm/ollama_adapter.py":["backend/assumption_zero/config.py","backend/assumption_zero/llm/base.py","backend/assumption_zero/llm/openrouter_adapter.py","backend/assumption_zero/schemas.py"],
+    "backend/assumption_zero/llm/openai_compat_adapter.py":["backend/assumption_zero/config.py","backend/assumption_zero/llm/base.py","backend/assumption_zero/schemas.py"],
+    "backend/assumption_zero/llm/opencode_adapter.py":["backend/assumption_zero/config.py","backend/assumption_zero/llm/base.py","backend/assumption_zero/llm/openrouter_adapter.py","backend/assumption_zero/schemas.py"],
+    "backend/assumption_zero/llm/openrouter_adapter.py":["backend/assumption_zero/config.py","backend/assumption_zero/llm/base.py","backend/assumption_zero/schemas.py"],
+    "backend/tests/test_llm_adapters.py":["backend/assumption_zero/llm/__init__.py","backend/assumption_zero/services/analysis_service.py"]
+  }
+}

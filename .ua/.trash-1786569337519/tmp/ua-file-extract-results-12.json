@@ -1,0 +1,496 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 14,
+  "filesSkipped": [
+    ".ua/.understandignore",
+    "frontend/src/index.css"
+  ],
+  "analysisOutcomes": {
+    "structure": {
+      "succeeded": 14,
+      "failed": 0
+    },
+    "callGraph": {
+      "succeeded": 9,
+      "failed": 0,
+      "skipped": 5
+    }
+  },
+  "results": [
+    {
+      "path": ".github/PULL_REQUEST_TEMPLATE.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 18,
+      "nonEmptyLines": 11,
+      "sections": [
+        {
+          "heading": "What changed?",
+          "level": 2,
+          "line": 1
+        },
+        {
+          "heading": "Why?",
+          "level": 2,
+          "line": 5
+        },
+        {
+          "heading": "Verification",
+          "level": 2,
+          "line": 9
+        },
+        {
+          "heading": "Screenshots",
+          "level": 2,
+          "line": 16
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 4
+      }
+    },
+    {
+      "path": ".ua/config.json",
+      "language": "json",
+      "fileCategory": "config",
+      "totalLines": 3,
+      "nonEmptyLines": 3,
+      "sections": [
+        {
+          "heading": "outputLanguage",
+          "level": 1,
+          "line": 2
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 1
+      }
+    },
+    {
+      "path": "backend/README.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 5,
+      "nonEmptyLines": 3,
+      "sections": [
+        {
+          "heading": "Assumption Zero backend",
+          "level": 1,
+          "line": 1
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 1
+      }
+    },
+    {
+      "path": "backend/assumption_zero/api/__init__.py",
+      "language": "python",
+      "fileCategory": "code",
+      "totalLines": 1,
+      "nonEmptyLines": 1,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "backend/assumption_zero/services/__init__.py",
+      "language": "python",
+      "fileCategory": "code",
+      "totalLines": 1,
+      "nonEmptyLines": 1,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "backend/pyproject.toml",
+      "language": "toml",
+      "fileCategory": "config",
+      "totalLines": 64,
+      "nonEmptyLines": 56,
+      "sections": [
+        {
+          "heading": "project",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "project.optional-dependencies",
+          "level": 2,
+          "line": 29
+        },
+        {
+          "heading": "project.scripts",
+          "level": 2,
+          "line": 41
+        },
+        {
+          "heading": "build-system",
+          "level": 1,
+          "line": 44
+        },
+        {
+          "heading": "tool.setuptools.packages.find",
+          "level": 4,
+          "line": 48
+        },
+        {
+          "heading": "tool.pytest.ini_options",
+          "level": 3,
+          "line": 52
+        },
+        {
+          "heading": "tool.ruff",
+          "level": 2,
+          "line": 57
+        },
+        {
+          "heading": "tool.mypy",
+          "level": 2,
+          "line": 61
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 8
+      }
+    },
+    {
+      "path": "backend/tests/__init__.py",
+      "language": "python",
+      "fileCategory": "code",
+      "totalLines": 1,
+      "nonEmptyLines": 1,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "examples/sample-idea.json",
+      "language": "json",
+      "fileCategory": "config",
+      "totalLines": 25,
+      "nonEmptyLines": 25,
+      "sections": [
+        {
+          "heading": "name",
+          "level": 1,
+          "line": 2
+        },
+        {
+          "heading": "description",
+          "level": 1,
+          "line": 3
+        },
+        {
+          "heading": "problem",
+          "level": 1,
+          "line": 4
+        },
+        {
+          "heading": "target_customer",
+          "level": 1,
+          "line": 5
+        },
+        {
+          "heading": "geography",
+          "level": 1,
+          "line": 6
+        },
+        {
+          "heading": "market_language",
+          "level": 1,
+          "line": 7
+        },
+        {
+          "heading": "currency",
+          "level": 1,
+          "line": 8
+        },
+        {
+          "heading": "industry",
+          "level": 1,
+          "line": 9
+        },
+        {
+          "heading": "startup_stage",
+          "level": 1,
+          "line": 10
+        },
+        {
+          "heading": "solution",
+          "level": 1,
+          "line": 11
+        },
+        {
+          "heading": "business_model",
+          "level": 1,
+          "line": 12
+        },
+        {
+          "heading": "price",
+          "level": 1,
+          "line": 13
+        },
+        {
+          "heading": "founder_skills",
+          "level": 1,
+          "line": 14
+        },
+        {
+          "heading": "team",
+          "level": 1,
+          "line": 15
+        },
+        {
+          "heading": "budget",
+          "level": 1,
+          "line": 16
+        },
+        {
+          "heading": "launch_timeline",
+          "level": 1,
+          "line": 17
+        },
+        {
+          "heading": "revenue_goal",
+          "level": 1,
+          "line": 18
+        },
+        {
+          "heading": "acquisition_channels",
+          "level": 1,
+          "line": 19
+        },
+        {
+          "heading": "known_competitors",
+          "level": 1,
+          "line": 20
+        },
+        {
+          "heading": "unfair_advantage",
+          "level": 1,
+          "line": 21
+        },
+        {
+          "heading": "key_assumptions",
+          "level": 1,
+          "line": 22
+        },
+        {
+          "heading": "regulatory_constraints",
+          "level": 1,
+          "line": 23
+        },
+        {
+          "heading": "additional_context",
+          "level": 1,
+          "line": 24
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 23
+      }
+    },
+    {
+      "path": "frontend/postcss.config.js",
+      "language": "javascript",
+      "fileCategory": "code",
+      "totalLines": 6,
+      "nonEmptyLines": 6,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "frontend/src/pages/DocsPage.tsx",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 280,
+      "nonEmptyLines": 252,
+      "functions": [
+        {
+          "name": "CodeBlock",
+          "startLine": 17,
+          "endLine": 19,
+          "params": [
+            "{ children }"
+          ]
+        },
+        {
+          "name": "Section",
+          "startLine": 21,
+          "endLine": 27,
+          "params": [
+            "{ id, eyebrow, title, children }"
+          ]
+        },
+        {
+          "name": "DocsPage",
+          "startLine": 29,
+          "endLine": 280,
+          "params": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "DocsPage",
+          "line": 29,
+          "isDefault": true
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "DocsPage",
+          "callee": "sections.map",
+          "lineNumber": 52
+        },
+        {
+          "caller": "DocsPage",
+          "callee": "[\r\n                ['1', 'Describe the business', 'Use Prompt mode for speed or Detailed brief for control. Include the buyer, painful workflow, solution, geography, price, and constraints.'],\r\n                ['2', 'Run the evidence engine', 'Choose Standard, Deep, or Exhaustive research. Add an AI provider for maximum qualitative depth, or use the evidence baseline without a key.'],\r\n                ['3', 'Act on thresholds', 'Use the founder roadmap and validation experiments. Pre-write success and failure thresholds before spending on a full MVP.'],\r\n              ].map",
+          "lineNumber": 73
+        },
+        {
+          "caller": "DocsPage",
+          "callee": "['Narrow target customer and buying role', 'Painful current workflow and measurable cost', 'Initial geography and industry', 'Smallest proposed solution', 'Pricing and business model hypothesis', 'Founder skills, team, budget, and runway', 'Reachable acquisition channels', 'Competitors and manual alternatives', 'Launch timeline and first revenue goal', 'Legal, privacy, safety, or operational constraints'].map",
+          "lineNumber": 102
+        },
+        {
+          "caller": "DocsPage",
+          "callee": "[\r\n                ['Clarify', 'Turn the brief into an explicit customer, problem, offer, constraints, and assumptions.'],\r\n                ['Research', 'Generate targeted competitor, demand, complaint, pricing, regulatory, and distribution queries.'],\r\n                ['Triangulate', 'Compare market analyst, regional strategist, skeptical investor, customer researcher, and practical builder perspectives according to research depth.'],\r\n                ['Score', 'Use deterministic weighted dimensions and evidence confidence; avoid treating eloquent AI output as proof.'],\r\n                ['Experiment', 'Design cheap tests ordered by information value, speed, and ability to disprove the idea.'],\r\n                ['Operate', 'Convert the result into positioning, channels, metrics, interview questions, and a 30-day roadmap.'],\r\n              ].map",
+          "lineNumber": 110
+        },
+        {
+          "caller": "DocsPage",
+          "callee": "String(index + 1).padStart",
+          "lineNumber": 119
+        },
+        {
+          "caller": "DocsPage",
+          "callee": "String",
+          "lineNumber": 119
+        },
+        {
+          "caller": "DocsPage",
+          "callee": "[\r\n                ['Standard', '3 perspectives', 'One query per evidence category for a quick first screen.'],\r\n                ['Deep · default', '4 perspectives', 'Two queries per category plus a regional market strategist.'],\r\n                ['Exhaustive', '5 perspectives', 'Up to four queries per category plus regional and customer-research specialists.'],\r\n              ].map",
+          "lineNumber": 128
+        },
+        {
+          "caller": "DocsPage",
+          "callee": "[\r\n                    ['Opportunity score', 'Comparing evidence-backed dimensions', 'A probability of success'],\r\n                    ['Evidence confidence', 'Judging how much research supports the analysis', 'Proof that every claim is true'],\r\n                    ['Regional market reality', 'Checking local demand, price, rules, channels, and evidence gaps', 'A probability that the business succeeds locally'],\r\n                    ['Competitor intelligence', 'Finding alternatives, complaints, and differentiation hypotheses', 'A complete market map'],\r\n                    ['Unit economics', 'Stress-testing price, CAC, costs, churn, and break-even', 'A financial forecast'],\r\n                    ['Founder toolkit', 'Planning interviews, channels, metrics, and decision gates', 'A fixed strategy'],\r\n                    ['Experiments', 'Learning before expensive development', 'Permission to collect money deceptively'],\r\n                  ].map",
+          "lineNumber": 152
+        },
+        {
+          "caller": "DocsPage",
+          "callee": "[\r\n                ['Days 1–3', 'Recruit', 'Build a list of 30 qualified prospects, write a neutral interview script, and schedule ten calls.', 'Exit: 10 interviews booked'],\r\n                ['Days 4–10', 'Discover', 'Ask about the last real occurrence, current workaround, frequency, cost, urgency, and buying authority.', 'Exit: 7/10 confirm an urgent pain'],\r\n                ['Days 11–20', 'Test commitment', 'Deliver the core outcome manually and ask for money, a deposit, pilot agreement, or scheduled onboarding.', 'Exit: 3 meaningful commitments'],\r\n                ['Days 21–30', 'Pilot', 'Build only the narrowest core value loop. Measure activation, time-to-value, repeat use, and willingness to continue.', 'Exit: repeat use and a paid path'],\r\n              ].map",
+          "lineNumber": 168
+        },
+        {
+          "caller": "DocsPage",
+          "callee": "['Ask about the last real event, not what someone might do in the future.', 'Do not pitch until you understand the current workflow and consequences.', 'Ask what they already pay in money, time, risk, or lost revenue.', 'Separate the user, champion, budget owner, and final decision maker.', 'Treat compliments as weak evidence; commitments of time, access, reputation, or money are stronger.', 'Write the pass/fail threshold before reviewing responses.'].map",
+          "lineNumber": 186
+        },
+        {
+          "caller": "DocsPage",
+          "callee": "[\r\n                ['Activation', 'Percent of new users who complete the core value loop.'],\r\n                ['Time to value', 'Minutes or days until the customer receives the promised outcome.'],\r\n                ['Retention', 'Percent who repeat the core behavior after four weeks.'],\r\n                ['CAC', 'Sales and marketing cost divided by new paying customers.'],\r\n                ['Gross profit', 'Revenue minus variable delivery and support costs.'],\r\n                ['CAC payback', 'Months of gross profit required to recover acquisition cost.'],\r\n              ].map",
+          "lineNumber": 193
+        },
+        {
+          "caller": "DocsPage",
+          "callee": "[\r\n                ['Should I build when the recommendation says Build?', 'Only the narrowest value loop supported by evidence. Keep interviewing and require real usage or payment milestones.'],\r\n                ['What if evidence confidence is low?', 'Treat the report as a research queue. Run interviews, pricing tests, and source-specific searches before making an expensive decision.'],\r\n                ['Can I use the built-in baseline without an AI key?', 'Yes. Deterministic scoring, regional evidence coverage, competitors, experiments, economics, and the founder toolkit still work. A configured provider adds deeper qualitative reasoning across the selected perspectives.'],\r\n                ['Are market sizes and competitor claims guaranteed?', 'No. Open every citation, check its date and scope, and verify important claims with primary sources.'],\r\n                ['What should I do first?', 'Recruit ten narrowly matched customer interviews. Do that before naming features, choosing architecture, or buying ads.'],\r\n              ].map",
+          "lineNumber": 261
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 3,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "frontend/tailwind.config.js",
+      "language": "javascript",
+      "fileCategory": "code",
+      "totalLines": 26,
+      "nonEmptyLines": 26,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "frontend/tests/docs.test.tsx",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 15,
+      "nonEmptyLines": 13,
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "frontend/tests/setup.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 1,
+      "nonEmptyLines": 1,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "frontend/vite.config.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 21,
+      "nonEmptyLines": 20,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    }
+  ]
+}

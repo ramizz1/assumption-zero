@@ -1,0 +1,5184 @@
+{
+  "fileNodes": [
+    {
+      "id": "file:frontend/src/App.tsx",
+      "type": "file",
+      "name": "App.tsx",
+      "filePath": "frontend/src/App.tsx",
+      "summary": "Defines the top-level React router, directing the landing route to idea intake and analysis routes to the analysis workflow.",
+      "tags": [
+        "entry-point",
+        "component",
+        "routing"
+      ]
+    },
+    {
+      "id": "file:frontend/src/components/CitationBadge.tsx",
+      "type": "file",
+      "name": "CitationBadge.tsx",
+      "filePath": "frontend/src/components/CitationBadge.tsx",
+      "summary": "Renders a compact evidence citation that resolves an evidence identifier and safely links to external source material.",
+      "tags": [
+        "component",
+        "evidence",
+        "security"
+      ]
+    },
+    {
+      "id": "file:frontend/src/components/CompetitorCard.tsx",
+      "type": "file",
+      "name": "CompetitorCard.tsx",
+      "filePath": "frontend/src/components/CompetitorCard.tsx",
+      "summary": "Presents a competitor profile with pricing, positioning, strengths, weaknesses, complaints, differentiation, and supporting citations.",
+      "tags": [
+        "component",
+        "competitor-research",
+        "evidence"
+      ]
+    },
+    {
+      "id": "file:frontend/src/components/DisclaimerBanner.tsx",
+      "type": "file",
+      "name": "DisclaimerBanner.tsx",
+      "filePath": "frontend/src/components/DisclaimerBanner.tsx",
+      "summary": "Displays the shared product disclaimer so research reports communicate the limits of automated analysis.",
+      "tags": [
+        "component",
+        "disclaimer",
+        "risk-communication"
+      ]
+    },
+    {
+      "id": "file:frontend/src/components/ExperimentCard.tsx",
+      "type": "file",
+      "name": "ExperimentCard.tsx",
+      "filePath": "frontend/src/components/ExperimentCard.tsx",
+      "summary": "Visualizes a validation experiment with its hypothesis, method, audience, success criteria, cost, timing, and next decision.",
+      "tags": [
+        "component",
+        "experiment",
+        "validation"
+      ]
+    },
+    {
+      "id": "file:frontend/src/components/FinancialSimulator.tsx",
+      "type": "file",
+      "name": "FinancialSimulator.tsx",
+      "filePath": "frontend/src/components/FinancialSimulator.tsx",
+      "summary": "Provides an interactive unit-economics simulator that derives customer acquisition, lifetime value, payback, break-even, and revenue projections from an idea.",
+      "tags": [
+        "component",
+        "financial-modeling",
+        "simulation"
+      ]
+    },
+    {
+      "id": "file:frontend/src/components/FounderToolkit.tsx",
+      "type": "file",
+      "name": "FounderToolkit.tsx",
+      "filePath": "frontend/src/components/FounderToolkit.tsx",
+      "summary": "Renders an execution toolkit covering customer-discovery scripts, channels, metrics, roadmap actions, interviews, and decision rules.",
+      "tags": [
+        "component",
+        "founder-toolkit",
+        "validation"
+      ]
+    },
+    {
+      "id": "file:frontend/src/components/OpportunityGauge.tsx",
+      "type": "file",
+      "name": "OpportunityGauge.tsx",
+      "filePath": "frontend/src/components/OpportunityGauge.tsx",
+      "summary": "Renders a score-driven circular opportunity gauge with normalized geometry, color semantics, and an accessible numeric value.",
+      "tags": [
+        "component",
+        "data-visualization",
+        "scoring"
+      ]
+    },
+    {
+      "id": "file:frontend/src/components/PerspectiveExplorer.tsx",
+      "type": "file",
+      "name": "PerspectiveExplorer.tsx",
+      "filePath": "frontend/src/components/PerspectiveExplorer.tsx",
+      "summary": "Lets users switch among model perspectives and view each recommendation, score, and evidence-backed analysis panel.",
+      "tags": [
+        "component",
+        "multi-model",
+        "evidence",
+        "tested"
+      ]
+    },
+    {
+      "id": "file:frontend/src/components/PerspectivePanel.tsx",
+      "type": "file",
+      "name": "PerspectivePanel.tsx",
+      "filePath": "frontend/src/components/PerspectivePanel.tsx",
+      "summary": "Renders the detailed sections of one analytical perspective, including claims, evidence citations, recommendations, and discipline-specific iconography.",
+      "tags": [
+        "component",
+        "analysis",
+        "evidence"
+      ]
+    },
+    {
+      "id": "file:frontend/src/components/ProviderIcon.tsx",
+      "type": "file",
+      "name": "ProviderIcon.tsx",
+      "filePath": "frontend/src/components/ProviderIcon.tsx",
+      "summary": "Maps supported AI provider identifiers to distinctive inline SVG marks for provider selection interfaces.",
+      "tags": [
+        "component",
+        "ai-provider",
+        "iconography"
+      ]
+    },
+    {
+      "id": "file:frontend/src/components/RegionalMarketPanel.tsx",
+      "type": "file",
+      "name": "RegionalMarketPanel.tsx",
+      "filePath": "frontend/src/components/RegionalMarketPanel.tsx",
+      "summary": "Summarizes regional market attractiveness, launch stance, demand signals, risks, regulatory notes, channels, and localization guidance.",
+      "tags": [
+        "component",
+        "regional-analysis",
+        "market-research"
+      ]
+    },
+    {
+      "id": "file:frontend/src/components/SavedAnalysesModal.tsx",
+      "type": "file",
+      "name": "SavedAnalysesModal.tsx",
+      "filePath": "frontend/src/components/SavedAnalysesModal.tsx",
+      "summary": "Loads and displays saved analyses in a modal, with navigation, deletion, recommendation styling, and empty or loading states.",
+      "tags": [
+        "component",
+        "saved-analyses",
+        "api-client"
+      ]
+    },
+    {
+      "id": "file:frontend/src/components/ScoreBreakdown.tsx",
+      "type": "file",
+      "name": "ScoreBreakdown.tsx",
+      "filePath": "frontend/src/components/ScoreBreakdown.tsx",
+      "summary": "Explains the overall opportunity score through weighted sub-scores, confidence, and visual color cues.",
+      "tags": [
+        "component",
+        "scoring",
+        "data-visualization"
+      ]
+    },
+    {
+      "id": "file:frontend/src/components/SettingsModal.tsx",
+      "type": "file",
+      "name": "SettingsModal.tsx",
+      "filePath": "frontend/src/components/SettingsModal.tsx",
+      "summary": "Provides persistent AI-provider configuration, credential fields, model selection, endpoint settings, connection testing, and provider-specific guidance.",
+      "tags": [
+        "component",
+        "configuration",
+        "ai-provider"
+      ]
+    },
+    {
+      "id": "file:frontend/src/hooks/useAnalysis.ts",
+      "type": "file",
+      "name": "useAnalysis.ts",
+      "filePath": "frontend/src/hooks/useAnalysis.ts",
+      "summary": "Encapsulates analysis submission and polling state, exposing progress, result, error, and reset behavior to analysis pages.",
+      "tags": [
+        "hook",
+        "api-client",
+        "state-management"
+      ]
+    },
+    {
+      "id": "file:frontend/src/lib/api.ts",
+      "type": "file",
+      "name": "api.ts",
+      "filePath": "frontend/src/lib/api.ts",
+      "summary": "Implements the typed frontend API client, centralizing JSON requests, errors, analysis lifecycle calls, history management, and provider connection tests.",
+      "tags": [
+        "api-client",
+        "serialization",
+        "error-handling"
+      ]
+    },
+    {
+      "id": "file:frontend/src/lib/readiness.ts",
+      "type": "file",
+      "name": "readiness.ts",
+      "filePath": "frontend/src/lib/readiness.ts",
+      "summary": "Scores prompt and structured-form completeness, returning actionable warnings, suggestions, and a readiness level before analysis submission.",
+      "tags": [
+        "validation",
+        "scoring",
+        "utility",
+        "tested"
+      ]
+    },
+    {
+      "id": "file:frontend/src/lib/report.ts",
+      "type": "file",
+      "name": "report.ts",
+      "filePath": "frontend/src/lib/report.ts",
+      "summary": "Serializes a completed analysis into a comprehensive Markdown report spanning verdict, scores, perspectives, markets, competitors, experiments, finances, toolkit, and evidence.",
+      "tags": [
+        "serialization",
+        "reporting",
+        "markdown"
+      ]
+    },
+    {
+      "id": "file:frontend/src/lib/utils.ts",
+      "type": "file",
+      "name": "utils.ts",
+      "filePath": "frontend/src/lib/utils.ts",
+      "summary": "Provides shared presentation helpers for score, recommendation, confidence, reliability, dates, safe URLs, progress stages, and the product disclaimer.",
+      "tags": [
+        "utility",
+        "formatting",
+        "security",
+        "tested"
+      ]
+    },
+    {
+      "id": "file:frontend/src/main.tsx",
+      "type": "file",
+      "name": "main.tsx",
+      "filePath": "frontend/src/main.tsx",
+      "summary": "Bootstraps the React application into the root DOM node, applying strict mode, browser routing, and global styles.",
+      "tags": [
+        "entry-point",
+        "react",
+        "routing"
+      ]
+    },
+    {
+      "id": "file:frontend/src/pages/AnalysisPage.tsx",
+      "type": "file",
+      "name": "AnalysisPage.tsx",
+      "filePath": "frontend/src/pages/AnalysisPage.tsx",
+      "summary": "Coordinates a single analysis run, starting work from navigation state and switching among error, progress, and completed-report views.",
+      "tags": [
+        "component",
+        "analysis-workflow",
+        "state-management"
+      ]
+    },
+    {
+      "id": "file:frontend/src/pages/HomePage.tsx",
+      "type": "file",
+      "name": "HomePage.tsx",
+      "filePath": "frontend/src/pages/HomePage.tsx",
+      "summary": "Implements the primary idea-intake experience, including raw-prompt and structured modes, provider and research-depth controls, readiness checks, file import, history, settings, and analysis launch.",
+      "tags": [
+        "component",
+        "idea-intake",
+        "analysis-workflow"
+      ]
+    },
+    {
+      "id": "file:frontend/src/pages/ProgressView.tsx",
+      "type": "file",
+      "name": "ProgressView.tsx",
+      "filePath": "frontend/src/pages/ProgressView.tsx",
+      "summary": "Visualizes the staged research and synthesis pipeline with progress percentages, active-state messaging, and completed-stage indicators.",
+      "tags": [
+        "component",
+        "progress-tracking",
+        "analysis-workflow"
+      ]
+    },
+    {
+      "id": "file:frontend/src/pages/ReportView.tsx",
+      "type": "file",
+      "name": "ReportView.tsx",
+      "filePath": "frontend/src/pages/ReportView.tsx",
+      "summary": "Orchestrates the full analysis report, loading results, filtering evidence, exporting Markdown or JSON, printing, and composing score, market, competitor, experiment, financial, and toolkit sections.",
+      "tags": [
+        "component",
+        "reporting",
+        "analysis-results"
+      ]
+    },
+    {
+      "id": "file:frontend/src/types/index.ts",
+      "type": "file",
+      "name": "index.ts",
+      "filePath": "frontend/src/types/index.ts",
+      "summary": "Defines the frontend domain contracts for idea input, analysis state and results, evidence, competitors, markets, experiments, provider settings, scores, and toolkit output.",
+      "tags": [
+        "type-definition",
+        "domain-model",
+        "typescript"
+      ]
+    },
+    {
+      "id": "file:frontend/tests/citation.test.ts",
+      "type": "file",
+      "name": "citation.test.ts",
+      "filePath": "frontend/tests/citation.test.ts",
+      "summary": "Tests evidence lookup and URL classification behavior used by citation rendering and external-link safety.",
+      "tags": [
+        "test",
+        "evidence",
+        "url-validation"
+      ]
+    },
+    {
+      "id": "file:frontend/tests/perspectiveExplorer.test.tsx",
+      "type": "file",
+      "name": "perspectiveExplorer.test.tsx",
+      "filePath": "frontend/tests/perspectiveExplorer.test.tsx",
+      "summary": "Tests perspective selection and evidence presentation in the multi-model perspective explorer.",
+      "tags": [
+        "test",
+        "component",
+        "multi-model"
+      ]
+    },
+    {
+      "id": "file:frontend/tests/readiness.test.ts",
+      "type": "file",
+      "name": "readiness.test.ts",
+      "filePath": "frontend/tests/readiness.test.ts",
+      "summary": "Tests readiness scoring and guidance for both raw prompts and structured idea forms.",
+      "tags": [
+        "test",
+        "validation",
+        "scoring"
+      ]
+    },
+    {
+      "id": "file:frontend/tests/score.test.ts",
+      "type": "file",
+      "name": "score.test.ts",
+      "filePath": "frontend/tests/score.test.ts",
+      "summary": "Tests score and recommendation presentation utilities, confidence colors, safe URL handling, stage labels, and disclaimer content.",
+      "tags": [
+        "test",
+        "utility",
+        "scoring"
+      ]
+    },
+    {
+      "id": "file:backend/assumption_zero/analysis/__init__.py",
+      "type": "file",
+      "name": "__init__.py",
+      "filePath": "backend/assumption_zero/analysis/__init__.py",
+      "summary": "Public package barrel exposing the validation engine’s core analysis helpers and orchestration API.",
+      "tags": [
+        "entry-point",
+        "barrel",
+        "analysis",
+        "exports"
+      ]
+    },
+    {
+      "id": "file:backend/assumption_zero/analysis/citation_validator.py",
+      "type": "file",
+      "name": "citation_validator.py",
+      "filePath": "backend/assumption_zero/analysis/citation_validator.py",
+      "summary": "Validates model-supplied evidence citations, preserving known evidence identifiers and moving unknown identifiers into each perspective’s invalid-citation list.",
+      "tags": [
+        "validation",
+        "citations",
+        "evidence",
+        "analysis"
+      ]
+    },
+    {
+      "id": "file:backend/assumption_zero/analysis/competitor_merger.py",
+      "type": "file",
+      "name": "competitor_merger.py",
+      "filePath": "backend/assumption_zero/analysis/competitor_merger.py",
+      "summary": "Normalizes, compares, merges, and ranks competitor records so duplicate discoveries become a single evidence-rich competitor profile.",
+      "tags": [
+        "competitor-research",
+        "deduplication",
+        "normalization",
+        "analysis"
+      ]
+    },
+    {
+      "id": "file:backend/assumption_zero/analysis/confidence.py",
+      "type": "file",
+      "name": "confidence.py",
+      "filePath": "backend/assumption_zero/analysis/confidence.py",
+      "summary": "Calculates evidence-confidence levels from source volume, diversity, reliability, recency, and citation validity across model perspectives.",
+      "tags": [
+        "confidence-scoring",
+        "evidence",
+        "citations",
+        "analysis"
+      ]
+    },
+    {
+      "id": "file:backend/assumption_zero/analysis/disagreement.py",
+      "type": "file",
+      "name": "disagreement.py",
+      "filePath": "backend/assumption_zero/analysis/disagreement.py",
+      "summary": "Detects recommendation, dimension-score, and assumption disagreements between model perspectives and records the competing positions for review.",
+      "tags": [
+        "multi-model",
+        "disagreement-detection",
+        "analysis",
+        "validation"
+      ]
+    },
+    {
+      "id": "file:backend/assumption_zero/analysis/engine.py",
+      "type": "file",
+      "name": "engine.py",
+      "filePath": "backend/assumption_zero/analysis/engine.py",
+      "summary": "Orchestrates the complete validation pipeline: research collection, parallel model perspectives, grounded competitor extraction, scoring, confidence, regional analysis, experiments, and founder guidance.",
+      "tags": [
+        "service",
+        "orchestration",
+        "analysis-engine",
+        "research-pipeline",
+        "entry-point"
+      ]
+    },
+    {
+      "id": "file:backend/assumption_zero/analysis/experiment_generator.py",
+      "type": "file",
+      "name": "experiment_generator.py",
+      "filePath": "backend/assumption_zero/analysis/experiment_generator.py",
+      "summary": "Selects prioritized validation experiments from reusable templates based on the idea, evidence, and model perspectives.",
+      "tags": [
+        "experiment-generation",
+        "validation",
+        "recommendation",
+        "analysis"
+      ]
+    },
+    {
+      "id": "file:backend/assumption_zero/analysis/founder_toolkit.py",
+      "type": "file",
+      "name": "founder_toolkit.py",
+      "filePath": "backend/assumption_zero/analysis/founder_toolkit.py",
+      "summary": "Transforms analysis outcomes into a founder-facing toolkit with positioning, channels, metrics, interview prompts, decision rules, and a phased action roadmap.",
+      "tags": [
+        "founder-toolkit",
+        "roadmap",
+        "recommendation",
+        "analysis"
+      ]
+    },
+    {
+      "id": "file:backend/assumption_zero/analysis/query_generator.py",
+      "type": "file",
+      "name": "query_generator.py",
+      "filePath": "backend/assumption_zero/analysis/query_generator.py",
+      "summary": "Generates categorized market, competitor, pricing, regional, regulatory, and validation research queries from structured idea details.",
+      "tags": [
+        "query-generation",
+        "research",
+        "market-analysis",
+        "utility"
+      ]
+    },
+    {
+      "id": "file:backend/assumption_zero/analysis/regional_analysis.py",
+      "type": "file",
+      "name": "regional_analysis.py",
+      "filePath": "backend/assumption_zero/analysis/regional_analysis.py",
+      "summary": "Filters evidence for geography-specific signals and produces regional demand, pricing, regulatory, distribution, localization, and research-gap assessments.",
+      "tags": [
+        "regional-analysis",
+        "market-research",
+        "evidence",
+        "scoring"
+      ]
+    },
+    {
+      "id": "file:backend/assumption_zero/analysis/scoring.py",
+      "type": "file",
+      "name": "scoring.py",
+      "filePath": "backend/assumption_zero/analysis/scoring.py",
+      "summary": "Aggregates model dimension scores into a weighted opportunity score with evidence links, confidence, explanations, and missing-information notes.",
+      "tags": [
+        "opportunity-scoring",
+        "evidence",
+        "aggregation",
+        "analysis"
+      ]
+    },
+    {
+      "id": "file:backend/assumption_zero/demo.py",
+      "type": "file",
+      "name": "demo.py",
+      "filePath": "backend/assumption_zero/demo.py",
+      "summary": "Provides deterministic demo analysis data for product previews and local demonstrations without external research or model calls.",
+      "tags": [
+        "demo",
+        "sample-data",
+        "development",
+        "utility"
+      ]
+    },
+    {
+      "id": "file:backend/assumption_zero/research/demo_provider.py",
+      "type": "file",
+      "name": "demo_provider.py",
+      "filePath": "backend/assumption_zero/research/demo_provider.py",
+      "summary": "Implements a deterministic research provider that returns bundled demo evidence while conforming to the standard research-provider interface.",
+      "tags": [
+        "research-provider",
+        "demo",
+        "service",
+        "test-double"
+      ]
+    },
+    {
+      "id": "file:backend/assumption_zero/schemas.py",
+      "type": "file",
+      "name": "schemas.py",
+      "filePath": "backend/assumption_zero/schemas.py",
+      "summary": "Defines the project’s enums and Pydantic models for ideas, evidence, competitors, perspectives, scores, experiments, regional analysis, API requests, and analysis results, including input validation.",
+      "tags": [
+        "data-model",
+        "type-definition",
+        "validation",
+        "pydantic",
+        "schema-definition"
+      ]
+    },
+    {
+      "id": "file:backend/tests/conftest.py",
+      "type": "file",
+      "name": "conftest.py",
+      "filePath": "backend/tests/conftest.py",
+      "summary": "Defines reusable pytest fixtures for isolated storage, sample ideas, evidence, and multi-model perspectives used throughout backend tests.",
+      "tags": [
+        "test",
+        "fixtures",
+        "pytest",
+        "sample-data"
+      ]
+    },
+    {
+      "id": "file:backend/tests/test_citations.py",
+      "type": "file",
+      "name": "test_citations.py",
+      "filePath": "backend/tests/test_citations.py",
+      "summary": "Verifies that citation validation preserves valid evidence IDs, rejects unknown IDs, and handles empty evidence and citation lists.",
+      "tags": [
+        "test",
+        "citations",
+        "validation",
+        "pytest"
+      ]
+    },
+    {
+      "id": "file:backend/tests/test_competitors.py",
+      "type": "file",
+      "name": "test_competitors.py",
+      "filePath": "backend/tests/test_competitors.py",
+      "summary": "Tests competitor normalization and merging plus evidence-grounding rules for AI-discovered and user-supplied competitors.",
+      "tags": [
+        "test",
+        "competitor-research",
+        "evidence-grounding",
+        "pytest"
+      ]
+    },
+    {
+      "id": "file:backend/tests/test_confidence.py",
+      "type": "file",
+      "name": "test_confidence.py",
+      "filePath": "backend/tests/test_confidence.py",
+      "summary": "Tests evidence-confidence behavior across empty, sparse, and high-quality evidence sets and confirms independence from opportunity scores.",
+      "tags": [
+        "test",
+        "confidence-scoring",
+        "evidence",
+        "pytest"
+      ]
+    },
+    {
+      "id": "file:backend/tests/test_engine_e2e.py",
+      "type": "file",
+      "name": "test_engine_e2e.py",
+      "filePath": "backend/tests/test_engine_e2e.py",
+      "summary": "Exercises the analysis engine end to end with deterministic adapter and research-provider doubles, including grounded competitor survival through the full pipeline.",
+      "tags": [
+        "test",
+        "end-to-end",
+        "analysis-engine",
+        "test-doubles"
+      ]
+    },
+    {
+      "id": "file:backend/tests/test_founder_toolkit.py",
+      "type": "file",
+      "name": "test_founder_toolkit.py",
+      "filePath": "backend/tests/test_founder_toolkit.py",
+      "summary": "Verifies that generated founder toolkits contain measurable roadmaps and honor the acquisition channels declared in the idea.",
+      "tags": [
+        "test",
+        "founder-toolkit",
+        "roadmap",
+        "pytest"
+      ]
+    },
+    {
+      "id": "file:backend/tests/test_regional_research.py",
+      "type": "file",
+      "name": "test_regional_research.py",
+      "filePath": "backend/tests/test_regional_research.py",
+      "summary": "Tests regional evidence filtering, research-depth controls, perspective volume, and fallback parsing of user-supplied competitor and geography details.",
+      "tags": [
+        "test",
+        "regional-analysis",
+        "research-depth",
+        "pytest"
+      ]
+    },
+    {
+      "id": "file:backend/tests/test_scoring.py",
+      "type": "file",
+      "name": "test_scoring.py",
+      "filePath": "backend/tests/test_scoring.py",
+      "summary": "Validates scoring weights, dimension coverage, determinism, bounds, weighted totals, and extreme or missing-perspective behavior.",
+      "tags": [
+        "test",
+        "opportunity-scoring",
+        "aggregation",
+        "pytest"
+      ]
+    },
+    {
+      "id": "file:backend/assumption_zero/api/routes.py",
+      "type": "file",
+      "name": "routes.py",
+      "filePath": "backend/assumption_zero/api/routes.py",
+      "summary": "Defines the FastAPI HTTP surface for health checks, credential verification, idea and prompt analysis creation, history retrieval, deletion, and demo execution.",
+      "tags": [
+        "api-handler",
+        "fastapi",
+        "routing",
+        "analysis-service",
+        "entry-point"
+      ]
+    },
+    {
+      "id": "file:backend/assumption_zero/config.py",
+      "type": "file",
+      "name": "config.py",
+      "filePath": "backend/assumption_zero/config.py",
+      "summary": "Defines environment-backed application settings, validates provider and URL configuration, masks secrets, and exposes a cached settings instance.",
+      "tags": [
+        "configuration",
+        "validation",
+        "security",
+        "settings",
+        "pydantic"
+      ]
+    },
+    {
+      "id": "file:backend/assumption_zero/models.py",
+      "type": "file",
+      "name": "models.py",
+      "filePath": "backend/assumption_zero/models.py",
+      "summary": "Defines SQLAlchemy persistence models plus cached synchronous and asynchronous engines, session factories, and database initialization helpers.",
+      "tags": [
+        "data-model",
+        "database",
+        "sqlalchemy",
+        "persistence"
+      ]
+    },
+    {
+      "id": "file:backend/assumption_zero/research/__init__.py",
+      "type": "file",
+      "name": "__init__.py",
+      "filePath": "backend/assumption_zero/research/__init__.py",
+      "summary": "Public package barrel exposing the research-provider abstraction and all bundled evidence-source implementations.",
+      "tags": [
+        "entry-point",
+        "barrel",
+        "research",
+        "exports"
+      ]
+    },
+    {
+      "id": "file:backend/assumption_zero/research/arxiv_provider.py",
+      "type": "file",
+      "name": "arxiv_provider.py",
+      "filePath": "backend/assumption_zero/research/arxiv_provider.py",
+      "summary": "Implements an arXiv research provider that searches academic papers and converts results into normalized evidence records.",
+      "tags": [
+        "research-provider",
+        "academic-research",
+        "evidence",
+        "service"
+      ]
+    },
+    {
+      "id": "file:backend/assumption_zero/research/base.py",
+      "type": "file",
+      "name": "base.py",
+      "filePath": "backend/assumption_zero/research/base.py",
+      "summary": "Defines the abstract asynchronous contract and shared text-truncation behavior implemented by all research providers.",
+      "tags": [
+        "research-provider",
+        "interface",
+        "abstraction",
+        "service"
+      ]
+    },
+    {
+      "id": "file:backend/assumption_zero/research/github_provider.py",
+      "type": "file",
+      "name": "github_provider.py",
+      "filePath": "backend/assumption_zero/research/github_provider.py",
+      "summary": "Implements GitHub repository search and maps repository metadata into normalized competitor and validation evidence.",
+      "tags": [
+        "research-provider",
+        "github",
+        "competitor-research",
+        "service"
+      ]
+    },
+    {
+      "id": "file:backend/assumption_zero/research/hackernews_provider.py",
+      "type": "file",
+      "name": "hackernews_provider.py",
+      "filePath": "backend/assumption_zero/research/hackernews_provider.py",
+      "summary": "Implements Hacker News search and classifies stories into evidence types for demand, pain, competitor, and market validation.",
+      "tags": [
+        "research-provider",
+        "hacker-news",
+        "market-research",
+        "service"
+      ]
+    },
+    {
+      "id": "file:backend/assumption_zero/research/news_provider.py",
+      "type": "file",
+      "name": "news_provider.py",
+      "filePath": "backend/assumption_zero/research/news_provider.py",
+      "summary": "Implements news search through the configured SearXNG endpoint and converts recent articles into normalized evidence.",
+      "tags": [
+        "research-provider",
+        "news-search",
+        "evidence",
+        "service"
+      ]
+    },
+    {
+      "id": "file:backend/assumption_zero/research/reddit_provider.py",
+      "type": "file",
+      "name": "reddit_provider.py",
+      "filePath": "backend/assumption_zero/research/reddit_provider.py",
+      "summary": "Implements Reddit search with query-type classification, relevance scoring, and normalized community evidence extraction.",
+      "tags": [
+        "research-provider",
+        "reddit",
+        "customer-research",
+        "service"
+      ]
+    },
+    {
+      "id": "file:backend/assumption_zero/research/searxng_provider.py",
+      "type": "file",
+      "name": "searxng_provider.py",
+      "filePath": "backend/assumption_zero/research/searxng_provider.py",
+      "summary": "Implements general web research through SearXNG with source-domain reliability assessment and normalized evidence mapping.",
+      "tags": [
+        "research-provider",
+        "searxng",
+        "web-search",
+        "reliability"
+      ]
+    },
+    {
+      "id": "file:backend/assumption_zero/research/web_search_provider.py",
+      "type": "file",
+      "name": "web_search_provider.py",
+      "filePath": "backend/assumption_zero/research/web_search_provider.py",
+      "summary": "Implements a lightweight web-search provider that classifies search results by query intent and emits normalized evidence records.",
+      "tags": [
+        "research-provider",
+        "web-search",
+        "evidence",
+        "service"
+      ]
+    },
+    {
+      "id": "file:backend/assumption_zero/research/wikipedia_provider.py",
+      "type": "file",
+      "name": "wikipedia_provider.py",
+      "filePath": "backend/assumption_zero/research/wikipedia_provider.py",
+      "summary": "Implements Wikipedia title search and summary retrieval for background, market, competitor, and regulatory evidence.",
+      "tags": [
+        "research-provider",
+        "wikipedia",
+        "background-research",
+        "service"
+      ]
+    },
+    {
+      "id": "file:backend/assumption_zero/services/analysis_service.py",
+      "type": "file",
+      "name": "analysis_service.py",
+      "filePath": "backend/assumption_zero/services/analysis_service.py",
+      "summary": "Provides the application service layer for adapter and research-provider construction, analysis lifecycle orchestration, persistence, history filtering, and deletion.",
+      "tags": [
+        "service",
+        "analysis-lifecycle",
+        "factory",
+        "persistence",
+        "orchestration"
+      ]
+    },
+    {
+      "id": "file:backend/assumption_zero/llm/__init__.py",
+      "type": "file",
+      "name": "__init__.py",
+      "filePath": "backend/assumption_zero/llm/__init__.py",
+      "summary": "Defines the public LLM package surface by re-exporting the adapter interface and supported provider implementations.",
+      "tags": [
+        "entry-point",
+        "barrel",
+        "llm-adapter",
+        "tested"
+      ]
+    },
+    {
+      "id": "file:backend/assumption_zero/llm/base.py",
+      "type": "file",
+      "name": "base.py",
+      "filePath": "backend/assumption_zero/llm/base.py",
+      "summary": "Defines validated LLM output models, discipline-specific system prompts, evidence-grounded prompt construction, and the abstract provider adapter contract with default idea parsing.",
+      "tags": [
+        "llm-adapter",
+        "prompt-engineering",
+        "data-model"
+      ]
+    },
+    {
+      "id": "file:backend/assumption_zero/llm/beta_adapter.py",
+      "type": "file",
+      "name": "beta_adapter.py",
+      "filePath": "backend/assumption_zero/llm/beta_adapter.py",
+      "summary": "Implements the legacy Beta provider as a configured OpenRouter alias without bundling a shared credential.",
+      "tags": [
+        "llm-adapter",
+        "openrouter",
+        "compatibility"
+      ]
+    },
+    {
+      "id": "file:backend/assumption_zero/llm/fallback_adapter.py",
+      "type": "file",
+      "name": "fallback_adapter.py",
+      "filePath": "backend/assumption_zero/llm/fallback_adapter.py",
+      "summary": "Orchestrates an ordered provider chain, failing over on provider errors and falling back to deterministic analysis when no configured adapter is available.",
+      "tags": [
+        "llm-adapter",
+        "failover",
+        "resilience",
+        "tested"
+      ]
+    },
+    {
+      "id": "file:backend/assumption_zero/llm/groq_adapter.py",
+      "type": "file",
+      "name": "groq_adapter.py",
+      "filePath": "backend/assumption_zero/llm/groq_adapter.py",
+      "summary": "Connects the analysis contract to Groq chat completions, including model fallback, structured perspective parsing, clarification, and raw-prompt extraction.",
+      "tags": [
+        "llm-adapter",
+        "groq",
+        "http-client"
+      ]
+    },
+    {
+      "id": "file:backend/assumption_zero/llm/hybrid_adapter.py",
+      "type": "file",
+      "name": "hybrid_adapter.py",
+      "filePath": "backend/assumption_zero/llm/hybrid_adapter.py",
+      "summary": "Balances perspective workloads between Groq and OpenRouter and performs automatic cross-provider failover for analysis, clarification, and prompt parsing.",
+      "tags": [
+        "llm-adapter",
+        "provider-routing",
+        "failover"
+      ]
+    },
+    {
+      "id": "file:backend/assumption_zero/llm/mock_adapter.py",
+      "type": "file",
+      "name": "mock_adapter.py",
+      "filePath": "backend/assumption_zero/llm/mock_adapter.py",
+      "summary": "Provides the labeled deterministic evidence engine, deriving opportunity scores, findings, risks, and recommendations from collected evidence without inventing model output.",
+      "tags": [
+        "llm-adapter",
+        "deterministic-scoring",
+        "fallback",
+        "tested"
+      ]
+    },
+    {
+      "id": "file:backend/assumption_zero/llm/ollama_adapter.py",
+      "type": "file",
+      "name": "ollama_adapter.py",
+      "filePath": "backend/assumption_zero/llm/ollama_adapter.py",
+      "summary": "Runs analysis against local Ollama models, supporting both OpenAI-compatible chat completions and Ollama native chat endpoints.",
+      "tags": [
+        "llm-adapter",
+        "ollama",
+        "local-model"
+      ]
+    },
+    {
+      "id": "file:backend/assumption_zero/llm/openai_compat_adapter.py",
+      "type": "file",
+      "name": "openai_compat_adapter.py",
+      "filePath": "backend/assumption_zero/llm/openai_compat_adapter.py",
+      "summary": "Supports configurable OpenAI-compatible chat-completion providers with structured response parsing, recommendation normalization, and provider-specific authentication.",
+      "tags": [
+        "llm-adapter",
+        "openai-compatible",
+        "http-client"
+      ]
+    },
+    {
+      "id": "file:backend/assumption_zero/llm/opencode_adapter.py",
+      "type": "file",
+      "name": "opencode_adapter.py",
+      "filePath": "backend/assumption_zero/llm/opencode_adapter.py",
+      "summary": "Connects analysis and prompt parsing to the configurable OpenCode API using shared prompt and output-normalization logic.",
+      "tags": [
+        "llm-adapter",
+        "opencode",
+        "http-client"
+      ]
+    },
+    {
+      "id": "file:backend/assumption_zero/llm/openrouter_adapter.py",
+      "type": "file",
+      "name": "openrouter_adapter.py",
+      "filePath": "backend/assumption_zero/llm/openrouter_adapter.py",
+      "summary": "Implements OpenRouter analysis across configurable and fallback models, with robust JSON repair, structured perspective validation, and prompt parsing.",
+      "tags": [
+        "llm-adapter",
+        "openrouter",
+        "json-repair"
+      ]
+    },
+    {
+      "id": "file:backend/tests/test_llm_adapters.py",
+      "type": "file",
+      "name": "test_llm_adapters.py",
+      "filePath": "backend/tests/test_llm_adapters.py",
+      "summary": "Tests adapter construction, explicit-provider failure behavior, deterministic raw-prompt parsing, gibberish rejection, and fallback-chain operation.",
+      "tags": [
+        "test",
+        "llm-adapter",
+        "failover"
+      ]
+    },
+    {
+      "id": "file:backend/assumption_zero/__init__.py",
+      "type": "file",
+      "name": "__init__.py",
+      "filePath": "backend/assumption_zero/__init__.py",
+      "summary": "Defines the Assumption Zero Python package metadata and exposes the installed application version.",
+      "tags": [
+        "entry-point",
+        "package-metadata",
+        "versioning"
+      ]
+    },
+    {
+      "id": "file:backend/assumption_zero/analysis/unit_economics.py",
+      "type": "file",
+      "name": "unit_economics.py",
+      "filePath": "backend/assumption_zero/analysis/unit_economics.py",
+      "summary": "Implements the transparent subscription unit-economics model shared by CLI and web-facing simulations, including breakeven, payback, LTV, and health classification.",
+      "tags": [
+        "unit-economics",
+        "calculation",
+        "validation",
+        "data-model"
+      ]
+    },
+    {
+      "id": "file:backend/assumption_zero/cli.py",
+      "type": "file",
+      "name": "cli.py",
+      "filePath": "backend/assumption_zero/cli.py",
+      "summary": "Provides the full Typer command-line interface for configuring providers, running and reviewing analyses, simulating unit economics, and exporting richly formatted reports.",
+      "tags": [
+        "entry-point",
+        "cli",
+        "reporting",
+        "serialization",
+        "configuration"
+      ]
+    },
+    {
+      "id": "file:backend/assumption_zero/main.py",
+      "type": "file",
+      "name": "main.py",
+      "filePath": "backend/assumption_zero/main.py",
+      "summary": "Creates and configures the FastAPI application, including clean validation errors, constrained CORS, API routes, startup storage initialization, and root metadata.",
+      "tags": [
+        "entry-point",
+        "api-handler",
+        "middleware",
+        "validation",
+        "startup"
+      ]
+    },
+    {
+      "id": "file:backend/assumption_zero/storage.py",
+      "type": "file",
+      "name": "storage.py",
+      "filePath": "backend/assumption_zero/storage.py",
+      "summary": "Implements human-readable file persistence for analysis metadata, inputs, and results using CSV plus JSON, with atomic writes and one-time legacy migration.",
+      "tags": [
+        "storage",
+        "persistence",
+        "serialization",
+        "migration",
+        "file-io"
+      ]
+    },
+    {
+      "id": "file:backend/tests/test_api.py",
+      "type": "file",
+      "name": "test_api.py",
+      "filePath": "backend/tests/test_api.py",
+      "summary": "Exercises FastAPI health, analysis, demo, and listing endpoints, including secret redaction and request-bound validation behavior.",
+      "tags": [
+        "test",
+        "api-handler",
+        "integration",
+        "validation",
+        "security"
+      ]
+    },
+    {
+      "id": "file:backend/tests/test_cli_parity.py",
+      "type": "file",
+      "name": "test_cli_parity.py",
+      "filePath": "backend/tests/test_cli_parity.py",
+      "summary": "Checks that CLI commands and provider controls match web capabilities and that CLI runs share storage, filtering, and unit-economics behavior with the web application.",
+      "tags": [
+        "test",
+        "cli",
+        "integration",
+        "regression",
+        "feature-parity"
+      ]
+    },
+    {
+      "id": "file:backend/tests/test_export.py",
+      "type": "file",
+      "name": "test_export.py",
+      "filePath": "backend/tests/test_export.py",
+      "summary": "Validates Markdown, HTML, and JSON analysis exports for required verdict, evidence, experiment, competitor, disclaimer, and secret-safety content.",
+      "tags": [
+        "test",
+        "serialization",
+        "reporting",
+        "regression",
+        "security"
+      ]
+    },
+    {
+      "id": "file:backend/tests/test_validation_errors.py",
+      "type": "file",
+      "name": "test_validation_errors.py",
+      "filePath": "backend/tests/test_validation_errors.py",
+      "summary": "Covers clean API validation messages, provider-key verification, release-mode debug parsing, and SSRF URL filtering safeguards.",
+      "tags": [
+        "test",
+        "validation",
+        "security",
+        "api-handler",
+        "regression"
+      ]
+    },
+    {
+      "id": "service:backend/Dockerfile",
+      "type": "service",
+      "name": "Dockerfile",
+      "filePath": "backend/Dockerfile",
+      "summary": "Builds the Python 3.12 backend image, installs the application and curl, provisions persistent-data storage, exposes port 8000, and starts the FastAPI app with Uvicorn.",
+      "tags": [
+        "containerization",
+        "infrastructure",
+        "deployment",
+        "api-handler"
+      ]
+    },
+    {
+      "id": "service:backend/Dockerfile:python",
+      "type": "service",
+      "name": "python",
+      "filePath": "backend/Dockerfile",
+      "summary": "Defines the Python runtime service that hosts Assumption Zero through Uvicorn on port 8000 with its data directory under /app.",
+      "tags": [
+        "containerization",
+        "python",
+        "runtime",
+        "api-service"
+      ]
+    },
+    {
+      "id": "service:frontend/Dockerfile",
+      "type": "service",
+      "name": "Dockerfile",
+      "filePath": "frontend/Dockerfile",
+      "summary": "Builds the Vite frontend in Node.js and serves the production assets from Nginx with SPA fallback routing and an /api proxy to the backend service.",
+      "tags": [
+        "containerization",
+        "infrastructure",
+        "deployment",
+        "reverse-proxy",
+        "frontend"
+      ]
+    },
+    {
+      "id": "service:frontend/Dockerfile:builder",
+      "type": "service",
+      "name": "builder",
+      "filePath": "frontend/Dockerfile",
+      "summary": "Installs locked frontend dependencies in Node.js 20 and compiles the Vite application into production assets.",
+      "tags": [
+        "containerization",
+        "build-system",
+        "nodejs",
+        "frontend"
+      ]
+    },
+    {
+      "id": "service:frontend/Dockerfile:nginx",
+      "type": "service",
+      "name": "nginx",
+      "filePath": "frontend/Dockerfile",
+      "summary": "Serves the compiled frontend on port 80, falls back to index.html for client-side routes, and proxies API requests to the backend container.",
+      "tags": [
+        "containerization",
+        "runtime",
+        "reverse-proxy",
+        "static-hosting"
+      ]
+    },
+    {
+      "id": "pipeline:.github/workflows/ci.yml",
+      "type": "pipeline",
+      "name": "ci.yml",
+      "filePath": ".github/workflows/ci.yml",
+      "summary": "Runs continuous integration on pushes and pull requests to main or master, executing the Python 3.12 pytest suite and independently installing and building the Node.js 20 frontend.",
+      "tags": [
+        "ci-cd",
+        "pipeline",
+        "test",
+        "build-system",
+        "automation"
+      ]
+    },
+    {
+      "id": "config:.env.example",
+      "type": "config",
+      "name": ".env.example",
+      "filePath": ".env.example",
+      "summary": "Documents the environment variables for application behavior, browser origins, AI provider credentials and models, local or compatible endpoints, GitHub access, and request timeouts.",
+      "tags": [
+        "configuration",
+        "environment",
+        "ai-providers",
+        "security"
+      ]
+    },
+    {
+      "id": "document:CONTRIBUTING.md",
+      "type": "document",
+      "name": "CONTRIBUTING.md",
+      "filePath": "CONTRIBUTING.md",
+      "summary": "Contributor guide covering valuable contribution areas, local backend and frontend setup, quality checks, secret handling, and pull-request expectations across five sections.",
+      "tags": [
+        "documentation",
+        "development",
+        "contributing",
+        "quality-checks"
+      ]
+    },
+    {
+      "id": "document:IDEA_GUIDE.md",
+      "type": "document",
+      "name": "IDEA_GUIDE.md",
+      "filePath": "IDEA_GUIDE.md",
+      "summary": "Founder-facing guide for writing a strong validation brief, choosing research depth, handling regional validation, running the engine, and turning evidence into a decision.",
+      "tags": [
+        "documentation",
+        "startup-validation",
+        "research-depth",
+        "decision-making"
+      ]
+    },
+    {
+      "id": "document:README.md",
+      "type": "document",
+      "name": "README.md",
+      "filePath": "README.md",
+      "summary": "Comprehensive project overview and quick-start guide covering the validation workflow, CLI and web usage, model providers, scoring, research accuracy, architecture, development, and safe deployment across eighteen sections.",
+      "tags": [
+        "documentation",
+        "entry-point",
+        "architecture",
+        "quick-start",
+        "deployment"
+      ]
+    },
+    {
+      "id": "document:SECURITY.md",
+      "type": "document",
+      "name": "SECURITY.md",
+      "filePath": "SECURITY.md",
+      "summary": "Security policy explaining private vulnerability reporting expectations and the operator’s responsibility for safe deployment.",
+      "tags": [
+        "documentation",
+        "security",
+        "vulnerability-reporting",
+        "deployment"
+      ]
+    },
+    {
+      "id": "service:docker-compose.yml",
+      "type": "service",
+      "name": "docker-compose.yml",
+      "filePath": "docker-compose.yml",
+      "summary": "Orchestrates backend and frontend containers, exposes the API and web ports, persists analysis data, forwards provider configuration, adds an API health check, and starts the frontend after the backend.",
+      "tags": [
+        "orchestration",
+        "infrastructure",
+        "containerization",
+        "deployment"
+      ]
+    },
+    {
+      "id": "file:start_web.bat",
+      "type": "file",
+      "name": "start_web.bat",
+      "filePath": "start_web.bat",
+      "summary": "Windows development launcher that checks prerequisites, provisions backend and frontend dependencies, creates data directories, starts both servers in separate command windows, and opens the web interface.",
+      "tags": [
+        "entry-point",
+        "development",
+        "launcher",
+        "windows"
+      ]
+    },
+    {
+      "id": "file:start_web.sh",
+      "type": "file",
+      "name": "start_web.sh",
+      "filePath": "start_web.sh",
+      "summary": "Unix development launcher that checks prerequisites, provisions dependencies and data storage, starts backend and frontend processes, opens the browser when supported, and cleans up child processes on termination.",
+      "tags": [
+        "entry-point",
+        "development",
+        "launcher",
+        "shell"
+      ]
+    },
+    {
+      "id": "config:.github/ISSUE_TEMPLATE/bug_report.yml",
+      "type": "config",
+      "name": "bug_report.yml",
+      "filePath": ".github/ISSUE_TEMPLATE/bug_report.yml",
+      "summary": "Defines the structured GitHub bug-report form for observed behavior, reproduction steps, affected product surface, environment details, sanitized logs, and a required secret-removal confirmation.",
+      "tags": [
+        "configuration",
+        "issue-template",
+        "bug-reporting",
+        "security",
+        "triage"
+      ]
+    },
+    {
+      "id": "config:.github/ISSUE_TEMPLATE/config.yml",
+      "type": "config",
+      "name": "config.yml",
+      "filePath": ".github/ISSUE_TEMPLATE/config.yml",
+      "summary": "Configures the GitHub issue chooser to disable blank issues and direct security vulnerabilities to private repository advisories.",
+      "tags": [
+        "configuration",
+        "issue-template",
+        "security",
+        "triage"
+      ]
+    },
+    {
+      "id": "config:.github/ISSUE_TEMPLATE/feature_request.yml",
+      "type": "config",
+      "name": "feature_request.yml",
+      "filePath": ".github/ISSUE_TEMPLATE/feature_request.yml",
+      "summary": "Defines the structured GitHub feature-request form for the user problem, smallest useful outcome, affected product area, and supporting evidence.",
+      "tags": [
+        "configuration",
+        "issue-template",
+        "feature-request",
+        "product-feedback"
+      ]
+    },
+    {
+      "id": "file:frontend/index.html",
+      "type": "file",
+      "name": "index.html",
+      "filePath": "frontend/index.html",
+      "summary": "Provides the Vite application's HTML shell, SEO and theme metadata, hosted font connections, React root element, and module bootstrap for the TypeScript entry point.",
+      "tags": [
+        "entry-point",
+        "markup",
+        "frontend",
+        "seo",
+        "bootstrap"
+      ]
+    },
+    {
+      "id": "config:frontend/package.json",
+      "type": "config",
+      "name": "package.json",
+      "filePath": "frontend/package.json",
+      "summary": "Defines the private React frontend package, Vite development and production scripts, Vitest checks, TypeScript validation, and runtime and build dependencies.",
+      "tags": [
+        "configuration",
+        "build-system",
+        "dependencies",
+        "frontend",
+        "test"
+      ]
+    },
+    {
+      "id": "config:frontend/tsconfig.json",
+      "type": "config",
+      "name": "tsconfig.json",
+      "filePath": "frontend/tsconfig.json",
+      "summary": "Configures strict, no-emit TypeScript compilation for React source and tests using ES2020, bundler module resolution, JSON modules, and Vitest globals.",
+      "tags": [
+        "configuration",
+        "typescript",
+        "build-system",
+        "frontend",
+        "test"
+      ]
+    },
+    {
+      "id": "config:frontend/tsconfig.node.json",
+      "type": "config",
+      "name": "tsconfig.node.json",
+      "filePath": "frontend/tsconfig.node.json",
+      "summary": "Defines the composite TypeScript project used to compile the Node-executed Vite configuration with strict ES module and bundler resolution settings.",
+      "tags": [
+        "configuration",
+        "typescript",
+        "build-system",
+        "nodejs"
+      ]
+    },
+    {
+      "id": "document:.github/PULL_REQUEST_TEMPLATE.md",
+      "type": "document",
+      "name": "PULL_REQUEST_TEMPLATE.md",
+      "filePath": ".github/PULL_REQUEST_TEMPLATE.md",
+      "summary": "Pull-request checklist prompting contributors to explain changes and motivation, report verification results, confirm security and documentation checks, and attach screenshots for UI changes.",
+      "tags": [
+        "documentation",
+        "contributing",
+        "pull-request",
+        "quality-checks"
+      ]
+    },
+    {
+      "id": "file:.ua/.understandignore",
+      "type": "file",
+      "name": ".understandignore",
+      "filePath": ".ua/.understandignore",
+      "summary": "Generated, fully commented ignore-pattern template for controlling future Understand Anything scans, including project artifacts, caches, documentation, examples, and language-specific test conventions.",
+      "tags": [
+        "configuration",
+        "analysis-scope",
+        "ignore-patterns",
+        "generated"
+      ]
+    },
+    {
+      "id": "config:.ua/config.json",
+      "type": "config",
+      "name": "config.json",
+      "filePath": ".ua/config.json",
+      "summary": "Configures Understand Anything graph generation to produce English textual output.",
+      "tags": [
+        "configuration",
+        "knowledge-graph",
+        "localization",
+        "analysis"
+      ]
+    },
+    {
+      "id": "document:backend/README.md",
+      "type": "document",
+      "name": "README.md",
+      "filePath": "backend/README.md",
+      "summary": "Brief backend overview identifying the FastAPI API and Python CLI and directing readers to the main project guide for setup, usage, testing, and deployment.",
+      "tags": [
+        "documentation",
+        "backend",
+        "fastapi",
+        "cli"
+      ]
+    },
+    {
+      "id": "file:backend/assumption_zero/api/__init__.py",
+      "type": "file",
+      "name": "__init__.py",
+      "filePath": "backend/assumption_zero/api/__init__.py",
+      "summary": "Marks the FastAPI routing directory as an importable Python package.",
+      "tags": [
+        "package-marker",
+        "api",
+        "python",
+        "entry-point"
+      ]
+    },
+    {
+      "id": "file:backend/assumption_zero/services/__init__.py",
+      "type": "file",
+      "name": "__init__.py",
+      "filePath": "backend/assumption_zero/services/__init__.py",
+      "summary": "Marks the backend application-service directory as an importable Python package.",
+      "tags": [
+        "package-marker",
+        "service",
+        "python",
+        "entry-point"
+      ]
+    },
+    {
+      "id": "config:backend/pyproject.toml",
+      "type": "config",
+      "name": "pyproject.toml",
+      "filePath": "backend/pyproject.toml",
+      "summary": "Defines Python 3.12 package metadata, runtime and development dependencies, the azero CLI entry point, setuptools packaging, pytest behavior, Ruff formatting limits, and mypy settings.",
+      "tags": [
+        "configuration",
+        "python",
+        "build-system",
+        "dependencies",
+        "tooling"
+      ]
+    },
+    {
+      "id": "file:backend/tests/__init__.py",
+      "type": "file",
+      "name": "__init__.py",
+      "filePath": "backend/tests/__init__.py",
+      "summary": "Marks the backend test suite as an importable Python package.",
+      "tags": [
+        "test",
+        "package-marker",
+        "pytest",
+        "python"
+      ]
+    },
+    {
+      "id": "config:examples/sample-idea.json",
+      "type": "config",
+      "name": "sample-idea.json",
+      "filePath": "examples/sample-idea.json",
+      "summary": "Complete example validation brief for a privacy-first, on-device legal meeting summarizer, covering customer, problem, solution, economics, founder constraints, channels, competitors, assumptions, and regulation.",
+      "tags": [
+        "sample-data",
+        "startup-idea",
+        "validation-input",
+        "documentation"
+      ]
+    },
+    {
+      "id": "file:frontend/postcss.config.js",
+      "type": "file",
+      "name": "postcss.config.js",
+      "filePath": "frontend/postcss.config.js",
+      "summary": "Configures PostCSS to process frontend styles with Tailwind CSS and Autoprefixer.",
+      "tags": [
+        "configuration",
+        "css",
+        "postcss",
+        "build-system"
+      ]
+    },
+    {
+      "id": "file:frontend/src/index.css",
+      "type": "file",
+      "name": "index.css",
+      "filePath": "frontend/src/index.css",
+      "summary": "Defines global Tailwind layers, typography and page defaults, reusable cards, buttons, inputs, badges, navigation and depth effects, ambient animations, responsive behavior, reduced-motion accessibility, and print styling.",
+      "tags": [
+        "stylesheet",
+        "tailwind",
+        "design-system",
+        "accessibility",
+        "responsive-design"
+      ]
+    },
+    {
+      "id": "file:frontend/src/pages/DocsPage.tsx",
+      "type": "file",
+      "name": "DocsPage.tsx",
+      "filePath": "frontend/src/pages/DocsPage.tsx",
+      "summary": "Renders the founder documentation page with navigation and detailed guidance on briefing, research depth, evidence interpretation, a 30-day validation playbook, metrics, CLI commands, and frequently asked questions.",
+      "tags": [
+        "component",
+        "documentation",
+        "react",
+        "founder-guide",
+        "ui",
+        "tested"
+      ]
+    },
+    {
+      "id": "file:frontend/tailwind.config.js",
+      "type": "file",
+      "name": "tailwind.config.js",
+      "filePath": "frontend/tailwind.config.js",
+      "summary": "Configures Tailwind content discovery and extends the frontend theme with surface, card, border, Verseo palette, and sans, display, and monospace font families.",
+      "tags": [
+        "configuration",
+        "tailwind",
+        "design-system",
+        "build-system"
+      ]
+    },
+    {
+      "id": "file:frontend/tests/docs.test.tsx",
+      "type": "file",
+      "name": "docs.test.tsx",
+      "filePath": "frontend/tests/docs.test.tsx",
+      "summary": "Vitest component test that renders the documentation page in a memory router and verifies the business playbook, CLI reference, and interview milestone content.",
+      "tags": [
+        "test",
+        "component-test",
+        "vitest",
+        "documentation"
+      ]
+    },
+    {
+      "id": "file:frontend/tests/setup.ts",
+      "type": "file",
+      "name": "setup.ts",
+      "filePath": "frontend/tests/setup.ts",
+      "summary": "Loads DOM-aware Testing Library matchers into the frontend Vitest environment.",
+      "tags": [
+        "test",
+        "setup",
+        "testing-library",
+        "vitest"
+      ]
+    },
+    {
+      "id": "file:frontend/vite.config.ts",
+      "type": "file",
+      "name": "vite.config.ts",
+      "filePath": "frontend/vite.config.ts",
+      "summary": "Configures Vite with React, a development server on port 5173, an API proxy to the local backend, and a jsdom Vitest environment using the shared test setup.",
+      "tags": [
+        "configuration",
+        "vite",
+        "development-server",
+        "test",
+        "proxy"
+      ]
+    }
+  ],
+  "importEdges": [
+    {
+      "source": "file:frontend/src/App.tsx",
+      "target": "file:frontend/src/pages/HomePage.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/components/CitationBadge.tsx",
+      "target": "file:frontend/src/lib/utils.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/components/CitationBadge.tsx",
+      "target": "file:frontend/src/types/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/components/CompetitorCard.tsx",
+      "target": "file:frontend/src/components/CitationBadge.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/components/CompetitorCard.tsx",
+      "target": "file:frontend/src/lib/utils.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/components/CompetitorCard.tsx",
+      "target": "file:frontend/src/types/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/components/DisclaimerBanner.tsx",
+      "target": "file:frontend/src/lib/utils.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/components/ExperimentCard.tsx",
+      "target": "file:frontend/src/types/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/components/FinancialSimulator.tsx",
+      "target": "file:frontend/src/types/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/components/FounderToolkit.tsx",
+      "target": "file:frontend/src/types/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/components/OpportunityGauge.tsx",
+      "target": "file:frontend/src/lib/utils.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/components/PerspectiveExplorer.tsx",
+      "target": "file:frontend/src/components/PerspectivePanel.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/components/PerspectiveExplorer.tsx",
+      "target": "file:frontend/src/lib/utils.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/components/PerspectiveExplorer.tsx",
+      "target": "file:frontend/src/types/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/components/PerspectivePanel.tsx",
+      "target": "file:frontend/src/components/CitationBadge.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/components/PerspectivePanel.tsx",
+      "target": "file:frontend/src/lib/utils.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/components/PerspectivePanel.tsx",
+      "target": "file:frontend/src/types/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/components/RegionalMarketPanel.tsx",
+      "target": "file:frontend/src/types/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/components/SavedAnalysesModal.tsx",
+      "target": "file:frontend/src/lib/api.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/components/SavedAnalysesModal.tsx",
+      "target": "file:frontend/src/lib/utils.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/components/SavedAnalysesModal.tsx",
+      "target": "file:frontend/src/types/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/components/ScoreBreakdown.tsx",
+      "target": "file:frontend/src/lib/utils.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/components/ScoreBreakdown.tsx",
+      "target": "file:frontend/src/types/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/components/SettingsModal.tsx",
+      "target": "file:frontend/src/components/ProviderIcon.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/components/SettingsModal.tsx",
+      "target": "file:frontend/src/lib/api.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/hooks/useAnalysis.ts",
+      "target": "file:frontend/src/lib/api.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/hooks/useAnalysis.ts",
+      "target": "file:frontend/src/types/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/lib/api.ts",
+      "target": "file:frontend/src/types/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/lib/report.ts",
+      "target": "file:frontend/src/types/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/lib/utils.ts",
+      "target": "file:frontend/src/types/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/main.tsx",
+      "target": "file:frontend/src/App.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/main.tsx",
+      "target": "file:frontend/src/index.css",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/pages/AnalysisPage.tsx",
+      "target": "file:frontend/src/components/DisclaimerBanner.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/pages/AnalysisPage.tsx",
+      "target": "file:frontend/src/hooks/useAnalysis.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/pages/AnalysisPage.tsx",
+      "target": "file:frontend/src/pages/ProgressView.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/pages/AnalysisPage.tsx",
+      "target": "file:frontend/src/pages/ReportView.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/pages/HomePage.tsx",
+      "target": "file:frontend/src/components/ProviderIcon.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/pages/HomePage.tsx",
+      "target": "file:frontend/src/components/SavedAnalysesModal.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/pages/HomePage.tsx",
+      "target": "file:frontend/src/components/SettingsModal.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/pages/HomePage.tsx",
+      "target": "file:frontend/src/lib/api.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/pages/HomePage.tsx",
+      "target": "file:frontend/src/lib/readiness.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/pages/HomePage.tsx",
+      "target": "file:frontend/src/types/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/pages/ProgressView.tsx",
+      "target": "file:frontend/src/lib/utils.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/pages/ProgressView.tsx",
+      "target": "file:frontend/src/types/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/pages/ReportView.tsx",
+      "target": "file:frontend/src/components/CompetitorCard.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/pages/ReportView.tsx",
+      "target": "file:frontend/src/components/ExperimentCard.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/pages/ReportView.tsx",
+      "target": "file:frontend/src/components/FinancialSimulator.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/pages/ReportView.tsx",
+      "target": "file:frontend/src/components/FounderToolkit.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/pages/ReportView.tsx",
+      "target": "file:frontend/src/components/OpportunityGauge.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/pages/ReportView.tsx",
+      "target": "file:frontend/src/components/PerspectiveExplorer.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/pages/ReportView.tsx",
+      "target": "file:frontend/src/components/RegionalMarketPanel.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/pages/ReportView.tsx",
+      "target": "file:frontend/src/components/ScoreBreakdown.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/pages/ReportView.tsx",
+      "target": "file:frontend/src/lib/api.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/pages/ReportView.tsx",
+      "target": "file:frontend/src/lib/report.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/pages/ReportView.tsx",
+      "target": "file:frontend/src/lib/utils.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/pages/ReportView.tsx",
+      "target": "file:frontend/src/pages/ProgressView.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/pages/ReportView.tsx",
+      "target": "file:frontend/src/types/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/tests/citation.test.ts",
+      "target": "file:frontend/src/lib/utils.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/tests/perspectiveExplorer.test.tsx",
+      "target": "file:frontend/src/components/PerspectiveExplorer.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/tests/perspectiveExplorer.test.tsx",
+      "target": "file:frontend/src/types/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/tests/readiness.test.ts",
+      "target": "file:frontend/src/lib/readiness.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/tests/score.test.ts",
+      "target": "file:frontend/src/lib/utils.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/tests/score.test.ts",
+      "target": "file:frontend/src/types/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/__init__.py",
+      "target": "file:backend/assumption_zero/analysis/citation_validator.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/__init__.py",
+      "target": "file:backend/assumption_zero/analysis/competitor_merger.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/__init__.py",
+      "target": "file:backend/assumption_zero/analysis/confidence.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/__init__.py",
+      "target": "file:backend/assumption_zero/analysis/disagreement.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/__init__.py",
+      "target": "file:backend/assumption_zero/analysis/engine.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/__init__.py",
+      "target": "file:backend/assumption_zero/analysis/experiment_generator.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/__init__.py",
+      "target": "file:backend/assumption_zero/analysis/query_generator.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/__init__.py",
+      "target": "file:backend/assumption_zero/analysis/scoring.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/citation_validator.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/competitor_merger.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/confidence.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/disagreement.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/engine.py",
+      "target": "file:backend/assumption_zero/analysis/citation_validator.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/engine.py",
+      "target": "file:backend/assumption_zero/analysis/competitor_merger.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/engine.py",
+      "target": "file:backend/assumption_zero/analysis/confidence.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/engine.py",
+      "target": "file:backend/assumption_zero/analysis/disagreement.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/engine.py",
+      "target": "file:backend/assumption_zero/analysis/experiment_generator.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/engine.py",
+      "target": "file:backend/assumption_zero/analysis/founder_toolkit.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/engine.py",
+      "target": "file:backend/assumption_zero/analysis/query_generator.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/engine.py",
+      "target": "file:backend/assumption_zero/analysis/regional_analysis.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/engine.py",
+      "target": "file:backend/assumption_zero/analysis/scoring.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/engine.py",
+      "target": "file:backend/assumption_zero/llm/base.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/engine.py",
+      "target": "file:backend/assumption_zero/research/base.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/engine.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/experiment_generator.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/founder_toolkit.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/query_generator.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/regional_analysis.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/scoring.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/demo.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/demo_provider.py",
+      "target": "file:backend/assumption_zero/research/base.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/demo_provider.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/tests/conftest.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/tests/test_citations.py",
+      "target": "file:backend/assumption_zero/analysis/citation_validator.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/tests/test_citations.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/tests/test_competitors.py",
+      "target": "file:backend/assumption_zero/analysis/competitor_merger.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/tests/test_competitors.py",
+      "target": "file:backend/assumption_zero/analysis/engine.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/tests/test_competitors.py",
+      "target": "file:backend/assumption_zero/llm/base.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/tests/test_competitors.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/tests/test_confidence.py",
+      "target": "file:backend/assumption_zero/analysis/confidence.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/tests/test_confidence.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/tests/test_engine_e2e.py",
+      "target": "file:backend/assumption_zero/analysis/engine.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/tests/test_engine_e2e.py",
+      "target": "file:backend/assumption_zero/llm/base.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/tests/test_engine_e2e.py",
+      "target": "file:backend/assumption_zero/research/base.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/tests/test_engine_e2e.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/tests/test_founder_toolkit.py",
+      "target": "file:backend/assumption_zero/analysis/experiment_generator.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/tests/test_founder_toolkit.py",
+      "target": "file:backend/assumption_zero/analysis/founder_toolkit.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/tests/test_founder_toolkit.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/tests/test_regional_research.py",
+      "target": "file:backend/assumption_zero/analysis/engine.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/tests/test_regional_research.py",
+      "target": "file:backend/assumption_zero/analysis/query_generator.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/tests/test_regional_research.py",
+      "target": "file:backend/assumption_zero/analysis/regional_analysis.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/tests/test_regional_research.py",
+      "target": "file:backend/assumption_zero/llm/mock_adapter.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/tests/test_regional_research.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/tests/test_scoring.py",
+      "target": "file:backend/assumption_zero/analysis/scoring.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/api/routes.py",
+      "target": "file:backend/assumption_zero/__init__.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/api/routes.py",
+      "target": "file:backend/assumption_zero/config.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/api/routes.py",
+      "target": "file:backend/assumption_zero/demo.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/api/routes.py",
+      "target": "file:backend/assumption_zero/research/github_provider.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/api/routes.py",
+      "target": "file:backend/assumption_zero/research/hackernews_provider.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/api/routes.py",
+      "target": "file:backend/assumption_zero/research/reddit_provider.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/api/routes.py",
+      "target": "file:backend/assumption_zero/research/searxng_provider.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/api/routes.py",
+      "target": "file:backend/assumption_zero/research/wikipedia_provider.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/api/routes.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/api/routes.py",
+      "target": "file:backend/assumption_zero/services/analysis_service.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/models.py",
+      "target": "file:backend/assumption_zero/config.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/__init__.py",
+      "target": "file:backend/assumption_zero/research/arxiv_provider.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/__init__.py",
+      "target": "file:backend/assumption_zero/research/base.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/__init__.py",
+      "target": "file:backend/assumption_zero/research/github_provider.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/__init__.py",
+      "target": "file:backend/assumption_zero/research/hackernews_provider.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/__init__.py",
+      "target": "file:backend/assumption_zero/research/news_provider.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/__init__.py",
+      "target": "file:backend/assumption_zero/research/reddit_provider.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/__init__.py",
+      "target": "file:backend/assumption_zero/research/searxng_provider.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/__init__.py",
+      "target": "file:backend/assumption_zero/research/web_search_provider.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/__init__.py",
+      "target": "file:backend/assumption_zero/research/wikipedia_provider.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/arxiv_provider.py",
+      "target": "file:backend/assumption_zero/config.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/arxiv_provider.py",
+      "target": "file:backend/assumption_zero/research/base.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/arxiv_provider.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/base.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/github_provider.py",
+      "target": "file:backend/assumption_zero/config.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/github_provider.py",
+      "target": "file:backend/assumption_zero/research/base.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/github_provider.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/hackernews_provider.py",
+      "target": "file:backend/assumption_zero/config.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/hackernews_provider.py",
+      "target": "file:backend/assumption_zero/research/base.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/hackernews_provider.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/news_provider.py",
+      "target": "file:backend/assumption_zero/config.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/news_provider.py",
+      "target": "file:backend/assumption_zero/research/base.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/news_provider.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/reddit_provider.py",
+      "target": "file:backend/assumption_zero/config.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/reddit_provider.py",
+      "target": "file:backend/assumption_zero/research/base.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/reddit_provider.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/searxng_provider.py",
+      "target": "file:backend/assumption_zero/config.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/searxng_provider.py",
+      "target": "file:backend/assumption_zero/research/base.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/searxng_provider.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/web_search_provider.py",
+      "target": "file:backend/assumption_zero/config.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/web_search_provider.py",
+      "target": "file:backend/assumption_zero/research/base.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/web_search_provider.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/wikipedia_provider.py",
+      "target": "file:backend/assumption_zero/config.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/wikipedia_provider.py",
+      "target": "file:backend/assumption_zero/research/base.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/wikipedia_provider.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/services/analysis_service.py",
+      "target": "file:backend/assumption_zero/analysis/engine.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/services/analysis_service.py",
+      "target": "file:backend/assumption_zero/config.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/services/analysis_service.py",
+      "target": "file:backend/assumption_zero/llm/base.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/services/analysis_service.py",
+      "target": "file:backend/assumption_zero/llm/fallback_adapter.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/services/analysis_service.py",
+      "target": "file:backend/assumption_zero/llm/groq_adapter.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/services/analysis_service.py",
+      "target": "file:backend/assumption_zero/llm/mock_adapter.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/services/analysis_service.py",
+      "target": "file:backend/assumption_zero/llm/ollama_adapter.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/services/analysis_service.py",
+      "target": "file:backend/assumption_zero/llm/openai_compat_adapter.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/services/analysis_service.py",
+      "target": "file:backend/assumption_zero/llm/opencode_adapter.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/services/analysis_service.py",
+      "target": "file:backend/assumption_zero/llm/openrouter_adapter.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/services/analysis_service.py",
+      "target": "file:backend/assumption_zero/research/arxiv_provider.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/services/analysis_service.py",
+      "target": "file:backend/assumption_zero/research/base.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/services/analysis_service.py",
+      "target": "file:backend/assumption_zero/research/github_provider.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/services/analysis_service.py",
+      "target": "file:backend/assumption_zero/research/hackernews_provider.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/services/analysis_service.py",
+      "target": "file:backend/assumption_zero/research/news_provider.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/services/analysis_service.py",
+      "target": "file:backend/assumption_zero/research/reddit_provider.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/services/analysis_service.py",
+      "target": "file:backend/assumption_zero/research/searxng_provider.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/services/analysis_service.py",
+      "target": "file:backend/assumption_zero/research/web_search_provider.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/services/analysis_service.py",
+      "target": "file:backend/assumption_zero/research/wikipedia_provider.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/services/analysis_service.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/services/analysis_service.py",
+      "target": "file:backend/assumption_zero/storage.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/__init__.py",
+      "target": "file:backend/assumption_zero/llm/base.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/__init__.py",
+      "target": "file:backend/assumption_zero/llm/beta_adapter.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/__init__.py",
+      "target": "file:backend/assumption_zero/llm/groq_adapter.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/__init__.py",
+      "target": "file:backend/assumption_zero/llm/hybrid_adapter.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/__init__.py",
+      "target": "file:backend/assumption_zero/llm/mock_adapter.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/__init__.py",
+      "target": "file:backend/assumption_zero/llm/ollama_adapter.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/__init__.py",
+      "target": "file:backend/assumption_zero/llm/openai_compat_adapter.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/__init__.py",
+      "target": "file:backend/assumption_zero/llm/opencode_adapter.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/__init__.py",
+      "target": "file:backend/assumption_zero/llm/openrouter_adapter.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/base.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/beta_adapter.py",
+      "target": "file:backend/assumption_zero/llm/openrouter_adapter.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/beta_adapter.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/fallback_adapter.py",
+      "target": "file:backend/assumption_zero/llm/base.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/fallback_adapter.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/groq_adapter.py",
+      "target": "file:backend/assumption_zero/config.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/groq_adapter.py",
+      "target": "file:backend/assumption_zero/llm/base.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/groq_adapter.py",
+      "target": "file:backend/assumption_zero/llm/openrouter_adapter.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/groq_adapter.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/hybrid_adapter.py",
+      "target": "file:backend/assumption_zero/llm/base.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/hybrid_adapter.py",
+      "target": "file:backend/assumption_zero/llm/groq_adapter.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/hybrid_adapter.py",
+      "target": "file:backend/assumption_zero/llm/openrouter_adapter.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/hybrid_adapter.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/mock_adapter.py",
+      "target": "file:backend/assumption_zero/llm/base.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/mock_adapter.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/ollama_adapter.py",
+      "target": "file:backend/assumption_zero/config.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/ollama_adapter.py",
+      "target": "file:backend/assumption_zero/llm/base.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/ollama_adapter.py",
+      "target": "file:backend/assumption_zero/llm/openrouter_adapter.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/ollama_adapter.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/openai_compat_adapter.py",
+      "target": "file:backend/assumption_zero/config.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/openai_compat_adapter.py",
+      "target": "file:backend/assumption_zero/llm/base.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/openai_compat_adapter.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/opencode_adapter.py",
+      "target": "file:backend/assumption_zero/config.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/opencode_adapter.py",
+      "target": "file:backend/assumption_zero/llm/base.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/opencode_adapter.py",
+      "target": "file:backend/assumption_zero/llm/openrouter_adapter.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/opencode_adapter.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/openrouter_adapter.py",
+      "target": "file:backend/assumption_zero/config.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/openrouter_adapter.py",
+      "target": "file:backend/assumption_zero/llm/base.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/openrouter_adapter.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/tests/test_llm_adapters.py",
+      "target": "file:backend/assumption_zero/llm/__init__.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/tests/test_llm_adapters.py",
+      "target": "file:backend/assumption_zero/services/analysis_service.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/cli.py",
+      "target": "file:backend/assumption_zero/__init__.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/main.py",
+      "target": "file:backend/assumption_zero/__init__.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/main.py",
+      "target": "file:backend/assumption_zero/api/routes.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/main.py",
+      "target": "file:backend/assumption_zero/config.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/main.py",
+      "target": "file:backend/assumption_zero/storage.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/tests/test_api.py",
+      "target": "file:backend/assumption_zero/main.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/tests/test_cli_parity.py",
+      "target": "file:backend/assumption_zero/analysis/unit_economics.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/tests/test_cli_parity.py",
+      "target": "file:backend/assumption_zero/cli.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/tests/test_cli_parity.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/tests/test_cli_parity.py",
+      "target": "file:backend/assumption_zero/storage.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/tests/test_export.py",
+      "target": "file:backend/assumption_zero/cli.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/tests/test_export.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/tests/test_validation_errors.py",
+      "target": "file:backend/assumption_zero/config.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/tests/test_validation_errors.py",
+      "target": "file:backend/assumption_zero/main.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/tests/docs.test.tsx",
+      "target": "file:frontend/src/pages/DocsPage.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    }
+  ],
+  "allEdges": [
+    {
+      "source": "file:frontend/src/App.tsx",
+      "target": "file:frontend/src/pages/HomePage.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/components/CitationBadge.tsx",
+      "target": "file:frontend/src/lib/utils.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/components/CitationBadge.tsx",
+      "target": "file:frontend/src/types/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/components/CompetitorCard.tsx",
+      "target": "file:frontend/src/components/CitationBadge.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/components/CompetitorCard.tsx",
+      "target": "file:frontend/src/lib/utils.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/components/CompetitorCard.tsx",
+      "target": "file:frontend/src/types/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/components/DisclaimerBanner.tsx",
+      "target": "file:frontend/src/lib/utils.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/components/ExperimentCard.tsx",
+      "target": "file:frontend/src/types/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/components/FinancialSimulator.tsx",
+      "target": "file:frontend/src/types/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/components/FounderToolkit.tsx",
+      "target": "file:frontend/src/types/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/components/OpportunityGauge.tsx",
+      "target": "file:frontend/src/lib/utils.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/components/PerspectiveExplorer.tsx",
+      "target": "file:frontend/src/components/PerspectivePanel.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/components/PerspectiveExplorer.tsx",
+      "target": "file:frontend/src/lib/utils.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/components/PerspectiveExplorer.tsx",
+      "target": "file:frontend/src/types/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/components/PerspectivePanel.tsx",
+      "target": "file:frontend/src/components/CitationBadge.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/components/PerspectivePanel.tsx",
+      "target": "file:frontend/src/lib/utils.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/components/PerspectivePanel.tsx",
+      "target": "file:frontend/src/types/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/components/RegionalMarketPanel.tsx",
+      "target": "file:frontend/src/types/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/components/SavedAnalysesModal.tsx",
+      "target": "file:frontend/src/lib/api.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/components/SavedAnalysesModal.tsx",
+      "target": "file:frontend/src/lib/utils.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/components/SavedAnalysesModal.tsx",
+      "target": "file:frontend/src/types/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/components/ScoreBreakdown.tsx",
+      "target": "file:frontend/src/lib/utils.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/components/ScoreBreakdown.tsx",
+      "target": "file:frontend/src/types/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/components/SettingsModal.tsx",
+      "target": "file:frontend/src/components/ProviderIcon.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/components/SettingsModal.tsx",
+      "target": "file:frontend/src/lib/api.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/components/PerspectiveExplorer.tsx",
+      "target": "file:frontend/tests/perspectiveExplorer.test.tsx",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:frontend/src/hooks/useAnalysis.ts",
+      "target": "file:frontend/src/lib/api.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/hooks/useAnalysis.ts",
+      "target": "file:frontend/src/types/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/lib/api.ts",
+      "target": "file:frontend/src/types/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/lib/report.ts",
+      "target": "file:frontend/src/types/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/lib/utils.ts",
+      "target": "file:frontend/src/types/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/main.tsx",
+      "target": "file:frontend/src/App.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/main.tsx",
+      "target": "file:frontend/src/index.css",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/pages/AnalysisPage.tsx",
+      "target": "file:frontend/src/components/DisclaimerBanner.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/pages/AnalysisPage.tsx",
+      "target": "file:frontend/src/hooks/useAnalysis.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/pages/AnalysisPage.tsx",
+      "target": "file:frontend/src/pages/ProgressView.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/pages/AnalysisPage.tsx",
+      "target": "file:frontend/src/pages/ReportView.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/pages/HomePage.tsx",
+      "target": "file:frontend/src/components/ProviderIcon.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/pages/HomePage.tsx",
+      "target": "file:frontend/src/components/SavedAnalysesModal.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/pages/HomePage.tsx",
+      "target": "file:frontend/src/components/SettingsModal.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/pages/HomePage.tsx",
+      "target": "file:frontend/src/lib/api.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/pages/HomePage.tsx",
+      "target": "file:frontend/src/lib/readiness.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/pages/HomePage.tsx",
+      "target": "file:frontend/src/types/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/pages/ProgressView.tsx",
+      "target": "file:frontend/src/lib/utils.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/pages/ProgressView.tsx",
+      "target": "file:frontend/src/types/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/pages/ReportView.tsx",
+      "target": "file:frontend/src/components/CompetitorCard.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/pages/ReportView.tsx",
+      "target": "file:frontend/src/components/ExperimentCard.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/pages/ReportView.tsx",
+      "target": "file:frontend/src/components/FinancialSimulator.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/pages/ReportView.tsx",
+      "target": "file:frontend/src/components/FounderToolkit.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/pages/ReportView.tsx",
+      "target": "file:frontend/src/components/OpportunityGauge.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/pages/ReportView.tsx",
+      "target": "file:frontend/src/components/PerspectiveExplorer.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/pages/ReportView.tsx",
+      "target": "file:frontend/src/components/RegionalMarketPanel.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/pages/ReportView.tsx",
+      "target": "file:frontend/src/components/ScoreBreakdown.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/pages/ReportView.tsx",
+      "target": "file:frontend/src/lib/api.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/pages/ReportView.tsx",
+      "target": "file:frontend/src/lib/report.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/pages/ReportView.tsx",
+      "target": "file:frontend/src/lib/utils.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/pages/ReportView.tsx",
+      "target": "file:frontend/src/pages/ProgressView.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/pages/ReportView.tsx",
+      "target": "file:frontend/src/types/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/tests/citation.test.ts",
+      "target": "file:frontend/src/lib/utils.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/tests/perspectiveExplorer.test.tsx",
+      "target": "file:frontend/src/components/PerspectiveExplorer.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/tests/perspectiveExplorer.test.tsx",
+      "target": "file:frontend/src/types/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/tests/readiness.test.ts",
+      "target": "file:frontend/src/lib/readiness.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/tests/score.test.ts",
+      "target": "file:frontend/src/lib/utils.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/tests/score.test.ts",
+      "target": "file:frontend/src/types/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/lib/utils.ts",
+      "target": "file:frontend/tests/citation.test.ts",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:frontend/src/lib/readiness.ts",
+      "target": "file:frontend/tests/readiness.test.ts",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:frontend/src/lib/utils.ts",
+      "target": "file:frontend/tests/score.test.ts",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/__init__.py",
+      "target": "file:backend/assumption_zero/analysis/citation_validator.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/__init__.py",
+      "target": "file:backend/assumption_zero/analysis/competitor_merger.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/__init__.py",
+      "target": "file:backend/assumption_zero/analysis/confidence.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/__init__.py",
+      "target": "file:backend/assumption_zero/analysis/disagreement.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/__init__.py",
+      "target": "file:backend/assumption_zero/analysis/engine.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/__init__.py",
+      "target": "file:backend/assumption_zero/analysis/experiment_generator.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/__init__.py",
+      "target": "file:backend/assumption_zero/analysis/query_generator.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/__init__.py",
+      "target": "file:backend/assumption_zero/analysis/scoring.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/citation_validator.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/competitor_merger.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/confidence.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/disagreement.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/engine.py",
+      "target": "file:backend/assumption_zero/analysis/citation_validator.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/engine.py",
+      "target": "file:backend/assumption_zero/analysis/competitor_merger.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/engine.py",
+      "target": "file:backend/assumption_zero/analysis/confidence.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/engine.py",
+      "target": "file:backend/assumption_zero/analysis/disagreement.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/engine.py",
+      "target": "file:backend/assumption_zero/analysis/experiment_generator.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/engine.py",
+      "target": "file:backend/assumption_zero/analysis/founder_toolkit.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/engine.py",
+      "target": "file:backend/assumption_zero/analysis/query_generator.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/engine.py",
+      "target": "file:backend/assumption_zero/analysis/regional_analysis.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/engine.py",
+      "target": "file:backend/assumption_zero/analysis/scoring.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/engine.py",
+      "target": "file:backend/assumption_zero/llm/base.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/engine.py",
+      "target": "file:backend/assumption_zero/research/base.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/engine.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/experiment_generator.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/founder_toolkit.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/query_generator.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/regional_analysis.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/scoring.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/demo.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/demo_provider.py",
+      "target": "file:backend/assumption_zero/research/base.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/demo_provider.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/tests/conftest.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/tests/test_citations.py",
+      "target": "file:backend/assumption_zero/analysis/citation_validator.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/tests/test_citations.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/tests/test_competitors.py",
+      "target": "file:backend/assumption_zero/analysis/competitor_merger.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/tests/test_competitors.py",
+      "target": "file:backend/assumption_zero/analysis/engine.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/tests/test_competitors.py",
+      "target": "file:backend/assumption_zero/llm/base.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/tests/test_competitors.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/tests/test_confidence.py",
+      "target": "file:backend/assumption_zero/analysis/confidence.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/tests/test_confidence.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/tests/test_engine_e2e.py",
+      "target": "file:backend/assumption_zero/analysis/engine.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/tests/test_engine_e2e.py",
+      "target": "file:backend/assumption_zero/llm/base.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/tests/test_engine_e2e.py",
+      "target": "file:backend/assumption_zero/research/base.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/tests/test_engine_e2e.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/tests/test_founder_toolkit.py",
+      "target": "file:backend/assumption_zero/analysis/experiment_generator.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/tests/test_founder_toolkit.py",
+      "target": "file:backend/assumption_zero/analysis/founder_toolkit.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/tests/test_founder_toolkit.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/tests/test_regional_research.py",
+      "target": "file:backend/assumption_zero/analysis/engine.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/tests/test_regional_research.py",
+      "target": "file:backend/assumption_zero/analysis/query_generator.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/tests/test_regional_research.py",
+      "target": "file:backend/assumption_zero/analysis/regional_analysis.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/tests/test_regional_research.py",
+      "target": "file:backend/assumption_zero/llm/mock_adapter.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/tests/test_regional_research.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/tests/test_scoring.py",
+      "target": "file:backend/assumption_zero/analysis/scoring.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/api/routes.py",
+      "target": "file:backend/assumption_zero/__init__.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/api/routes.py",
+      "target": "file:backend/assumption_zero/config.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/api/routes.py",
+      "target": "file:backend/assumption_zero/demo.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/api/routes.py",
+      "target": "file:backend/assumption_zero/research/github_provider.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/api/routes.py",
+      "target": "file:backend/assumption_zero/research/hackernews_provider.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/api/routes.py",
+      "target": "file:backend/assumption_zero/research/reddit_provider.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/api/routes.py",
+      "target": "file:backend/assumption_zero/research/searxng_provider.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/api/routes.py",
+      "target": "file:backend/assumption_zero/research/wikipedia_provider.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/api/routes.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/api/routes.py",
+      "target": "file:backend/assumption_zero/services/analysis_service.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/models.py",
+      "target": "file:backend/assumption_zero/config.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/__init__.py",
+      "target": "file:backend/assumption_zero/research/arxiv_provider.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/__init__.py",
+      "target": "file:backend/assumption_zero/research/base.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/__init__.py",
+      "target": "file:backend/assumption_zero/research/github_provider.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/__init__.py",
+      "target": "file:backend/assumption_zero/research/hackernews_provider.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/__init__.py",
+      "target": "file:backend/assumption_zero/research/news_provider.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/__init__.py",
+      "target": "file:backend/assumption_zero/research/reddit_provider.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/__init__.py",
+      "target": "file:backend/assumption_zero/research/searxng_provider.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/__init__.py",
+      "target": "file:backend/assumption_zero/research/web_search_provider.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/__init__.py",
+      "target": "file:backend/assumption_zero/research/wikipedia_provider.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/arxiv_provider.py",
+      "target": "file:backend/assumption_zero/config.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/arxiv_provider.py",
+      "target": "file:backend/assumption_zero/research/base.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/arxiv_provider.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/base.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/github_provider.py",
+      "target": "file:backend/assumption_zero/config.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/github_provider.py",
+      "target": "file:backend/assumption_zero/research/base.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/github_provider.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/hackernews_provider.py",
+      "target": "file:backend/assumption_zero/config.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/hackernews_provider.py",
+      "target": "file:backend/assumption_zero/research/base.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/hackernews_provider.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/news_provider.py",
+      "target": "file:backend/assumption_zero/config.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/news_provider.py",
+      "target": "file:backend/assumption_zero/research/base.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/news_provider.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/reddit_provider.py",
+      "target": "file:backend/assumption_zero/config.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/reddit_provider.py",
+      "target": "file:backend/assumption_zero/research/base.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/reddit_provider.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/searxng_provider.py",
+      "target": "file:backend/assumption_zero/config.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/searxng_provider.py",
+      "target": "file:backend/assumption_zero/research/base.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/searxng_provider.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/web_search_provider.py",
+      "target": "file:backend/assumption_zero/config.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/web_search_provider.py",
+      "target": "file:backend/assumption_zero/research/base.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/web_search_provider.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/wikipedia_provider.py",
+      "target": "file:backend/assumption_zero/config.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/wikipedia_provider.py",
+      "target": "file:backend/assumption_zero/research/base.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/wikipedia_provider.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/services/analysis_service.py",
+      "target": "file:backend/assumption_zero/analysis/engine.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/services/analysis_service.py",
+      "target": "file:backend/assumption_zero/config.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/services/analysis_service.py",
+      "target": "file:backend/assumption_zero/llm/base.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/services/analysis_service.py",
+      "target": "file:backend/assumption_zero/llm/fallback_adapter.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/services/analysis_service.py",
+      "target": "file:backend/assumption_zero/llm/groq_adapter.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/services/analysis_service.py",
+      "target": "file:backend/assumption_zero/llm/mock_adapter.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/services/analysis_service.py",
+      "target": "file:backend/assumption_zero/llm/ollama_adapter.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/services/analysis_service.py",
+      "target": "file:backend/assumption_zero/llm/openai_compat_adapter.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/services/analysis_service.py",
+      "target": "file:backend/assumption_zero/llm/opencode_adapter.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/services/analysis_service.py",
+      "target": "file:backend/assumption_zero/llm/openrouter_adapter.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/services/analysis_service.py",
+      "target": "file:backend/assumption_zero/research/arxiv_provider.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/services/analysis_service.py",
+      "target": "file:backend/assumption_zero/research/base.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/services/analysis_service.py",
+      "target": "file:backend/assumption_zero/research/github_provider.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/services/analysis_service.py",
+      "target": "file:backend/assumption_zero/research/hackernews_provider.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/services/analysis_service.py",
+      "target": "file:backend/assumption_zero/research/news_provider.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/services/analysis_service.py",
+      "target": "file:backend/assumption_zero/research/reddit_provider.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/services/analysis_service.py",
+      "target": "file:backend/assumption_zero/research/searxng_provider.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/services/analysis_service.py",
+      "target": "file:backend/assumption_zero/research/web_search_provider.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/services/analysis_service.py",
+      "target": "file:backend/assumption_zero/research/wikipedia_provider.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/services/analysis_service.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/services/analysis_service.py",
+      "target": "file:backend/assumption_zero/storage.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/__init__.py",
+      "target": "file:backend/assumption_zero/llm/base.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/__init__.py",
+      "target": "file:backend/assumption_zero/llm/beta_adapter.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/__init__.py",
+      "target": "file:backend/assumption_zero/llm/groq_adapter.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/__init__.py",
+      "target": "file:backend/assumption_zero/llm/hybrid_adapter.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/__init__.py",
+      "target": "file:backend/assumption_zero/llm/mock_adapter.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/__init__.py",
+      "target": "file:backend/assumption_zero/llm/ollama_adapter.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/__init__.py",
+      "target": "file:backend/assumption_zero/llm/openai_compat_adapter.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/__init__.py",
+      "target": "file:backend/assumption_zero/llm/opencode_adapter.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/__init__.py",
+      "target": "file:backend/assumption_zero/llm/openrouter_adapter.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/base.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/beta_adapter.py",
+      "target": "file:backend/assumption_zero/llm/openrouter_adapter.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/beta_adapter.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/fallback_adapter.py",
+      "target": "file:backend/assumption_zero/llm/base.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/fallback_adapter.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/groq_adapter.py",
+      "target": "file:backend/assumption_zero/config.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/groq_adapter.py",
+      "target": "file:backend/assumption_zero/llm/base.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/groq_adapter.py",
+      "target": "file:backend/assumption_zero/llm/openrouter_adapter.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/groq_adapter.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/hybrid_adapter.py",
+      "target": "file:backend/assumption_zero/llm/base.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/hybrid_adapter.py",
+      "target": "file:backend/assumption_zero/llm/groq_adapter.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/hybrid_adapter.py",
+      "target": "file:backend/assumption_zero/llm/openrouter_adapter.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/hybrid_adapter.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/mock_adapter.py",
+      "target": "file:backend/assumption_zero/llm/base.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/mock_adapter.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/ollama_adapter.py",
+      "target": "file:backend/assumption_zero/config.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/ollama_adapter.py",
+      "target": "file:backend/assumption_zero/llm/base.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/ollama_adapter.py",
+      "target": "file:backend/assumption_zero/llm/openrouter_adapter.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/ollama_adapter.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/openai_compat_adapter.py",
+      "target": "file:backend/assumption_zero/config.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/openai_compat_adapter.py",
+      "target": "file:backend/assumption_zero/llm/base.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/openai_compat_adapter.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/opencode_adapter.py",
+      "target": "file:backend/assumption_zero/config.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/opencode_adapter.py",
+      "target": "file:backend/assumption_zero/llm/base.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/opencode_adapter.py",
+      "target": "file:backend/assumption_zero/llm/openrouter_adapter.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/opencode_adapter.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/openrouter_adapter.py",
+      "target": "file:backend/assumption_zero/config.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/openrouter_adapter.py",
+      "target": "file:backend/assumption_zero/llm/base.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/openrouter_adapter.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/tests/test_llm_adapters.py",
+      "target": "file:backend/assumption_zero/llm/__init__.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/tests/test_llm_adapters.py",
+      "target": "file:backend/assumption_zero/services/analysis_service.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/__init__.py",
+      "target": "file:backend/tests/test_llm_adapters.py",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/fallback_adapter.py",
+      "target": "file:backend/tests/test_llm_adapters.py",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/mock_adapter.py",
+      "target": "file:backend/tests/test_llm_adapters.py",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:backend/assumption_zero/cli.py",
+      "target": "file:backend/assumption_zero/__init__.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/main.py",
+      "target": "file:backend/assumption_zero/__init__.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/main.py",
+      "target": "file:backend/assumption_zero/api/routes.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/main.py",
+      "target": "file:backend/assumption_zero/config.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/main.py",
+      "target": "file:backend/assumption_zero/storage.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/tests/test_api.py",
+      "target": "file:backend/assumption_zero/main.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/tests/test_cli_parity.py",
+      "target": "file:backend/assumption_zero/analysis/unit_economics.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/tests/test_cli_parity.py",
+      "target": "file:backend/assumption_zero/cli.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/tests/test_cli_parity.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/tests/test_cli_parity.py",
+      "target": "file:backend/assumption_zero/storage.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/tests/test_export.py",
+      "target": "file:backend/assumption_zero/cli.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/tests/test_export.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/tests/test_validation_errors.py",
+      "target": "file:backend/assumption_zero/config.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/tests/test_validation_errors.py",
+      "target": "file:backend/assumption_zero/main.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "service:backend/Dockerfile",
+      "target": "service:backend/Dockerfile:python",
+      "type": "deploys",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "service:frontend/Dockerfile",
+      "target": "service:frontend/Dockerfile:nginx",
+      "type": "deploys",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "service:frontend/Dockerfile:nginx",
+      "target": "service:frontend/Dockerfile:builder",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "document:README.md",
+      "target": "config:.env.example",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:README.md",
+      "target": "document:CONTRIBUTING.md",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:README.md",
+      "target": "document:SECURITY.md",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:README.md",
+      "target": "document:IDEA_GUIDE.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "service:docker-compose.yml",
+      "target": "config:.env.example",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:start_web.bat",
+      "target": "file:start_web.sh",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:start_web.bat",
+      "target": "service:docker-compose.yml",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:start_web.sh",
+      "target": "service:docker-compose.yml",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "config:.github/ISSUE_TEMPLATE/config.yml",
+      "target": "config:.github/ISSUE_TEMPLATE/bug_report.yml",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:.github/ISSUE_TEMPLATE/config.yml",
+      "target": "config:.github/ISSUE_TEMPLATE/feature_request.yml",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:frontend/package.json",
+      "target": "file:frontend/index.html",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:frontend/package.json",
+      "target": "config:frontend/tsconfig.json",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:frontend/tsconfig.json",
+      "target": "config:frontend/tsconfig.node.json",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:frontend/tests/docs.test.tsx",
+      "target": "file:frontend/src/pages/DocsPage.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/pages/DocsPage.tsx",
+      "target": "file:frontend/tests/docs.test.tsx",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:frontend/postcss.config.js",
+      "target": "file:frontend/src/index.css",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:frontend/tailwind.config.js",
+      "target": "file:frontend/src/index.css",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:frontend/vite.config.ts",
+      "target": "file:frontend/src/pages/DocsPage.tsx",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:frontend/vite.config.ts",
+      "target": "file:frontend/tests/setup.ts",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:backend/pyproject.toml",
+      "target": "file:backend/assumption_zero/api/__init__.py",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:backend/pyproject.toml",
+      "target": "file:backend/assumption_zero/services/__init__.py",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:backend/pyproject.toml",
+      "target": "file:backend/tests/__init__.py",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "document:backend/README.md",
+      "target": "file:backend/assumption_zero/api/__init__.py",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:backend/README.md",
+      "target": "file:backend/assumption_zero/services/__init__.py",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "config:.ua/config.json",
+      "target": "file:.ua/.understandignore",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "config:examples/sample-idea.json",
+      "target": "document:backend/README.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    }
+  ]
+}

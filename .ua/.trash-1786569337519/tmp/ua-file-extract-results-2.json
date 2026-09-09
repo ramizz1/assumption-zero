@@ -1,0 +1,5416 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 22,
+  "filesSkipped": [],
+  "analysisOutcomes": {
+    "structure": {
+      "succeeded": 22,
+      "failed": 0
+    },
+    "callGraph": {
+      "succeeded": 22,
+      "failed": 0,
+      "skipped": 0
+    }
+  },
+  "results": [
+    {
+      "path": "backend/assumption_zero/analysis/__init__.py",
+      "language": "python",
+      "fileCategory": "code",
+      "totalLines": 21,
+      "nonEmptyLines": 20,
+      "metrics": {
+        "importCount": 8,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "backend/assumption_zero/analysis/citation_validator.py",
+      "language": "python",
+      "fileCategory": "code",
+      "totalLines": 41,
+      "nonEmptyLines": 31,
+      "functions": [
+        {
+          "name": "validate_citations",
+          "startLine": 15,
+          "endLine": 41,
+          "params": [
+            "perspectives",
+            "evidence"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "validate_citations",
+          "line": 15,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "validate_citations",
+          "callee": "valid.append",
+          "lineNumber": 34
+        },
+        {
+          "caller": "validate_citations",
+          "callee": "invalid.append",
+          "lineNumber": 36
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 1,
+        "functionCount": 1,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "backend/assumption_zero/analysis/competitor_merger.py",
+      "language": "python",
+      "fileCategory": "code",
+      "totalLines": 109,
+      "nonEmptyLines": 92,
+      "functions": [
+        {
+          "name": "_normalize",
+          "startLine": 22,
+          "endLine": 28,
+          "params": [
+            "name"
+          ]
+        },
+        {
+          "name": "_similar",
+          "startLine": 31,
+          "endLine": 38,
+          "params": [
+            "a",
+            "b"
+          ]
+        },
+        {
+          "name": "_merge_two",
+          "startLine": 41,
+          "endLine": 80,
+          "params": [
+            "primary",
+            "duplicate"
+          ]
+        },
+        {
+          "name": "merge_competitors",
+          "startLine": 83,
+          "endLine": 109,
+          "params": [
+            "competitors"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "_normalize",
+          "line": 22,
+          "isDefault": false
+        },
+        {
+          "name": "_similar",
+          "line": 31,
+          "isDefault": false
+        },
+        {
+          "name": "_merge_two",
+          "line": 41,
+          "isDefault": false
+        },
+        {
+          "name": "merge_competitors",
+          "line": 83,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "_normalize",
+          "callee": "re.sub(r\"[^a-z0-9]+\", \" \", name.casefold()).strip",
+          "lineNumber": 24
+        },
+        {
+          "caller": "_normalize",
+          "callee": "re.sub",
+          "lineNumber": 24
+        },
+        {
+          "caller": "_normalize",
+          "callee": "name.casefold",
+          "lineNumber": 24
+        },
+        {
+          "caller": "_normalize",
+          "callee": "name.split",
+          "lineNumber": 25
+        },
+        {
+          "caller": "_normalize",
+          "callee": "parts.pop",
+          "lineNumber": 27
+        },
+        {
+          "caller": "_normalize",
+          "callee": "\" \".join",
+          "lineNumber": 28
+        },
+        {
+          "caller": "_similar",
+          "callee": "_normalize",
+          "lineNumber": 33
+        },
+        {
+          "caller": "_similar",
+          "callee": "_normalize",
+          "lineNumber": 33
+        },
+        {
+          "caller": "_merge_two",
+          "callee": "max",
+          "lineNumber": 43
+        },
+        {
+          "caller": "_merge_two",
+          "callee": "len",
+          "lineNumber": 47
+        },
+        {
+          "caller": "_merge_two",
+          "callee": "bool",
+          "lineNumber": 48
+        },
+        {
+          "caller": "_merge_two",
+          "callee": "len",
+          "lineNumber": 49
+        },
+        {
+          "caller": "_merge_two",
+          "callee": "max",
+          "lineNumber": 53
+        },
+        {
+          "caller": "_merge_two",
+          "callee": "len",
+          "lineNumber": 58
+        },
+        {
+          "caller": "_merge_two",
+          "callee": "list",
+          "lineNumber": 61
+        },
+        {
+          "caller": "_merge_two",
+          "callee": "dict.fromkeys",
+          "lineNumber": 61
+        },
+        {
+          "caller": "_merge_two",
+          "callee": "Competitor",
+          "lineNumber": 63
+        },
+        {
+          "caller": "_merge_two",
+          "callee": "list",
+          "lineNumber": 74
+        },
+        {
+          "caller": "_merge_two",
+          "callee": "dict.fromkeys",
+          "lineNumber": 74
+        },
+        {
+          "caller": "_merge_two",
+          "callee": "list",
+          "lineNumber": 75
+        },
+        {
+          "caller": "_merge_two",
+          "callee": "dict.fromkeys",
+          "lineNumber": 75
+        },
+        {
+          "caller": "_merge_two",
+          "callee": "list",
+          "lineNumber": 76
+        },
+        {
+          "caller": "_merge_two",
+          "callee": "dict.fromkeys",
+          "lineNumber": 76
+        },
+        {
+          "caller": "_merge_two",
+          "callee": "list",
+          "lineNumber": 77
+        },
+        {
+          "caller": "_merge_two",
+          "callee": "dict.fromkeys",
+          "lineNumber": 77
+        },
+        {
+          "caller": "merge_competitors",
+          "callee": "enumerate",
+          "lineNumber": 94
+        },
+        {
+          "caller": "merge_competitors",
+          "callee": "_similar",
+          "lineNumber": 95
+        },
+        {
+          "caller": "merge_competitors",
+          "callee": "_merge_two",
+          "lineNumber": 96
+        },
+        {
+          "caller": "merge_competitors",
+          "callee": "merged.append",
+          "lineNumber": 100
+        },
+        {
+          "caller": "merge_competitors",
+          "callee": "sorted",
+          "lineNumber": 102
+        },
+        {
+          "caller": "merge_competitors",
+          "callee": "len",
+          "lineNumber": 106
+        },
+        {
+          "caller": "merge_competitors",
+          "callee": "comp.name.casefold",
+          "lineNumber": 107
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 4,
+        "functionCount": 4,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "backend/assumption_zero/analysis/confidence.py",
+      "language": "python",
+      "fileCategory": "code",
+      "totalLines": 92,
+      "nonEmptyLines": 76,
+      "functions": [
+        {
+          "name": "calculate_evidence_confidence",
+          "startLine": 27,
+          "endLine": 92,
+          "params": [
+            "evidence",
+            "perspectives"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "calculate_evidence_confidence",
+          "line": 27,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "calculate_evidence_confidence",
+          "callee": "len",
+          "lineNumber": 45
+        },
+        {
+          "caller": "calculate_evidence_confidence",
+          "callee": "min",
+          "lineNumber": 48
+        },
+        {
+          "caller": "calculate_evidence_confidence",
+          "callee": "len",
+          "lineNumber": 51
+        },
+        {
+          "caller": "calculate_evidence_confidence",
+          "callee": "min",
+          "lineNumber": 52
+        },
+        {
+          "caller": "calculate_evidence_confidence",
+          "callee": "sum",
+          "lineNumber": 55
+        },
+        {
+          "caller": "calculate_evidence_confidence",
+          "callee": "sum",
+          "lineNumber": 56
+        },
+        {
+          "caller": "calculate_evidence_confidence",
+          "callee": "min",
+          "lineNumber": 57
+        },
+        {
+          "caller": "calculate_evidence_confidence",
+          "callee": "date.today",
+          "lineNumber": 60
+        },
+        {
+          "caller": "calculate_evidence_confidence",
+          "callee": "sum",
+          "lineNumber": 61
+        },
+        {
+          "caller": "calculate_evidence_confidence",
+          "callee": "min",
+          "lineNumber": 65
+        },
+        {
+          "caller": "calculate_evidence_confidence",
+          "callee": "all_cited.extend",
+          "lineNumber": 71
+        },
+        {
+          "caller": "calculate_evidence_confidence",
+          "callee": "all_invalid.extend",
+          "lineNumber": 72
+        },
+        {
+          "caller": "calculate_evidence_confidence",
+          "callee": "max",
+          "lineNumber": 75
+        },
+        {
+          "caller": "calculate_evidence_confidence",
+          "callee": "len",
+          "lineNumber": 75
+        },
+        {
+          "caller": "calculate_evidence_confidence",
+          "callee": "len",
+          "lineNumber": 75
+        },
+        {
+          "caller": "calculate_evidence_confidence",
+          "callee": "len",
+          "lineNumber": 75
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 1,
+        "functionCount": 1,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "backend/assumption_zero/analysis/disagreement.py",
+      "language": "python",
+      "fileCategory": "code",
+      "totalLines": 117,
+      "nonEmptyLines": 103,
+      "functions": [
+        {
+          "name": "detect_disagreements",
+          "startLine": 20,
+          "endLine": 117,
+          "params": [
+            "perspectives"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "detect_disagreements",
+          "line": 20,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "detect_disagreements",
+          "callee": "len",
+          "lineNumber": 24
+        },
+        {
+          "caller": "detect_disagreements",
+          "callee": "len",
+          "lineNumber": 31
+        },
+        {
+          "caller": "detect_disagreements",
+          "callee": "set",
+          "lineNumber": 31
+        },
+        {
+          "caller": "detect_disagreements",
+          "callee": "DisagreementPosition",
+          "lineNumber": 33
+        },
+        {
+          "caller": "detect_disagreements",
+          "callee": "Counter(rec_values).most_common",
+          "lineNumber": 44
+        },
+        {
+          "caller": "detect_disagreements",
+          "callee": "Counter",
+          "lineNumber": 44
+        },
+        {
+          "caller": "detect_disagreements",
+          "callee": "disagreements.append",
+          "lineNumber": 45
+        },
+        {
+          "caller": "detect_disagreements",
+          "callee": "ModelDisagreement",
+          "lineNumber": 46
+        },
+        {
+          "caller": "detect_disagreements",
+          "callee": "p.dimension_scores.get",
+          "lineNumber": 58
+        },
+        {
+          "caller": "detect_disagreements",
+          "callee": "len",
+          "lineNumber": 60
+        },
+        {
+          "caller": "detect_disagreements",
+          "callee": "max",
+          "lineNumber": 63
+        },
+        {
+          "caller": "detect_disagreements",
+          "callee": "min",
+          "lineNumber": 63
+        },
+        {
+          "caller": "detect_disagreements",
+          "callee": "DisagreementPosition",
+          "lineNumber": 69
+        },
+        {
+          "caller": "detect_disagreements",
+          "callee": "p.dimension_scores.get",
+          "lineNumber": 73
+        },
+        {
+          "caller": "detect_disagreements",
+          "callee": "p.dimension_scores.get",
+          "lineNumber": 74
+        },
+        {
+          "caller": "detect_disagreements",
+          "callee": "p.dimension_scores.get",
+          "lineNumber": 80
+        },
+        {
+          "caller": "detect_disagreements",
+          "callee": "len",
+          "lineNumber": 83
+        },
+        {
+          "caller": "detect_disagreements",
+          "callee": "max",
+          "lineNumber": 84
+        },
+        {
+          "caller": "detect_disagreements",
+          "callee": "float",
+          "lineNumber": 84
+        },
+        {
+          "caller": "detect_disagreements",
+          "callee": "pos.position.split(\":\")[1].split(\"/\")[0].strip",
+          "lineNumber": 84
+        },
+        {
+          "caller": "detect_disagreements",
+          "callee": "pos.position.split(\":\")[1].split",
+          "lineNumber": 84
+        },
+        {
+          "caller": "detect_disagreements",
+          "callee": "pos.position.split",
+          "lineNumber": 84
+        },
+        {
+          "caller": "detect_disagreements",
+          "callee": "disagreements.append",
+          "lineNumber": 85
+        },
+        {
+          "caller": "detect_disagreements",
+          "callee": "ModelDisagreement",
+          "lineNumber": 86
+        },
+        {
+          "caller": "detect_disagreements",
+          "callee": "len",
+          "lineNumber": 96
+        },
+        {
+          "caller": "detect_disagreements",
+          "callee": "set",
+          "lineNumber": 96
+        },
+        {
+          "caller": "detect_disagreements",
+          "callee": "DisagreementPosition",
+          "lineNumber": 98
+        },
+        {
+          "caller": "detect_disagreements",
+          "callee": "len",
+          "lineNumber": 107
+        },
+        {
+          "caller": "detect_disagreements",
+          "callee": "disagreements.append",
+          "lineNumber": 108
+        },
+        {
+          "caller": "detect_disagreements",
+          "callee": "ModelDisagreement",
+          "lineNumber": 109
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 1,
+        "functionCount": 1,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "backend/assumption_zero/analysis/engine.py",
+      "language": "python",
+      "fileCategory": "code",
+      "totalLines": 745,
+      "nonEmptyLines": 652,
+      "functions": [
+        {
+          "name": "_assign_evidence_ids",
+          "startLine": 71,
+          "endLine": 86,
+          "params": [
+            "items"
+          ]
+        },
+        {
+          "name": "_normalized_name",
+          "startLine": 107,
+          "endLine": 113,
+          "params": [
+            "value"
+          ]
+        },
+        {
+          "name": "_brand_from_url",
+          "startLine": 116,
+          "endLine": 127,
+          "params": [
+            "url"
+          ]
+        },
+        {
+          "name": "_clean_competitor_name",
+          "startLine": 130,
+          "endLine": 181,
+          "params": [
+            "title",
+            "url"
+          ]
+        },
+        {
+          "name": "_extract_competitors_from_evidence",
+          "startLine": 184,
+          "endLine": 262,
+          "params": [
+            "evidence",
+            "idea"
+          ]
+        },
+        {
+          "name": "_evidence_mentions",
+          "startLine": 265,
+          "endLine": 273,
+          "params": [
+            "name",
+            "item"
+          ]
+        },
+        {
+          "name": "_validated_ai_competitors",
+          "startLine": 276,
+          "endLine": 330,
+          "params": [
+            "candidates",
+            "evidence",
+            "idea"
+          ]
+        },
+        {
+          "name": "_select_recommendation",
+          "startLine": 333,
+          "endLine": 346,
+          "params": [
+            "perspectives",
+            "confidence"
+          ]
+        },
+        {
+          "name": "_select_most_dangerous_assumption",
+          "startLine": 349,
+          "endLine": 357,
+          "params": [
+            "perspectives"
+          ]
+        },
+        {
+          "name": "_find_strongest",
+          "startLine": 360,
+          "endLine": 379,
+          "params": [
+            "evidence",
+            "good"
+          ]
+        },
+        {
+          "name": "_collect_missing_info",
+          "startLine": 382,
+          "endLine": 411,
+          "params": [
+            "perspectives",
+            "evidence",
+            "competitors"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "AnalysisEngine",
+          "startLine": 414,
+          "endLine": 745,
+          "methods": [
+            "__init__",
+            "run",
+            "_collect_evidence",
+            "_safe_search",
+            "_run_perspectives",
+            "_select_queries",
+            "_safe_perspective"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "_assign_evidence_ids",
+          "line": 71,
+          "isDefault": false
+        },
+        {
+          "name": "_normalized_name",
+          "line": 107,
+          "isDefault": false
+        },
+        {
+          "name": "_brand_from_url",
+          "line": 116,
+          "isDefault": false
+        },
+        {
+          "name": "_clean_competitor_name",
+          "line": 130,
+          "isDefault": false
+        },
+        {
+          "name": "_extract_competitors_from_evidence",
+          "line": 184,
+          "isDefault": false
+        },
+        {
+          "name": "_evidence_mentions",
+          "line": 265,
+          "isDefault": false
+        },
+        {
+          "name": "_validated_ai_competitors",
+          "line": 276,
+          "isDefault": false
+        },
+        {
+          "name": "_select_recommendation",
+          "line": 333,
+          "isDefault": false
+        },
+        {
+          "name": "_select_most_dangerous_assumption",
+          "line": 349,
+          "isDefault": false
+        },
+        {
+          "name": "_find_strongest",
+          "line": 360,
+          "isDefault": false
+        },
+        {
+          "name": "_collect_missing_info",
+          "line": 382,
+          "isDefault": false
+        },
+        {
+          "name": "AnalysisEngine",
+          "line": 414,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "_assign_evidence_ids",
+          "callee": "set",
+          "lineNumber": 76
+        },
+        {
+          "caller": "_assign_evidence_ids",
+          "callee": "seen_urls.add",
+          "lineNumber": 80
+        },
+        {
+          "caller": "_assign_evidence_ids",
+          "callee": "unique.append",
+          "lineNumber": 81
+        },
+        {
+          "caller": "_assign_evidence_ids",
+          "callee": "enumerate",
+          "lineNumber": 83
+        },
+        {
+          "caller": "_normalized_name",
+          "callee": "re.sub(r\"[^a-z0-9]+\", \" \", value.casefold()).strip",
+          "lineNumber": 109
+        },
+        {
+          "caller": "_normalized_name",
+          "callee": "re.sub",
+          "lineNumber": 109
+        },
+        {
+          "caller": "_normalized_name",
+          "callee": "value.casefold",
+          "lineNumber": 109
+        },
+        {
+          "caller": "_normalized_name",
+          "callee": "normalized.split",
+          "lineNumber": 110
+        },
+        {
+          "caller": "_normalized_name",
+          "callee": "words.pop",
+          "lineNumber": 112
+        },
+        {
+          "caller": "_normalized_name",
+          "callee": "\" \".join",
+          "lineNumber": 113
+        },
+        {
+          "caller": "_brand_from_url",
+          "callee": "(urlparse(url).hostname or \"\").casefold().removeprefix",
+          "lineNumber": 119
+        },
+        {
+          "caller": "_brand_from_url",
+          "callee": "(urlparse(url).hostname or \"\").casefold",
+          "lineNumber": 119
+        },
+        {
+          "caller": "_brand_from_url",
+          "callee": "urlparse",
+          "lineNumber": 119
+        },
+        {
+          "caller": "_brand_from_url",
+          "callee": "any",
+          "lineNumber": 122
+        },
+        {
+          "caller": "_brand_from_url",
+          "callee": "host.endswith",
+          "lineNumber": 122
+        },
+        {
+          "caller": "_brand_from_url",
+          "callee": "host.split",
+          "lineNumber": 124
+        },
+        {
+          "caller": "_brand_from_url",
+          "callee": "len",
+          "lineNumber": 125
+        },
+        {
+          "caller": "_brand_from_url",
+          "callee": "\" \".join",
+          "lineNumber": 127
+        },
+        {
+          "caller": "_brand_from_url",
+          "callee": "part.capitalize",
+          "lineNumber": 127
+        },
+        {
+          "caller": "_brand_from_url",
+          "callee": "label.split",
+          "lineNumber": 127
+        },
+        {
+          "caller": "_clean_competitor_name",
+          "callee": "title.strip",
+          "lineNumber": 132
+        },
+        {
+          "caller": "_clean_competitor_name",
+          "callee": "re.sub(r\"^\\[[^\\]]+\\]\\s*\", \"\", original).strip",
+          "lineNumber": 133
+        },
+        {
+          "caller": "_clean_competitor_name",
+          "callee": "re.sub",
+          "lineNumber": 133
+        },
+        {
+          "caller": "_clean_competitor_name",
+          "callee": "name.startswith",
+          "lineNumber": 135
+        },
+        {
+          "caller": "_clean_competitor_name",
+          "callee": "name.split(\"]\", 1)[-1].strip",
+          "lineNumber": 136
+        },
+        {
+          "caller": "_clean_competitor_name",
+          "callee": "name.split",
+          "lineNumber": 136
+        },
+        {
+          "caller": "_clean_competitor_name",
+          "callee": "name.split(\"Show HN:\", 1)[-1].strip",
+          "lineNumber": 141
+        },
+        {
+          "caller": "_clean_competitor_name",
+          "callee": "name.split",
+          "lineNumber": 141
+        },
+        {
+          "caller": "_clean_competitor_name",
+          "callee": "name.split(\"Launch HN:\", 1)[-1].strip",
+          "lineNumber": 143
+        },
+        {
+          "caller": "_clean_competitor_name",
+          "callee": "name.split",
+          "lineNumber": 143
+        },
+        {
+          "caller": "_clean_competitor_name",
+          "callee": "name.split(sep)[0].strip",
+          "lineNumber": 148
+        },
+        {
+          "caller": "_clean_competitor_name",
+          "callee": "name.split",
+          "lineNumber": 148
+        },
+        {
+          "caller": "_clean_competitor_name",
+          "callee": "len",
+          "lineNumber": 149
+        },
+        {
+          "caller": "_clean_competitor_name",
+          "callee": "_brand_from_url",
+          "lineNumber": 155
+        },
+        {
+          "caller": "_clean_competitor_name",
+          "callee": "re.match",
+          "lineNumber": 156
+        },
+        {
+          "caller": "_clean_competitor_name",
+          "callee": "(urlparse(url).hostname or \"\").casefold().removeprefix",
+          "lineNumber": 158
+        },
+        {
+          "caller": "_clean_competitor_name",
+          "callee": "(urlparse(url).hostname or \"\").casefold",
+          "lineNumber": 158
+        },
+        {
+          "caller": "_clean_competitor_name",
+          "callee": "urlparse",
+          "lineNumber": 158
+        },
+        {
+          "caller": "_clean_competitor_name",
+          "callee": "bracket_match.group(1).casefold().removeprefix",
+          "lineNumber": 161
+        },
+        {
+          "caller": "_clean_competitor_name",
+          "callee": "bracket_match.group(1).casefold",
+          "lineNumber": 161
+        },
+        {
+          "caller": "_clean_competitor_name",
+          "callee": "bracket_match.group",
+          "lineNumber": 161
+        },
+        {
+          "caller": "_clean_competitor_name",
+          "callee": "_normalized_name(name).startswith",
+          "lineNumber": 163
+        },
+        {
+          "caller": "_clean_competitor_name",
+          "callee": "_normalized_name",
+          "lineNumber": 163
+        },
+        {
+          "caller": "_clean_competitor_name",
+          "callee": "_normalized_name",
+          "lineNumber": 163
+        },
+        {
+          "caller": "_clean_competitor_name",
+          "callee": "name.startswith",
+          "lineNumber": 168
+        },
+        {
+          "caller": "_clean_competitor_name",
+          "callee": "name.split",
+          "lineNumber": 171
+        },
+        {
+          "caller": "_clean_competitor_name",
+          "callee": "name.casefold",
+          "lineNumber": 172
+        },
+        {
+          "caller": "_clean_competitor_name",
+          "callee": "len",
+          "lineNumber": 174
+        },
+        {
+          "caller": "_clean_competitor_name",
+          "callee": "words[0].isdigit",
+          "lineNumber": 175
+        },
+        {
+          "caller": "_clean_competitor_name",
+          "callee": "lowered.startswith",
+          "lineNumber": 176
+        },
+        {
+          "caller": "_clean_competitor_name",
+          "callee": "any",
+          "lineNumber": 177
+        },
+        {
+          "caller": "_clean_competitor_name",
+          "callee": "name.strip",
+          "lineNumber": 181
+        },
+        {
+          "caller": "_extract_competitors_from_evidence",
+          "callee": "idea.known_competitors.split",
+          "lineNumber": 192
+        },
+        {
+          "caller": "_extract_competitors_from_evidence",
+          "callee": "raw_comp.strip",
+          "lineNumber": 193
+        },
+        {
+          "caller": "_extract_competitors_from_evidence",
+          "callee": "cname.lower",
+          "lineNumber": 194
+        },
+        {
+          "caller": "_extract_competitors_from_evidence",
+          "callee": "_evidence_mentions",
+          "lineNumber": 196
+        },
+        {
+          "caller": "_extract_competitors_from_evidence",
+          "callee": "len",
+          "lineNumber": 206
+        },
+        {
+          "caller": "_extract_competitors_from_evidence",
+          "callee": "competitors.append",
+          "lineNumber": 211
+        },
+        {
+          "caller": "_extract_competitors_from_evidence",
+          "callee": "Competitor",
+          "lineNumber": 212
+        },
+        {
+          "caller": "_extract_competitors_from_evidence",
+          "callee": "next",
+          "lineNumber": 214
+        },
+        {
+          "caller": "_extract_competitors_from_evidence",
+          "callee": "e.url.startswith",
+          "lineNumber": 214
+        },
+        {
+          "caller": "_extract_competitors_from_evidence",
+          "callee": "_clean_competitor_name",
+          "lineNumber": 233
+        },
+        {
+          "caller": "_extract_competitors_from_evidence",
+          "callee": "clean_name.lower",
+          "lineNumber": 234
+        },
+        {
+          "caller": "_extract_competitors_from_evidence",
+          "callee": "_normalized_name",
+          "lineNumber": 236
+        },
+        {
+          "caller": "_extract_competitors_from_evidence",
+          "callee": "_normalized_name",
+          "lineNumber": 236
+        },
+        {
+          "caller": "_extract_competitors_from_evidence",
+          "callee": "competitors.append",
+          "lineNumber": 245
+        },
+        {
+          "caller": "_extract_competitors_from_evidence",
+          "callee": "Competitor",
+          "lineNumber": 246
+        },
+        {
+          "caller": "_extract_competitors_from_evidence",
+          "callee": "item.url.startswith",
+          "lineNumber": 248
+        },
+        {
+          "caller": "_evidence_mentions",
+          "callee": "_normalized_name",
+          "lineNumber": 267
+        },
+        {
+          "caller": "_evidence_mentions",
+          "callee": "len",
+          "lineNumber": 268
+        },
+        {
+          "caller": "_evidence_mentions",
+          "callee": "_normalized_name",
+          "lineNumber": 270
+        },
+        {
+          "caller": "_evidence_mentions",
+          "callee": "urlparse",
+          "lineNumber": 271
+        },
+        {
+          "caller": "_evidence_mentions",
+          "callee": "bool",
+          "lineNumber": 273
+        },
+        {
+          "caller": "_evidence_mentions",
+          "callee": "re.search",
+          "lineNumber": 273
+        },
+        {
+          "caller": "_evidence_mentions",
+          "callee": "re.escape",
+          "lineNumber": 273
+        },
+        {
+          "caller": "_validated_ai_competitors",
+          "callee": "_normalized_name",
+          "lineNumber": 286
+        },
+        {
+          "caller": "_validated_ai_competitors",
+          "callee": "_normalized_name",
+          "lineNumber": 286
+        },
+        {
+          "caller": "_validated_ai_competitors",
+          "callee": "dict.fromkeys",
+          "lineNumber": 289
+        },
+        {
+          "caller": "_validated_ai_competitors",
+          "callee": "_evidence_mentions",
+          "lineNumber": 290
+        },
+        {
+          "caller": "_validated_ai_competitors",
+          "callee": "logger.info",
+          "lineNumber": 293
+        },
+        {
+          "caller": "_validated_ai_competitors",
+          "callee": "len",
+          "lineNumber": 296
+        },
+        {
+          "caller": "_validated_ai_competitors",
+          "callee": "re.findall",
+          "lineNumber": 299
+        },
+        {
+          "caller": "_validated_ai_competitors",
+          "callee": "re.findall",
+          "lineNumber": 300
+        },
+        {
+          "caller": "_validated_ai_competitors",
+          "callee": "\" \".join(item.passage for item in cited_items).casefold",
+          "lineNumber": 302
+        },
+        {
+          "caller": "_validated_ai_competitors",
+          "callee": "\" \".join",
+          "lineNumber": 302
+        },
+        {
+          "caller": "_validated_ai_competitors",
+          "callee": "bool",
+          "lineNumber": 303
+        },
+        {
+          "caller": "_validated_ai_competitors",
+          "callee": "any",
+          "lineNumber": 304
+        },
+        {
+          "caller": "_validated_ai_competitors",
+          "callee": "any",
+          "lineNumber": 305
+        },
+        {
+          "caller": "_validated_ai_competitors",
+          "callee": "marker.casefold().replace",
+          "lineNumber": 305
+        },
+        {
+          "caller": "_validated_ai_competitors",
+          "callee": "marker.casefold",
+          "lineNumber": 305
+        },
+        {
+          "caller": "_validated_ai_competitors",
+          "callee": "cited_pricing_text.replace",
+          "lineNumber": 305
+        },
+        {
+          "caller": "_validated_ai_competitors",
+          "callee": "value.casefold().startswith",
+          "lineNumber": 308
+        },
+        {
+          "caller": "_validated_ai_competitors",
+          "callee": "value.casefold",
+          "lineNumber": 308
+        },
+        {
+          "caller": "_validated_ai_competitors",
+          "callee": "value.strip",
+          "lineNumber": 310
+        },
+        {
+          "caller": "_validated_ai_competitors",
+          "callee": "accepted.append",
+          "lineNumber": 313
+        },
+        {
+          "caller": "_validated_ai_competitors",
+          "callee": "Competitor",
+          "lineNumber": 314
+        },
+        {
+          "caller": "_validated_ai_competitors",
+          "callee": "candidate.name.strip",
+          "lineNumber": 315
+        },
+        {
+          "caller": "_validated_ai_competitors",
+          "callee": "next",
+          "lineNumber": 316
+        },
+        {
+          "caller": "_validated_ai_competitors",
+          "callee": "item.url.startswith",
+          "lineNumber": 316
+        },
+        {
+          "caller": "_select_recommendation",
+          "callee": "Counter",
+          "lineNumber": 339
+        },
+        {
+          "caller": "_select_recommendation",
+          "callee": "counts.most_common",
+          "lineNumber": 340
+        },
+        {
+          "caller": "_select_recommendation",
+          "callee": "Recommendation",
+          "lineNumber": 341
+        },
+        {
+          "caller": "_find_strongest",
+          "callee": "max",
+          "lineNumber": 378
+        },
+        {
+          "caller": "_collect_missing_info",
+          "callee": "missing.append",
+          "lineNumber": 390
+        },
+        {
+          "caller": "_collect_missing_info",
+          "callee": "p.summary.lower",
+          "lineNumber": 394
+        },
+        {
+          "caller": "_collect_missing_info",
+          "callee": "missing.append",
+          "lineNumber": 395
+        },
+        {
+          "caller": "_collect_missing_info",
+          "callee": "any",
+          "lineNumber": 398
+        },
+        {
+          "caller": "_collect_missing_info",
+          "callee": "missing.append",
+          "lineNumber": 399
+        },
+        {
+          "caller": "_collect_missing_info",
+          "callee": "any",
+          "lineNumber": 400
+        },
+        {
+          "caller": "_collect_missing_info",
+          "callee": "missing.append",
+          "lineNumber": 401
+        },
+        {
+          "caller": "_collect_missing_info",
+          "callee": "any",
+          "lineNumber": 402
+        },
+        {
+          "caller": "_collect_missing_info",
+          "callee": "missing.append",
+          "lineNumber": 403
+        },
+        {
+          "caller": "_collect_missing_info",
+          "callee": "missing.append",
+          "lineNumber": 405
+        },
+        {
+          "caller": "_collect_missing_info",
+          "callee": "any",
+          "lineNumber": 406
+        },
+        {
+          "caller": "_collect_missing_info",
+          "callee": "missing.append",
+          "lineNumber": 407
+        },
+        {
+          "caller": "_collect_missing_info",
+          "callee": "len",
+          "lineNumber": 408
+        },
+        {
+          "caller": "_collect_missing_info",
+          "callee": "missing.append",
+          "lineNumber": 409
+        },
+        {
+          "caller": "_collect_missing_info",
+          "callee": "list",
+          "lineNumber": 411
+        },
+        {
+          "caller": "_collect_missing_info",
+          "callee": "dict.fromkeys",
+          "lineNumber": 411
+        },
+        {
+          "caller": "__init__",
+          "callee": "ResearchDepth",
+          "lineNumber": 431
+        },
+        {
+          "caller": "__init__",
+          "callee": "logger.info",
+          "lineNumber": 440
+        },
+        {
+          "caller": "_progress",
+          "callee": "STAGE_DESCRIPTIONS.get",
+          "lineNumber": 459
+        },
+        {
+          "caller": "_progress",
+          "callee": "logger.info",
+          "lineNumber": 460
+        },
+        {
+          "caller": "_progress",
+          "callee": "progress_callback",
+          "lineNumber": 462
+        },
+        {
+          "caller": "run",
+          "callee": "_progress",
+          "lineNumber": 465
+        },
+        {
+          "caller": "run",
+          "callee": "self._llm.clarify_idea",
+          "lineNumber": 467
+        },
+        {
+          "caller": "run",
+          "callee": "logger.warning",
+          "lineNumber": 469
+        },
+        {
+          "caller": "run",
+          "callee": "provider_errors.append",
+          "lineNumber": 471
+        },
+        {
+          "caller": "run",
+          "callee": "_progress",
+          "lineNumber": 474
+        },
+        {
+          "caller": "run",
+          "callee": "generate_queries",
+          "lineNumber": 475
+        },
+        {
+          "caller": "run",
+          "callee": "self._select_queries",
+          "lineNumber": 476
+        },
+        {
+          "caller": "run",
+          "callee": "logger.info",
+          "lineNumber": 477
+        },
+        {
+          "caller": "run",
+          "callee": "len",
+          "lineNumber": 479
+        },
+        {
+          "caller": "run",
+          "callee": "len",
+          "lineNumber": 480
+        },
+        {
+          "caller": "run",
+          "callee": "_progress",
+          "lineNumber": 484
+        },
+        {
+          "caller": "run",
+          "callee": "self._collect_evidence",
+          "lineNumber": 485
+        },
+        {
+          "caller": "run",
+          "callee": "_assign_evidence_ids",
+          "lineNumber": 488
+        },
+        {
+          "caller": "run",
+          "callee": "logger.info",
+          "lineNumber": 489
+        },
+        {
+          "caller": "run",
+          "callee": "len",
+          "lineNumber": 489
+        },
+        {
+          "caller": "run",
+          "callee": "generate_regional_analysis",
+          "lineNumber": 490
+        },
+        {
+          "caller": "run",
+          "callee": "ResearchCoverage",
+          "lineNumber": 491
+        },
+        {
+          "caller": "run",
+          "callee": "len",
+          "lineNumber": 493
+        },
+        {
+          "caller": "run",
+          "callee": "len",
+          "lineNumber": 494
+        },
+        {
+          "caller": "run",
+          "callee": "len",
+          "lineNumber": 496
+        },
+        {
+          "caller": "run",
+          "callee": "_progress",
+          "lineNumber": 501
+        },
+        {
+          "caller": "run",
+          "callee": "_extract_competitors_from_evidence",
+          "lineNumber": 502
+        },
+        {
+          "caller": "run",
+          "callee": "merge_competitors",
+          "lineNumber": 503
+        },
+        {
+          "caller": "run",
+          "callee": "logger.info",
+          "lineNumber": 504
+        },
+        {
+          "caller": "run",
+          "callee": "len",
+          "lineNumber": 504
+        },
+        {
+          "caller": "run",
+          "callee": "_progress",
+          "lineNumber": 507
+        },
+        {
+          "caller": "run",
+          "callee": "self._run_perspectives",
+          "lineNumber": 508
+        },
+        {
+          "caller": "run",
+          "callee": "_validated_ai_competitors",
+          "lineNumber": 514
+        },
+        {
+          "caller": "run",
+          "callee": "merge_competitors",
+          "lineNumber": 517
+        },
+        {
+          "caller": "run",
+          "callee": "logger.info",
+          "lineNumber": 518
+        },
+        {
+          "caller": "run",
+          "callee": "len",
+          "lineNumber": 520
+        },
+        {
+          "caller": "run",
+          "callee": "len",
+          "lineNumber": 520
+        },
+        {
+          "caller": "run",
+          "callee": "logger.error",
+          "lineNumber": 525
+        },
+        {
+          "caller": "run",
+          "callee": "AnalysisResult",
+          "lineNumber": 526
+        },
+        {
+          "caller": "run",
+          "callee": "datetime.utcnow",
+          "lineNumber": 530
+        },
+        {
+          "caller": "run",
+          "callee": "_progress",
+          "lineNumber": 555
+        },
+        {
+          "caller": "run",
+          "callee": "validate_citations",
+          "lineNumber": 556
+        },
+        {
+          "caller": "run",
+          "callee": "_progress",
+          "lineNumber": 559
+        },
+        {
+          "caller": "run",
+          "callee": "calculate_opportunity_score",
+          "lineNumber": 561
+        },
+        {
+          "caller": "run",
+          "callee": "calculate_evidence_confidence",
+          "lineNumber": 562
+        },
+        {
+          "caller": "run",
+          "callee": "_select_recommendation",
+          "lineNumber": 563
+        },
+        {
+          "caller": "run",
+          "callee": "_progress",
+          "lineNumber": 566
+        },
+        {
+          "caller": "run",
+          "callee": "generate_experiments",
+          "lineNumber": 567
+        },
+        {
+          "caller": "run",
+          "callee": "generate_founder_toolkit",
+          "lineNumber": 568
+        },
+        {
+          "caller": "run",
+          "callee": "detect_disagreements",
+          "lineNumber": 571
+        },
+        {
+          "caller": "run",
+          "callee": "_select_most_dangerous_assumption",
+          "lineNumber": 572
+        },
+        {
+          "caller": "run",
+          "callee": "_find_strongest",
+          "lineNumber": 573
+        },
+        {
+          "caller": "run",
+          "callee": "_find_strongest",
+          "lineNumber": 574
+        },
+        {
+          "caller": "run",
+          "callee": "_collect_missing_info",
+          "lineNumber": 575
+        },
+        {
+          "caller": "run",
+          "callee": "_progress",
+          "lineNumber": 577
+        },
+        {
+          "caller": "run",
+          "callee": "AnalysisResult",
+          "lineNumber": 579
+        },
+        {
+          "caller": "run",
+          "callee": "datetime.utcnow",
+          "lineNumber": 584
+        },
+        {
+          "caller": "run",
+          "callee": "datetime.utcnow",
+          "lineNumber": 585
+        },
+        {
+          "caller": "_collect_evidence",
+          "callee": "errors.append",
+          "lineNumber": 616
+        },
+        {
+          "caller": "_collect_evidence",
+          "callee": "asyncio.Semaphore",
+          "lineNumber": 622
+        },
+        {
+          "caller": "limited_search",
+          "callee": "self._safe_search",
+          "lineNumber": 626
+        },
+        {
+          "caller": "_collect_evidence",
+          "callee": "tasks.append",
+          "lineNumber": 636
+        },
+        {
+          "caller": "_collect_evidence",
+          "callee": "limited_search",
+          "lineNumber": 636
+        },
+        {
+          "caller": "_collect_evidence",
+          "callee": "asyncio.gather",
+          "lineNumber": 639
+        },
+        {
+          "caller": "_collect_evidence",
+          "callee": "all_items.extend",
+          "lineNumber": 642
+        },
+        {
+          "caller": "_safe_search",
+          "callee": "provider.search",
+          "lineNumber": 655
+        },
+        {
+          "caller": "_safe_search",
+          "callee": "logger.warning",
+          "lineNumber": 662
+        },
+        {
+          "caller": "_run_perspectives",
+          "callee": "perspective_names.insert",
+          "lineNumber": 681
+        },
+        {
+          "caller": "_run_perspectives",
+          "callee": "perspective_names.insert",
+          "lineNumber": 683
+        },
+        {
+          "caller": "_run_perspectives",
+          "callee": "self._safe_perspective",
+          "lineNumber": 686
+        },
+        {
+          "caller": "_run_perspectives",
+          "callee": "asyncio.gather",
+          "lineNumber": 689
+        },
+        {
+          "caller": "_run_perspectives",
+          "callee": "zip",
+          "lineNumber": 695
+        },
+        {
+          "caller": "_run_perspectives",
+          "callee": "competitor_candidates.extend",
+          "lineNumber": 698
+        },
+        {
+          "caller": "_run_perspectives",
+          "callee": "perspectives.append",
+          "lineNumber": 699
+        },
+        {
+          "caller": "_run_perspectives",
+          "callee": "AnalysisPerspective",
+          "lineNumber": 700
+        },
+        {
+          "caller": "_run_perspectives",
+          "callee": "models_used.append",
+          "lineNumber": 716
+        },
+        {
+          "caller": "_select_queries",
+          "callee": "Counter",
+          "lineNumber": 723
+        },
+        {
+          "caller": "_select_queries",
+          "callee": "selected.append",
+          "lineNumber": 728
+        },
+        {
+          "caller": "_safe_perspective",
+          "callee": "self._llm.analyze_perspective",
+          "lineNumber": 740
+        },
+        {
+          "caller": "_safe_perspective",
+          "callee": "logger.error",
+          "lineNumber": 743
+        },
+        {
+          "caller": "_safe_perspective",
+          "callee": "errors.append",
+          "lineNumber": 744
+        }
+      ],
+      "metrics": {
+        "importCount": 12,
+        "exportCount": 12,
+        "functionCount": 11,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "backend/assumption_zero/analysis/experiment_generator.py",
+      "language": "python",
+      "fileCategory": "code",
+      "totalLines": 130,
+      "nonEmptyLines": 119,
+      "functions": [
+        {
+          "name": "_pick_experiments",
+          "startLine": 91,
+          "endLine": 121,
+          "params": [
+            "idea",
+            "perspectives",
+            "evidence"
+          ]
+        },
+        {
+          "name": "generate_experiments",
+          "startLine": 124,
+          "endLine": 130,
+          "params": [
+            "idea",
+            "perspectives",
+            "evidence"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "_pick_experiments",
+          "line": 91,
+          "isDefault": false
+        },
+        {
+          "name": "generate_experiments",
+          "line": 124,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "_pick_experiments",
+          "callee": "ValidationExperiment",
+          "lineNumber": 104
+        },
+        {
+          "caller": "_pick_experiments",
+          "callee": "experiments.append",
+          "lineNumber": 117
+        },
+        {
+          "caller": "_pick_experiments",
+          "callee": "experiments.sort",
+          "lineNumber": 120
+        },
+        {
+          "caller": "generate_experiments",
+          "callee": "_pick_experiments",
+          "lineNumber": 130
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 2,
+        "functionCount": 2,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "backend/assumption_zero/analysis/founder_toolkit.py",
+      "language": "python",
+      "fileCategory": "code",
+      "totalLines": 147,
+      "nonEmptyLines": 135,
+      "functions": [
+        {
+          "name": "_split_channels",
+          "startLine": 15,
+          "endLine": 18,
+          "params": [
+            "value"
+          ]
+        },
+        {
+          "name": "_default_channels",
+          "startLine": 21,
+          "endLine": 33,
+          "params": [
+            "idea"
+          ]
+        },
+        {
+          "name": "generate_founder_toolkit",
+          "startLine": 36,
+          "endLine": 147,
+          "params": [
+            "idea",
+            "recommendation",
+            "experiments"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "_split_channels",
+          "line": 15,
+          "isDefault": false
+        },
+        {
+          "name": "_default_channels",
+          "line": 21,
+          "isDefault": false
+        },
+        {
+          "name": "generate_founder_toolkit",
+          "line": 36,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "_split_channels",
+          "callee": "part.strip",
+          "lineNumber": 18
+        },
+        {
+          "caller": "_split_channels",
+          "callee": "re.split",
+          "lineNumber": 18
+        },
+        {
+          "caller": "_split_channels",
+          "callee": "part.strip",
+          "lineNumber": 18
+        },
+        {
+          "caller": "_default_channels",
+          "callee": "idea.target_customer.lower",
+          "lineNumber": 22
+        },
+        {
+          "caller": "_default_channels",
+          "callee": "any",
+          "lineNumber": 23
+        },
+        {
+          "caller": "generate_founder_toolkit",
+          "callee": "_split_channels",
+          "lineNumber": 42
+        },
+        {
+          "caller": "generate_founder_toolkit",
+          "callee": "_default_channels",
+          "lineNumber": 42
+        },
+        {
+          "caller": "generate_founder_toolkit",
+          "callee": "len",
+          "lineNumber": 50
+        },
+        {
+          "caller": "generate_founder_toolkit",
+          "callee": "FounderAction",
+          "lineNumber": 54
+        },
+        {
+          "caller": "generate_founder_toolkit",
+          "callee": "FounderAction",
+          "lineNumber": 66
+        },
+        {
+          "caller": "generate_founder_toolkit",
+          "callee": "FounderAction",
+          "lineNumber": 78
+        },
+        {
+          "caller": "generate_founder_toolkit",
+          "callee": "FounderAction",
+          "lineNumber": 90
+        },
+        {
+          "caller": "generate_founder_toolkit",
+          "callee": "FounderToolkit",
+          "lineNumber": 111
+        },
+        {
+          "caller": "generate_founder_toolkit",
+          "callee": "idea.problem.rstrip",
+          "lineNumber": 114
+        },
+        {
+          "caller": "generate_founder_toolkit",
+          "callee": "solution.rstrip",
+          "lineNumber": 114
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 3,
+        "functionCount": 3,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "backend/assumption_zero/analysis/query_generator.py",
+      "language": "python",
+      "fileCategory": "code",
+      "totalLines": 158,
+      "nonEmptyLines": 132,
+      "functions": [
+        {
+          "name": "_clean_phrase",
+          "startLine": 34,
+          "endLine": 42,
+          "params": [
+            "text",
+            "max_words"
+          ]
+        },
+        {
+          "name": "generate_queries",
+          "startLine": 45,
+          "endLine": 158,
+          "params": [
+            "idea"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "_clean_phrase",
+          "line": 34,
+          "isDefault": false
+        },
+        {
+          "name": "generate_queries",
+          "line": 45,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "_clean_phrase",
+          "callee": "re.sub",
+          "lineNumber": 39
+        },
+        {
+          "caller": "_clean_phrase",
+          "callee": "re.sub",
+          "lineNumber": 40
+        },
+        {
+          "caller": "_clean_phrase",
+          "callee": "w.strip",
+          "lineNumber": 41
+        },
+        {
+          "caller": "_clean_phrase",
+          "callee": "cleaned.split",
+          "lineNumber": 41
+        },
+        {
+          "caller": "_clean_phrase",
+          "callee": "len",
+          "lineNumber": 41
+        },
+        {
+          "caller": "_clean_phrase",
+          "callee": "w.strip",
+          "lineNumber": 41
+        },
+        {
+          "caller": "_clean_phrase",
+          "callee": "\" \".join",
+          "lineNumber": 42
+        },
+        {
+          "caller": "generate_queries",
+          "callee": "_clean_phrase",
+          "lineNumber": 52
+        },
+        {
+          "caller": "generate_queries",
+          "callee": "_clean_phrase",
+          "lineNumber": 53
+        },
+        {
+          "caller": "generate_queries",
+          "callee": "_clean_phrase",
+          "lineNumber": 55
+        },
+        {
+          "caller": "generate_queries",
+          "callee": "_clean_phrase",
+          "lineNumber": 56
+        },
+        {
+          "caller": "generate_queries",
+          "callee": "_clean_phrase",
+          "lineNumber": 57
+        },
+        {
+          "caller": "generate_queries",
+          "callee": "_clean_phrase",
+          "lineNumber": 59
+        },
+        {
+          "caller": "generate_queries",
+          "callee": "_clean_phrase",
+          "lineNumber": 60
+        },
+        {
+          "caller": "generate_queries",
+          "callee": "date.today",
+          "lineNumber": 62
+        },
+        {
+          "caller": "generate_queries",
+          "callee": "queries.append",
+          "lineNumber": 68
+        },
+        {
+          "caller": "generate_queries",
+          "callee": "queries.append",
+          "lineNumber": 69
+        },
+        {
+          "caller": "generate_queries",
+          "callee": "queries.append",
+          "lineNumber": 70
+        },
+        {
+          "caller": "generate_queries",
+          "callee": "queries.append",
+          "lineNumber": 71
+        },
+        {
+          "caller": "generate_queries",
+          "callee": "queries.append",
+          "lineNumber": 72
+        },
+        {
+          "caller": "generate_queries",
+          "callee": "queries.append",
+          "lineNumber": 73
+        },
+        {
+          "caller": "generate_queries",
+          "callee": "c.strip",
+          "lineNumber": 76
+        },
+        {
+          "caller": "generate_queries",
+          "callee": "known_comps.split",
+          "lineNumber": 76
+        },
+        {
+          "caller": "generate_queries",
+          "callee": "c.strip",
+          "lineNumber": 77
+        },
+        {
+          "caller": "generate_queries",
+          "callee": "c.strip().lower",
+          "lineNumber": 77
+        },
+        {
+          "caller": "generate_queries",
+          "callee": "c.strip",
+          "lineNumber": 77
+        },
+        {
+          "caller": "generate_queries",
+          "callee": "queries.append",
+          "lineNumber": 82
+        },
+        {
+          "caller": "generate_queries",
+          "callee": "queries.append",
+          "lineNumber": 83
+        },
+        {
+          "caller": "generate_queries",
+          "callee": "queries.append",
+          "lineNumber": 84
+        },
+        {
+          "caller": "generate_queries",
+          "callee": "queries.append",
+          "lineNumber": 86
+        },
+        {
+          "caller": "generate_queries",
+          "callee": "queries.append",
+          "lineNumber": 87
+        },
+        {
+          "caller": "generate_queries",
+          "callee": "queries.append",
+          "lineNumber": 90
+        },
+        {
+          "caller": "generate_queries",
+          "callee": "queries.append",
+          "lineNumber": 91
+        },
+        {
+          "caller": "generate_queries",
+          "callee": "queries.append",
+          "lineNumber": 94
+        },
+        {
+          "caller": "generate_queries",
+          "callee": "queries.append",
+          "lineNumber": 95
+        },
+        {
+          "caller": "generate_queries",
+          "callee": "queries.append",
+          "lineNumber": 96
+        },
+        {
+          "caller": "generate_queries",
+          "callee": "queries.append",
+          "lineNumber": 99
+        },
+        {
+          "caller": "generate_queries",
+          "callee": "queries.append",
+          "lineNumber": 100
+        },
+        {
+          "caller": "generate_queries",
+          "callee": "queries.append",
+          "lineNumber": 101
+        },
+        {
+          "caller": "generate_queries",
+          "callee": "queries.append",
+          "lineNumber": 102
+        },
+        {
+          "caller": "generate_queries",
+          "callee": "queries.append",
+          "lineNumber": 104
+        },
+        {
+          "caller": "generate_queries",
+          "callee": "queries.append",
+          "lineNumber": 107
+        },
+        {
+          "caller": "generate_queries",
+          "callee": "queries.append",
+          "lineNumber": 108
+        },
+        {
+          "caller": "generate_queries",
+          "callee": "queries.append",
+          "lineNumber": 109
+        },
+        {
+          "caller": "generate_queries",
+          "callee": "queries.append",
+          "lineNumber": 111
+        },
+        {
+          "caller": "generate_queries",
+          "callee": "queries.append",
+          "lineNumber": 114
+        },
+        {
+          "caller": "generate_queries",
+          "callee": "queries.append",
+          "lineNumber": 117
+        },
+        {
+          "caller": "generate_queries",
+          "callee": "queries.append",
+          "lineNumber": 119
+        },
+        {
+          "caller": "generate_queries",
+          "callee": "queries.append",
+          "lineNumber": 123
+        },
+        {
+          "caller": "generate_queries",
+          "callee": "queries.append",
+          "lineNumber": 124
+        },
+        {
+          "caller": "generate_queries",
+          "callee": "queries.append",
+          "lineNumber": 125
+        },
+        {
+          "caller": "generate_queries",
+          "callee": "queries.append",
+          "lineNumber": 127
+        },
+        {
+          "caller": "generate_queries",
+          "callee": "queries.append",
+          "lineNumber": 130
+        },
+        {
+          "caller": "generate_queries",
+          "callee": "queries.append",
+          "lineNumber": 131
+        },
+        {
+          "caller": "generate_queries",
+          "callee": "queries.append",
+          "lineNumber": 133
+        },
+        {
+          "caller": "generate_queries",
+          "callee": "queries.append",
+          "lineNumber": 136
+        },
+        {
+          "caller": "generate_queries",
+          "callee": "queries.append",
+          "lineNumber": 137
+        },
+        {
+          "caller": "generate_queries",
+          "callee": "queries.append",
+          "lineNumber": 140
+        },
+        {
+          "caller": "generate_queries",
+          "callee": "queries.append",
+          "lineNumber": 143
+        },
+        {
+          "caller": "generate_queries",
+          "callee": "queries.append",
+          "lineNumber": 144
+        },
+        {
+          "caller": "generate_queries",
+          "callee": "queries.append",
+          "lineNumber": 145
+        },
+        {
+          "caller": "generate_queries",
+          "callee": "queries.append",
+          "lineNumber": 147
+        },
+        {
+          "caller": "generate_queries",
+          "callee": "set",
+          "lineNumber": 152
+        },
+        {
+          "caller": "generate_queries",
+          "callee": "item[\"query\"].casefold().strip",
+          "lineNumber": 154
+        },
+        {
+          "caller": "generate_queries",
+          "callee": "item[\"query\"].casefold",
+          "lineNumber": 154
+        },
+        {
+          "caller": "generate_queries",
+          "callee": "seen.add",
+          "lineNumber": 156
+        },
+        {
+          "caller": "generate_queries",
+          "callee": "unique.append",
+          "lineNumber": 157
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 2,
+        "functionCount": 2,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "backend/assumption_zero/analysis/regional_analysis.py",
+      "language": "python",
+      "fileCategory": "code",
+      "totalLines": 145,
+      "nonEmptyLines": 128,
+      "functions": [
+        {
+          "name": "_location_tokens",
+          "startLine": 27,
+          "endLine": 33,
+          "params": [
+            "geography"
+          ]
+        },
+        {
+          "name": "_is_regional",
+          "startLine": 36,
+          "endLine": 41,
+          "params": [
+            "item",
+            "geography"
+          ]
+        },
+        {
+          "name": "_signals",
+          "startLine": 44,
+          "endLine": 54,
+          "params": [
+            "items",
+            "category",
+            "limit"
+          ]
+        },
+        {
+          "name": "generate_regional_analysis",
+          "startLine": 57,
+          "endLine": 145,
+          "params": [
+            "idea",
+            "evidence"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "_location_tokens",
+          "line": 27,
+          "isDefault": false
+        },
+        {
+          "name": "_is_regional",
+          "line": 36,
+          "isDefault": false
+        },
+        {
+          "name": "_signals",
+          "line": 44,
+          "isDefault": false
+        },
+        {
+          "name": "generate_regional_analysis",
+          "line": 57,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "_location_tokens",
+          "callee": "token.casefold",
+          "lineNumber": 30
+        },
+        {
+          "caller": "_location_tokens",
+          "callee": "re.findall",
+          "lineNumber": 31
+        },
+        {
+          "caller": "_location_tokens",
+          "callee": "token.casefold",
+          "lineNumber": 32
+        },
+        {
+          "caller": "_is_regional",
+          "callee": "f\"{item.title} {item.passage} {item.search_query} {item.evidence_origin}\".casefold",
+          "lineNumber": 39
+        },
+        {
+          "caller": "_is_regional",
+          "callee": "_location_tokens",
+          "lineNumber": 40
+        },
+        {
+          "caller": "_is_regional",
+          "callee": "bool",
+          "lineNumber": 41
+        },
+        {
+          "caller": "_is_regional",
+          "callee": "any",
+          "lineNumber": 41
+        },
+        {
+          "caller": "_signals",
+          "callee": "RegionalEvidenceSignal",
+          "lineNumber": 46
+        },
+        {
+          "caller": "_signals",
+          "callee": "sorted",
+          "lineNumber": 53
+        },
+        {
+          "caller": "generate_regional_analysis",
+          "callee": "_is_regional",
+          "lineNumber": 62
+        },
+        {
+          "caller": "generate_regional_analysis",
+          "callee": "sum",
+          "lineNumber": 78
+        },
+        {
+          "caller": "generate_regional_analysis",
+          "callee": "len",
+          "lineNumber": 78
+        },
+        {
+          "caller": "generate_regional_analysis",
+          "callee": "sum",
+          "lineNumber": 79
+        },
+        {
+          "caller": "generate_regional_analysis",
+          "callee": "min",
+          "lineNumber": 80
+        },
+        {
+          "caller": "generate_regional_analysis",
+          "callee": "len",
+          "lineNumber": 80
+        },
+        {
+          "caller": "generate_regional_analysis",
+          "callee": "min",
+          "lineNumber": 81
+        },
+        {
+          "caller": "generate_regional_analysis",
+          "callee": "len",
+          "lineNumber": 81
+        },
+        {
+          "caller": "generate_regional_analysis",
+          "callee": "min",
+          "lineNumber": 82
+        },
+        {
+          "caller": "generate_regional_analysis",
+          "callee": "round",
+          "lineNumber": 84
+        },
+        {
+          "caller": "generate_regional_analysis",
+          "callee": "min",
+          "lineNumber": 84
+        },
+        {
+          "caller": "generate_regional_analysis",
+          "callee": "len",
+          "lineNumber": 88
+        },
+        {
+          "caller": "generate_regional_analysis",
+          "callee": "len",
+          "lineNumber": 88
+        },
+        {
+          "caller": "generate_regional_analysis",
+          "callee": "len",
+          "lineNumber": 88
+        },
+        {
+          "caller": "generate_regional_analysis",
+          "callee": "len",
+          "lineNumber": 90
+        },
+        {
+          "caller": "generate_regional_analysis",
+          "callee": "len",
+          "lineNumber": 90
+        },
+        {
+          "caller": "generate_regional_analysis",
+          "callee": "len",
+          "lineNumber": 90
+        },
+        {
+          "caller": "generate_regional_analysis",
+          "callee": "len",
+          "lineNumber": 97
+        },
+        {
+          "caller": "generate_regional_analysis",
+          "callee": "localization.append",
+          "lineNumber": 116
+        },
+        {
+          "caller": "generate_regional_analysis",
+          "callee": "localization.append",
+          "lineNumber": 118
+        },
+        {
+          "caller": "generate_regional_analysis",
+          "callee": "len",
+          "lineNumber": 121
+        },
+        {
+          "caller": "generate_regional_analysis",
+          "callee": "gaps.append",
+          "lineNumber": 122
+        },
+        {
+          "caller": "generate_regional_analysis",
+          "callee": "gaps.append",
+          "lineNumber": 124
+        },
+        {
+          "caller": "generate_regional_analysis",
+          "callee": "gaps.append",
+          "lineNumber": 126
+        },
+        {
+          "caller": "generate_regional_analysis",
+          "callee": "gaps.append",
+          "lineNumber": 128
+        },
+        {
+          "caller": "generate_regional_analysis",
+          "callee": "len",
+          "lineNumber": 129
+        },
+        {
+          "caller": "generate_regional_analysis",
+          "callee": "gaps.append",
+          "lineNumber": 130
+        },
+        {
+          "caller": "generate_regional_analysis",
+          "callee": "RegionalMarketAnalysis",
+          "lineNumber": 132
+        },
+        {
+          "caller": "generate_regional_analysis",
+          "callee": "len",
+          "lineNumber": 136
+        },
+        {
+          "caller": "generate_regional_analysis",
+          "callee": "len",
+          "lineNumber": 137
+        },
+        {
+          "caller": "generate_regional_analysis",
+          "callee": "_signals",
+          "lineNumber": 139
+        },
+        {
+          "caller": "generate_regional_analysis",
+          "callee": "_signals",
+          "lineNumber": 140
+        },
+        {
+          "caller": "generate_regional_analysis",
+          "callee": "_signals",
+          "lineNumber": 141
+        },
+        {
+          "caller": "generate_regional_analysis",
+          "callee": "_signals",
+          "lineNumber": 142
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 4,
+        "functionCount": 4,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "backend/assumption_zero/analysis/scoring.py",
+      "language": "python",
+      "fileCategory": "code",
+      "totalLines": 186,
+      "nonEmptyLines": 157,
+      "functions": [
+        {
+          "name": "_normalize_dimension_scores",
+          "startLine": 72,
+          "endLine": 82,
+          "params": [
+            "scores"
+          ]
+        },
+        {
+          "name": "_avg_dimension_scores",
+          "startLine": 85,
+          "endLine": 99,
+          "params": [
+            "perspectives"
+          ]
+        },
+        {
+          "name": "_confidence_from_evidence",
+          "startLine": 102,
+          "endLine": 111,
+          "params": [
+            "evidence",
+            "supporting_ids",
+            "contradicting_ids"
+          ]
+        },
+        {
+          "name": "_find_evidence_for_dimension",
+          "startLine": 114,
+          "endLine": 130,
+          "params": [
+            "dim",
+            "perspectives"
+          ]
+        },
+        {
+          "name": "_dimension_explanation",
+          "startLine": 133,
+          "endLine": 140,
+          "params": [
+            "dim",
+            "raw",
+            "idea"
+          ]
+        },
+        {
+          "name": "calculate_opportunity_score",
+          "startLine": 143,
+          "endLine": 186,
+          "params": [
+            "perspectives",
+            "evidence",
+            "idea"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "_normalize_dimension_scores",
+          "line": 72,
+          "isDefault": false
+        },
+        {
+          "name": "_avg_dimension_scores",
+          "line": 85,
+          "isDefault": false
+        },
+        {
+          "name": "_confidence_from_evidence",
+          "line": 102,
+          "isDefault": false
+        },
+        {
+          "name": "_find_evidence_for_dimension",
+          "line": 114,
+          "isDefault": false
+        },
+        {
+          "name": "_dimension_explanation",
+          "line": 133,
+          "isDefault": false
+        },
+        {
+          "name": "calculate_opportunity_score",
+          "line": 143,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "_normalize_dimension_scores",
+          "callee": "scores.items",
+          "lineNumber": 75
+        },
+        {
+          "caller": "_normalize_dimension_scores",
+          "callee": "DIMENSION_ALIASES.get",
+          "lineNumber": 76
+        },
+        {
+          "caller": "_normalize_dimension_scores",
+          "callee": "key.lower",
+          "lineNumber": 76
+        },
+        {
+          "caller": "_normalize_dimension_scores",
+          "callee": "key.lower",
+          "lineNumber": 76
+        },
+        {
+          "caller": "_normalize_dimension_scores",
+          "callee": "max",
+          "lineNumber": 79
+        },
+        {
+          "caller": "_normalize_dimension_scores",
+          "callee": "min",
+          "lineNumber": 79
+        },
+        {
+          "caller": "_normalize_dimension_scores",
+          "callee": "float",
+          "lineNumber": 79
+        },
+        {
+          "caller": "_avg_dimension_scores",
+          "callee": "_normalize_dimension_scores",
+          "lineNumber": 90
+        },
+        {
+          "caller": "_avg_dimension_scores",
+          "callee": "norm_scores.get",
+          "lineNumber": 92
+        },
+        {
+          "caller": "_avg_dimension_scores",
+          "callee": "sums[dim].append",
+          "lineNumber": 94
+        },
+        {
+          "caller": "_avg_dimension_scores",
+          "callee": "sum",
+          "lineNumber": 97
+        },
+        {
+          "caller": "_avg_dimension_scores",
+          "callee": "len",
+          "lineNumber": 97
+        },
+        {
+          "caller": "_avg_dimension_scores",
+          "callee": "sums.items",
+          "lineNumber": 98
+        },
+        {
+          "caller": "_confidence_from_evidence",
+          "callee": "len",
+          "lineNumber": 109
+        },
+        {
+          "caller": "_find_evidence_for_dimension",
+          "callee": "set",
+          "lineNumber": 119
+        },
+        {
+          "caller": "_find_evidence_for_dimension",
+          "callee": "set",
+          "lineNumber": 120
+        },
+        {
+          "caller": "_find_evidence_for_dimension",
+          "callee": "_normalize_dimension_scores",
+          "lineNumber": 123
+        },
+        {
+          "caller": "_find_evidence_for_dimension",
+          "callee": "norm_scores.get",
+          "lineNumber": 124
+        },
+        {
+          "caller": "_find_evidence_for_dimension",
+          "callee": "supporting.update",
+          "lineNumber": 126
+        },
+        {
+          "caller": "_find_evidence_for_dimension",
+          "callee": "contradicting.update",
+          "lineNumber": 128
+        },
+        {
+          "caller": "_find_evidence_for_dimension",
+          "callee": "sorted",
+          "lineNumber": 130
+        },
+        {
+          "caller": "_find_evidence_for_dimension",
+          "callee": "sorted",
+          "lineNumber": 130
+        },
+        {
+          "caller": "calculate_opportunity_score",
+          "callee": "_avg_dimension_scores",
+          "lineNumber": 155
+        },
+        {
+          "caller": "calculate_opportunity_score",
+          "callee": "DIMENSION_WEIGHTS.items",
+          "lineNumber": 160
+        },
+        {
+          "caller": "calculate_opportunity_score",
+          "callee": "avg_raw.get",
+          "lineNumber": 161
+        },
+        {
+          "caller": "calculate_opportunity_score",
+          "callee": "_find_evidence_for_dimension",
+          "lineNumber": 165
+        },
+        {
+          "caller": "calculate_opportunity_score",
+          "callee": "_confidence_from_evidence",
+          "lineNumber": 166
+        },
+        {
+          "caller": "calculate_opportunity_score",
+          "callee": "_dimension_explanation",
+          "lineNumber": 167
+        },
+        {
+          "caller": "calculate_opportunity_score",
+          "callee": "dimensions.append",
+          "lineNumber": 169
+        },
+        {
+          "caller": "calculate_opportunity_score",
+          "callee": "DimensionScore",
+          "lineNumber": 170
+        },
+        {
+          "caller": "calculate_opportunity_score",
+          "callee": "round",
+          "lineNumber": 174
+        },
+        {
+          "caller": "calculate_opportunity_score",
+          "callee": "round",
+          "lineNumber": 175
+        },
+        {
+          "caller": "calculate_opportunity_score",
+          "callee": "OpportunityScore",
+          "lineNumber": 183
+        },
+        {
+          "caller": "calculate_opportunity_score",
+          "callee": "round",
+          "lineNumber": 184
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 6,
+        "functionCount": 6,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "backend/assumption_zero/demo.py",
+      "language": "python",
+      "fileCategory": "code",
+      "totalLines": 36,
+      "nonEmptyLines": 33,
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "backend/assumption_zero/research/demo_provider.py",
+      "language": "python",
+      "fileCategory": "code",
+      "totalLines": 43,
+      "nonEmptyLines": 34,
+      "classes": [
+        {
+          "name": "DemoProvider",
+          "startLine": 14,
+          "endLine": 43,
+          "methods": [
+            "name",
+            "is_available",
+            "search"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "DemoProvider",
+          "line": 14,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 2,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "backend/assumption_zero/schemas.py",
+      "language": "python",
+      "fileCategory": "code",
+      "totalLines": 539,
+      "nonEmptyLines": 433,
+      "functions": [
+        {
+          "name": "is_gibberish",
+          "startLine": 121,
+          "endLine": 157,
+          "params": [
+            "text"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "EvidenceType",
+          "startLine": 19,
+          "endLine": 32,
+          "methods": [],
+          "properties": []
+        },
+        {
+          "name": "ReliabilityLevel",
+          "startLine": 35,
+          "endLine": 38,
+          "methods": [],
+          "properties": []
+        },
+        {
+          "name": "ConfidenceLevel",
+          "startLine": 41,
+          "endLine": 44,
+          "methods": [],
+          "properties": []
+        },
+        {
+          "name": "AnalysisStatus",
+          "startLine": 47,
+          "endLine": 51,
+          "methods": [],
+          "properties": []
+        },
+        {
+          "name": "ResearchDepth",
+          "startLine": 54,
+          "endLine": 57,
+          "methods": [],
+          "properties": []
+        },
+        {
+          "name": "AnalysisStage",
+          "startLine": 60,
+          "endLine": 69,
+          "methods": [],
+          "properties": []
+        },
+        {
+          "name": "Recommendation",
+          "startLine": 85,
+          "endLine": 89,
+          "methods": [],
+          "properties": []
+        },
+        {
+          "name": "PerspectiveName",
+          "startLine": 92,
+          "endLine": 97,
+          "methods": [],
+          "properties": []
+        },
+        {
+          "name": "CompetitorType",
+          "startLine": 109,
+          "endLine": 111,
+          "methods": [],
+          "properties": []
+        },
+        {
+          "name": "IdeaInput",
+          "startLine": 160,
+          "endLine": 211,
+          "methods": [
+            "validate_not_gibberish",
+            "from_storage"
+          ],
+          "properties": [
+            "name",
+            "description",
+            "problem",
+            "target_customer",
+            "geography",
+            "market_language",
+            "currency",
+            "industry",
+            "startup_stage",
+            "solution",
+            "business_model",
+            "price",
+            "founder_skills",
+            "team",
+            "budget",
+            "launch_timeline",
+            "revenue_goal",
+            "acquisition_channels",
+            "known_competitors",
+            "unfair_advantage",
+            "key_assumptions",
+            "regulatory_constraints",
+            "additional_context"
+          ]
+        },
+        {
+          "name": "EvidenceItem",
+          "startLine": 218,
+          "endLine": 237,
+          "methods": [
+            "short_citation"
+          ],
+          "properties": [
+            "evidence_id",
+            "title",
+            "url",
+            "evidence_origin",
+            "source_name",
+            "publication_date",
+            "retrieval_date",
+            "passage",
+            "search_query",
+            "evidence_type",
+            "reliability",
+            "relevance_score",
+            "retrieval_timestamp",
+            "is_demo"
+          ]
+        },
+        {
+          "name": "Competitor",
+          "startLine": 244,
+          "endLine": 256,
+          "methods": [],
+          "properties": [
+            "name",
+            "url",
+            "competitor_type",
+            "description",
+            "target_user",
+            "pricing_evidence",
+            "strengths",
+            "weaknesses",
+            "complaints",
+            "differentiation",
+            "evidence_ids",
+            "confidence"
+          ]
+        },
+        {
+          "name": "DimensionScore",
+          "startLine": 263,
+          "endLine": 273,
+          "methods": [],
+          "properties": [
+            "dimension",
+            "display_name",
+            "raw_score",
+            "weight",
+            "weighted_score",
+            "explanation",
+            "supporting_evidence_ids",
+            "contradicting_evidence_ids",
+            "confidence",
+            "missing_information"
+          ]
+        },
+        {
+          "name": "OpportunityScore",
+          "startLine": 276,
+          "endLine": 278,
+          "methods": [],
+          "properties": [
+            "total",
+            "dimensions"
+          ]
+        },
+        {
+          "name": "AnalysisPerspective",
+          "startLine": 285,
+          "endLine": 297,
+          "methods": [],
+          "properties": [
+            "perspective_name",
+            "perspective_display",
+            "model_id",
+            "summary",
+            "key_findings",
+            "risks",
+            "opportunities",
+            "recommendation",
+            "cited_evidence_ids",
+            "invalid_citations",
+            "dimension_scores",
+            "most_dangerous_assumption"
+          ]
+        },
+        {
+          "name": "DisagreementPosition",
+          "startLine": 304,
+          "endLine": 308,
+          "methods": [],
+          "properties": [
+            "perspective",
+            "model_id",
+            "position",
+            "evidence_ids"
+          ]
+        },
+        {
+          "name": "ModelDisagreement",
+          "startLine": 311,
+          "endLine": 315,
+          "methods": [],
+          "properties": [
+            "topic",
+            "positions",
+            "stronger_position",
+            "requires_human_research"
+          ]
+        },
+        {
+          "name": "ValidationExperiment",
+          "startLine": 322,
+          "endLine": 333,
+          "methods": [],
+          "properties": [
+            "title",
+            "assumption_tested",
+            "why_it_matters",
+            "procedure",
+            "estimated_time",
+            "estimated_cost_range",
+            "success_threshold",
+            "failure_threshold",
+            "decision_after",
+            "legal_ethical",
+            "priority"
+          ]
+        },
+        {
+          "name": "FounderAction",
+          "startLine": 336,
+          "endLine": 344,
+          "methods": [],
+          "properties": [
+            "phase",
+            "objective",
+            "actions",
+            "success_metric",
+            "stop_condition",
+            "budget_hint"
+          ]
+        },
+        {
+          "name": "FounderToolkit",
+          "startLine": 347,
+          "endLine": 357,
+          "methods": [],
+          "properties": [
+            "one_sentence_pitch",
+            "ideal_customer_profile",
+            "beachhead_market",
+            "recommended_channels",
+            "key_metrics",
+            "roadmap",
+            "interview_questions",
+            "decision_rules"
+          ]
+        },
+        {
+          "name": "RegionalEvidenceSignal",
+          "startLine": 360,
+          "endLine": 365,
+          "methods": [],
+          "properties": [
+            "evidence_id",
+            "category",
+            "title",
+            "source_name",
+            "relevance_score"
+          ]
+        },
+        {
+          "name": "RegionalMarketAnalysis",
+          "startLine": 368,
+          "endLine": 382,
+          "methods": [],
+          "properties": [
+            "geography",
+            "demand_score",
+            "confidence",
+            "evidence_count",
+            "source_count",
+            "summary",
+            "demand_signals",
+            "pricing_signals",
+            "regulatory_signals",
+            "distribution_signals",
+            "localization_requirements",
+            "research_gaps"
+          ]
+        },
+        {
+          "name": "ResearchCoverage",
+          "startLine": 385,
+          "endLine": 391,
+          "methods": [],
+          "properties": [
+            "depth",
+            "queries_generated",
+            "queries_executed",
+            "providers_used",
+            "evidence_collected",
+            "regional_evidence_count"
+          ]
+        },
+        {
+          "name": "AnalysisResult",
+          "startLine": 398,
+          "endLine": 440,
+          "methods": [],
+          "properties": [
+            "analysis_id",
+            "status",
+            "stage",
+            "stage_description",
+            "created_at",
+            "completed_at",
+            "idea_input",
+            "interpreted_idea",
+            "evidence",
+            "provider_errors",
+            "competitors",
+            "perspectives",
+            "models_used",
+            "opportunity_score",
+            "evidence_confidence",
+            "recommendation",
+            "most_dangerous_assumption",
+            "strongest_supporting",
+            "strongest_contradicting",
+            "missing_information",
+            "experiments",
+            "founder_toolkit",
+            "regional_analysis",
+            "research_coverage",
+            "disagreements",
+            "is_demo",
+            "error_message"
+          ]
+        },
+        {
+          "name": "AnalysisCreateRequest",
+          "startLine": 447,
+          "endLine": 471,
+          "methods": [
+            "validate_requested_provider"
+          ],
+          "properties": [
+            "idea",
+            "ai_provider",
+            "openrouter_api_key",
+            "groq_api_key",
+            "opencode_api_key",
+            "openai_api_key",
+            "custom_base_url",
+            "ollama_base_url",
+            "research_providers",
+            "research_depth"
+          ]
+        },
+        {
+          "name": "DemoAnalysisRequest",
+          "startLine": 474,
+          "endLine": 490,
+          "methods": [
+            "validate_requested_provider"
+          ],
+          "properties": [
+            "ai_provider",
+            "openrouter_api_key",
+            "groq_api_key",
+            "opencode_api_key",
+            "openai_api_key",
+            "custom_base_url",
+            "ollama_base_url",
+            "research_providers",
+            "research_depth"
+          ]
+        },
+        {
+          "name": "PromptAnalysisRequest",
+          "startLine": 493,
+          "endLine": 519,
+          "methods": [
+            "validate_prompt",
+            "validate_requested_provider"
+          ],
+          "properties": [
+            "prompt",
+            "ai_provider",
+            "openrouter_api_key",
+            "groq_api_key",
+            "opencode_api_key",
+            "openai_api_key",
+            "custom_base_url",
+            "ollama_base_url",
+            "research_providers",
+            "research_depth"
+          ]
+        },
+        {
+          "name": "AnalysisListItem",
+          "startLine": 522,
+          "endLine": 531,
+          "methods": [],
+          "properties": [
+            "analysis_id",
+            "status",
+            "stage",
+            "created_at",
+            "completed_at",
+            "idea_name",
+            "is_demo",
+            "opportunity_score",
+            "recommendation"
+          ]
+        },
+        {
+          "name": "HealthResponse",
+          "startLine": 534,
+          "endLine": 539,
+          "methods": [],
+          "properties": [
+            "status",
+            "version",
+            "ai_provider",
+            "research_providers",
+            "demo_mode"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "EvidenceType",
+          "line": 19,
+          "isDefault": false
+        },
+        {
+          "name": "ReliabilityLevel",
+          "line": 35,
+          "isDefault": false
+        },
+        {
+          "name": "ConfidenceLevel",
+          "line": 41,
+          "isDefault": false
+        },
+        {
+          "name": "AnalysisStatus",
+          "line": 47,
+          "isDefault": false
+        },
+        {
+          "name": "ResearchDepth",
+          "line": 54,
+          "isDefault": false
+        },
+        {
+          "name": "AnalysisStage",
+          "line": 60,
+          "isDefault": false
+        },
+        {
+          "name": "Recommendation",
+          "line": 85,
+          "isDefault": false
+        },
+        {
+          "name": "PerspectiveName",
+          "line": 92,
+          "isDefault": false
+        },
+        {
+          "name": "CompetitorType",
+          "line": 109,
+          "isDefault": false
+        },
+        {
+          "name": "is_gibberish",
+          "line": 121,
+          "isDefault": false
+        },
+        {
+          "name": "IdeaInput",
+          "line": 160,
+          "isDefault": false
+        },
+        {
+          "name": "EvidenceItem",
+          "line": 218,
+          "isDefault": false
+        },
+        {
+          "name": "Competitor",
+          "line": 244,
+          "isDefault": false
+        },
+        {
+          "name": "DimensionScore",
+          "line": 263,
+          "isDefault": false
+        },
+        {
+          "name": "OpportunityScore",
+          "line": 276,
+          "isDefault": false
+        },
+        {
+          "name": "AnalysisPerspective",
+          "line": 285,
+          "isDefault": false
+        },
+        {
+          "name": "DisagreementPosition",
+          "line": 304,
+          "isDefault": false
+        },
+        {
+          "name": "ModelDisagreement",
+          "line": 311,
+          "isDefault": false
+        },
+        {
+          "name": "ValidationExperiment",
+          "line": 322,
+          "isDefault": false
+        },
+        {
+          "name": "FounderAction",
+          "line": 336,
+          "isDefault": false
+        },
+        {
+          "name": "FounderToolkit",
+          "line": 347,
+          "isDefault": false
+        },
+        {
+          "name": "RegionalEvidenceSignal",
+          "line": 360,
+          "isDefault": false
+        },
+        {
+          "name": "RegionalMarketAnalysis",
+          "line": 368,
+          "isDefault": false
+        },
+        {
+          "name": "ResearchCoverage",
+          "line": 385,
+          "isDefault": false
+        },
+        {
+          "name": "AnalysisResult",
+          "line": 398,
+          "isDefault": false
+        },
+        {
+          "name": "AnalysisCreateRequest",
+          "line": 447,
+          "isDefault": false
+        },
+        {
+          "name": "DemoAnalysisRequest",
+          "line": 474,
+          "isDefault": false
+        },
+        {
+          "name": "PromptAnalysisRequest",
+          "line": 493,
+          "isDefault": false
+        },
+        {
+          "name": "AnalysisListItem",
+          "line": 522,
+          "isDefault": false
+        },
+        {
+          "name": "HealthResponse",
+          "line": 534,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "is_gibberish",
+          "callee": "text.strip",
+          "lineNumber": 123
+        },
+        {
+          "caller": "is_gibberish",
+          "callee": "len",
+          "lineNumber": 124
+        },
+        {
+          "caller": "is_gibberish",
+          "callee": "s.lower().strip",
+          "lineNumber": 127
+        },
+        {
+          "caller": "is_gibberish",
+          "callee": "s.lower",
+          "lineNumber": 127
+        },
+        {
+          "caller": "is_gibberish",
+          "callee": "re.split",
+          "lineNumber": 136
+        },
+        {
+          "caller": "is_gibberish",
+          "callee": "len",
+          "lineNumber": 136
+        },
+        {
+          "caller": "is_gibberish",
+          "callee": "len",
+          "lineNumber": 137
+        },
+        {
+          "caller": "is_gibberish",
+          "callee": "len",
+          "lineNumber": 140
+        },
+        {
+          "caller": "is_gibberish",
+          "callee": "len",
+          "lineNumber": 140
+        },
+        {
+          "caller": "is_gibberish",
+          "callee": "set",
+          "lineNumber": 143
+        },
+        {
+          "caller": "is_gibberish",
+          "callee": "len",
+          "lineNumber": 145
+        },
+        {
+          "caller": "is_gibberish",
+          "callee": "len",
+          "lineNumber": 145
+        },
+        {
+          "caller": "is_gibberish",
+          "callee": "sum",
+          "lineNumber": 146
+        },
+        {
+          "caller": "is_gibberish",
+          "callee": "len",
+          "lineNumber": 147
+        },
+        {
+          "caller": "is_gibberish",
+          "callee": "len",
+          "lineNumber": 150
+        },
+        {
+          "caller": "is_gibberish",
+          "callee": "len",
+          "lineNumber": 152
+        },
+        {
+          "caller": "is_gibberish",
+          "callee": "sum",
+          "lineNumber": 153
+        },
+        {
+          "caller": "is_gibberish",
+          "callee": "len",
+          "lineNumber": 154
+        },
+        {
+          "caller": "validate_not_gibberish",
+          "callee": "is_gibberish",
+          "lineNumber": 199
+        },
+        {
+          "caller": "validate_not_gibberish",
+          "callee": "ValueError",
+          "lineNumber": 200
+        },
+        {
+          "caller": "from_storage",
+          "callee": "cls.model_construct",
+          "lineNumber": 211
+        },
+        {
+          "caller": "validate_requested_provider",
+          "callee": "value.strip().lower",
+          "lineNumber": 464
+        },
+        {
+          "caller": "validate_requested_provider",
+          "callee": "value.strip",
+          "lineNumber": 464
+        },
+        {
+          "caller": "validate_requested_provider",
+          "callee": "ValueError",
+          "lineNumber": 470
+        },
+        {
+          "caller": "validate_requested_provider",
+          "callee": "AnalysisCreateRequest.validate_requested_provider",
+          "lineNumber": 490
+        },
+        {
+          "caller": "validate_prompt",
+          "callee": "value.strip",
+          "lineNumber": 508
+        },
+        {
+          "caller": "validate_prompt",
+          "callee": "len",
+          "lineNumber": 509
+        },
+        {
+          "caller": "validate_prompt",
+          "callee": "is_gibberish",
+          "lineNumber": 509
+        },
+        {
+          "caller": "validate_prompt",
+          "callee": "ValueError",
+          "lineNumber": 510
+        },
+        {
+          "caller": "validate_requested_provider",
+          "callee": "AnalysisCreateRequest.validate_requested_provider",
+          "lineNumber": 519
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 30,
+        "functionCount": 1,
+        "classCount": 29
+      }
+    },
+    {
+      "path": "backend/tests/conftest.py",
+      "language": "python",
+      "fileCategory": "code",
+      "totalLines": 170,
+      "nonEmptyLines": 159,
+      "functions": [
+        {
+          "name": "isolated_storage",
+          "startLine": 21,
+          "endLine": 31,
+          "params": [
+            "tmp_path",
+            "monkeypatch"
+          ]
+        },
+        {
+          "name": "sample_idea",
+          "startLine": 35,
+          "endLine": 47,
+          "params": []
+        },
+        {
+          "name": "sample_evidence",
+          "startLine": 51,
+          "endLine": 98,
+          "params": []
+        },
+        {
+          "name": "sample_perspectives",
+          "startLine": 102,
+          "endLine": 170,
+          "params": [
+            "sample_evidence"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "isolated_storage",
+          "line": 20,
+          "isDefault": false
+        },
+        {
+          "name": "sample_idea",
+          "line": 34,
+          "isDefault": false
+        },
+        {
+          "name": "sample_evidence",
+          "line": 50,
+          "isDefault": false
+        },
+        {
+          "name": "sample_perspectives",
+          "line": 101,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "isolated_storage",
+          "callee": "monkeypatch.setattr",
+          "lineNumber": 26
+        },
+        {
+          "caller": "isolated_storage",
+          "callee": "monkeypatch.setattr",
+          "lineNumber": 27
+        },
+        {
+          "caller": "isolated_storage",
+          "callee": "monkeypatch.setattr",
+          "lineNumber": 28
+        },
+        {
+          "caller": "isolated_storage",
+          "callee": "monkeypatch.setattr",
+          "lineNumber": 29
+        },
+        {
+          "caller": "isolated_storage",
+          "callee": "monkeypatch.setattr",
+          "lineNumber": 30
+        },
+        {
+          "caller": "sample_idea",
+          "callee": "IdeaInput",
+          "lineNumber": 36
+        },
+        {
+          "caller": "sample_evidence",
+          "callee": "EvidenceItem",
+          "lineNumber": 53
+        },
+        {
+          "caller": "sample_evidence",
+          "callee": "date",
+          "lineNumber": 58
+        },
+        {
+          "caller": "sample_evidence",
+          "callee": "date",
+          "lineNumber": 59
+        },
+        {
+          "caller": "sample_evidence",
+          "callee": "datetime",
+          "lineNumber": 65
+        },
+        {
+          "caller": "sample_evidence",
+          "callee": "EvidenceItem",
+          "lineNumber": 68
+        },
+        {
+          "caller": "sample_evidence",
+          "callee": "date",
+          "lineNumber": 73
+        },
+        {
+          "caller": "sample_evidence",
+          "callee": "date",
+          "lineNumber": 74
+        },
+        {
+          "caller": "sample_evidence",
+          "callee": "datetime",
+          "lineNumber": 80
+        },
+        {
+          "caller": "sample_evidence",
+          "callee": "EvidenceItem",
+          "lineNumber": 83
+        },
+        {
+          "caller": "sample_evidence",
+          "callee": "date",
+          "lineNumber": 88
+        },
+        {
+          "caller": "sample_evidence",
+          "callee": "date",
+          "lineNumber": 89
+        },
+        {
+          "caller": "sample_evidence",
+          "callee": "datetime",
+          "lineNumber": 95
+        },
+        {
+          "caller": "sample_perspectives",
+          "callee": "AnalysisPerspective",
+          "lineNumber": 104
+        },
+        {
+          "caller": "sample_perspectives",
+          "callee": "AnalysisPerspective",
+          "lineNumber": 126
+        },
+        {
+          "caller": "sample_perspectives",
+          "callee": "AnalysisPerspective",
+          "lineNumber": 148
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 4,
+        "functionCount": 4,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "backend/tests/test_citations.py",
+      "language": "python",
+      "fileCategory": "code",
+      "totalLines": 53,
+      "nonEmptyLines": 42,
+      "functions": [
+        {
+          "name": "_make_perspective",
+          "startLine": 8,
+          "endLine": 22,
+          "params": [
+            "name",
+            "cited",
+            "invalid"
+          ]
+        },
+        {
+          "name": "test_valid_citations_are_kept",
+          "startLine": 25,
+          "endLine": 29,
+          "params": [
+            "sample_evidence"
+          ]
+        },
+        {
+          "name": "test_invalid_citations_are_moved",
+          "startLine": 32,
+          "endLine": 39,
+          "params": [
+            "sample_evidence"
+          ]
+        },
+        {
+          "name": "test_empty_evidence_makes_all_invalid",
+          "startLine": 42,
+          "endLine": 46,
+          "params": [
+            "sample_evidence"
+          ]
+        },
+        {
+          "name": "test_no_citations_stays_empty",
+          "startLine": 49,
+          "endLine": 53,
+          "params": [
+            "sample_evidence"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "_make_perspective",
+          "line": 8,
+          "isDefault": false
+        },
+        {
+          "name": "test_valid_citations_are_kept",
+          "line": 25,
+          "isDefault": false
+        },
+        {
+          "name": "test_invalid_citations_are_moved",
+          "line": 32,
+          "isDefault": false
+        },
+        {
+          "name": "test_empty_evidence_makes_all_invalid",
+          "line": 42,
+          "isDefault": false
+        },
+        {
+          "name": "test_no_citations_stays_empty",
+          "line": 49,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "_make_perspective",
+          "callee": "AnalysisPerspective",
+          "lineNumber": 9
+        },
+        {
+          "caller": "_make_perspective",
+          "callee": "list",
+          "lineNumber": 18
+        },
+        {
+          "caller": "_make_perspective",
+          "callee": "list",
+          "lineNumber": 19
+        },
+        {
+          "caller": "test_valid_citations_are_kept",
+          "callee": "_make_perspective",
+          "lineNumber": 26
+        },
+        {
+          "caller": "test_valid_citations_are_kept",
+          "callee": "validate_citations",
+          "lineNumber": 27
+        },
+        {
+          "caller": "test_invalid_citations_are_moved",
+          "callee": "_make_perspective",
+          "lineNumber": 34
+        },
+        {
+          "caller": "test_invalid_citations_are_moved",
+          "callee": "validate_citations",
+          "lineNumber": 35
+        },
+        {
+          "caller": "test_empty_evidence_makes_all_invalid",
+          "callee": "_make_perspective",
+          "lineNumber": 43
+        },
+        {
+          "caller": "test_empty_evidence_makes_all_invalid",
+          "callee": "validate_citations",
+          "lineNumber": 44
+        },
+        {
+          "caller": "test_empty_evidence_makes_all_invalid",
+          "callee": "set",
+          "lineNumber": 46
+        },
+        {
+          "caller": "test_no_citations_stays_empty",
+          "callee": "_make_perspective",
+          "lineNumber": 50
+        },
+        {
+          "caller": "test_no_citations_stays_empty",
+          "callee": "validate_citations",
+          "lineNumber": 51
+        }
+      ],
+      "metrics": {
+        "importCount": 2,
+        "exportCount": 5,
+        "functionCount": 5,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "backend/tests/test_competitors.py",
+      "language": "python",
+      "fileCategory": "code",
+      "totalLines": 185,
+      "nonEmptyLines": 155,
+      "functions": [
+        {
+          "name": "_comp",
+          "startLine": 25,
+          "endLine": 38,
+          "params": [
+            "name",
+            "url",
+            "evidence_ids"
+          ]
+        },
+        {
+          "name": "test_exact_duplicates_merged",
+          "startLine": 41,
+          "endLine": 49,
+          "params": []
+        },
+        {
+          "name": "test_name_variant_merged",
+          "startLine": 52,
+          "endLine": 59,
+          "params": []
+        },
+        {
+          "name": "test_different_companies_not_merged",
+          "startLine": 62,
+          "endLine": 68,
+          "params": []
+        },
+        {
+          "name": "test_empty_list",
+          "startLine": 71,
+          "endLine": 72,
+          "params": []
+        },
+        {
+          "name": "test_single_competitor",
+          "startLine": 75,
+          "endLine": 78,
+          "params": []
+        },
+        {
+          "name": "test_evidence_ids_deduplicated",
+          "startLine": 81,
+          "endLine": 89,
+          "params": []
+        },
+        {
+          "name": "_idea",
+          "startLine": 92,
+          "endLine": 100,
+          "params": [
+            "known_competitors"
+          ]
+        },
+        {
+          "name": "_evidence",
+          "startLine": 103,
+          "endLine": 123,
+          "params": [
+            "evidence_id",
+            "passage",
+            "source",
+            "evidence_type"
+          ]
+        },
+        {
+          "name": "test_ai_competitor_requires_real_supporting_citation",
+          "startLine": 126,
+          "endLine": 139,
+          "params": []
+        },
+        {
+          "name": "test_ai_competitor_is_grounded_and_uses_evidence_url",
+          "startLine": 142,
+          "endLine": 160,
+          "params": []
+        },
+        {
+          "name": "test_user_competitor_without_evidence_is_low_confidence_and_has_no_fake_url",
+          "startLine": 163,
+          "endLine": 169,
+          "params": []
+        },
+        {
+          "name": "test_prefix_names_are_not_accidentally_merged",
+          "startLine": 172,
+          "endLine": 174,
+          "params": []
+        },
+        {
+          "name": "test_merge_promotes_better_supported_entry",
+          "startLine": 177,
+          "endLine": 185,
+          "params": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "_comp",
+          "line": 25,
+          "isDefault": false
+        },
+        {
+          "name": "test_exact_duplicates_merged",
+          "line": 41,
+          "isDefault": false
+        },
+        {
+          "name": "test_name_variant_merged",
+          "line": 52,
+          "isDefault": false
+        },
+        {
+          "name": "test_different_companies_not_merged",
+          "line": 62,
+          "isDefault": false
+        },
+        {
+          "name": "test_empty_list",
+          "line": 71,
+          "isDefault": false
+        },
+        {
+          "name": "test_single_competitor",
+          "line": 75,
+          "isDefault": false
+        },
+        {
+          "name": "test_evidence_ids_deduplicated",
+          "line": 81,
+          "isDefault": false
+        },
+        {
+          "name": "_idea",
+          "line": 92,
+          "isDefault": false
+        },
+        {
+          "name": "_evidence",
+          "line": 103,
+          "isDefault": false
+        },
+        {
+          "name": "test_ai_competitor_requires_real_supporting_citation",
+          "line": 126,
+          "isDefault": false
+        },
+        {
+          "name": "test_ai_competitor_is_grounded_and_uses_evidence_url",
+          "line": 142,
+          "isDefault": false
+        },
+        {
+          "name": "test_user_competitor_without_evidence_is_low_confidence_and_has_no_fake_url",
+          "line": 163,
+          "isDefault": false
+        },
+        {
+          "name": "test_prefix_names_are_not_accidentally_merged",
+          "line": 172,
+          "isDefault": false
+        },
+        {
+          "name": "test_merge_promotes_better_supported_entry",
+          "line": 177,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "_comp",
+          "callee": "Competitor",
+          "lineNumber": 26
+        },
+        {
+          "caller": "test_exact_duplicates_merged",
+          "callee": "_comp",
+          "lineNumber": 43
+        },
+        {
+          "caller": "test_exact_duplicates_merged",
+          "callee": "_comp",
+          "lineNumber": 44
+        },
+        {
+          "caller": "test_exact_duplicates_merged",
+          "callee": "merge_competitors",
+          "lineNumber": 46
+        },
+        {
+          "caller": "test_exact_duplicates_merged",
+          "callee": "len",
+          "lineNumber": 47
+        },
+        {
+          "caller": "test_name_variant_merged",
+          "callee": "_comp",
+          "lineNumber": 55
+        },
+        {
+          "caller": "test_name_variant_merged",
+          "callee": "_comp",
+          "lineNumber": 56
+        },
+        {
+          "caller": "test_name_variant_merged",
+          "callee": "merge_competitors",
+          "lineNumber": 58
+        },
+        {
+          "caller": "test_name_variant_merged",
+          "callee": "len",
+          "lineNumber": 59
+        },
+        {
+          "caller": "test_different_companies_not_merged",
+          "callee": "_comp",
+          "lineNumber": 64
+        },
+        {
+          "caller": "test_different_companies_not_merged",
+          "callee": "_comp",
+          "lineNumber": 65
+        },
+        {
+          "caller": "test_different_companies_not_merged",
+          "callee": "merge_competitors",
+          "lineNumber": 67
+        },
+        {
+          "caller": "test_different_companies_not_merged",
+          "callee": "len",
+          "lineNumber": 68
+        },
+        {
+          "caller": "test_empty_list",
+          "callee": "merge_competitors",
+          "lineNumber": 72
+        },
+        {
+          "caller": "test_single_competitor",
+          "callee": "_comp",
+          "lineNumber": 76
+        },
+        {
+          "caller": "test_single_competitor",
+          "callee": "merge_competitors",
+          "lineNumber": 77
+        },
+        {
+          "caller": "test_single_competitor",
+          "callee": "len",
+          "lineNumber": 78
+        },
+        {
+          "caller": "test_evidence_ids_deduplicated",
+          "callee": "_comp",
+          "lineNumber": 83
+        },
+        {
+          "caller": "test_evidence_ids_deduplicated",
+          "callee": "_comp",
+          "lineNumber": 84
+        },
+        {
+          "caller": "test_evidence_ids_deduplicated",
+          "callee": "merge_competitors",
+          "lineNumber": 86
+        },
+        {
+          "caller": "test_evidence_ids_deduplicated",
+          "callee": "len",
+          "lineNumber": 87
+        },
+        {
+          "caller": "test_evidence_ids_deduplicated",
+          "callee": "merged[0].evidence_ids.count",
+          "lineNumber": 89
+        },
+        {
+          "caller": "_idea",
+          "callee": "IdeaInput",
+          "lineNumber": 93
+        },
+        {
+          "caller": "_evidence",
+          "callee": "EvidenceItem",
+          "lineNumber": 110
+        },
+        {
+          "caller": "_evidence",
+          "callee": "date.today",
+          "lineNumber": 116
+        },
+        {
+          "caller": "_evidence",
+          "callee": "datetime.utcnow",
+          "lineNumber": 122
+        },
+        {
+          "caller": "test_ai_competitor_requires_real_supporting_citation",
+          "callee": "DiscoveredCompetitor",
+          "lineNumber": 127
+        },
+        {
+          "caller": "test_ai_competitor_requires_real_supporting_citation",
+          "callee": "_evidence",
+          "lineNumber": 132
+        },
+        {
+          "caller": "test_ai_competitor_requires_real_supporting_citation",
+          "callee": "_validated_ai_competitors",
+          "lineNumber": 134
+        },
+        {
+          "caller": "test_ai_competitor_requires_real_supporting_citation",
+          "callee": "_idea",
+          "lineNumber": 137
+        },
+        {
+          "caller": "test_ai_competitor_is_grounded_and_uses_evidence_url",
+          "callee": "DiscoveredCompetitor",
+          "lineNumber": 143
+        },
+        {
+          "caller": "test_ai_competitor_is_grounded_and_uses_evidence_url",
+          "callee": "_validated_ai_competitors",
+          "lineNumber": 150
+        },
+        {
+          "caller": "test_ai_competitor_is_grounded_and_uses_evidence_url",
+          "callee": "_evidence",
+          "lineNumber": 152
+        },
+        {
+          "caller": "test_ai_competitor_is_grounded_and_uses_evidence_url",
+          "callee": "_idea",
+          "lineNumber": 153
+        },
+        {
+          "caller": "test_ai_competitor_is_grounded_and_uses_evidence_url",
+          "callee": "len",
+          "lineNumber": 155
+        },
+        {
+          "caller": "test_ai_competitor_is_grounded_and_uses_evidence_url",
+          "callee": "accepted[0].differentiation[0].startswith",
+          "lineNumber": 160
+        },
+        {
+          "caller": "test_user_competitor_without_evidence_is_low_confidence_and_has_no_fake_url",
+          "callee": "_extract_competitors_from_evidence",
+          "lineNumber": 164
+        },
+        {
+          "caller": "test_user_competitor_without_evidence_is_low_confidence_and_has_no_fake_url",
+          "callee": "_idea",
+          "lineNumber": 164
+        },
+        {
+          "caller": "test_user_competitor_without_evidence_is_low_confidence_and_has_no_fake_url",
+          "callee": "len",
+          "lineNumber": 165
+        },
+        {
+          "caller": "test_prefix_names_are_not_accidentally_merged",
+          "callee": "merge_competitors",
+          "lineNumber": 173
+        },
+        {
+          "caller": "test_prefix_names_are_not_accidentally_merged",
+          "callee": "_comp",
+          "lineNumber": 173
+        },
+        {
+          "caller": "test_prefix_names_are_not_accidentally_merged",
+          "callee": "_comp",
+          "lineNumber": 173
+        },
+        {
+          "caller": "test_prefix_names_are_not_accidentally_merged",
+          "callee": "len",
+          "lineNumber": 174
+        },
+        {
+          "caller": "test_merge_promotes_better_supported_entry",
+          "callee": "_comp",
+          "lineNumber": 178
+        },
+        {
+          "caller": "test_merge_promotes_better_supported_entry",
+          "callee": "_comp",
+          "lineNumber": 179
+        },
+        {
+          "caller": "test_merge_promotes_better_supported_entry",
+          "callee": "merge_competitors",
+          "lineNumber": 182
+        },
+        {
+          "caller": "test_merge_promotes_better_supported_entry",
+          "callee": "len",
+          "lineNumber": 183
+        }
+      ],
+      "metrics": {
+        "importCount": 4,
+        "exportCount": 14,
+        "functionCount": 14,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "backend/tests/test_confidence.py",
+      "language": "python",
+      "fileCategory": "code",
+      "totalLines": 49,
+      "nonEmptyLines": 40,
+      "functions": [
+        {
+          "name": "test_no_evidence_returns_low",
+          "startLine": 8,
+          "endLine": 10,
+          "params": []
+        },
+        {
+          "name": "test_many_high_quality_items_returns_high",
+          "startLine": 13,
+          "endLine": 33,
+          "params": [
+            "sample_evidence",
+            "sample_perspectives"
+          ]
+        },
+        {
+          "name": "test_single_item_returns_low",
+          "startLine": 36,
+          "endLine": 38,
+          "params": [
+            "sample_evidence",
+            "sample_perspectives"
+          ]
+        },
+        {
+          "name": "test_confidence_is_independent_of_score",
+          "startLine": 41,
+          "endLine": 49,
+          "params": [
+            "sample_evidence",
+            "sample_perspectives"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "test_no_evidence_returns_low",
+          "line": 8,
+          "isDefault": false
+        },
+        {
+          "name": "test_many_high_quality_items_returns_high",
+          "line": 13,
+          "isDefault": false
+        },
+        {
+          "name": "test_single_item_returns_low",
+          "line": 36,
+          "isDefault": false
+        },
+        {
+          "name": "test_confidence_is_independent_of_score",
+          "line": 41,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "test_no_evidence_returns_low",
+          "callee": "calculate_evidence_confidence",
+          "lineNumber": 9
+        },
+        {
+          "caller": "test_many_high_quality_items_returns_high",
+          "callee": "range",
+          "lineNumber": 23
+        },
+        {
+          "caller": "test_many_high_quality_items_returns_high",
+          "callee": "deepcopy",
+          "lineNumber": 24
+        },
+        {
+          "caller": "test_many_high_quality_items_returns_high",
+          "callee": "date",
+          "lineNumber": 28
+        },
+        {
+          "caller": "test_many_high_quality_items_returns_high",
+          "callee": "extra.append",
+          "lineNumber": 29
+        },
+        {
+          "caller": "test_many_high_quality_items_returns_high",
+          "callee": "calculate_evidence_confidence",
+          "lineNumber": 31
+        },
+        {
+          "caller": "test_single_item_returns_low",
+          "callee": "calculate_evidence_confidence",
+          "lineNumber": 37
+        },
+        {
+          "caller": "test_confidence_is_independent_of_score",
+          "callee": "calculate_evidence_confidence",
+          "lineNumber": 47
+        }
+      ],
+      "metrics": {
+        "importCount": 2,
+        "exportCount": 4,
+        "functionCount": 4,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "backend/tests/test_engine_e2e.py",
+      "language": "python",
+      "fileCategory": "code",
+      "totalLines": 165,
+      "nonEmptyLines": 138,
+      "functions": [
+        {
+          "name": "test_engine_end_to_end",
+          "startLine": 96,
+          "endLine": 138,
+          "params": []
+        },
+        {
+          "name": "test_ai_competitor_survives_grounded_end_to_end_pipeline",
+          "startLine": 142,
+          "endLine": 165,
+          "params": []
+        }
+      ],
+      "classes": [
+        {
+          "name": "MockAdapter",
+          "startLine": 12,
+          "endLine": 44,
+          "methods": [
+            "name",
+            "is_available",
+            "model_id",
+            "analyze_perspective",
+            "_call_api"
+          ],
+          "properties": []
+        },
+        {
+          "name": "MockProvider",
+          "startLine": 46,
+          "endLine": 56,
+          "methods": [
+            "name",
+            "is_available",
+            "search"
+          ],
+          "properties": []
+        },
+        {
+          "name": "CompetitorProvider",
+          "startLine": 59,
+          "endLine": 78,
+          "methods": [
+            "search"
+          ],
+          "properties": []
+        },
+        {
+          "name": "CompetitorAIAdapter",
+          "startLine": 81,
+          "endLine": 93,
+          "methods": [
+            "analyze_perspective"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "MockAdapter",
+          "line": 12,
+          "isDefault": false
+        },
+        {
+          "name": "MockProvider",
+          "line": 46,
+          "isDefault": false
+        },
+        {
+          "name": "CompetitorProvider",
+          "line": 59,
+          "isDefault": false
+        },
+        {
+          "name": "CompetitorAIAdapter",
+          "line": 81,
+          "isDefault": false
+        },
+        {
+          "name": "test_engine_end_to_end",
+          "line": 95,
+          "isDefault": false
+        },
+        {
+          "name": "test_ai_competitor_survives_grounded_end_to_end_pipeline",
+          "line": 141,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "analyze_perspective",
+          "callee": "PerspectiveOutput",
+          "lineNumber": 26
+        },
+        {
+          "caller": "search",
+          "callee": "EvidenceItem",
+          "lineNumber": 64
+        },
+        {
+          "caller": "search",
+          "callee": "date.today",
+          "lineNumber": 70
+        },
+        {
+          "caller": "search",
+          "callee": "datetime.utcnow",
+          "lineNumber": 76
+        },
+        {
+          "caller": "analyze_perspective",
+          "callee": "super().analyze_perspective",
+          "lineNumber": 83
+        },
+        {
+          "caller": "analyze_perspective",
+          "callee": "super",
+          "lineNumber": 83
+        },
+        {
+          "caller": "analyze_perspective",
+          "callee": "DiscoveredCompetitor",
+          "lineNumber": 85
+        },
+        {
+          "caller": "test_engine_end_to_end",
+          "callee": "IdeaInput",
+          "lineNumber": 97
+        },
+        {
+          "caller": "test_engine_end_to_end",
+          "callee": "AnalysisEngine",
+          "lineNumber": 105
+        },
+        {
+          "caller": "test_engine_end_to_end",
+          "callee": "MockProvider",
+          "lineNumber": 106
+        },
+        {
+          "caller": "test_engine_end_to_end",
+          "callee": "MockAdapter",
+          "lineNumber": 107
+        },
+        {
+          "caller": "progress_cb",
+          "callee": "stages_hit.append",
+          "lineNumber": 112
+        },
+        {
+          "caller": "test_engine_end_to_end",
+          "callee": "engine.run",
+          "lineNumber": 114
+        },
+        {
+          "caller": "test_engine_end_to_end",
+          "callee": "hasattr",
+          "lineNumber": 120
+        },
+        {
+          "caller": "test_engine_end_to_end",
+          "callee": "len",
+          "lineNumber": 124
+        },
+        {
+          "caller": "test_engine_end_to_end",
+          "callee": "hasattr",
+          "lineNumber": 127
+        },
+        {
+          "caller": "test_engine_end_to_end",
+          "callee": "isinstance",
+          "lineNumber": 128
+        },
+        {
+          "caller": "test_engine_end_to_end",
+          "callee": "len",
+          "lineNumber": 132
+        },
+        {
+          "caller": "test_engine_end_to_end",
+          "callee": "result.model_dump",
+          "lineNumber": 136
+        },
+        {
+          "caller": "test_engine_end_to_end",
+          "callee": "isinstance",
+          "lineNumber": 137
+        },
+        {
+          "caller": "test_ai_competitor_survives_grounded_end_to_end_pipeline",
+          "callee": "IdeaInput",
+          "lineNumber": 143
+        },
+        {
+          "caller": "test_ai_competitor_survives_grounded_end_to_end_pipeline",
+          "callee": "AnalysisEngine",
+          "lineNumber": 150
+        },
+        {
+          "caller": "test_ai_competitor_survives_grounded_end_to_end_pipeline",
+          "callee": "CompetitorProvider",
+          "lineNumber": 151
+        },
+        {
+          "caller": "test_ai_competitor_survives_grounded_end_to_end_pipeline",
+          "callee": "CompetitorAIAdapter",
+          "lineNumber": 152
+        },
+        {
+          "caller": "test_ai_competitor_survives_grounded_end_to_end_pipeline",
+          "callee": "engine.run",
+          "lineNumber": 155
+        },
+        {
+          "caller": "test_ai_competitor_survives_grounded_end_to_end_pipeline",
+          "callee": "len",
+          "lineNumber": 157
+        },
+        {
+          "caller": "test_ai_competitor_survives_grounded_end_to_end_pipeline",
+          "callee": "result.model_dump",
+          "lineNumber": 165
+        }
+      ],
+      "metrics": {
+        "importCount": 4,
+        "exportCount": 6,
+        "functionCount": 2,
+        "classCount": 4
+      }
+    },
+    {
+      "path": "backend/tests/test_founder_toolkit.py",
+      "language": "python",
+      "fileCategory": "code",
+      "totalLines": 49,
+      "nonEmptyLines": 39,
+      "functions": [
+        {
+          "name": "_idea",
+          "startLine": 6,
+          "endLine": 22,
+          "params": [
+            "**overrides"
+          ]
+        },
+        {
+          "name": "test_founder_toolkit_contains_measurable_roadmap",
+          "startLine": 25,
+          "endLine": 36,
+          "params": []
+        },
+        {
+          "name": "test_founder_toolkit_uses_declared_acquisition_channels",
+          "startLine": 39,
+          "endLine": 49,
+          "params": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "_idea",
+          "line": 6,
+          "isDefault": false
+        },
+        {
+          "name": "test_founder_toolkit_contains_measurable_roadmap",
+          "line": 25,
+          "isDefault": false
+        },
+        {
+          "name": "test_founder_toolkit_uses_declared_acquisition_channels",
+          "line": 39,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "_idea",
+          "callee": "values.update",
+          "lineNumber": 21
+        },
+        {
+          "caller": "_idea",
+          "callee": "IdeaInput",
+          "lineNumber": 22
+        },
+        {
+          "caller": "test_founder_toolkit_contains_measurable_roadmap",
+          "callee": "_idea",
+          "lineNumber": 26
+        },
+        {
+          "caller": "test_founder_toolkit_contains_measurable_roadmap",
+          "callee": "generate_experiments",
+          "lineNumber": 27
+        },
+        {
+          "caller": "test_founder_toolkit_contains_measurable_roadmap",
+          "callee": "generate_founder_toolkit",
+          "lineNumber": 29
+        },
+        {
+          "caller": "test_founder_toolkit_contains_measurable_roadmap",
+          "callee": "len",
+          "lineNumber": 31
+        },
+        {
+          "caller": "test_founder_toolkit_contains_measurable_roadmap",
+          "callee": "all",
+          "lineNumber": 33
+        },
+        {
+          "caller": "test_founder_toolkit_contains_measurable_roadmap",
+          "callee": "len",
+          "lineNumber": 36
+        },
+        {
+          "caller": "test_founder_toolkit_uses_declared_acquisition_channels",
+          "callee": "_idea",
+          "lineNumber": 40
+        },
+        {
+          "caller": "test_founder_toolkit_uses_declared_acquisition_channels",
+          "callee": "generate_founder_toolkit",
+          "lineNumber": 42
+        }
+      ],
+      "metrics": {
+        "importCount": 3,
+        "exportCount": 3,
+        "functionCount": 3,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "backend/tests/test_regional_research.py",
+      "language": "python",
+      "fileCategory": "code",
+      "totalLines": 138,
+      "nonEmptyLines": 120,
+      "functions": [
+        {
+          "name": "_idea",
+          "startLine": 23,
+          "endLine": 35,
+          "params": []
+        },
+        {
+          "name": "_evidence",
+          "startLine": 38,
+          "endLine": 58,
+          "params": [
+            "evidence_id",
+            "evidence_type",
+            "title",
+            "source",
+            "query"
+          ]
+        },
+        {
+          "name": "test_regional_analysis_counts_only_market_specific_evidence",
+          "startLine": 61,
+          "endLine": 86,
+          "params": []
+        },
+        {
+          "name": "test_research_depth_controls_query_and_perspective_volume",
+          "startLine": 98,
+          "endLine": 115,
+          "params": [
+            "depth",
+            "queries_per_type",
+            "perspective_count"
+          ]
+        },
+        {
+          "name": "test_no_key_parser_uses_only_user_supplied_competitors_and_region",
+          "startLine": 119,
+          "endLine": 138,
+          "params": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "_idea",
+          "line": 23,
+          "isDefault": false
+        },
+        {
+          "name": "_evidence",
+          "line": 38,
+          "isDefault": false
+        },
+        {
+          "name": "test_regional_analysis_counts_only_market_specific_evidence",
+          "line": 61,
+          "isDefault": false
+        },
+        {
+          "name": "test_research_depth_controls_query_and_perspective_volume",
+          "line": 89,
+          "isDefault": false
+        },
+        {
+          "name": "test_no_key_parser_uses_only_user_supplied_competitors_and_region",
+          "line": 118,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "_idea",
+          "callee": "IdeaInput",
+          "lineNumber": 24
+        },
+        {
+          "caller": "_evidence",
+          "callee": "EvidenceItem",
+          "lineNumber": 45
+        },
+        {
+          "caller": "_evidence",
+          "callee": "datetime.now(UTC).date",
+          "lineNumber": 51
+        },
+        {
+          "caller": "_evidence",
+          "callee": "datetime.now",
+          "lineNumber": 51
+        },
+        {
+          "caller": "_evidence",
+          "callee": "datetime.now",
+          "lineNumber": 57
+        },
+        {
+          "caller": "test_regional_analysis_counts_only_market_specific_evidence",
+          "callee": "_idea",
+          "lineNumber": 62
+        },
+        {
+          "caller": "test_regional_analysis_counts_only_market_specific_evidence",
+          "callee": "_evidence",
+          "lineNumber": 64
+        },
+        {
+          "caller": "test_regional_analysis_counts_only_market_specific_evidence",
+          "callee": "_evidence",
+          "lineNumber": 65
+        },
+        {
+          "caller": "test_regional_analysis_counts_only_market_specific_evidence",
+          "callee": "_evidence",
+          "lineNumber": 66
+        },
+        {
+          "caller": "test_regional_analysis_counts_only_market_specific_evidence",
+          "callee": "_evidence",
+          "lineNumber": 67
+        },
+        {
+          "caller": "test_regional_analysis_counts_only_market_specific_evidence",
+          "callee": "EvidenceItem",
+          "lineNumber": 68
+        },
+        {
+          "caller": "test_regional_analysis_counts_only_market_specific_evidence",
+          "callee": "_evidence(\"E005\", EvidenceType.DEMAND, \"US dental software demand\", \"US report\", \"dental software US\").model_dump",
+          "lineNumber": 70
+        },
+        {
+          "caller": "test_regional_analysis_counts_only_market_specific_evidence",
+          "callee": "_evidence",
+          "lineNumber": 70
+        },
+        {
+          "caller": "test_regional_analysis_counts_only_market_specific_evidence",
+          "callee": "generate_regional_analysis",
+          "lineNumber": 76
+        },
+        {
+          "caller": "test_regional_analysis_counts_only_market_specific_evidence",
+          "callee": "all",
+          "lineNumber": 86
+        },
+        {
+          "caller": "test_research_depth_controls_query_and_perspective_volume",
+          "callee": "AnalysisEngine",
+          "lineNumber": 103
+        },
+        {
+          "caller": "test_research_depth_controls_query_and_perspective_volume",
+          "callee": "MockAdapter",
+          "lineNumber": 103
+        },
+        {
+          "caller": "test_research_depth_controls_query_and_perspective_volume",
+          "callee": "engine._select_queries",
+          "lineNumber": 104
+        },
+        {
+          "caller": "test_research_depth_controls_query_and_perspective_volume",
+          "callee": "generate_queries",
+          "lineNumber": 104
+        },
+        {
+          "caller": "test_research_depth_controls_query_and_perspective_volume",
+          "callee": "_idea",
+          "lineNumber": 104
+        },
+        {
+          "caller": "test_research_depth_controls_query_and_perspective_volume",
+          "callee": "Counter",
+          "lineNumber": 105
+        },
+        {
+          "caller": "test_research_depth_controls_query_and_perspective_volume",
+          "callee": "max",
+          "lineNumber": 108
+        },
+        {
+          "caller": "test_research_depth_controls_query_and_perspective_volume",
+          "callee": "counts.values",
+          "lineNumber": 108
+        },
+        {
+          "caller": "test_research_depth_controls_query_and_perspective_volume",
+          "callee": "engine.run",
+          "lineNumber": 110
+        },
+        {
+          "caller": "test_research_depth_controls_query_and_perspective_volume",
+          "callee": "_idea",
+          "lineNumber": 110
+        },
+        {
+          "caller": "test_research_depth_controls_query_and_perspective_volume",
+          "callee": "len",
+          "lineNumber": 112
+        },
+        {
+          "caller": "test_research_depth_controls_query_and_perspective_volume",
+          "callee": "len",
+          "lineNumber": 115
+        },
+        {
+          "caller": "test_no_key_parser_uses_only_user_supplied_competitors_and_region",
+          "callee": "MockAdapter().parse_raw_prompt",
+          "lineNumber": 120
+        },
+        {
+          "caller": "test_no_key_parser_uses_only_user_supplied_competitors_and_region",
+          "callee": "MockAdapter",
+          "lineNumber": 120
+        },
+        {
+          "caller": "test_no_key_parser_uses_only_user_supplied_competitors_and_region",
+          "callee": "parsed.model_dump_json",
+          "lineNumber": 138
+        }
+      ],
+      "metrics": {
+        "importCount": 5,
+        "exportCount": 5,
+        "functionCount": 5,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "backend/tests/test_scoring.py",
+      "language": "python",
+      "fileCategory": "code",
+      "totalLines": 85,
+      "nonEmptyLines": 64,
+      "functions": [
+        {
+          "name": "test_weights_sum_to_100",
+          "startLine": 17,
+          "endLine": 21,
+          "params": []
+        },
+        {
+          "name": "test_all_seven_dimensions_present",
+          "startLine": 24,
+          "endLine": 34,
+          "params": []
+        },
+        {
+          "name": "test_score_calculation_deterministic",
+          "startLine": 37,
+          "endLine": 41,
+          "params": [
+            "sample_idea",
+            "sample_evidence",
+            "sample_perspectives"
+          ]
+        },
+        {
+          "name": "test_score_is_within_bounds",
+          "startLine": 44,
+          "endLine": 46,
+          "params": [
+            "sample_idea",
+            "sample_evidence",
+            "sample_perspectives"
+          ]
+        },
+        {
+          "name": "test_score_has_correct_dimension_count",
+          "startLine": 49,
+          "endLine": 51,
+          "params": [
+            "sample_idea",
+            "sample_evidence",
+            "sample_perspectives"
+          ]
+        },
+        {
+          "name": "test_weighted_scores_sum_to_total",
+          "startLine": 54,
+          "endLine": 60,
+          "params": [
+            "sample_idea",
+            "sample_evidence",
+            "sample_perspectives"
+          ]
+        },
+        {
+          "name": "test_score_no_perspectives",
+          "startLine": 63,
+          "endLine": 67,
+          "params": [
+            "sample_idea",
+            "sample_evidence"
+          ]
+        },
+        {
+          "name": "test_score_all_high",
+          "startLine": 70,
+          "endLine": 76,
+          "params": [
+            "sample_idea",
+            "sample_evidence",
+            "sample_perspectives"
+          ]
+        },
+        {
+          "name": "test_score_all_low",
+          "startLine": 79,
+          "endLine": 85,
+          "params": [
+            "sample_idea",
+            "sample_evidence",
+            "sample_perspectives"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "test_weights_sum_to_100",
+          "line": 17,
+          "isDefault": false
+        },
+        {
+          "name": "test_all_seven_dimensions_present",
+          "line": 24,
+          "isDefault": false
+        },
+        {
+          "name": "test_score_calculation_deterministic",
+          "line": 37,
+          "isDefault": false
+        },
+        {
+          "name": "test_score_is_within_bounds",
+          "line": 44,
+          "isDefault": false
+        },
+        {
+          "name": "test_score_has_correct_dimension_count",
+          "line": 49,
+          "isDefault": false
+        },
+        {
+          "name": "test_weighted_scores_sum_to_total",
+          "line": 54,
+          "isDefault": false
+        },
+        {
+          "name": "test_score_no_perspectives",
+          "line": 63,
+          "isDefault": false
+        },
+        {
+          "name": "test_score_all_high",
+          "line": 70,
+          "isDefault": false
+        },
+        {
+          "name": "test_score_all_low",
+          "line": 79,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "test_weights_sum_to_100",
+          "callee": "sum",
+          "lineNumber": 19
+        },
+        {
+          "caller": "test_weights_sum_to_100",
+          "callee": "DIMENSION_WEIGHTS.values",
+          "lineNumber": 19
+        },
+        {
+          "caller": "test_weights_sum_to_100",
+          "callee": "sum",
+          "lineNumber": 20
+        },
+        {
+          "caller": "test_weights_sum_to_100",
+          "callee": "DIMENSION_WEIGHTS.values",
+          "lineNumber": 20
+        },
+        {
+          "caller": "test_all_seven_dimensions_present",
+          "callee": "set",
+          "lineNumber": 34
+        },
+        {
+          "caller": "test_all_seven_dimensions_present",
+          "callee": "DIMENSION_WEIGHTS.keys",
+          "lineNumber": 34
+        },
+        {
+          "caller": "test_score_calculation_deterministic",
+          "callee": "calculate_opportunity_score",
+          "lineNumber": 39
+        },
+        {
+          "caller": "test_score_calculation_deterministic",
+          "callee": "calculate_opportunity_score",
+          "lineNumber": 40
+        },
+        {
+          "caller": "test_score_is_within_bounds",
+          "callee": "calculate_opportunity_score",
+          "lineNumber": 45
+        },
+        {
+          "caller": "test_score_has_correct_dimension_count",
+          "callee": "calculate_opportunity_score",
+          "lineNumber": 50
+        },
+        {
+          "caller": "test_score_has_correct_dimension_count",
+          "callee": "len",
+          "lineNumber": 51
+        },
+        {
+          "caller": "test_weighted_scores_sum_to_total",
+          "callee": "calculate_opportunity_score",
+          "lineNumber": 56
+        },
+        {
+          "caller": "test_weighted_scores_sum_to_total",
+          "callee": "sum",
+          "lineNumber": 57
+        },
+        {
+          "caller": "test_weighted_scores_sum_to_total",
+          "callee": "abs",
+          "lineNumber": 58
+        },
+        {
+          "caller": "test_score_no_perspectives",
+          "callee": "calculate_opportunity_score",
+          "lineNumber": 65
+        },
+        {
+          "caller": "test_score_no_perspectives",
+          "callee": "pytest.approx",
+          "lineNumber": 67
+        },
+        {
+          "caller": "test_score_all_high",
+          "callee": "calculate_opportunity_score",
+          "lineNumber": 75
+        },
+        {
+          "caller": "test_score_all_low",
+          "callee": "calculate_opportunity_score",
+          "lineNumber": 84
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 9,
+        "functionCount": 9,
+        "classCount": 0
+      }
+    }
+  ]
+}

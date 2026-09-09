@@ -1,0 +1,1175 @@
+{
+  "nodes": [
+    {
+      "id": "file:frontend/src/hooks/useAnalysis.ts",
+      "type": "file",
+      "name": "useAnalysis.ts",
+      "filePath": "frontend/src/hooks/useAnalysis.ts",
+      "summary": "Encapsulates analysis submission and polling state, exposing progress, result, error, and reset behavior to analysis pages.",
+      "tags": [
+        "hook",
+        "api-client",
+        "state-management"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:frontend/src/hooks/useAnalysis.ts:useAnalysis",
+      "type": "function",
+      "name": "useAnalysis",
+      "filePath": "frontend/src/hooks/useAnalysis.ts",
+      "lineRange": [
+        8,
+        46
+      ],
+      "summary": "Submits an idea for analysis and manages polling, progress, terminal results, errors, and reset state.",
+      "tags": [
+        "hook",
+        "api-client",
+        "state-management"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:frontend/src/lib/api.ts",
+      "type": "file",
+      "name": "api.ts",
+      "filePath": "frontend/src/lib/api.ts",
+      "summary": "Implements the typed frontend API client, centralizing JSON requests, errors, analysis lifecycle calls, history management, and provider connection tests.",
+      "tags": [
+        "api-client",
+        "serialization",
+        "error-handling"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:frontend/src/lib/api.ts:request",
+      "type": "function",
+      "name": "request",
+      "filePath": "frontend/src/lib/api.ts",
+      "lineRange": [
+        26,
+        68
+      ],
+      "summary": "Executes typed JSON requests and converts unsuccessful responses into useful client errors.",
+      "tags": [
+        "api-client",
+        "serialization",
+        "error-handling"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:frontend/src/lib/readiness.ts",
+      "type": "file",
+      "name": "readiness.ts",
+      "filePath": "frontend/src/lib/readiness.ts",
+      "summary": "Scores prompt and structured-form completeness, returning actionable warnings, suggestions, and a readiness level before analysis submission.",
+      "tags": [
+        "validation",
+        "scoring",
+        "utility"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:frontend/src/lib/readiness.ts:assessPromptReadiness",
+      "type": "function",
+      "name": "assessPromptReadiness",
+      "filePath": "frontend/src/lib/readiness.ts",
+      "lineRange": [
+        44,
+        73
+      ],
+      "summary": "Evaluates a free-form idea prompt for specificity, evidence, constraints, and research readiness.",
+      "tags": [
+        "validation",
+        "scoring",
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:frontend/src/lib/readiness.ts:assessFormReadiness",
+      "type": "function",
+      "name": "assessFormReadiness",
+      "filePath": "frontend/src/lib/readiness.ts",
+      "lineRange": [
+        75,
+        118
+      ],
+      "summary": "Evaluates structured idea fields and returns a readiness score with targeted corrective guidance.",
+      "tags": [
+        "validation",
+        "scoring",
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:frontend/src/lib/report.ts",
+      "type": "file",
+      "name": "report.ts",
+      "filePath": "frontend/src/lib/report.ts",
+      "summary": "Serializes a completed analysis into a comprehensive Markdown report spanning verdict, scores, perspectives, markets, competitors, experiments, finances, toolkit, and evidence.",
+      "tags": [
+        "serialization",
+        "reporting",
+        "markdown"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:frontend/src/lib/report.ts:generateMarkdownReport",
+      "type": "function",
+      "name": "generateMarkdownReport",
+      "filePath": "frontend/src/lib/report.ts",
+      "lineRange": [
+        5,
+        164
+      ],
+      "summary": "Builds a downloadable Markdown representation of every major analysis result and evidence section.",
+      "tags": [
+        "serialization",
+        "reporting",
+        "markdown"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:frontend/src/lib/utils.ts",
+      "type": "file",
+      "name": "utils.ts",
+      "filePath": "frontend/src/lib/utils.ts",
+      "summary": "Provides shared presentation helpers for score, recommendation, confidence, reliability, dates, safe URLs, progress stages, and the product disclaimer.",
+      "tags": [
+        "utility",
+        "formatting",
+        "security"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:frontend/src/lib/utils.ts:scoreColor",
+      "type": "function",
+      "name": "scoreColor",
+      "filePath": "frontend/src/lib/utils.ts",
+      "lineRange": [
+        5,
+        9
+      ],
+      "summary": "Maps an opportunity score to its semantic text color class.",
+      "tags": [
+        "utility",
+        "scoring",
+        "formatting"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:frontend/src/lib/utils.ts:scoreBgColor",
+      "type": "function",
+      "name": "scoreBgColor",
+      "filePath": "frontend/src/lib/utils.ts",
+      "lineRange": [
+        11,
+        15
+      ],
+      "summary": "Maps an opportunity score to its semantic background color class.",
+      "tags": [
+        "utility",
+        "scoring",
+        "formatting"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:frontend/src/lib/utils.ts:scoreBorderColor",
+      "type": "function",
+      "name": "scoreBorderColor",
+      "filePath": "frontend/src/lib/utils.ts",
+      "lineRange": [
+        17,
+        21
+      ],
+      "summary": "Maps an opportunity score to its semantic border color class.",
+      "tags": [
+        "utility",
+        "scoring",
+        "formatting"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:frontend/src/lib/utils.ts:recommendationColor",
+      "type": "function",
+      "name": "recommendationColor",
+      "filePath": "frontend/src/lib/utils.ts",
+      "lineRange": [
+        23,
+        31
+      ],
+      "summary": "Maps a recommendation label to its semantic text color class.",
+      "tags": [
+        "utility",
+        "recommendation",
+        "formatting"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:frontend/src/lib/utils.ts:recommendationBg",
+      "type": "function",
+      "name": "recommendationBg",
+      "filePath": "frontend/src/lib/utils.ts",
+      "lineRange": [
+        33,
+        41
+      ],
+      "summary": "Maps a recommendation label to its semantic background color class.",
+      "tags": [
+        "utility",
+        "recommendation",
+        "formatting"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:frontend/src/lib/utils.ts:confidenceColor",
+      "type": "function",
+      "name": "confidenceColor",
+      "filePath": "frontend/src/lib/utils.ts",
+      "lineRange": [
+        43,
+        50
+      ],
+      "summary": "Maps an evidence-confidence level to its semantic color class.",
+      "tags": [
+        "utility",
+        "confidence",
+        "formatting"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:frontend/src/lib/utils.ts:reliabilityBadge",
+      "type": "function",
+      "name": "reliabilityBadge",
+      "filePath": "frontend/src/lib/utils.ts",
+      "lineRange": [
+        52,
+        56
+      ],
+      "summary": "Formats an evidence reliability rating as a compact badge label.",
+      "tags": [
+        "utility",
+        "evidence",
+        "formatting"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:frontend/src/lib/utils.ts:formatDate",
+      "type": "function",
+      "name": "formatDate",
+      "filePath": "frontend/src/lib/utils.ts",
+      "lineRange": [
+        58,
+        69
+      ],
+      "summary": "Formats timestamps for concise human-readable display.",
+      "tags": [
+        "utility",
+        "date",
+        "formatting"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:frontend/src/lib/utils.ts:safeExternalUrl",
+      "type": "function",
+      "name": "safeExternalUrl",
+      "filePath": "frontend/src/lib/utils.ts",
+      "lineRange": [
+        71,
+        79
+      ],
+      "summary": "Allows only safe external HTTP(S) URLs and rejects unsuitable link values.",
+      "tags": [
+        "utility",
+        "security",
+        "url-validation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:frontend/src/lib/utils.ts:stageLabel",
+      "type": "function",
+      "name": "stageLabel",
+      "filePath": "frontend/src/lib/utils.ts",
+      "lineRange": [
+        81,
+        94
+      ],
+      "summary": "Converts analysis pipeline stage identifiers into readable labels.",
+      "tags": [
+        "utility",
+        "progress-tracking",
+        "formatting"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:frontend/src/main.tsx",
+      "type": "file",
+      "name": "main.tsx",
+      "filePath": "frontend/src/main.tsx",
+      "summary": "Bootstraps the React application into the root DOM node, applying strict mode, browser routing, and global styles.",
+      "tags": [
+        "entry-point",
+        "react",
+        "routing"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:frontend/src/pages/AnalysisPage.tsx",
+      "type": "file",
+      "name": "AnalysisPage.tsx",
+      "filePath": "frontend/src/pages/AnalysisPage.tsx",
+      "summary": "Coordinates a single analysis run, starting work from navigation state and switching among error, progress, and completed-report views.",
+      "tags": [
+        "component",
+        "analysis-workflow",
+        "state-management"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:frontend/src/pages/AnalysisPage.tsx:AnalysisPage",
+      "type": "function",
+      "name": "AnalysisPage",
+      "filePath": "frontend/src/pages/AnalysisPage.tsx",
+      "lineRange": [
+        8,
+        104
+      ],
+      "summary": "Starts or resumes analysis work and selects the appropriate error, progress, or report view.",
+      "tags": [
+        "component",
+        "analysis-workflow",
+        "state-management"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:frontend/src/pages/HomePage.tsx",
+      "type": "file",
+      "name": "HomePage.tsx",
+      "filePath": "frontend/src/pages/HomePage.tsx",
+      "summary": "Implements the primary idea-intake experience, including raw-prompt and structured modes, provider and research-depth controls, readiness checks, file import, history, settings, and analysis launch.",
+      "tags": [
+        "component",
+        "idea-intake",
+        "analysis-workflow"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:frontend/src/pages/HomePage.tsx:ReadinessPanel",
+      "type": "function",
+      "name": "ReadinessPanel",
+      "filePath": "frontend/src/pages/HomePage.tsx",
+      "lineRange": [
+        21,
+        60
+      ],
+      "summary": "Displays readiness score, level, warnings, and suggestions beside idea inputs.",
+      "tags": [
+        "component",
+        "validation",
+        "scoring"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:frontend/src/pages/HomePage.tsx:HomePage",
+      "type": "function",
+      "name": "HomePage",
+      "filePath": "frontend/src/pages/HomePage.tsx",
+      "lineRange": [
+        88,
+        975
+      ],
+      "summary": "Manages idea intake, settings, research options, validation, file upload, and navigation into analysis.",
+      "tags": [
+        "component",
+        "idea-intake",
+        "analysis-workflow"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:frontend/src/pages/ProgressView.tsx",
+      "type": "file",
+      "name": "ProgressView.tsx",
+      "filePath": "frontend/src/pages/ProgressView.tsx",
+      "summary": "Visualizes the staged research and synthesis pipeline with progress percentages, active-state messaging, and completed-stage indicators.",
+      "tags": [
+        "component",
+        "progress-tracking",
+        "analysis-workflow"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:frontend/src/pages/ProgressView.tsx:ProgressView",
+      "type": "function",
+      "name": "ProgressView",
+      "filePath": "frontend/src/pages/ProgressView.tsx",
+      "lineRange": [
+        20,
+        117
+      ],
+      "summary": "Renders current analysis stage, completion percentage, and the full staged workflow.",
+      "tags": [
+        "component",
+        "progress-tracking",
+        "analysis-workflow"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:frontend/src/pages/ReportView.tsx",
+      "type": "file",
+      "name": "ReportView.tsx",
+      "filePath": "frontend/src/pages/ReportView.tsx",
+      "summary": "Orchestrates the full analysis report, loading results, filtering evidence, exporting Markdown or JSON, printing, and composing score, market, competitor, experiment, financial, and toolkit sections.",
+      "tags": [
+        "component",
+        "reporting",
+        "analysis-results"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:frontend/src/pages/ReportView.tsx:ReportView",
+      "type": "function",
+      "name": "ReportView",
+      "filePath": "frontend/src/pages/ReportView.tsx",
+      "lineRange": [
+        24,
+        383
+      ],
+      "summary": "Loads and composes the complete evidence-backed report with filtering and export actions.",
+      "tags": [
+        "component",
+        "reporting",
+        "analysis-results"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:frontend/src/types/index.ts",
+      "type": "file",
+      "name": "index.ts",
+      "filePath": "frontend/src/types/index.ts",
+      "summary": "Defines the frontend domain contracts for idea input, analysis state and results, evidence, competitors, markets, experiments, provider settings, scores, and toolkit output.",
+      "tags": [
+        "type-definition",
+        "domain-model",
+        "typescript"
+      ],
+      "complexity": "complex",
+      "languageNotes": "Central TypeScript interface layer keeps the UI aligned with the backend analysis contract."
+    },
+    {
+      "id": "file:frontend/tests/citation.test.ts",
+      "type": "file",
+      "name": "citation.test.ts",
+      "filePath": "frontend/tests/citation.test.ts",
+      "summary": "Tests evidence lookup and URL classification behavior used by citation rendering and external-link safety.",
+      "tags": [
+        "test",
+        "evidence",
+        "url-validation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:frontend/tests/perspectiveExplorer.test.tsx",
+      "type": "file",
+      "name": "perspectiveExplorer.test.tsx",
+      "filePath": "frontend/tests/perspectiveExplorer.test.tsx",
+      "summary": "Tests perspective selection and evidence presentation in the multi-model perspective explorer.",
+      "tags": [
+        "test",
+        "component",
+        "multi-model"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:frontend/tests/perspectiveExplorer.test.tsx:perspective",
+      "type": "function",
+      "name": "perspective",
+      "filePath": "frontend/tests/perspectiveExplorer.test.tsx",
+      "lineRange": [
+        6,
+        20
+      ],
+      "summary": "Builds reusable perspective fixtures with optional field overrides for component tests.",
+      "tags": [
+        "test-fixture",
+        "factory",
+        "multi-model"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:frontend/tests/readiness.test.ts",
+      "type": "file",
+      "name": "readiness.test.ts",
+      "filePath": "frontend/tests/readiness.test.ts",
+      "summary": "Tests readiness scoring and guidance for both raw prompts and structured idea forms.",
+      "tags": [
+        "test",
+        "validation",
+        "scoring"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:frontend/tests/score.test.ts",
+      "type": "file",
+      "name": "score.test.ts",
+      "filePath": "frontend/tests/score.test.ts",
+      "summary": "Tests score and recommendation presentation utilities, confidence colors, safe URL handling, stage labels, and disclaimer content.",
+      "tags": [
+        "test",
+        "utility",
+        "scoring"
+      ],
+      "complexity": "moderate"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:frontend/src/hooks/useAnalysis.ts",
+      "target": "function:frontend/src/hooks/useAnalysis.ts:useAnalysis",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/hooks/useAnalysis.ts",
+      "target": "function:frontend/src/hooks/useAnalysis.ts:useAnalysis",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:frontend/src/lib/api.ts",
+      "target": "function:frontend/src/lib/api.ts:request",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/lib/readiness.ts",
+      "target": "function:frontend/src/lib/readiness.ts:assessPromptReadiness",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/lib/readiness.ts",
+      "target": "function:frontend/src/lib/readiness.ts:assessPromptReadiness",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:frontend/src/lib/readiness.ts",
+      "target": "function:frontend/src/lib/readiness.ts:assessFormReadiness",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/lib/readiness.ts",
+      "target": "function:frontend/src/lib/readiness.ts:assessFormReadiness",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:frontend/src/lib/report.ts",
+      "target": "function:frontend/src/lib/report.ts:generateMarkdownReport",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/lib/report.ts",
+      "target": "function:frontend/src/lib/report.ts:generateMarkdownReport",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:frontend/src/lib/utils.ts",
+      "target": "function:frontend/src/lib/utils.ts:scoreColor",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/lib/utils.ts",
+      "target": "function:frontend/src/lib/utils.ts:scoreColor",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:frontend/src/lib/utils.ts",
+      "target": "function:frontend/src/lib/utils.ts:scoreBgColor",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/lib/utils.ts",
+      "target": "function:frontend/src/lib/utils.ts:scoreBgColor",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:frontend/src/lib/utils.ts",
+      "target": "function:frontend/src/lib/utils.ts:scoreBorderColor",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/lib/utils.ts",
+      "target": "function:frontend/src/lib/utils.ts:scoreBorderColor",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:frontend/src/lib/utils.ts",
+      "target": "function:frontend/src/lib/utils.ts:recommendationColor",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/lib/utils.ts",
+      "target": "function:frontend/src/lib/utils.ts:recommendationColor",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:frontend/src/lib/utils.ts",
+      "target": "function:frontend/src/lib/utils.ts:recommendationBg",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/lib/utils.ts",
+      "target": "function:frontend/src/lib/utils.ts:recommendationBg",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:frontend/src/lib/utils.ts",
+      "target": "function:frontend/src/lib/utils.ts:confidenceColor",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/lib/utils.ts",
+      "target": "function:frontend/src/lib/utils.ts:confidenceColor",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:frontend/src/lib/utils.ts",
+      "target": "function:frontend/src/lib/utils.ts:reliabilityBadge",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/lib/utils.ts",
+      "target": "function:frontend/src/lib/utils.ts:reliabilityBadge",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:frontend/src/lib/utils.ts",
+      "target": "function:frontend/src/lib/utils.ts:formatDate",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/lib/utils.ts",
+      "target": "function:frontend/src/lib/utils.ts:formatDate",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:frontend/src/lib/utils.ts",
+      "target": "function:frontend/src/lib/utils.ts:safeExternalUrl",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/lib/utils.ts",
+      "target": "function:frontend/src/lib/utils.ts:safeExternalUrl",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:frontend/src/lib/utils.ts",
+      "target": "function:frontend/src/lib/utils.ts:stageLabel",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/lib/utils.ts",
+      "target": "function:frontend/src/lib/utils.ts:stageLabel",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:frontend/src/pages/AnalysisPage.tsx",
+      "target": "function:frontend/src/pages/AnalysisPage.tsx:AnalysisPage",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/pages/AnalysisPage.tsx",
+      "target": "function:frontend/src/pages/AnalysisPage.tsx:AnalysisPage",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:frontend/src/pages/HomePage.tsx",
+      "target": "function:frontend/src/pages/HomePage.tsx:ReadinessPanel",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/pages/HomePage.tsx",
+      "target": "function:frontend/src/pages/HomePage.tsx:HomePage",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/pages/HomePage.tsx",
+      "target": "function:frontend/src/pages/HomePage.tsx:HomePage",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:frontend/src/pages/ProgressView.tsx",
+      "target": "function:frontend/src/pages/ProgressView.tsx:ProgressView",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/pages/ProgressView.tsx",
+      "target": "function:frontend/src/pages/ProgressView.tsx:ProgressView",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:frontend/src/pages/ReportView.tsx",
+      "target": "function:frontend/src/pages/ReportView.tsx:ReportView",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/pages/ReportView.tsx",
+      "target": "function:frontend/src/pages/ReportView.tsx:ReportView",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:frontend/tests/perspectiveExplorer.test.tsx",
+      "target": "function:frontend/tests/perspectiveExplorer.test.tsx:perspective",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/hooks/useAnalysis.ts",
+      "target": "file:frontend/src/lib/api.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/hooks/useAnalysis.ts",
+      "target": "file:frontend/src/types/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/lib/api.ts",
+      "target": "file:frontend/src/types/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/lib/report.ts",
+      "target": "file:frontend/src/types/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/lib/utils.ts",
+      "target": "file:frontend/src/types/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/main.tsx",
+      "target": "file:frontend/src/App.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/main.tsx",
+      "target": "file:frontend/src/index.css",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/pages/AnalysisPage.tsx",
+      "target": "file:frontend/src/components/DisclaimerBanner.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/pages/AnalysisPage.tsx",
+      "target": "file:frontend/src/hooks/useAnalysis.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/pages/AnalysisPage.tsx",
+      "target": "file:frontend/src/pages/ProgressView.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/pages/AnalysisPage.tsx",
+      "target": "file:frontend/src/pages/ReportView.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/pages/HomePage.tsx",
+      "target": "file:frontend/src/components/ProviderIcon.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/pages/HomePage.tsx",
+      "target": "file:frontend/src/components/SavedAnalysesModal.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/pages/HomePage.tsx",
+      "target": "file:frontend/src/components/SettingsModal.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/pages/HomePage.tsx",
+      "target": "file:frontend/src/lib/api.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/pages/HomePage.tsx",
+      "target": "file:frontend/src/lib/readiness.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/pages/HomePage.tsx",
+      "target": "file:frontend/src/types/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/pages/ProgressView.tsx",
+      "target": "file:frontend/src/lib/utils.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/pages/ProgressView.tsx",
+      "target": "file:frontend/src/types/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/pages/ReportView.tsx",
+      "target": "file:frontend/src/components/CompetitorCard.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/pages/ReportView.tsx",
+      "target": "file:frontend/src/components/ExperimentCard.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/pages/ReportView.tsx",
+      "target": "file:frontend/src/components/FinancialSimulator.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/pages/ReportView.tsx",
+      "target": "file:frontend/src/components/FounderToolkit.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/pages/ReportView.tsx",
+      "target": "file:frontend/src/components/OpportunityGauge.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/pages/ReportView.tsx",
+      "target": "file:frontend/src/components/PerspectiveExplorer.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/pages/ReportView.tsx",
+      "target": "file:frontend/src/components/RegionalMarketPanel.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/pages/ReportView.tsx",
+      "target": "file:frontend/src/components/ScoreBreakdown.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/pages/ReportView.tsx",
+      "target": "file:frontend/src/lib/api.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/pages/ReportView.tsx",
+      "target": "file:frontend/src/lib/report.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/pages/ReportView.tsx",
+      "target": "file:frontend/src/lib/utils.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/pages/ReportView.tsx",
+      "target": "file:frontend/src/pages/ProgressView.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/pages/ReportView.tsx",
+      "target": "file:frontend/src/types/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/tests/citation.test.ts",
+      "target": "file:frontend/src/lib/utils.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/tests/perspectiveExplorer.test.tsx",
+      "target": "file:frontend/src/components/PerspectiveExplorer.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/tests/perspectiveExplorer.test.tsx",
+      "target": "file:frontend/src/types/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/tests/readiness.test.ts",
+      "target": "file:frontend/src/lib/readiness.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/tests/score.test.ts",
+      "target": "file:frontend/src/lib/utils.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/tests/score.test.ts",
+      "target": "file:frontend/src/types/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "function:frontend/src/pages/AnalysisPage.tsx:AnalysisPage",
+      "target": "function:frontend/src/hooks/useAnalysis.ts:useAnalysis",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:frontend/src/pages/HomePage.tsx:HomePage",
+      "target": "function:frontend/src/lib/readiness.ts:assessPromptReadiness",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:frontend/src/pages/HomePage.tsx:HomePage",
+      "target": "function:frontend/src/lib/readiness.ts:assessFormReadiness",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:frontend/src/pages/ProgressView.tsx:ProgressView",
+      "target": "function:frontend/src/lib/utils.ts:stageLabel",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:frontend/src/pages/ReportView.tsx:ReportView",
+      "target": "function:frontend/src/lib/report.ts:generateMarkdownReport",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:frontend/src/pages/ReportView.tsx:ReportView",
+      "target": "function:frontend/src/lib/utils.ts:recommendationBg",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:frontend/src/pages/ReportView.tsx:ReportView",
+      "target": "function:frontend/src/lib/utils.ts:recommendationColor",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:frontend/src/pages/ReportView.tsx:ReportView",
+      "target": "function:frontend/src/lib/utils.ts:safeExternalUrl",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:frontend/src/lib/utils.ts",
+      "target": "file:frontend/tests/citation.test.ts",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:frontend/src/lib/readiness.ts",
+      "target": "file:frontend/tests/readiness.test.ts",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:frontend/src/lib/utils.ts",
+      "target": "file:frontend/tests/score.test.ts",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    }
+  ]
+}

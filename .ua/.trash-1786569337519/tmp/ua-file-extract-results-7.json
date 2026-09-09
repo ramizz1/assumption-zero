@@ -1,0 +1,108 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 1,
+  "filesSkipped": [],
+  "analysisOutcomes": {
+    "structure": {
+      "succeeded": 1,
+      "failed": 0
+    },
+    "callGraph": {
+      "succeeded": 0,
+      "failed": 0,
+      "skipped": 1
+    }
+  },
+  "results": [
+    {
+      "path": "frontend/Dockerfile",
+      "language": "dockerfile",
+      "fileCategory": "infra",
+      "totalLines": 23,
+      "nonEmptyLines": 18,
+      "services": [
+        {
+          "name": "builder",
+          "image": "node:20-alpine",
+          "ports": [],
+          "startLine": 1,
+          "endLine": 9
+        },
+        {
+          "name": "nginx",
+          "image": "nginx:alpine",
+          "ports": [
+            80
+          ],
+          "startLine": 10,
+          "endLine": 24
+        }
+      ],
+      "steps": [
+        {
+          "name": "FROM node:20-alpine AS builder",
+          "startLine": 1,
+          "endLine": 1
+        },
+        {
+          "name": "WORKDIR /app",
+          "startLine": 3,
+          "endLine": 3
+        },
+        {
+          "name": "COPY package*.json ./",
+          "startLine": 4,
+          "endLine": 4
+        },
+        {
+          "name": "RUN npm ci",
+          "startLine": 5,
+          "endLine": 5
+        },
+        {
+          "name": "COPY . .",
+          "startLine": 7,
+          "endLine": 7
+        },
+        {
+          "name": "RUN npm run build",
+          "startLine": 8,
+          "endLine": 8
+        },
+        {
+          "name": "FROM nginx:alpine",
+          "startLine": 10,
+          "endLine": 10
+        },
+        {
+          "name": "COPY --from=builder /app/dist /usr/share/nginx/html",
+          "startLine": 11,
+          "endLine": 11
+        },
+        {
+          "name": "RUN echo 'server { \\",
+          "startLine": 14,
+          "endLine": 14
+        },
+        {
+          "name": "EXPOSE 80",
+          "startLine": 22,
+          "endLine": 22
+        },
+        {
+          "name": "CMD [\"nginx\", \"-g\", \"daemon off;\"]",
+          "startLine": 23,
+          "endLine": 23
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "serviceCount": 2,
+        "stepCount": 11
+      }
+    }
+  ]
+}

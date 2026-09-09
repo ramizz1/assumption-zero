@@ -5,6 +5,8 @@ from __future__ import annotations
 from collections.abc import Callable, Iterable
 from typing import Any
 
+import httpx
+
 _NON_CHAT_MARKERS = (
     "audio",
     "embed",
@@ -82,4 +84,20 @@ def completion_content(payload: Any) -> str | None:
     if not isinstance(message, dict):
         return None
     content = message.get("content")
+    if isinstance(content, list):
+        content = "".join(part.get("text", "") for part in content
+                          if isinstance(part, dict) and isinstance(part.get("text"), str))
     return content if isinstance(content, str) and content.strip() else None
+
+
+async def post_chat(client: httpx.AsyncClient, url: str, payload: dict) -> httpx.Response:
+    """Retry a model once without optional parameters it explicitly rejects."""
+    response = await client.post(url, json=payload)
+    if response.status_code == 400:
+        message = response.text.casefold()
+        rejected = [key for key in ("temperature", "response_format")
+                    if key in payload and key in message]
+        if rejected:
+            response = await client.post(url, json={k: v for k, v in payload.items()
+                                                    if k not in rejected})
+    return response

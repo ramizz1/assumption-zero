@@ -1,0 +1,66 @@
+{
+  "nodes": [
+    {
+      "id": "file:frontend/index.html",
+      "type": "file",
+      "name": "index.html",
+      "filePath": "frontend/index.html",
+      "summary": "Provides the Vite application's HTML shell, SEO and theme metadata, hosted font connections, React root element, and module bootstrap for the TypeScript entry point.",
+      "tags": ["entry-point", "markup", "frontend", "seo", "bootstrap"],
+      "complexity": "simple",
+      "languageNotes": "Loads the React application through a module script and preconnects to Google Fonts for Inter, JetBrains Mono, and Space Grotesk."
+    },
+    {
+      "id": "config:frontend/package.json",
+      "type": "config",
+      "name": "package.json",
+      "filePath": "frontend/package.json",
+      "summary": "Defines the private React frontend package, Vite development and production scripts, Vitest checks, TypeScript validation, and runtime and build dependencies.",
+      "tags": ["configuration", "build-system", "dependencies", "frontend", "test"],
+      "complexity": "simple",
+      "languageNotes": "The check script composes TypeScript linting, the Vitest suite, and a full production build as one local verification command."
+    },
+    {
+      "id": "config:frontend/tsconfig.json",
+      "type": "config",
+      "name": "tsconfig.json",
+      "filePath": "frontend/tsconfig.json",
+      "summary": "Configures strict, no-emit TypeScript compilation for React source and tests using ES2020, bundler module resolution, JSON modules, and Vitest globals.",
+      "tags": ["configuration", "typescript", "build-system", "frontend", "test"],
+      "complexity": "simple",
+      "languageNotes": "Uses project references for the Node-side Vite configuration while keeping browser application compilation isolated and emit-free."
+    },
+    {
+      "id": "config:frontend/tsconfig.node.json",
+      "type": "config",
+      "name": "tsconfig.node.json",
+      "filePath": "frontend/tsconfig.node.json",
+      "summary": "Defines the composite TypeScript project used to compile the Node-executed Vite configuration with strict ES module and bundler resolution settings.",
+      "tags": ["configuration", "typescript", "build-system", "nodejs"],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "config:frontend/package.json",
+      "target": "file:frontend/index.html",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:frontend/package.json",
+      "target": "config:frontend/tsconfig.json",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:frontend/tsconfig.json",
+      "target": "config:frontend/tsconfig.node.json",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    }
+  ]
+}

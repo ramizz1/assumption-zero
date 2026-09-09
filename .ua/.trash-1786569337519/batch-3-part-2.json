@@ -1,0 +1,1160 @@
+{
+  "nodes": [
+    {
+      "id": "file:backend/assumption_zero/research/hackernews_provider.py",
+      "type": "file",
+      "name": "hackernews_provider.py",
+      "filePath": "backend/assumption_zero/research/hackernews_provider.py",
+      "summary": "Implements Hacker News search and classifies stories into evidence types for demand, pain, competitor, and market validation.",
+      "tags": [
+        "research-provider",
+        "hacker-news",
+        "market-research",
+        "service"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "Uses asynchronous HTTP access and maps heterogeneous source responses into the shared EvidenceItem schema."
+    },
+    {
+      "id": "function:backend/assumption_zero/research/hackernews_provider.py:_stable_id",
+      "type": "function",
+      "name": "_stable_id",
+      "filePath": "backend/assumption_zero/research/hackernews_provider.py",
+      "lineRange": [
+        33,
+        34
+      ],
+      "summary": "Creates a deterministic evidence identifier from a source URL.",
+      "tags": [
+        "research",
+        "evidence",
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/assumption_zero/research/hackernews_provider.py:_ev_type_for_hn",
+      "type": "function",
+      "name": "_ev_type_for_hn",
+      "filePath": "backend/assumption_zero/research/hackernews_provider.py",
+      "lineRange": [
+        37,
+        45
+      ],
+      "summary": "Classifies Hacker News results into evidence types from their title and query intent.",
+      "tags": [
+        "research",
+        "evidence",
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/assumption_zero/research/hackernews_provider.py:HackerNewsProvider",
+      "type": "class",
+      "name": "HackerNewsProvider",
+      "filePath": "backend/assumption_zero/research/hackernews_provider.py",
+      "lineRange": [
+        48,
+        133
+      ],
+      "summary": "Research-provider implementation for founder, launch, demand, and market signals from Hacker News.",
+      "tags": [
+        "research-provider",
+        "service",
+        "evidence"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:backend/assumption_zero/research/news_provider.py",
+      "type": "file",
+      "name": "news_provider.py",
+      "filePath": "backend/assumption_zero/research/news_provider.py",
+      "summary": "Implements news search through the configured SearXNG endpoint and converts recent articles into normalized evidence.",
+      "tags": [
+        "research-provider",
+        "news-search",
+        "evidence",
+        "service"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "Uses asynchronous HTTP access and maps heterogeneous source responses into the shared EvidenceItem schema."
+    },
+    {
+      "id": "function:backend/assumption_zero/research/news_provider.py:_stable_id",
+      "type": "function",
+      "name": "_stable_id",
+      "filePath": "backend/assumption_zero/research/news_provider.py",
+      "lineRange": [
+        33,
+        34
+      ],
+      "summary": "Creates a deterministic evidence identifier from a source URL.",
+      "tags": [
+        "research",
+        "evidence",
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/assumption_zero/research/news_provider.py:NewsSearchProvider",
+      "type": "class",
+      "name": "NewsSearchProvider",
+      "filePath": "backend/assumption_zero/research/news_provider.py",
+      "lineRange": [
+        37,
+        120
+      ],
+      "summary": "Research-provider implementation for recent news evidence returned through SearXNG.",
+      "tags": [
+        "research-provider",
+        "service",
+        "evidence"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:backend/assumption_zero/research/reddit_provider.py",
+      "type": "file",
+      "name": "reddit_provider.py",
+      "filePath": "backend/assumption_zero/research/reddit_provider.py",
+      "summary": "Implements Reddit search with query-type classification, relevance scoring, and normalized community evidence extraction.",
+      "tags": [
+        "research-provider",
+        "reddit",
+        "customer-research",
+        "service"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "Uses asynchronous HTTP access and maps heterogeneous source responses into the shared EvidenceItem schema."
+    },
+    {
+      "id": "function:backend/assumption_zero/research/reddit_provider.py:_stable_id",
+      "type": "function",
+      "name": "_stable_id",
+      "filePath": "backend/assumption_zero/research/reddit_provider.py",
+      "lineRange": [
+        38,
+        39
+      ],
+      "summary": "Creates a deterministic evidence identifier from a source URL.",
+      "tags": [
+        "research",
+        "evidence",
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/assumption_zero/research/reddit_provider.py:_ev_type",
+      "type": "function",
+      "name": "_ev_type",
+      "filePath": "backend/assumption_zero/research/reddit_provider.py",
+      "lineRange": [
+        42,
+        51
+      ],
+      "summary": "Maps research query intent to the corresponding evidence type.",
+      "tags": [
+        "research",
+        "evidence",
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/assumption_zero/research/reddit_provider.py:RedditProvider",
+      "type": "class",
+      "name": "RedditProvider",
+      "filePath": "backend/assumption_zero/research/reddit_provider.py",
+      "lineRange": [
+        54,
+        189
+      ],
+      "summary": "Research-provider implementation for pain points, demand, alternatives, and sentiment from Reddit communities.",
+      "tags": [
+        "research-provider",
+        "service",
+        "evidence"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:backend/assumption_zero/research/searxng_provider.py",
+      "type": "file",
+      "name": "searxng_provider.py",
+      "filePath": "backend/assumption_zero/research/searxng_provider.py",
+      "summary": "Implements general web research through SearXNG with source-domain reliability assessment and normalized evidence mapping.",
+      "tags": [
+        "research-provider",
+        "searxng",
+        "web-search",
+        "reliability"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "Uses asynchronous HTTP access and maps heterogeneous source responses into the shared EvidenceItem schema."
+    },
+    {
+      "id": "function:backend/assumption_zero/research/searxng_provider.py:_stable_id",
+      "type": "function",
+      "name": "_stable_id",
+      "filePath": "backend/assumption_zero/research/searxng_provider.py",
+      "lineRange": [
+        66,
+        68
+      ],
+      "summary": "Creates a deterministic evidence identifier from a source URL.",
+      "tags": [
+        "research",
+        "evidence",
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/assumption_zero/research/searxng_provider.py:_reliability_from_domain",
+      "type": "function",
+      "name": "_reliability_from_domain",
+      "filePath": "backend/assumption_zero/research/searxng_provider.py",
+      "lineRange": [
+        71,
+        80
+      ],
+      "summary": "Assigns source reliability from the result URL’s domain characteristics.",
+      "tags": [
+        "research",
+        "evidence",
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/assumption_zero/research/searxng_provider.py:SearXNGProvider",
+      "type": "class",
+      "name": "SearXNGProvider",
+      "filePath": "backend/assumption_zero/research/searxng_provider.py",
+      "lineRange": [
+        83,
+        157
+      ],
+      "summary": "General web research provider backed by SearXNG with domain-based reliability classification.",
+      "tags": [
+        "research-provider",
+        "service",
+        "evidence"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:backend/assumption_zero/research/web_search_provider.py",
+      "type": "file",
+      "name": "web_search_provider.py",
+      "filePath": "backend/assumption_zero/research/web_search_provider.py",
+      "summary": "Implements a lightweight web-search provider that classifies search results by query intent and emits normalized evidence records.",
+      "tags": [
+        "research-provider",
+        "web-search",
+        "evidence",
+        "service"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "Uses asynchronous HTTP access and maps heterogeneous source responses into the shared EvidenceItem schema."
+    },
+    {
+      "id": "function:backend/assumption_zero/research/web_search_provider.py:_stable_id",
+      "type": "function",
+      "name": "_stable_id",
+      "filePath": "backend/assumption_zero/research/web_search_provider.py",
+      "lineRange": [
+        32,
+        33
+      ],
+      "summary": "Creates a deterministic evidence identifier from a source URL.",
+      "tags": [
+        "research",
+        "evidence",
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/assumption_zero/research/web_search_provider.py:_ev_type",
+      "type": "function",
+      "name": "_ev_type",
+      "filePath": "backend/assumption_zero/research/web_search_provider.py",
+      "lineRange": [
+        36,
+        49
+      ],
+      "summary": "Maps research query intent to the corresponding evidence type.",
+      "tags": [
+        "research",
+        "evidence",
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/assumption_zero/research/web_search_provider.py:WebSearchProvider",
+      "type": "class",
+      "name": "WebSearchProvider",
+      "filePath": "backend/assumption_zero/research/web_search_provider.py",
+      "lineRange": [
+        52,
+        136
+      ],
+      "summary": "General search-result provider that maps query intent into normalized evidence records.",
+      "tags": [
+        "research-provider",
+        "service",
+        "evidence"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:backend/assumption_zero/research/wikipedia_provider.py",
+      "type": "file",
+      "name": "wikipedia_provider.py",
+      "filePath": "backend/assumption_zero/research/wikipedia_provider.py",
+      "summary": "Implements Wikipedia title search and summary retrieval for background, market, competitor, and regulatory evidence.",
+      "tags": [
+        "research-provider",
+        "wikipedia",
+        "background-research",
+        "service"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "Uses asynchronous HTTP access and maps heterogeneous source responses into the shared EvidenceItem schema."
+    },
+    {
+      "id": "function:backend/assumption_zero/research/wikipedia_provider.py:_stable_id",
+      "type": "function",
+      "name": "_stable_id",
+      "filePath": "backend/assumption_zero/research/wikipedia_provider.py",
+      "lineRange": [
+        36,
+        37
+      ],
+      "summary": "Creates a deterministic evidence identifier from a source URL.",
+      "tags": [
+        "research",
+        "evidence",
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/assumption_zero/research/wikipedia_provider.py:_ev_type_for_wiki",
+      "type": "function",
+      "name": "_ev_type_for_wiki",
+      "filePath": "backend/assumption_zero/research/wikipedia_provider.py",
+      "lineRange": [
+        40,
+        47
+      ],
+      "summary": "Maps Wikipedia query intent to the corresponding evidence type.",
+      "tags": [
+        "research",
+        "evidence",
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/assumption_zero/research/wikipedia_provider.py:WikipediaProvider",
+      "type": "class",
+      "name": "WikipediaProvider",
+      "filePath": "backend/assumption_zero/research/wikipedia_provider.py",
+      "lineRange": [
+        50,
+        155
+      ],
+      "summary": "Background research provider that resolves Wikipedia titles and summaries into normalized evidence.",
+      "tags": [
+        "research-provider",
+        "service",
+        "evidence"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:backend/assumption_zero/services/analysis_service.py",
+      "type": "file",
+      "name": "analysis_service.py",
+      "filePath": "backend/assumption_zero/services/analysis_service.py",
+      "summary": "Provides the application service layer for adapter and research-provider construction, analysis lifecycle orchestration, persistence, history filtering, and deletion.",
+      "tags": [
+        "service",
+        "analysis-lifecycle",
+        "factory",
+        "persistence",
+        "orchestration"
+      ],
+      "complexity": "complex",
+      "languageNotes": "Centralizes asynchronous orchestration while persisting stage progress and final typed results through SQLAlchemy-backed storage."
+    },
+    {
+      "id": "function:backend/assumption_zero/services/analysis_service.py:build_llm_adapter",
+      "type": "function",
+      "name": "build_llm_adapter",
+      "filePath": "backend/assumption_zero/services/analysis_service.py",
+      "lineRange": [
+        53,
+        116
+      ],
+      "summary": "Constructs the requested model adapter, including provider-specific credentials, models, endpoints, and fallback behavior.",
+      "tags": [
+        "service",
+        "analysis-lifecycle",
+        "persistence"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:backend/assumption_zero/services/analysis_service.py:build_research_providers",
+      "type": "function",
+      "name": "build_research_providers",
+      "filePath": "backend/assumption_zero/services/analysis_service.py",
+      "lineRange": [
+        122,
+        143
+      ],
+      "summary": "Constructs the enabled research-provider set from configuration and request overrides.",
+      "tags": [
+        "service",
+        "analysis-lifecycle",
+        "persistence"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/assumption_zero/services/analysis_service.py:create_analysis",
+      "type": "function",
+      "name": "create_analysis",
+      "filePath": "backend/assumption_zero/services/analysis_service.py",
+      "lineRange": [
+        149,
+        164
+      ],
+      "summary": "Creates and persists an initial analysis record before background processing starts.",
+      "tags": [
+        "service",
+        "analysis-lifecycle",
+        "persistence"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/assumption_zero/services/analysis_service.py:run_analysis",
+      "type": "function",
+      "name": "run_analysis",
+      "filePath": "backend/assumption_zero/services/analysis_service.py",
+      "lineRange": [
+        167,
+        237
+      ],
+      "summary": "Builds integrations, runs the analysis engine with progress persistence, and stores either the completed result or failure state.",
+      "tags": [
+        "service",
+        "analysis-lifecycle",
+        "persistence"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:backend/assumption_zero/services/analysis_service.py:get_analysis",
+      "type": "function",
+      "name": "get_analysis",
+      "filePath": "backend/assumption_zero/services/analysis_service.py",
+      "lineRange": [
+        240,
+        283
+      ],
+      "summary": "Loads and reconstructs a complete stored analysis result by identifier.",
+      "tags": [
+        "service",
+        "analysis-lifecycle",
+        "persistence"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/assumption_zero/services/analysis_service.py:list_analyses",
+      "type": "function",
+      "name": "list_analyses",
+      "filePath": "backend/assumption_zero/services/analysis_service.py",
+      "lineRange": [
+        286,
+        359
+      ],
+      "summary": "Queries analysis records with search, status, verdict, and limit filters and maps them to API list items.",
+      "tags": [
+        "service",
+        "analysis-lifecycle",
+        "persistence"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:backend/assumption_zero/services/analysis_service.py:delete_analysis",
+      "type": "function",
+      "name": "delete_analysis",
+      "filePath": "backend/assumption_zero/services/analysis_service.py",
+      "lineRange": [
+        362,
+        364
+      ],
+      "summary": "Deletes the specified analysis record from persistence.",
+      "tags": [
+        "service",
+        "analysis-lifecycle",
+        "persistence"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/assumption_zero/services/analysis_service.py:_parse_dt",
+      "type": "function",
+      "name": "_parse_dt",
+      "filePath": "backend/assumption_zero/services/analysis_service.py",
+      "lineRange": [
+        370,
+        376
+      ],
+      "summary": "Parses an optional persisted datetime string into a datetime value.",
+      "tags": [
+        "service",
+        "analysis-lifecycle",
+        "persistence"
+      ],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:backend/assumption_zero/research/hackernews_provider.py",
+      "target": "function:backend/assumption_zero/research/hackernews_provider.py:_stable_id",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/research/hackernews_provider.py",
+      "target": "function:backend/assumption_zero/research/hackernews_provider.py:_stable_id",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/research/hackernews_provider.py",
+      "target": "function:backend/assumption_zero/research/hackernews_provider.py:_ev_type_for_hn",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/research/hackernews_provider.py",
+      "target": "function:backend/assumption_zero/research/hackernews_provider.py:_ev_type_for_hn",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/research/hackernews_provider.py",
+      "target": "class:backend/assumption_zero/research/hackernews_provider.py:HackerNewsProvider",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/research/hackernews_provider.py",
+      "target": "class:backend/assumption_zero/research/hackernews_provider.py:HackerNewsProvider",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/research/hackernews_provider.py",
+      "target": "file:backend/assumption_zero/config.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/hackernews_provider.py",
+      "target": "file:backend/assumption_zero/research/base.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/hackernews_provider.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/news_provider.py",
+      "target": "function:backend/assumption_zero/research/news_provider.py:_stable_id",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/research/news_provider.py",
+      "target": "function:backend/assumption_zero/research/news_provider.py:_stable_id",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/research/news_provider.py",
+      "target": "class:backend/assumption_zero/research/news_provider.py:NewsSearchProvider",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/research/news_provider.py",
+      "target": "class:backend/assumption_zero/research/news_provider.py:NewsSearchProvider",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/research/news_provider.py",
+      "target": "file:backend/assumption_zero/config.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/news_provider.py",
+      "target": "file:backend/assumption_zero/research/base.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/news_provider.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/reddit_provider.py",
+      "target": "function:backend/assumption_zero/research/reddit_provider.py:_stable_id",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/research/reddit_provider.py",
+      "target": "function:backend/assumption_zero/research/reddit_provider.py:_stable_id",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/research/reddit_provider.py",
+      "target": "function:backend/assumption_zero/research/reddit_provider.py:_ev_type",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/research/reddit_provider.py",
+      "target": "function:backend/assumption_zero/research/reddit_provider.py:_ev_type",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/research/reddit_provider.py",
+      "target": "class:backend/assumption_zero/research/reddit_provider.py:RedditProvider",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/research/reddit_provider.py",
+      "target": "class:backend/assumption_zero/research/reddit_provider.py:RedditProvider",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/research/reddit_provider.py",
+      "target": "file:backend/assumption_zero/config.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/reddit_provider.py",
+      "target": "file:backend/assumption_zero/research/base.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/reddit_provider.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/searxng_provider.py",
+      "target": "function:backend/assumption_zero/research/searxng_provider.py:_stable_id",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/research/searxng_provider.py",
+      "target": "function:backend/assumption_zero/research/searxng_provider.py:_stable_id",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/research/searxng_provider.py",
+      "target": "function:backend/assumption_zero/research/searxng_provider.py:_reliability_from_domain",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/research/searxng_provider.py",
+      "target": "function:backend/assumption_zero/research/searxng_provider.py:_reliability_from_domain",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/research/searxng_provider.py",
+      "target": "class:backend/assumption_zero/research/searxng_provider.py:SearXNGProvider",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/research/searxng_provider.py",
+      "target": "class:backend/assumption_zero/research/searxng_provider.py:SearXNGProvider",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/research/searxng_provider.py",
+      "target": "file:backend/assumption_zero/config.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/searxng_provider.py",
+      "target": "file:backend/assumption_zero/research/base.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/searxng_provider.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/web_search_provider.py",
+      "target": "function:backend/assumption_zero/research/web_search_provider.py:_stable_id",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/research/web_search_provider.py",
+      "target": "function:backend/assumption_zero/research/web_search_provider.py:_stable_id",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/research/web_search_provider.py",
+      "target": "function:backend/assumption_zero/research/web_search_provider.py:_ev_type",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/research/web_search_provider.py",
+      "target": "function:backend/assumption_zero/research/web_search_provider.py:_ev_type",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/research/web_search_provider.py",
+      "target": "class:backend/assumption_zero/research/web_search_provider.py:WebSearchProvider",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/research/web_search_provider.py",
+      "target": "class:backend/assumption_zero/research/web_search_provider.py:WebSearchProvider",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/research/web_search_provider.py",
+      "target": "file:backend/assumption_zero/config.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/web_search_provider.py",
+      "target": "file:backend/assumption_zero/research/base.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/web_search_provider.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/wikipedia_provider.py",
+      "target": "function:backend/assumption_zero/research/wikipedia_provider.py:_stable_id",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/research/wikipedia_provider.py",
+      "target": "function:backend/assumption_zero/research/wikipedia_provider.py:_stable_id",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/research/wikipedia_provider.py",
+      "target": "function:backend/assumption_zero/research/wikipedia_provider.py:_ev_type_for_wiki",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/research/wikipedia_provider.py",
+      "target": "function:backend/assumption_zero/research/wikipedia_provider.py:_ev_type_for_wiki",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/research/wikipedia_provider.py",
+      "target": "class:backend/assumption_zero/research/wikipedia_provider.py:WikipediaProvider",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/research/wikipedia_provider.py",
+      "target": "class:backend/assumption_zero/research/wikipedia_provider.py:WikipediaProvider",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/research/wikipedia_provider.py",
+      "target": "file:backend/assumption_zero/config.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/wikipedia_provider.py",
+      "target": "file:backend/assumption_zero/research/base.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/wikipedia_provider.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/services/analysis_service.py",
+      "target": "function:backend/assumption_zero/services/analysis_service.py:build_llm_adapter",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/services/analysis_service.py",
+      "target": "function:backend/assumption_zero/services/analysis_service.py:build_llm_adapter",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/services/analysis_service.py",
+      "target": "function:backend/assumption_zero/services/analysis_service.py:build_research_providers",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/services/analysis_service.py",
+      "target": "function:backend/assumption_zero/services/analysis_service.py:build_research_providers",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/services/analysis_service.py",
+      "target": "function:backend/assumption_zero/services/analysis_service.py:create_analysis",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/services/analysis_service.py",
+      "target": "function:backend/assumption_zero/services/analysis_service.py:create_analysis",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/services/analysis_service.py",
+      "target": "function:backend/assumption_zero/services/analysis_service.py:run_analysis",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/services/analysis_service.py",
+      "target": "function:backend/assumption_zero/services/analysis_service.py:run_analysis",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/services/analysis_service.py",
+      "target": "function:backend/assumption_zero/services/analysis_service.py:get_analysis",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/services/analysis_service.py",
+      "target": "function:backend/assumption_zero/services/analysis_service.py:get_analysis",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/services/analysis_service.py",
+      "target": "function:backend/assumption_zero/services/analysis_service.py:list_analyses",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/services/analysis_service.py",
+      "target": "function:backend/assumption_zero/services/analysis_service.py:list_analyses",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/services/analysis_service.py",
+      "target": "function:backend/assumption_zero/services/analysis_service.py:delete_analysis",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/services/analysis_service.py",
+      "target": "function:backend/assumption_zero/services/analysis_service.py:delete_analysis",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/services/analysis_service.py",
+      "target": "function:backend/assumption_zero/services/analysis_service.py:_parse_dt",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/services/analysis_service.py",
+      "target": "function:backend/assumption_zero/services/analysis_service.py:_parse_dt",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/services/analysis_service.py",
+      "target": "file:backend/assumption_zero/analysis/engine.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/services/analysis_service.py",
+      "target": "file:backend/assumption_zero/config.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/services/analysis_service.py",
+      "target": "file:backend/assumption_zero/llm/base.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/services/analysis_service.py",
+      "target": "file:backend/assumption_zero/llm/fallback_adapter.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/services/analysis_service.py",
+      "target": "file:backend/assumption_zero/llm/groq_adapter.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/services/analysis_service.py",
+      "target": "file:backend/assumption_zero/llm/mock_adapter.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/services/analysis_service.py",
+      "target": "file:backend/assumption_zero/llm/ollama_adapter.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/services/analysis_service.py",
+      "target": "file:backend/assumption_zero/llm/openai_compat_adapter.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/services/analysis_service.py",
+      "target": "file:backend/assumption_zero/llm/opencode_adapter.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/services/analysis_service.py",
+      "target": "file:backend/assumption_zero/llm/openrouter_adapter.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/services/analysis_service.py",
+      "target": "file:backend/assumption_zero/research/arxiv_provider.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/services/analysis_service.py",
+      "target": "file:backend/assumption_zero/research/base.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/services/analysis_service.py",
+      "target": "file:backend/assumption_zero/research/github_provider.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/services/analysis_service.py",
+      "target": "file:backend/assumption_zero/research/hackernews_provider.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/services/analysis_service.py",
+      "target": "file:backend/assumption_zero/research/news_provider.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/services/analysis_service.py",
+      "target": "file:backend/assumption_zero/research/reddit_provider.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/services/analysis_service.py",
+      "target": "file:backend/assumption_zero/research/searxng_provider.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/services/analysis_service.py",
+      "target": "file:backend/assumption_zero/research/web_search_provider.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/services/analysis_service.py",
+      "target": "file:backend/assumption_zero/research/wikipedia_provider.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/services/analysis_service.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/services/analysis_service.py",
+      "target": "file:backend/assumption_zero/storage.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    }
+  ]
+}

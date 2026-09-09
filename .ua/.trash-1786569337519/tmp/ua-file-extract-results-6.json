@@ -1,0 +1,96 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 1,
+  "filesSkipped": [],
+  "analysisOutcomes": {
+    "structure": {
+      "succeeded": 1,
+      "failed": 0
+    },
+    "callGraph": {
+      "succeeded": 0,
+      "failed": 0,
+      "skipped": 1
+    }
+  },
+  "results": [
+    {
+      "path": "backend/Dockerfile",
+      "language": "dockerfile",
+      "fileCategory": "infra",
+      "totalLines": 23,
+      "nonEmptyLines": 16,
+      "services": [
+        {
+          "name": "python",
+          "image": "python:3.12-slim",
+          "ports": [
+            8000
+          ],
+          "startLine": 1,
+          "endLine": 24
+        }
+      ],
+      "steps": [
+        {
+          "name": "FROM python:3.12-slim",
+          "startLine": 1,
+          "endLine": 1
+        },
+        {
+          "name": "WORKDIR /app",
+          "startLine": 3,
+          "endLine": 3
+        },
+        {
+          "name": "RUN apt-get update && apt-get install -y --no-install-recommends",
+          "startLine": 6,
+          "endLine": 6
+        },
+        {
+          "name": "COPY pyproject.toml .",
+          "startLine": 11,
+          "endLine": 11
+        },
+        {
+          "name": "RUN pip install --no-cache-dir .",
+          "startLine": 12,
+          "endLine": 12
+        },
+        {
+          "name": "COPY assumption_zero/ assumption_zero/",
+          "startLine": 15,
+          "endLine": 15
+        },
+        {
+          "name": "ENV AZERO_DATA_DIR=/app/azero_data",
+          "startLine": 18,
+          "endLine": 18
+        },
+        {
+          "name": "RUN mkdir -p /app/azero_data",
+          "startLine": 19,
+          "endLine": 19
+        },
+        {
+          "name": "EXPOSE 8000",
+          "startLine": 21,
+          "endLine": 21
+        },
+        {
+          "name": "CMD [\"uvicorn\", \"assumption_zero.main:app\", \"--host\", \"0.0.0.0\",",
+          "startLine": 23,
+          "endLine": 23
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "serviceCount": 1,
+        "stepCount": 10
+      }
+    }
+  ]
+}

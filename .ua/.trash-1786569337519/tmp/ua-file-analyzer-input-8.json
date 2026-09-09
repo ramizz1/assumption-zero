@@ -1,0 +1,7 @@
+{
+  "projectRoot": "C:\\Users\\user\\Desktop\\idea\\assumption-zero",
+  "batchFiles": [
+    {"path":".github/workflows/ci.yml","language":"yaml","sizeLines":53,"fileCategory":"infra"}
+  ],
+  "batchImportData": {".github/workflows/ci.yml": []}
+}

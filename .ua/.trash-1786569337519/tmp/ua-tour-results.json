@@ -1,0 +1,1123 @@
+{
+  "scriptCompleted": true,
+  "entryPointCandidates": [
+    {
+      "id": "document:README.md",
+      "score": 5,
+      "name": "README.md",
+      "summary": "Comprehensive project overview and quick-start guide covering the validation workflow, CLI and web usage, model providers, scoring, research accuracy, architecture, development, and safe deployment across eighteen sections.",
+      "type": "document"
+    },
+    {
+      "id": "file:frontend/src/main.tsx",
+      "score": 4,
+      "name": "main.tsx",
+      "summary": "Bootstraps the React application into the root DOM node, applying strict mode, browser routing, and global styles.",
+      "type": "file"
+    },
+    {
+      "id": "file:backend/assumption_zero/api/routes.py",
+      "score": 4,
+      "name": "routes.py",
+      "summary": "Defines the FastAPI HTTP surface for health checks, credential verification, idea and prompt analysis creation, history retrieval, deletion, and demo execution.",
+      "type": "file"
+    },
+    {
+      "id": "file:backend/assumption_zero/cli.py",
+      "score": 4,
+      "name": "cli.py",
+      "summary": "Provides the full Typer command-line interface for configuring providers, running and reviewing analyses, simulating unit economics, and exporting richly formatted reports.",
+      "type": "file"
+    },
+    {
+      "id": "file:frontend/src/App.tsx",
+      "score": 3,
+      "name": "App.tsx",
+      "summary": "Defines the top-level React router, directing the landing route to idea intake and analysis routes to the analysis workflow.",
+      "type": "file"
+    }
+  ],
+  "fanInRanking": [
+    {
+      "id": "file:backend/assumption_zero/schemas.py",
+      "fanIn": 42,
+      "name": "schemas.py"
+    },
+    {
+      "id": "file:frontend/src/types/index.ts",
+      "fanIn": 19,
+      "name": "index.ts"
+    },
+    {
+      "id": "file:backend/assumption_zero/config.py",
+      "fanIn": 18,
+      "name": "config.py"
+    },
+    {
+      "id": "file:backend/assumption_zero/llm/base.py",
+      "fanIn": 13,
+      "name": "base.py"
+    },
+    {
+      "id": "file:backend/assumption_zero/research/base.py",
+      "fanIn": 13,
+      "name": "base.py"
+    },
+    {
+      "id": "file:frontend/src/lib/utils.ts",
+      "fanIn": 12,
+      "name": "utils.ts"
+    },
+    {
+      "id": "file:backend/assumption_zero/llm/openrouter_adapter.py",
+      "fanIn": 7,
+      "name": "openrouter_adapter.py"
+    },
+    {
+      "id": "file:backend/assumption_zero/analysis/engine.py",
+      "fanIn": 5,
+      "name": "engine.py"
+    },
+    {
+      "id": "file:frontend/src/lib/api.ts",
+      "fanIn": 5,
+      "name": "api.ts"
+    },
+    {
+      "id": "file:backend/assumption_zero/__init__.py",
+      "fanIn": 3,
+      "name": "__init__.py"
+    },
+    {
+      "id": "file:backend/assumption_zero/analysis/citation_validator.py",
+      "fanIn": 3,
+      "name": "citation_validator.py"
+    },
+    {
+      "id": "file:backend/assumption_zero/analysis/competitor_merger.py",
+      "fanIn": 3,
+      "name": "competitor_merger.py"
+    },
+    {
+      "id": "file:backend/assumption_zero/analysis/confidence.py",
+      "fanIn": 3,
+      "name": "confidence.py"
+    },
+    {
+      "id": "file:backend/assumption_zero/analysis/experiment_generator.py",
+      "fanIn": 3,
+      "name": "experiment_generator.py"
+    },
+    {
+      "id": "file:backend/assumption_zero/analysis/query_generator.py",
+      "fanIn": 3,
+      "name": "query_generator.py"
+    },
+    {
+      "id": "file:backend/assumption_zero/analysis/scoring.py",
+      "fanIn": 3,
+      "name": "scoring.py"
+    },
+    {
+      "id": "file:backend/assumption_zero/llm/groq_adapter.py",
+      "fanIn": 3,
+      "name": "groq_adapter.py"
+    },
+    {
+      "id": "file:backend/assumption_zero/llm/mock_adapter.py",
+      "fanIn": 3,
+      "name": "mock_adapter.py"
+    },
+    {
+      "id": "file:backend/assumption_zero/research/github_provider.py",
+      "fanIn": 3,
+      "name": "github_provider.py"
+    },
+    {
+      "id": "file:backend/assumption_zero/research/hackernews_provider.py",
+      "fanIn": 3,
+      "name": "hackernews_provider.py"
+    }
+  ],
+  "fanOutRanking": [
+    {
+      "id": "file:backend/assumption_zero/cli.py",
+      "fanOut": 65,
+      "name": "cli.py"
+    },
+    {
+      "id": "file:backend/assumption_zero/schemas.py",
+      "fanOut": 60,
+      "name": "schemas.py"
+    },
+    {
+      "id": "file:backend/assumption_zero/services/analysis_service.py",
+      "fanOut": 37,
+      "name": "analysis_service.py"
+    },
+    {
+      "id": "file:backend/assumption_zero/analysis/engine.py",
+      "fanOut": 36,
+      "name": "engine.py"
+    },
+    {
+      "id": "file:backend/assumption_zero/storage.py",
+      "fanOut": 34,
+      "name": "storage.py"
+    },
+    {
+      "id": "file:backend/assumption_zero/api/routes.py",
+      "fanOut": 32,
+      "name": "routes.py"
+    },
+    {
+      "id": "file:backend/tests/test_competitors.py",
+      "fanOut": 32,
+      "name": "test_competitors.py"
+    },
+    {
+      "id": "file:backend/tests/test_api.py",
+      "fanOut": 25,
+      "name": "test_api.py"
+    },
+    {
+      "id": "file:frontend/src/lib/utils.ts",
+      "fanOut": 23,
+      "name": "utils.ts"
+    },
+    {
+      "id": "file:backend/tests/test_export.py",
+      "fanOut": 20,
+      "name": "test_export.py"
+    },
+    {
+      "id": "file:backend/tests/test_scoring.py",
+      "fanOut": 19,
+      "name": "test_scoring.py"
+    },
+    {
+      "id": "file:backend/assumption_zero/llm/mock_adapter.py",
+      "fanOut": 17,
+      "name": "mock_adapter.py"
+    },
+    {
+      "id": "file:backend/tests/test_engine_e2e.py",
+      "fanOut": 16,
+      "name": "test_engine_e2e.py"
+    },
+    {
+      "id": "file:backend/tests/test_validation_errors.py",
+      "fanOut": 16,
+      "name": "test_validation_errors.py"
+    },
+    {
+      "id": "file:backend/assumption_zero/models.py",
+      "fanOut": 15,
+      "name": "models.py"
+    },
+    {
+      "id": "file:backend/tests/test_regional_research.py",
+      "fanOut": 15,
+      "name": "test_regional_research.py"
+    },
+    {
+      "id": "file:frontend/src/pages/ReportView.tsx",
+      "fanOut": 15,
+      "name": "ReportView.tsx"
+    },
+    {
+      "id": "file:backend/tests/test_cli_parity.py",
+      "fanOut": 14,
+      "name": "test_cli_parity.py"
+    },
+    {
+      "id": "file:backend/assumption_zero/analysis/scoring.py",
+      "fanOut": 13,
+      "name": "scoring.py"
+    },
+    {
+      "id": "file:backend/tests/test_citations.py",
+      "fanOut": 12,
+      "name": "test_citations.py"
+    }
+  ],
+  "bfsTraversal": {
+    "startNode": "file:frontend/src/main.tsx",
+    "order": [
+      "file:frontend/src/main.tsx",
+      "file:frontend/src/App.tsx",
+      "file:frontend/src/index.css",
+      "file:frontend/src/pages/HomePage.tsx",
+      "file:frontend/src/components/ProviderIcon.tsx",
+      "file:frontend/src/components/SavedAnalysesModal.tsx",
+      "file:frontend/src/components/SettingsModal.tsx",
+      "file:frontend/src/lib/api.ts",
+      "file:frontend/src/lib/readiness.ts",
+      "file:frontend/src/types/index.ts",
+      "file:frontend/src/lib/utils.ts"
+    ],
+    "depthMap": {
+      "file:frontend/src/main.tsx": 0,
+      "file:frontend/src/App.tsx": 1,
+      "file:frontend/src/index.css": 1,
+      "file:frontend/src/pages/HomePage.tsx": 2,
+      "file:frontend/src/components/ProviderIcon.tsx": 3,
+      "file:frontend/src/components/SavedAnalysesModal.tsx": 3,
+      "file:frontend/src/components/SettingsModal.tsx": 3,
+      "file:frontend/src/lib/api.ts": 3,
+      "file:frontend/src/lib/readiness.ts": 3,
+      "file:frontend/src/types/index.ts": 3,
+      "file:frontend/src/lib/utils.ts": 4
+    },
+    "byDepth": {
+      "0": [
+        "file:frontend/src/main.tsx"
+      ],
+      "1": [
+        "file:frontend/src/App.tsx",
+        "file:frontend/src/index.css"
+      ],
+      "2": [
+        "file:frontend/src/pages/HomePage.tsx"
+      ],
+      "3": [
+        "file:frontend/src/components/ProviderIcon.tsx",
+        "file:frontend/src/components/SavedAnalysesModal.tsx",
+        "file:frontend/src/components/SettingsModal.tsx",
+        "file:frontend/src/lib/api.ts",
+        "file:frontend/src/lib/readiness.ts",
+        "file:frontend/src/types/index.ts"
+      ],
+      "4": [
+        "file:frontend/src/lib/utils.ts"
+      ]
+    }
+  },
+  "nonCodeFiles": {
+    "documentation": [
+      {
+        "id": "document:CONTRIBUTING.md",
+        "name": "CONTRIBUTING.md",
+        "type": "document",
+        "summary": "Contributor guide covering valuable contribution areas, local backend and frontend setup, quality checks, secret handling, and pull-request expectations across five sections."
+      },
+      {
+        "id": "document:IDEA_GUIDE.md",
+        "name": "IDEA_GUIDE.md",
+        "type": "document",
+        "summary": "Founder-facing guide for writing a strong validation brief, choosing research depth, handling regional validation, running the engine, and turning evidence into a decision."
+      },
+      {
+        "id": "document:README.md",
+        "name": "README.md",
+        "type": "document",
+        "summary": "Comprehensive project overview and quick-start guide covering the validation workflow, CLI and web usage, model providers, scoring, research accuracy, architecture, development, and safe deployment across eighteen sections."
+      },
+      {
+        "id": "document:SECURITY.md",
+        "name": "SECURITY.md",
+        "type": "document",
+        "summary": "Security policy explaining private vulnerability reporting expectations and the operator’s responsibility for safe deployment."
+      },
+      {
+        "id": "document:.github/PULL_REQUEST_TEMPLATE.md",
+        "name": "PULL_REQUEST_TEMPLATE.md",
+        "type": "document",
+        "summary": "Pull-request checklist prompting contributors to explain changes and motivation, report verification results, confirm security and documentation checks, and attach screenshots for UI changes."
+      },
+      {
+        "id": "document:backend/README.md",
+        "name": "README.md",
+        "type": "document",
+        "summary": "Brief backend overview identifying the FastAPI API and Python CLI and directing readers to the main project guide for setup, usage, testing, and deployment."
+      }
+    ],
+    "infrastructure": [
+      {
+        "id": "service:backend/Dockerfile",
+        "name": "Dockerfile",
+        "type": "service",
+        "summary": "Builds the Python 3.12 backend image, installs the application and curl, provisions persistent-data storage, exposes port 8000, and starts the FastAPI app with Uvicorn."
+      },
+      {
+        "id": "service:backend/Dockerfile:python",
+        "name": "python",
+        "type": "service",
+        "summary": "Defines the Python runtime service that hosts Assumption Zero through Uvicorn on port 8000 with its data directory under /app."
+      },
+      {
+        "id": "service:frontend/Dockerfile",
+        "name": "Dockerfile",
+        "type": "service",
+        "summary": "Builds the Vite frontend in Node.js and serves the production assets from Nginx with SPA fallback routing and an /api proxy to the backend service."
+      },
+      {
+        "id": "service:frontend/Dockerfile:builder",
+        "name": "builder",
+        "type": "service",
+        "summary": "Installs locked frontend dependencies in Node.js 20 and compiles the Vite application into production assets."
+      },
+      {
+        "id": "service:frontend/Dockerfile:nginx",
+        "name": "nginx",
+        "type": "service",
+        "summary": "Serves the compiled frontend on port 80, falls back to index.html for client-side routes, and proxies API requests to the backend container."
+      },
+      {
+        "id": "pipeline:.github/workflows/ci.yml",
+        "name": "ci.yml",
+        "type": "pipeline",
+        "summary": "Runs continuous integration on pushes and pull requests to main or master, executing the Python 3.12 pytest suite and independently installing and building the Node.js 20 frontend."
+      },
+      {
+        "id": "service:docker-compose.yml",
+        "name": "docker-compose.yml",
+        "type": "service",
+        "summary": "Orchestrates backend and frontend containers, exposes the API and web ports, persists analysis data, forwards provider configuration, adds an API health check, and starts the frontend after the backend."
+      }
+    ],
+    "data": [],
+    "config": [
+      {
+        "id": "config:.env.example",
+        "name": ".env.example",
+        "type": "config",
+        "summary": "Documents the environment variables for application behavior, browser origins, AI provider credentials and models, local or compatible endpoints, GitHub access, and request timeouts."
+      },
+      {
+        "id": "config:.github/ISSUE_TEMPLATE/bug_report.yml",
+        "name": "bug_report.yml",
+        "type": "config",
+        "summary": "Defines the structured GitHub bug-report form for observed behavior, reproduction steps, affected product surface, environment details, sanitized logs, and a required secret-removal confirmation."
+      },
+      {
+        "id": "config:.github/ISSUE_TEMPLATE/config.yml",
+        "name": "config.yml",
+        "type": "config",
+        "summary": "Configures the GitHub issue chooser to disable blank issues and direct security vulnerabilities to private repository advisories."
+      },
+      {
+        "id": "config:.github/ISSUE_TEMPLATE/feature_request.yml",
+        "name": "feature_request.yml",
+        "type": "config",
+        "summary": "Defines the structured GitHub feature-request form for the user problem, smallest useful outcome, affected product area, and supporting evidence."
+      },
+      {
+        "id": "config:frontend/package.json",
+        "name": "package.json",
+        "type": "config",
+        "summary": "Defines the private React frontend package, Vite development and production scripts, Vitest checks, TypeScript validation, and runtime and build dependencies."
+      },
+      {
+        "id": "config:frontend/tsconfig.json",
+        "name": "tsconfig.json",
+        "type": "config",
+        "summary": "Configures strict, no-emit TypeScript compilation for React source and tests using ES2020, bundler module resolution, JSON modules, and Vitest globals."
+      },
+      {
+        "id": "config:frontend/tsconfig.node.json",
+        "name": "tsconfig.node.json",
+        "type": "config",
+        "summary": "Defines the composite TypeScript project used to compile the Node-executed Vite configuration with strict ES module and bundler resolution settings."
+      },
+      {
+        "id": "config:.ua/config.json",
+        "name": "config.json",
+        "type": "config",
+        "summary": "Configures Understand Anything graph generation to produce English textual output."
+      },
+      {
+        "id": "config:backend/pyproject.toml",
+        "name": "pyproject.toml",
+        "type": "config",
+        "summary": "Defines Python 3.12 package metadata, runtime and development dependencies, the azero CLI entry point, setuptools packaging, pytest behavior, Ruff formatting limits, and mypy settings."
+      },
+      {
+        "id": "config:examples/sample-idea.json",
+        "name": "sample-idea.json",
+        "type": "config",
+        "summary": "Complete example validation brief for a privacy-first, on-device legal meeting summarizer, covering customer, problem, solution, economics, founder constraints, channels, competitors, assumptions, and regulation."
+      }
+    ]
+  },
+  "clusters": [],
+  "layers": {
+    "count": 10,
+    "list": [
+      {
+        "id": "layer:frontend-ui",
+        "name": "Frontend UI",
+        "description": "React pages, reusable result components, application bootstrapping, and the responsive visual system for idea intake and evidence-backed reports."
+      },
+      {
+        "id": "layer:frontend-client",
+        "name": "Frontend Client and Shared Logic",
+        "description": "Typed API access, analysis polling, readiness checks, report serialization, presentation utilities, and browser-side domain contracts."
+      },
+      {
+        "id": "layer:api-application",
+        "name": "API and Application Layer",
+        "description": "FastAPI and CLI entry points plus application services that construct providers, run analyses, and expose the persisted analysis lifecycle."
+      },
+      {
+        "id": "layer:analysis-engine",
+        "name": "Analysis Engine",
+        "description": "Core validation logic for orchestration, citation grounding, competitor consolidation, confidence, disagreements, scoring, regional conclusions, experiments, and founder actions."
+      },
+      {
+        "id": "layer:research",
+        "name": "Evidence Research Layer",
+        "description": "Research-provider abstractions and source integrations that collect and normalize web, community, repository, news, academic, and reference evidence."
+      },
+      {
+        "id": "layer:llm-integration",
+        "name": "LLM Integration Layer",
+        "description": "Shared model contracts, evidence-aware prompting, deterministic analysis, provider adapters, model routing, and resilient failover across local and hosted AI services."
+      },
+      {
+        "id": "layer:data-contracts",
+        "name": "Data Contracts and Persistence",
+        "description": "Validated domain schemas, database and file-storage models, demo fixtures, and the canonical example input used across the validation engine."
+      },
+      {
+        "id": "layer:test",
+        "name": "Test Layer",
+        "description": "Pytest and Vitest suites that verify API, CLI, analysis, research, model-adapter, UI, validation, scoring, export, and security behavior."
+      },
+      {
+        "id": "layer:infrastructure-config",
+        "name": "Infrastructure and Configuration",
+        "description": "Container topology, CI, development launchers, environment settings, package manifests, build tools, repository templates, and knowledge-graph configuration."
+      },
+      {
+        "id": "layer:documentation",
+        "name": "Documentation",
+        "description": "Project, backend, validation, security, contribution, and pull-request guidance for users, operators, and contributors."
+      }
+    ]
+  },
+  "nodeSummaryIndex": {
+    "file:frontend/src/App.tsx": {
+      "name": "App.tsx",
+      "type": "file",
+      "summary": "Defines the top-level React router, directing the landing route to idea intake and analysis routes to the analysis workflow."
+    },
+    "file:frontend/src/components/CitationBadge.tsx": {
+      "name": "CitationBadge.tsx",
+      "type": "file",
+      "summary": "Renders a compact evidence citation that resolves an evidence identifier and safely links to external source material."
+    },
+    "file:frontend/src/components/CompetitorCard.tsx": {
+      "name": "CompetitorCard.tsx",
+      "type": "file",
+      "summary": "Presents a competitor profile with pricing, positioning, strengths, weaknesses, complaints, differentiation, and supporting citations."
+    },
+    "file:frontend/src/components/DisclaimerBanner.tsx": {
+      "name": "DisclaimerBanner.tsx",
+      "type": "file",
+      "summary": "Displays the shared product disclaimer so research reports communicate the limits of automated analysis."
+    },
+    "file:frontend/src/components/ExperimentCard.tsx": {
+      "name": "ExperimentCard.tsx",
+      "type": "file",
+      "summary": "Visualizes a validation experiment with its hypothesis, method, audience, success criteria, cost, timing, and next decision."
+    },
+    "file:frontend/src/components/FinancialSimulator.tsx": {
+      "name": "FinancialSimulator.tsx",
+      "type": "file",
+      "summary": "Provides an interactive unit-economics simulator that derives customer acquisition, lifetime value, payback, break-even, and revenue projections from an idea."
+    },
+    "file:frontend/src/components/FounderToolkit.tsx": {
+      "name": "FounderToolkit.tsx",
+      "type": "file",
+      "summary": "Renders an execution toolkit covering customer-discovery scripts, channels, metrics, roadmap actions, interviews, and decision rules."
+    },
+    "file:frontend/src/components/OpportunityGauge.tsx": {
+      "name": "OpportunityGauge.tsx",
+      "type": "file",
+      "summary": "Renders a score-driven circular opportunity gauge with normalized geometry, color semantics, and an accessible numeric value."
+    },
+    "file:frontend/src/components/PerspectiveExplorer.tsx": {
+      "name": "PerspectiveExplorer.tsx",
+      "type": "file",
+      "summary": "Lets users switch among model perspectives and view each recommendation, score, and evidence-backed analysis panel."
+    },
+    "file:frontend/src/components/PerspectivePanel.tsx": {
+      "name": "PerspectivePanel.tsx",
+      "type": "file",
+      "summary": "Renders the detailed sections of one analytical perspective, including claims, evidence citations, recommendations, and discipline-specific iconography."
+    },
+    "file:frontend/src/components/ProviderIcon.tsx": {
+      "name": "ProviderIcon.tsx",
+      "type": "file",
+      "summary": "Maps supported AI provider identifiers to distinctive inline SVG marks for provider selection interfaces."
+    },
+    "file:frontend/src/components/RegionalMarketPanel.tsx": {
+      "name": "RegionalMarketPanel.tsx",
+      "type": "file",
+      "summary": "Summarizes regional market attractiveness, launch stance, demand signals, risks, regulatory notes, channels, and localization guidance."
+    },
+    "file:frontend/src/components/SavedAnalysesModal.tsx": {
+      "name": "SavedAnalysesModal.tsx",
+      "type": "file",
+      "summary": "Loads and displays saved analyses in a modal, with navigation, deletion, recommendation styling, and empty or loading states."
+    },
+    "file:frontend/src/components/ScoreBreakdown.tsx": {
+      "name": "ScoreBreakdown.tsx",
+      "type": "file",
+      "summary": "Explains the overall opportunity score through weighted sub-scores, confidence, and visual color cues."
+    },
+    "file:frontend/src/components/SettingsModal.tsx": {
+      "name": "SettingsModal.tsx",
+      "type": "file",
+      "summary": "Provides persistent AI-provider configuration, credential fields, model selection, endpoint settings, connection testing, and provider-specific guidance."
+    },
+    "file:frontend/src/hooks/useAnalysis.ts": {
+      "name": "useAnalysis.ts",
+      "type": "file",
+      "summary": "Encapsulates analysis submission and polling state, exposing progress, result, error, and reset behavior to analysis pages."
+    },
+    "file:frontend/src/lib/api.ts": {
+      "name": "api.ts",
+      "type": "file",
+      "summary": "Implements the typed frontend API client, centralizing JSON requests, errors, analysis lifecycle calls, history management, and provider connection tests."
+    },
+    "file:frontend/src/lib/readiness.ts": {
+      "name": "readiness.ts",
+      "type": "file",
+      "summary": "Scores prompt and structured-form completeness, returning actionable warnings, suggestions, and a readiness level before analysis submission."
+    },
+    "file:frontend/src/lib/report.ts": {
+      "name": "report.ts",
+      "type": "file",
+      "summary": "Serializes a completed analysis into a comprehensive Markdown report spanning verdict, scores, perspectives, markets, competitors, experiments, finances, toolkit, and evidence."
+    },
+    "file:frontend/src/lib/utils.ts": {
+      "name": "utils.ts",
+      "type": "file",
+      "summary": "Provides shared presentation helpers for score, recommendation, confidence, reliability, dates, safe URLs, progress stages, and the product disclaimer."
+    },
+    "file:frontend/src/main.tsx": {
+      "name": "main.tsx",
+      "type": "file",
+      "summary": "Bootstraps the React application into the root DOM node, applying strict mode, browser routing, and global styles."
+    },
+    "file:frontend/src/pages/AnalysisPage.tsx": {
+      "name": "AnalysisPage.tsx",
+      "type": "file",
+      "summary": "Coordinates a single analysis run, starting work from navigation state and switching among error, progress, and completed-report views."
+    },
+    "file:frontend/src/pages/HomePage.tsx": {
+      "name": "HomePage.tsx",
+      "type": "file",
+      "summary": "Implements the primary idea-intake experience, including raw-prompt and structured modes, provider and research-depth controls, readiness checks, file import, history, settings, and analysis launch."
+    },
+    "file:frontend/src/pages/ProgressView.tsx": {
+      "name": "ProgressView.tsx",
+      "type": "file",
+      "summary": "Visualizes the staged research and synthesis pipeline with progress percentages, active-state messaging, and completed-stage indicators."
+    },
+    "file:frontend/src/pages/ReportView.tsx": {
+      "name": "ReportView.tsx",
+      "type": "file",
+      "summary": "Orchestrates the full analysis report, loading results, filtering evidence, exporting Markdown or JSON, printing, and composing score, market, competitor, experiment, financial, and toolkit sections."
+    },
+    "file:frontend/src/types/index.ts": {
+      "name": "index.ts",
+      "type": "file",
+      "summary": "Defines the frontend domain contracts for idea input, analysis state and results, evidence, competitors, markets, experiments, provider settings, scores, and toolkit output."
+    },
+    "file:frontend/tests/citation.test.ts": {
+      "name": "citation.test.ts",
+      "type": "file",
+      "summary": "Tests evidence lookup and URL classification behavior used by citation rendering and external-link safety."
+    },
+    "file:frontend/tests/perspectiveExplorer.test.tsx": {
+      "name": "perspectiveExplorer.test.tsx",
+      "type": "file",
+      "summary": "Tests perspective selection and evidence presentation in the multi-model perspective explorer."
+    },
+    "file:frontend/tests/readiness.test.ts": {
+      "name": "readiness.test.ts",
+      "type": "file",
+      "summary": "Tests readiness scoring and guidance for both raw prompts and structured idea forms."
+    },
+    "file:frontend/tests/score.test.ts": {
+      "name": "score.test.ts",
+      "type": "file",
+      "summary": "Tests score and recommendation presentation utilities, confidence colors, safe URL handling, stage labels, and disclaimer content."
+    },
+    "file:backend/assumption_zero/analysis/__init__.py": {
+      "name": "__init__.py",
+      "type": "file",
+      "summary": "Public package barrel exposing the validation engine’s core analysis helpers and orchestration API."
+    },
+    "file:backend/assumption_zero/analysis/citation_validator.py": {
+      "name": "citation_validator.py",
+      "type": "file",
+      "summary": "Validates model-supplied evidence citations, preserving known evidence identifiers and moving unknown identifiers into each perspective’s invalid-citation list."
+    },
+    "file:backend/assumption_zero/analysis/competitor_merger.py": {
+      "name": "competitor_merger.py",
+      "type": "file",
+      "summary": "Normalizes, compares, merges, and ranks competitor records so duplicate discoveries become a single evidence-rich competitor profile."
+    },
+    "file:backend/assumption_zero/analysis/confidence.py": {
+      "name": "confidence.py",
+      "type": "file",
+      "summary": "Calculates evidence-confidence levels from source volume, diversity, reliability, recency, and citation validity across model perspectives."
+    },
+    "file:backend/assumption_zero/analysis/disagreement.py": {
+      "name": "disagreement.py",
+      "type": "file",
+      "summary": "Detects recommendation, dimension-score, and assumption disagreements between model perspectives and records the competing positions for review."
+    },
+    "file:backend/assumption_zero/analysis/engine.py": {
+      "name": "engine.py",
+      "type": "file",
+      "summary": "Orchestrates the complete validation pipeline: research collection, parallel model perspectives, grounded competitor extraction, scoring, confidence, regional analysis, experiments, and founder guidance."
+    },
+    "file:backend/assumption_zero/analysis/experiment_generator.py": {
+      "name": "experiment_generator.py",
+      "type": "file",
+      "summary": "Selects prioritized validation experiments from reusable templates based on the idea, evidence, and model perspectives."
+    },
+    "file:backend/assumption_zero/analysis/founder_toolkit.py": {
+      "name": "founder_toolkit.py",
+      "type": "file",
+      "summary": "Transforms analysis outcomes into a founder-facing toolkit with positioning, channels, metrics, interview prompts, decision rules, and a phased action roadmap."
+    },
+    "file:backend/assumption_zero/analysis/query_generator.py": {
+      "name": "query_generator.py",
+      "type": "file",
+      "summary": "Generates categorized market, competitor, pricing, regional, regulatory, and validation research queries from structured idea details."
+    },
+    "file:backend/assumption_zero/analysis/regional_analysis.py": {
+      "name": "regional_analysis.py",
+      "type": "file",
+      "summary": "Filters evidence for geography-specific signals and produces regional demand, pricing, regulatory, distribution, localization, and research-gap assessments."
+    },
+    "file:backend/assumption_zero/analysis/scoring.py": {
+      "name": "scoring.py",
+      "type": "file",
+      "summary": "Aggregates model dimension scores into a weighted opportunity score with evidence links, confidence, explanations, and missing-information notes."
+    },
+    "file:backend/assumption_zero/demo.py": {
+      "name": "demo.py",
+      "type": "file",
+      "summary": "Provides deterministic demo analysis data for product previews and local demonstrations without external research or model calls."
+    },
+    "file:backend/assumption_zero/research/demo_provider.py": {
+      "name": "demo_provider.py",
+      "type": "file",
+      "summary": "Implements a deterministic research provider that returns bundled demo evidence while conforming to the standard research-provider interface."
+    },
+    "file:backend/assumption_zero/schemas.py": {
+      "name": "schemas.py",
+      "type": "file",
+      "summary": "Defines the project’s enums and Pydantic models for ideas, evidence, competitors, perspectives, scores, experiments, regional analysis, API requests, and analysis results, including input validation."
+    },
+    "file:backend/tests/conftest.py": {
+      "name": "conftest.py",
+      "type": "file",
+      "summary": "Defines reusable pytest fixtures for isolated storage, sample ideas, evidence, and multi-model perspectives used throughout backend tests."
+    },
+    "file:backend/tests/test_citations.py": {
+      "name": "test_citations.py",
+      "type": "file",
+      "summary": "Verifies that citation validation preserves valid evidence IDs, rejects unknown IDs, and handles empty evidence and citation lists."
+    },
+    "file:backend/tests/test_competitors.py": {
+      "name": "test_competitors.py",
+      "type": "file",
+      "summary": "Tests competitor normalization and merging plus evidence-grounding rules for AI-discovered and user-supplied competitors."
+    },
+    "file:backend/tests/test_confidence.py": {
+      "name": "test_confidence.py",
+      "type": "file",
+      "summary": "Tests evidence-confidence behavior across empty, sparse, and high-quality evidence sets and confirms independence from opportunity scores."
+    },
+    "file:backend/tests/test_engine_e2e.py": {
+      "name": "test_engine_e2e.py",
+      "type": "file",
+      "summary": "Exercises the analysis engine end to end with deterministic adapter and research-provider doubles, including grounded competitor survival through the full pipeline."
+    },
+    "file:backend/tests/test_founder_toolkit.py": {
+      "name": "test_founder_toolkit.py",
+      "type": "file",
+      "summary": "Verifies that generated founder toolkits contain measurable roadmaps and honor the acquisition channels declared in the idea."
+    },
+    "file:backend/tests/test_regional_research.py": {
+      "name": "test_regional_research.py",
+      "type": "file",
+      "summary": "Tests regional evidence filtering, research-depth controls, perspective volume, and fallback parsing of user-supplied competitor and geography details."
+    },
+    "file:backend/tests/test_scoring.py": {
+      "name": "test_scoring.py",
+      "type": "file",
+      "summary": "Validates scoring weights, dimension coverage, determinism, bounds, weighted totals, and extreme or missing-perspective behavior."
+    },
+    "file:backend/assumption_zero/api/routes.py": {
+      "name": "routes.py",
+      "type": "file",
+      "summary": "Defines the FastAPI HTTP surface for health checks, credential verification, idea and prompt analysis creation, history retrieval, deletion, and demo execution."
+    },
+    "file:backend/assumption_zero/config.py": {
+      "name": "config.py",
+      "type": "file",
+      "summary": "Defines environment-backed application settings, validates provider and URL configuration, masks secrets, and exposes a cached settings instance."
+    },
+    "file:backend/assumption_zero/models.py": {
+      "name": "models.py",
+      "type": "file",
+      "summary": "Defines SQLAlchemy persistence models plus cached synchronous and asynchronous engines, session factories, and database initialization helpers."
+    },
+    "file:backend/assumption_zero/research/__init__.py": {
+      "name": "__init__.py",
+      "type": "file",
+      "summary": "Public package barrel exposing the research-provider abstraction and all bundled evidence-source implementations."
+    },
+    "file:backend/assumption_zero/research/arxiv_provider.py": {
+      "name": "arxiv_provider.py",
+      "type": "file",
+      "summary": "Implements an arXiv research provider that searches academic papers and converts results into normalized evidence records."
+    },
+    "file:backend/assumption_zero/research/base.py": {
+      "name": "base.py",
+      "type": "file",
+      "summary": "Defines the abstract asynchronous contract and shared text-truncation behavior implemented by all research providers."
+    },
+    "file:backend/assumption_zero/research/github_provider.py": {
+      "name": "github_provider.py",
+      "type": "file",
+      "summary": "Implements GitHub repository search and maps repository metadata into normalized competitor and validation evidence."
+    },
+    "file:backend/assumption_zero/research/hackernews_provider.py": {
+      "name": "hackernews_provider.py",
+      "type": "file",
+      "summary": "Implements Hacker News search and classifies stories into evidence types for demand, pain, competitor, and market validation."
+    },
+    "file:backend/assumption_zero/research/news_provider.py": {
+      "name": "news_provider.py",
+      "type": "file",
+      "summary": "Implements news search through the configured SearXNG endpoint and converts recent articles into normalized evidence."
+    },
+    "file:backend/assumption_zero/research/reddit_provider.py": {
+      "name": "reddit_provider.py",
+      "type": "file",
+      "summary": "Implements Reddit search with query-type classification, relevance scoring, and normalized community evidence extraction."
+    },
+    "file:backend/assumption_zero/research/searxng_provider.py": {
+      "name": "searxng_provider.py",
+      "type": "file",
+      "summary": "Implements general web research through SearXNG with source-domain reliability assessment and normalized evidence mapping."
+    },
+    "file:backend/assumption_zero/research/web_search_provider.py": {
+      "name": "web_search_provider.py",
+      "type": "file",
+      "summary": "Implements a lightweight web-search provider that classifies search results by query intent and emits normalized evidence records."
+    },
+    "file:backend/assumption_zero/research/wikipedia_provider.py": {
+      "name": "wikipedia_provider.py",
+      "type": "file",
+      "summary": "Implements Wikipedia title search and summary retrieval for background, market, competitor, and regulatory evidence."
+    },
+    "file:backend/assumption_zero/services/analysis_service.py": {
+      "name": "analysis_service.py",
+      "type": "file",
+      "summary": "Provides the application service layer for adapter and research-provider construction, analysis lifecycle orchestration, persistence, history filtering, and deletion."
+    },
+    "file:backend/assumption_zero/llm/__init__.py": {
+      "name": "__init__.py",
+      "type": "file",
+      "summary": "Defines the public LLM package surface by re-exporting the adapter interface and supported provider implementations."
+    },
+    "file:backend/assumption_zero/llm/base.py": {
+      "name": "base.py",
+      "type": "file",
+      "summary": "Defines validated LLM output models, discipline-specific system prompts, evidence-grounded prompt construction, and the abstract provider adapter contract with default idea parsing."
+    },
+    "file:backend/assumption_zero/llm/beta_adapter.py": {
+      "name": "beta_adapter.py",
+      "type": "file",
+      "summary": "Implements the legacy Beta provider as a configured OpenRouter alias without bundling a shared credential."
+    },
+    "file:backend/assumption_zero/llm/fallback_adapter.py": {
+      "name": "fallback_adapter.py",
+      "type": "file",
+      "summary": "Orchestrates an ordered provider chain, failing over on provider errors and falling back to deterministic analysis when no configured adapter is available."
+    },
+    "file:backend/assumption_zero/llm/groq_adapter.py": {
+      "name": "groq_adapter.py",
+      "type": "file",
+      "summary": "Connects the analysis contract to Groq chat completions, including model fallback, structured perspective parsing, clarification, and raw-prompt extraction."
+    },
+    "file:backend/assumption_zero/llm/hybrid_adapter.py": {
+      "name": "hybrid_adapter.py",
+      "type": "file",
+      "summary": "Balances perspective workloads between Groq and OpenRouter and performs automatic cross-provider failover for analysis, clarification, and prompt parsing."
+    },
+    "file:backend/assumption_zero/llm/mock_adapter.py": {
+      "name": "mock_adapter.py",
+      "type": "file",
+      "summary": "Provides the labeled deterministic evidence engine, deriving opportunity scores, findings, risks, and recommendations from collected evidence without inventing model output."
+    },
+    "file:backend/assumption_zero/llm/ollama_adapter.py": {
+      "name": "ollama_adapter.py",
+      "type": "file",
+      "summary": "Runs analysis against local Ollama models, supporting both OpenAI-compatible chat completions and Ollama native chat endpoints."
+    },
+    "file:backend/assumption_zero/llm/openai_compat_adapter.py": {
+      "name": "openai_compat_adapter.py",
+      "type": "file",
+      "summary": "Supports configurable OpenAI-compatible chat-completion providers with structured response parsing, recommendation normalization, and provider-specific authentication."
+    },
+    "file:backend/assumption_zero/llm/opencode_adapter.py": {
+      "name": "opencode_adapter.py",
+      "type": "file",
+      "summary": "Connects analysis and prompt parsing to the configurable OpenCode API using shared prompt and output-normalization logic."
+    },
+    "file:backend/assumption_zero/llm/openrouter_adapter.py": {
+      "name": "openrouter_adapter.py",
+      "type": "file",
+      "summary": "Implements OpenRouter analysis across configurable and fallback models, with robust JSON repair, structured perspective validation, and prompt parsing."
+    },
+    "file:backend/tests/test_llm_adapters.py": {
+      "name": "test_llm_adapters.py",
+      "type": "file",
+      "summary": "Tests adapter construction, explicit-provider failure behavior, deterministic raw-prompt parsing, gibberish rejection, and fallback-chain operation."
+    },
+    "file:backend/assumption_zero/__init__.py": {
+      "name": "__init__.py",
+      "type": "file",
+      "summary": "Defines the Assumption Zero Python package metadata and exposes the installed application version."
+    },
+    "file:backend/assumption_zero/analysis/unit_economics.py": {
+      "name": "unit_economics.py",
+      "type": "file",
+      "summary": "Implements the transparent subscription unit-economics model shared by CLI and web-facing simulations, including breakeven, payback, LTV, and health classification."
+    },
+    "file:backend/assumption_zero/cli.py": {
+      "name": "cli.py",
+      "type": "file",
+      "summary": "Provides the full Typer command-line interface for configuring providers, running and reviewing analyses, simulating unit economics, and exporting richly formatted reports."
+    },
+    "file:backend/assumption_zero/main.py": {
+      "name": "main.py",
+      "type": "file",
+      "summary": "Creates and configures the FastAPI application, including clean validation errors, constrained CORS, API routes, startup storage initialization, and root metadata."
+    },
+    "file:backend/assumption_zero/storage.py": {
+      "name": "storage.py",
+      "type": "file",
+      "summary": "Implements human-readable file persistence for analysis metadata, inputs, and results using CSV plus JSON, with atomic writes and one-time legacy migration."
+    },
+    "file:backend/tests/test_api.py": {
+      "name": "test_api.py",
+      "type": "file",
+      "summary": "Exercises FastAPI health, analysis, demo, and listing endpoints, including secret redaction and request-bound validation behavior."
+    },
+    "file:backend/tests/test_cli_parity.py": {
+      "name": "test_cli_parity.py",
+      "type": "file",
+      "summary": "Checks that CLI commands and provider controls match web capabilities and that CLI runs share storage, filtering, and unit-economics behavior with the web application."
+    },
+    "file:backend/tests/test_export.py": {
+      "name": "test_export.py",
+      "type": "file",
+      "summary": "Validates Markdown, HTML, and JSON analysis exports for required verdict, evidence, experiment, competitor, disclaimer, and secret-safety content."
+    },
+    "file:backend/tests/test_validation_errors.py": {
+      "name": "test_validation_errors.py",
+      "type": "file",
+      "summary": "Covers clean API validation messages, provider-key verification, release-mode debug parsing, and SSRF URL filtering safeguards."
+    },
+    "service:backend/Dockerfile": {
+      "name": "Dockerfile",
+      "type": "service",
+      "summary": "Builds the Python 3.12 backend image, installs the application and curl, provisions persistent-data storage, exposes port 8000, and starts the FastAPI app with Uvicorn."
+    },
+    "service:backend/Dockerfile:python": {
+      "name": "python",
+      "type": "service",
+      "summary": "Defines the Python runtime service that hosts Assumption Zero through Uvicorn on port 8000 with its data directory under /app."
+    },
+    "service:frontend/Dockerfile": {
+      "name": "Dockerfile",
+      "type": "service",
+      "summary": "Builds the Vite frontend in Node.js and serves the production assets from Nginx with SPA fallback routing and an /api proxy to the backend service."
+    },
+    "service:frontend/Dockerfile:builder": {
+      "name": "builder",
+      "type": "service",
+      "summary": "Installs locked frontend dependencies in Node.js 20 and compiles the Vite application into production assets."
+    },
+    "service:frontend/Dockerfile:nginx": {
+      "name": "nginx",
+      "type": "service",
+      "summary": "Serves the compiled frontend on port 80, falls back to index.html for client-side routes, and proxies API requests to the backend container."
+    },
+    "pipeline:.github/workflows/ci.yml": {
+      "name": "ci.yml",
+      "type": "pipeline",
+      "summary": "Runs continuous integration on pushes and pull requests to main or master, executing the Python 3.12 pytest suite and independently installing and building the Node.js 20 frontend."
+    },
+    "config:.env.example": {
+      "name": ".env.example",
+      "type": "config",
+      "summary": "Documents the environment variables for application behavior, browser origins, AI provider credentials and models, local or compatible endpoints, GitHub access, and request timeouts."
+    },
+    "document:CONTRIBUTING.md": {
+      "name": "CONTRIBUTING.md",
+      "type": "document",
+      "summary": "Contributor guide covering valuable contribution areas, local backend and frontend setup, quality checks, secret handling, and pull-request expectations across five sections."
+    },
+    "document:IDEA_GUIDE.md": {
+      "name": "IDEA_GUIDE.md",
+      "type": "document",
+      "summary": "Founder-facing guide for writing a strong validation brief, choosing research depth, handling regional validation, running the engine, and turning evidence into a decision."
+    },
+    "document:README.md": {
+      "name": "README.md",
+      "type": "document",
+      "summary": "Comprehensive project overview and quick-start guide covering the validation workflow, CLI and web usage, model providers, scoring, research accuracy, architecture, development, and safe deployment across eighteen sections."
+    },
+    "document:SECURITY.md": {
+      "name": "SECURITY.md",
+      "type": "document",
+      "summary": "Security policy explaining private vulnerability reporting expectations and the operator’s responsibility for safe deployment."
+    },
+    "service:docker-compose.yml": {
+      "name": "docker-compose.yml",
+      "type": "service",
+      "summary": "Orchestrates backend and frontend containers, exposes the API and web ports, persists analysis data, forwards provider configuration, adds an API health check, and starts the frontend after the backend."
+    },
+    "file:start_web.bat": {
+      "name": "start_web.bat",
+      "type": "file",
+      "summary": "Windows development launcher that checks prerequisites, provisions backend and frontend dependencies, creates data directories, starts both servers in separate command windows, and opens the web interface."
+    },
+    "file:start_web.sh": {
+      "name": "start_web.sh",
+      "type": "file",
+      "summary": "Unix development launcher that checks prerequisites, provisions dependencies and data storage, starts backend and frontend processes, opens the browser when supported, and cleans up child processes on termination."
+    },
+    "config:.github/ISSUE_TEMPLATE/bug_report.yml": {
+      "name": "bug_report.yml",
+      "type": "config",
+      "summary": "Defines the structured GitHub bug-report form for observed behavior, reproduction steps, affected product surface, environment details, sanitized logs, and a required secret-removal confirmation."
+    },
+    "config:.github/ISSUE_TEMPLATE/config.yml": {
+      "name": "config.yml",
+      "type": "config",
+      "summary": "Configures the GitHub issue chooser to disable blank issues and direct security vulnerabilities to private repository advisories."
+    },
+    "config:.github/ISSUE_TEMPLATE/feature_request.yml": {
+      "name": "feature_request.yml",
+      "type": "config",
+      "summary": "Defines the structured GitHub feature-request form for the user problem, smallest useful outcome, affected product area, and supporting evidence."
+    },
+    "file:frontend/index.html": {
+      "name": "index.html",
+      "type": "file",
+      "summary": "Provides the Vite application's HTML shell, SEO and theme metadata, hosted font connections, React root element, and module bootstrap for the TypeScript entry point."
+    },
+    "config:frontend/package.json": {
+      "name": "package.json",
+      "type": "config",
+      "summary": "Defines the private React frontend package, Vite development and production scripts, Vitest checks, TypeScript validation, and runtime and build dependencies."
+    },
+    "config:frontend/tsconfig.json": {
+      "name": "tsconfig.json",
+      "type": "config",
+      "summary": "Configures strict, no-emit TypeScript compilation for React source and tests using ES2020, bundler module resolution, JSON modules, and Vitest globals."
+    },
+    "config:frontend/tsconfig.node.json": {
+      "name": "tsconfig.node.json",
+      "type": "config",
+      "summary": "Defines the composite TypeScript project used to compile the Node-executed Vite configuration with strict ES module and bundler resolution settings."
+    },
+    "document:.github/PULL_REQUEST_TEMPLATE.md": {
+      "name": "PULL_REQUEST_TEMPLATE.md",
+      "type": "document",
+      "summary": "Pull-request checklist prompting contributors to explain changes and motivation, report verification results, confirm security and documentation checks, and attach screenshots for UI changes."
+    },
+    "file:.ua/.understandignore": {
+      "name": ".understandignore",
+      "type": "file",
+      "summary": "Generated, fully commented ignore-pattern template for controlling future Understand Anything scans, including project artifacts, caches, documentation, examples, and language-specific test conventions."
+    },
+    "config:.ua/config.json": {
+      "name": "config.json",
+      "type": "config",
+      "summary": "Configures Understand Anything graph generation to produce English textual output."
+    },
+    "document:backend/README.md": {
+      "name": "README.md",
+      "type": "document",
+      "summary": "Brief backend overview identifying the FastAPI API and Python CLI and directing readers to the main project guide for setup, usage, testing, and deployment."
+    },
+    "file:backend/assumption_zero/api/__init__.py": {
+      "name": "__init__.py",
+      "type": "file",
+      "summary": "Marks the FastAPI routing directory as an importable Python package."
+    },
+    "file:backend/assumption_zero/services/__init__.py": {
+      "name": "__init__.py",
+      "type": "file",
+      "summary": "Marks the backend application-service directory as an importable Python package."
+    },
+    "config:backend/pyproject.toml": {
+      "name": "pyproject.toml",
+      "type": "config",
+      "summary": "Defines Python 3.12 package metadata, runtime and development dependencies, the azero CLI entry point, setuptools packaging, pytest behavior, Ruff formatting limits, and mypy settings."
+    },
+    "file:backend/tests/__init__.py": {
+      "name": "__init__.py",
+      "type": "file",
+      "summary": "Marks the backend test suite as an importable Python package."
+    },
+    "config:examples/sample-idea.json": {
+      "name": "sample-idea.json",
+      "type": "config",
+      "summary": "Complete example validation brief for a privacy-first, on-device legal meeting summarizer, covering customer, problem, solution, economics, founder constraints, channels, competitors, assumptions, and regulation."
+    },
+    "file:frontend/postcss.config.js": {
+      "name": "postcss.config.js",
+      "type": "file",
+      "summary": "Configures PostCSS to process frontend styles with Tailwind CSS and Autoprefixer."
+    },
+    "file:frontend/src/index.css": {
+      "name": "index.css",
+      "type": "file",
+      "summary": "Defines global Tailwind layers, typography and page defaults, reusable cards, buttons, inputs, badges, navigation and depth effects, ambient animations, responsive behavior, reduced-motion accessibility, and print styling."
+    },
+    "file:frontend/src/pages/DocsPage.tsx": {
+      "name": "DocsPage.tsx",
+      "type": "file",
+      "summary": "Renders the founder documentation page with navigation and detailed guidance on briefing, research depth, evidence interpretation, a 30-day validation playbook, metrics, CLI commands, and frequently asked questions."
+    },
+    "file:frontend/tailwind.config.js": {
+      "name": "tailwind.config.js",
+      "type": "file",
+      "summary": "Configures Tailwind content discovery and extends the frontend theme with surface, card, border, Verseo palette, and sans, display, and monospace font families."
+    },
+    "file:frontend/tests/docs.test.tsx": {
+      "name": "docs.test.tsx",
+      "type": "file",
+      "summary": "Vitest component test that renders the documentation page in a memory router and verifies the business playbook, CLI reference, and interview milestone content."
+    },
+    "file:frontend/tests/setup.ts": {
+      "name": "setup.ts",
+      "type": "file",
+      "summary": "Loads DOM-aware Testing Library matchers into the frontend Vitest environment."
+    },
+    "file:frontend/vite.config.ts": {
+      "name": "vite.config.ts",
+      "type": "file",
+      "summary": "Configures Vite with React, a development server on port 5173, an API proxy to the local backend, and a jsdom Vitest environment using the shared test setup."
+    }
+  },
+  "totalNodes": 124,
+  "totalEdges": 1034
+}

@@ -12,11 +12,15 @@ Routes:
 
 from __future__ import annotations
 
+import asyncio
+import json
 import logging
+import time
 from typing import Annotated
 
 from fastapi import APIRouter, BackgroundTasks, Depends, Header, HTTPException, Query, status
 from pydantic import SecretStr
+from starlette.responses import StreamingResponse
 
 from assumption_zero import __version__
 from assumption_zero.config import get_settings, is_public_http_url
@@ -52,6 +56,8 @@ from assumption_zero.services.analysis_service import (
 
 router = APIRouter(prefix="/api")
 logger = logging.getLogger(__name__)
+ANALYSIS_DEADLINE_SECONDS = 240
+HEARTBEAT_SECONDS = 10
 
 
 async def _probe_provider_connection(
@@ -70,7 +76,8 @@ async def _probe_provider_connection(
             base_url_override=base_url,
             allow_mock_fallback=False,
         )
-        model = await adapter.verify_connection()
+        async with asyncio.timeout(45):
+            model = await adapter.verify_connection()
         logger.info("Provider %s verified with model %s", normalized, model)
         return model
     except HTTPException:
@@ -532,6 +539,87 @@ async def create_analysis_from_prompt_sync_endpoint(
             detail="The selected AI provider could not process this prompt. Verify the key and try again.",
         ) from None
     return await _run_analysis_in_request(body, parsed_idea, provider, owner_hash)
+
+
+def _stream_analysis(body: AnalysisCreateRequest | PromptAnalysisRequest, owner_hash: str):
+    provider = _validate_selected_provider(body)
+
+    async def events():
+        started = time.monotonic()
+        queue: asyncio.Queue[dict] = asyncio.Queue()
+
+        async def progress(stage, description):
+            await queue.put({"type": "progress", "stage": getattr(stage, "value", stage),
+                             "description": description})
+
+        async def work():
+            try:
+                async with asyncio.timeout(ANALYSIS_DEADLINE_SECONDS):
+                    if isinstance(body, PromptAnalysisRequest):
+                        await progress("parsing_idea", "Understanding your idea")
+                        _, key, base = _llm_options(body)
+                        llm = build_llm_adapter(provider_override=provider, api_key_override=key,
+                                                api_keys=_provider_keys(body), base_url_override=base,
+                                                allow_mock_fallback=False)
+                        idea = await llm.parse_raw_prompt(body.prompt)
+                    else:
+                        idea = body.idea
+                    analysis_id = await create_analysis(idea=idea, owner_hash=owner_hash)
+                    result = await run_analysis(
+                        analysis_id=analysis_id, idea=idea, ai_provider_override=provider,
+                        openrouter_api_key=_secret_value(body.openrouter_api_key),
+                        groq_api_key=_secret_value(body.groq_api_key),
+                        opencode_api_key=_secret_value(body.opencode_api_key),
+                        openai_api_key=_secret_value(body.openai_api_key),
+                        custom_base_url=body.custom_base_url, ollama_base_url=body.ollama_base_url,
+                        research_providers_override=body.research_providers,
+                        research_depth=body.research_depth, progress_callback=progress,
+                    )
+                    if result.status == "failed":
+                        await queue.put({"type": "error", "message": result.error_message})
+                    else:
+                        await queue.put({"type": "result", "result": result.model_dump(mode="json")})
+            except TimeoutError:
+                logger.warning("Analysis request exceeded its deadline")
+                await queue.put({"type": "error", "message":
+                                 "Analysis exceeded four minutes. Try Standard research or another provider."})
+            except Exception as exc:
+                logger.warning("Analysis stream failed: %s", redact_sensitive_text(exc))
+                await queue.put({"type": "error", "message": public_provider_error(exc)})
+
+        worker = asyncio.create_task(work())
+        try:
+            yield json.dumps({"type": "progress", "stage": "starting_analysis",
+                              "description": "Starting your analysis", "elapsed_seconds": 0}) + "\n"
+            while True:
+                try:
+                    event = await asyncio.wait_for(queue.get(), timeout=HEARTBEAT_SECONDS)
+                except TimeoutError:
+                    event = {"type": "heartbeat"}
+                event["elapsed_seconds"] = round(time.monotonic() - started, 1)
+                yield json.dumps(event) + "\n"
+                if event["type"] in {"result", "error"}:
+                    break
+        finally:
+            worker.cancel()
+            await asyncio.gather(worker, return_exceptions=True)
+
+    return StreamingResponse(events(), media_type="application/x-ndjson",
+                             headers={"Cache-Control": "no-store", "X-Accel-Buffering": "no"})
+
+
+@router.post("/analyses/stream")
+async def stream_structured_analysis(
+    body: AnalysisCreateRequest, owner_hash: str = Depends(require_owner_hash),
+):
+    return _stream_analysis(body, owner_hash)
+
+
+@router.post("/analyses/from-prompt/stream")
+async def stream_prompt_analysis(
+    body: PromptAnalysisRequest, owner_hash: str = Depends(require_owner_hash),
+):
+    return _stream_analysis(body, owner_hash)
 
 
 @router.get("/analyses", response_model=list[AnalysisListItem])

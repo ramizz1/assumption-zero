@@ -1,0 +1,1434 @@
+{
+  "nodes": [
+    {
+      "id": "file:backend/assumption_zero/llm/__init__.py",
+      "type": "file",
+      "name": "__init__.py",
+      "filePath": "backend/assumption_zero/llm/__init__.py",
+      "summary": "Defines the public LLM package surface by re-exporting the adapter interface and supported provider implementations.",
+      "tags": [
+        "entry-point",
+        "barrel",
+        "llm-adapter"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/assumption_zero/llm/base.py",
+      "type": "file",
+      "name": "base.py",
+      "filePath": "backend/assumption_zero/llm/base.py",
+      "summary": "Defines validated LLM output models, discipline-specific system prompts, evidence-grounded prompt construction, and the abstract provider adapter contract with default idea parsing.",
+      "tags": [
+        "llm-adapter",
+        "prompt-engineering",
+        "data-model"
+      ],
+      "complexity": "complex",
+      "languageNotes": "Uses Pydantic field validators for tolerant model-output ingestion and an ABC to keep asynchronous provider implementations interchangeable."
+    },
+    {
+      "id": "function:backend/assumption_zero/llm/base.py:build_analysis_prompt",
+      "type": "function",
+      "name": "build_analysis_prompt",
+      "filePath": "backend/assumption_zero/llm/base.py",
+      "lineRange": [
+        119,
+        235
+      ],
+      "summary": "Builds a compact evidence-prioritized prompt with idea context, discipline instructions, citation constraints, and the required JSON schema.",
+      "tags": [
+        "prompt-engineering",
+        "evidence",
+        "serialization"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:backend/assumption_zero/llm/base.py:DiscoveredCompetitor",
+      "type": "class",
+      "name": "DiscoveredCompetitor",
+      "filePath": "backend/assumption_zero/llm/base.py",
+      "lineRange": [
+        20,
+        40
+      ],
+      "summary": "Validates an evidence-grounded competitor candidate and normalizes direct versus indirect classifications.",
+      "tags": [
+        "data-model",
+        "validation",
+        "competitor-research"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/assumption_zero/llm/base.py:PerspectiveOutput",
+      "type": "class",
+      "name": "PerspectiveOutput",
+      "filePath": "backend/assumption_zero/llm/base.py",
+      "lineRange": [
+        43,
+        71
+      ],
+      "summary": "Validates the structured result of one model perspective while discarding malformed competitor entries safely.",
+      "tags": [
+        "data-model",
+        "validation",
+        "analysis-output"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/assumption_zero/llm/base.py:LLMAdapter",
+      "type": "class",
+      "name": "LLMAdapter",
+      "filePath": "backend/assumption_zero/llm/base.py",
+      "lineRange": [
+        238,
+        446
+      ],
+      "summary": "Defines the asynchronous provider interface and supplies default idea clarification and heuristic raw-prompt structuring.",
+      "tags": [
+        "abstract-class",
+        "llm-adapter",
+        "adapter-pattern"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:backend/assumption_zero/llm/beta_adapter.py",
+      "type": "file",
+      "name": "beta_adapter.py",
+      "filePath": "backend/assumption_zero/llm/beta_adapter.py",
+      "summary": "Implements the legacy Beta provider as a configured OpenRouter alias without bundling a shared credential.",
+      "tags": [
+        "llm-adapter",
+        "openrouter",
+        "compatibility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/assumption_zero/llm/beta_adapter.py:BetaAdapter",
+      "type": "class",
+      "name": "BetaAdapter",
+      "filePath": "backend/assumption_zero/llm/beta_adapter.py",
+      "lineRange": [
+        16,
+        40
+      ],
+      "summary": "Exposes OpenRouter behavior under the Beta identifier while requiring the user to supply OpenRouter configuration.",
+      "tags": [
+        "llm-adapter",
+        "openrouter",
+        "compatibility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/assumption_zero/llm/fallback_adapter.py",
+      "type": "file",
+      "name": "fallback_adapter.py",
+      "filePath": "backend/assumption_zero/llm/fallback_adapter.py",
+      "summary": "Orchestrates an ordered provider chain, failing over on provider errors and falling back to deterministic analysis when no configured adapter is available.",
+      "tags": [
+        "llm-adapter",
+        "failover",
+        "resilience"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:backend/assumption_zero/llm/fallback_adapter.py:FallbackChainAdapter",
+      "type": "class",
+      "name": "FallbackChainAdapter",
+      "filePath": "backend/assumption_zero/llm/fallback_adapter.py",
+      "lineRange": [
+        19,
+        116
+      ],
+      "summary": "Sequences available adapters, preserves validation errors, translates quota failures, and falls back across analysis and parsing operations.",
+      "tags": [
+        "llm-adapter",
+        "failover",
+        "resilience"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:backend/assumption_zero/llm/groq_adapter.py",
+      "type": "file",
+      "name": "groq_adapter.py",
+      "filePath": "backend/assumption_zero/llm/groq_adapter.py",
+      "summary": "Connects the analysis contract to Groq chat completions, including model fallback, structured perspective parsing, clarification, and raw-prompt extraction.",
+      "tags": [
+        "llm-adapter",
+        "groq",
+        "http-client"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:backend/assumption_zero/llm/groq_adapter.py:GroqAdapter",
+      "type": "class",
+      "name": "GroqAdapter",
+      "filePath": "backend/assumption_zero/llm/groq_adapter.py",
+      "lineRange": [
+        37,
+        201
+      ],
+      "summary": "Executes Groq-hosted model calls with credentials, model fallback, shared prompting, and normalized analysis output.",
+      "tags": [
+        "llm-adapter",
+        "groq",
+        "http-client"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:backend/assumption_zero/llm/hybrid_adapter.py",
+      "type": "file",
+      "name": "hybrid_adapter.py",
+      "filePath": "backend/assumption_zero/llm/hybrid_adapter.py",
+      "summary": "Balances perspective workloads between Groq and OpenRouter and performs automatic cross-provider failover for analysis, clarification, and prompt parsing.",
+      "tags": [
+        "llm-adapter",
+        "provider-routing",
+        "failover"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:backend/assumption_zero/llm/hybrid_adapter.py:HybridLLMAdapter",
+      "type": "class",
+      "name": "HybridLLMAdapter",
+      "filePath": "backend/assumption_zero/llm/hybrid_adapter.py",
+      "lineRange": [
+        22,
+        131
+      ],
+      "summary": "Routes perspectives between Groq and OpenRouter and retries the alternate provider when the primary fails.",
+      "tags": [
+        "llm-adapter",
+        "provider-routing",
+        "failover"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:backend/assumption_zero/llm/mock_adapter.py",
+      "type": "file",
+      "name": "mock_adapter.py",
+      "filePath": "backend/assumption_zero/llm/mock_adapter.py",
+      "summary": "Provides the labeled deterministic evidence engine, deriving opportunity scores, findings, risks, and recommendations from collected evidence without inventing model output.",
+      "tags": [
+        "llm-adapter",
+        "deterministic-scoring",
+        "fallback"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:backend/assumption_zero/llm/mock_adapter.py:_count",
+      "type": "function",
+      "name": "_count",
+      "filePath": "backend/assumption_zero/llm/mock_adapter.py",
+      "lineRange": [
+        34,
+        35
+      ],
+      "summary": "Counts evidence items of a requested evidence type.",
+      "tags": [
+        "utility",
+        "evidence",
+        "aggregation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/assumption_zero/llm/mock_adapter.py:_avg_relevance",
+      "type": "function",
+      "name": "_avg_relevance",
+      "filePath": "backend/assumption_zero/llm/mock_adapter.py",
+      "lineRange": [
+        38,
+        40
+      ],
+      "summary": "Calculates average relevance for evidence of a requested type.",
+      "tags": [
+        "utility",
+        "evidence",
+        "aggregation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/assumption_zero/llm/mock_adapter.py:_high_reliability_count",
+      "type": "function",
+      "name": "_high_reliability_count",
+      "filePath": "backend/assumption_zero/llm/mock_adapter.py",
+      "lineRange": [
+        43,
+        44
+      ],
+      "summary": "Counts evidence items carrying the highest reliability rating.",
+      "tags": [
+        "utility",
+        "evidence",
+        "aggregation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/assumption_zero/llm/mock_adapter.py:_compute_scores",
+      "type": "function",
+      "name": "_compute_scores",
+      "filePath": "backend/assumption_zero/llm/mock_adapter.py",
+      "lineRange": [
+        47,
+        181
+      ],
+      "summary": "Derives the seven opportunity dimensions from evidence mix, relevance, reliability, and idea completeness.",
+      "tags": [
+        "deterministic-scoring",
+        "evidence",
+        "analysis"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:backend/assumption_zero/llm/mock_adapter.py:_recommendation_from_avg",
+      "type": "function",
+      "name": "_recommendation_from_avg",
+      "filePath": "backend/assumption_zero/llm/mock_adapter.py",
+      "lineRange": [
+        184,
+        191
+      ],
+      "summary": "Maps an average opportunity score to a standardized founder recommendation.",
+      "tags": [
+        "deterministic-scoring",
+        "recommendation",
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/assumption_zero/llm/mock_adapter.py:_findings",
+      "type": "function",
+      "name": "_findings",
+      "filePath": "backend/assumption_zero/llm/mock_adapter.py",
+      "lineRange": [
+        194,
+        222
+      ],
+      "summary": "Generates perspective-specific evidence findings without adding unsupported facts.",
+      "tags": [
+        "deterministic-analysis",
+        "evidence",
+        "reporting"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/assumption_zero/llm/mock_adapter.py:MockAdapter",
+      "type": "class",
+      "name": "MockAdapter",
+      "filePath": "backend/assumption_zero/llm/mock_adapter.py",
+      "lineRange": [
+        225,
+        455
+      ],
+      "summary": "Implements the always-available deterministic provider using evidence-derived scores and clearly labeled template analysis.",
+      "tags": [
+        "llm-adapter",
+        "deterministic-scoring",
+        "fallback"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:backend/assumption_zero/llm/ollama_adapter.py",
+      "type": "file",
+      "name": "ollama_adapter.py",
+      "filePath": "backend/assumption_zero/llm/ollama_adapter.py",
+      "summary": "Runs analysis against local Ollama models, supporting both OpenAI-compatible chat completions and Ollama native chat endpoints.",
+      "tags": [
+        "llm-adapter",
+        "ollama",
+        "local-model"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:backend/assumption_zero/llm/ollama_adapter.py:OllamaAdapter",
+      "type": "class",
+      "name": "OllamaAdapter",
+      "filePath": "backend/assumption_zero/llm/ollama_adapter.py",
+      "lineRange": [
+        32,
+        188
+      ],
+      "summary": "Connects to local Ollama deployments and adapts either supported chat endpoint to the shared analysis contract.",
+      "tags": [
+        "llm-adapter",
+        "ollama",
+        "local-model"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:backend/assumption_zero/llm/openai_compat_adapter.py",
+      "type": "file",
+      "name": "openai_compat_adapter.py",
+      "filePath": "backend/assumption_zero/llm/openai_compat_adapter.py",
+      "summary": "Supports configurable OpenAI-compatible chat-completion providers with structured response parsing, recommendation normalization, and provider-specific authentication.",
+      "tags": [
+        "llm-adapter",
+        "openai-compatible",
+        "http-client"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:backend/assumption_zero/llm/openai_compat_adapter.py:_parse_output",
+      "type": "function",
+      "name": "_parse_output",
+      "filePath": "backend/assumption_zero/llm/openai_compat_adapter.py",
+      "lineRange": [
+        41,
+        75
+      ],
+      "summary": "Parses OpenAI-compatible model text into validated perspective output and normalizes recommendation values.",
+      "tags": [
+        "serialization",
+        "validation",
+        "llm-output"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/assumption_zero/llm/openai_compat_adapter.py:OpenAICompatAdapter",
+      "type": "class",
+      "name": "OpenAICompatAdapter",
+      "filePath": "backend/assumption_zero/llm/openai_compat_adapter.py",
+      "lineRange": [
+        78,
+        197
+      ],
+      "summary": "Executes analysis through a configurable OpenAI-compatible endpoint and validates its structured response.",
+      "tags": [
+        "llm-adapter",
+        "openai-compatible",
+        "http-client"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:backend/assumption_zero/llm/opencode_adapter.py",
+      "type": "file",
+      "name": "opencode_adapter.py",
+      "filePath": "backend/assumption_zero/llm/opencode_adapter.py",
+      "summary": "Connects analysis and prompt parsing to the configurable OpenCode API using shared prompt and output-normalization logic.",
+      "tags": [
+        "llm-adapter",
+        "opencode",
+        "http-client"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:backend/assumption_zero/llm/opencode_adapter.py:OpencodeAdapter",
+      "type": "class",
+      "name": "OpencodeAdapter",
+      "filePath": "backend/assumption_zero/llm/opencode_adapter.py",
+      "lineRange": [
+        31,
+        191
+      ],
+      "summary": "Executes OpenCode chat calls for analysis, clarification, and structured idea extraction.",
+      "tags": [
+        "llm-adapter",
+        "opencode",
+        "http-client"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:backend/assumption_zero/llm/openrouter_adapter.py",
+      "type": "file",
+      "name": "openrouter_adapter.py",
+      "filePath": "backend/assumption_zero/llm/openrouter_adapter.py",
+      "summary": "Implements OpenRouter analysis across configurable and fallback models, with robust JSON repair, structured perspective validation, and prompt parsing.",
+      "tags": [
+        "llm-adapter",
+        "openrouter",
+        "json-repair"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:backend/assumption_zero/llm/openrouter_adapter.py:_repair_and_parse_json",
+      "type": "function",
+      "name": "_repair_and_parse_json",
+      "filePath": "backend/assumption_zero/llm/openrouter_adapter.py",
+      "lineRange": [
+        44,
+        138
+      ],
+      "summary": "Repairs common fenced, truncated, and malformed model JSON before decoding it.",
+      "tags": [
+        "json-repair",
+        "serialization",
+        "validation"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:backend/assumption_zero/llm/openrouter_adapter.py:_parse_output",
+      "type": "function",
+      "name": "_parse_output",
+      "filePath": "backend/assumption_zero/llm/openrouter_adapter.py",
+      "lineRange": [
+        141,
+        161
+      ],
+      "summary": "Converts repaired model JSON into a validated perspective result with normalized recommendations.",
+      "tags": [
+        "serialization",
+        "validation",
+        "llm-output"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/assumption_zero/llm/openrouter_adapter.py:OpenRouterAdapter",
+      "type": "class",
+      "name": "OpenRouterAdapter",
+      "filePath": "backend/assumption_zero/llm/openrouter_adapter.py",
+      "lineRange": [
+        164,
+        332
+      ],
+      "summary": "Runs evidence-grounded analysis through OpenRouter with configurable models, fallback models, and structured parsing.",
+      "tags": [
+        "llm-adapter",
+        "openrouter",
+        "http-client"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:backend/tests/test_llm_adapters.py",
+      "type": "file",
+      "name": "test_llm_adapters.py",
+      "filePath": "backend/tests/test_llm_adapters.py",
+      "summary": "Tests adapter construction, explicit-provider failure behavior, deterministic raw-prompt parsing, gibberish rejection, and fallback-chain operation.",
+      "tags": [
+        "test",
+        "llm-adapter",
+        "failover"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:backend/tests/test_llm_adapters.py:test_build_all_llm_adapters",
+      "type": "function",
+      "name": "test_build_all_llm_adapters",
+      "filePath": "backend/tests/test_llm_adapters.py",
+      "lineRange": [
+        18,
+        28
+      ],
+      "summary": "Verifies every supported provider name builds an adapter exposing availability and model identity.",
+      "tags": [
+        "test",
+        "factory",
+        "llm-adapter"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/tests/test_llm_adapters.py:test_explicit_provider_never_silently_falls_back_to_mock",
+      "type": "function",
+      "name": "test_explicit_provider_never_silently_falls_back_to_mock",
+      "filePath": "backend/tests/test_llm_adapters.py",
+      "lineRange": [
+        31,
+        34
+      ],
+      "summary": "Verifies an unavailable explicitly selected provider raises instead of silently returning the deterministic adapter.",
+      "tags": [
+        "test",
+        "error-handling",
+        "provider-selection"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/tests/test_llm_adapters.py:test_mock_adapter_parse_prompt",
+      "type": "function",
+      "name": "test_mock_adapter_parse_prompt",
+      "filePath": "backend/tests/test_llm_adapters.py",
+      "lineRange": [
+        38,
+        44
+      ],
+      "summary": "Verifies deterministic prompt parsing extracts a usable idea name, geography, and competitors.",
+      "tags": [
+        "test",
+        "prompt-parsing",
+        "mock-adapter"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/tests/test_llm_adapters.py:test_gibberish_rejection_in_adapters",
+      "type": "function",
+      "name": "test_gibberish_rejection_in_adapters",
+      "filePath": "backend/tests/test_llm_adapters.py",
+      "lineRange": [
+        48,
+        52
+      ],
+      "summary": "Verifies adapter prompt parsing rejects meaningless input with a clear validation error.",
+      "tags": [
+        "test",
+        "validation",
+        "prompt-parsing"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/tests/test_llm_adapters.py:test_fallback_chain_adapter",
+      "type": "function",
+      "name": "test_fallback_chain_adapter",
+      "filePath": "backend/tests/test_llm_adapters.py",
+      "lineRange": [
+        56,
+        63
+      ],
+      "summary": "Verifies the fallback chain remains available and delegates raw-prompt parsing through its active adapter.",
+      "tags": [
+        "test",
+        "failover",
+        "llm-adapter"
+      ],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:backend/assumption_zero/llm/base.py",
+      "target": "function:backend/assumption_zero/llm/base.py:build_analysis_prompt",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/base.py",
+      "target": "function:backend/assumption_zero/llm/base.py:build_analysis_prompt",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/base.py",
+      "target": "class:backend/assumption_zero/llm/base.py:DiscoveredCompetitor",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/base.py",
+      "target": "class:backend/assumption_zero/llm/base.py:DiscoveredCompetitor",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/base.py",
+      "target": "class:backend/assumption_zero/llm/base.py:PerspectiveOutput",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/base.py",
+      "target": "class:backend/assumption_zero/llm/base.py:PerspectiveOutput",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/base.py",
+      "target": "class:backend/assumption_zero/llm/base.py:LLMAdapter",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/base.py",
+      "target": "class:backend/assumption_zero/llm/base.py:LLMAdapter",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/beta_adapter.py",
+      "target": "class:backend/assumption_zero/llm/beta_adapter.py:BetaAdapter",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/beta_adapter.py",
+      "target": "class:backend/assumption_zero/llm/beta_adapter.py:BetaAdapter",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/fallback_adapter.py",
+      "target": "class:backend/assumption_zero/llm/fallback_adapter.py:FallbackChainAdapter",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/fallback_adapter.py",
+      "target": "class:backend/assumption_zero/llm/fallback_adapter.py:FallbackChainAdapter",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/groq_adapter.py",
+      "target": "class:backend/assumption_zero/llm/groq_adapter.py:GroqAdapter",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/groq_adapter.py",
+      "target": "class:backend/assumption_zero/llm/groq_adapter.py:GroqAdapter",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/hybrid_adapter.py",
+      "target": "class:backend/assumption_zero/llm/hybrid_adapter.py:HybridLLMAdapter",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/hybrid_adapter.py",
+      "target": "class:backend/assumption_zero/llm/hybrid_adapter.py:HybridLLMAdapter",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/mock_adapter.py",
+      "target": "function:backend/assumption_zero/llm/mock_adapter.py:_count",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/mock_adapter.py",
+      "target": "function:backend/assumption_zero/llm/mock_adapter.py:_count",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/mock_adapter.py",
+      "target": "function:backend/assumption_zero/llm/mock_adapter.py:_avg_relevance",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/mock_adapter.py",
+      "target": "function:backend/assumption_zero/llm/mock_adapter.py:_avg_relevance",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/mock_adapter.py",
+      "target": "function:backend/assumption_zero/llm/mock_adapter.py:_high_reliability_count",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/mock_adapter.py",
+      "target": "function:backend/assumption_zero/llm/mock_adapter.py:_high_reliability_count",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/mock_adapter.py",
+      "target": "function:backend/assumption_zero/llm/mock_adapter.py:_compute_scores",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/mock_adapter.py",
+      "target": "function:backend/assumption_zero/llm/mock_adapter.py:_compute_scores",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/mock_adapter.py",
+      "target": "function:backend/assumption_zero/llm/mock_adapter.py:_recommendation_from_avg",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/mock_adapter.py",
+      "target": "function:backend/assumption_zero/llm/mock_adapter.py:_recommendation_from_avg",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/mock_adapter.py",
+      "target": "function:backend/assumption_zero/llm/mock_adapter.py:_findings",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/mock_adapter.py",
+      "target": "function:backend/assumption_zero/llm/mock_adapter.py:_findings",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/mock_adapter.py",
+      "target": "class:backend/assumption_zero/llm/mock_adapter.py:MockAdapter",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/mock_adapter.py",
+      "target": "class:backend/assumption_zero/llm/mock_adapter.py:MockAdapter",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/ollama_adapter.py",
+      "target": "class:backend/assumption_zero/llm/ollama_adapter.py:OllamaAdapter",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/ollama_adapter.py",
+      "target": "class:backend/assumption_zero/llm/ollama_adapter.py:OllamaAdapter",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/openai_compat_adapter.py",
+      "target": "function:backend/assumption_zero/llm/openai_compat_adapter.py:_parse_output",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/openai_compat_adapter.py",
+      "target": "function:backend/assumption_zero/llm/openai_compat_adapter.py:_parse_output",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/openai_compat_adapter.py",
+      "target": "class:backend/assumption_zero/llm/openai_compat_adapter.py:OpenAICompatAdapter",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/openai_compat_adapter.py",
+      "target": "class:backend/assumption_zero/llm/openai_compat_adapter.py:OpenAICompatAdapter",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/opencode_adapter.py",
+      "target": "class:backend/assumption_zero/llm/opencode_adapter.py:OpencodeAdapter",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/opencode_adapter.py",
+      "target": "class:backend/assumption_zero/llm/opencode_adapter.py:OpencodeAdapter",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/openrouter_adapter.py",
+      "target": "function:backend/assumption_zero/llm/openrouter_adapter.py:_repair_and_parse_json",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/openrouter_adapter.py",
+      "target": "function:backend/assumption_zero/llm/openrouter_adapter.py:_repair_and_parse_json",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/openrouter_adapter.py",
+      "target": "function:backend/assumption_zero/llm/openrouter_adapter.py:_parse_output",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/openrouter_adapter.py",
+      "target": "function:backend/assumption_zero/llm/openrouter_adapter.py:_parse_output",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/openrouter_adapter.py",
+      "target": "class:backend/assumption_zero/llm/openrouter_adapter.py:OpenRouterAdapter",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/openrouter_adapter.py",
+      "target": "class:backend/assumption_zero/llm/openrouter_adapter.py:OpenRouterAdapter",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/tests/test_llm_adapters.py",
+      "target": "function:backend/tests/test_llm_adapters.py:test_build_all_llm_adapters",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_llm_adapters.py",
+      "target": "function:backend/tests/test_llm_adapters.py:test_build_all_llm_adapters",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/tests/test_llm_adapters.py",
+      "target": "function:backend/tests/test_llm_adapters.py:test_explicit_provider_never_silently_falls_back_to_mock",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_llm_adapters.py",
+      "target": "function:backend/tests/test_llm_adapters.py:test_explicit_provider_never_silently_falls_back_to_mock",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/tests/test_llm_adapters.py",
+      "target": "function:backend/tests/test_llm_adapters.py:test_mock_adapter_parse_prompt",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_llm_adapters.py",
+      "target": "function:backend/tests/test_llm_adapters.py:test_mock_adapter_parse_prompt",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/tests/test_llm_adapters.py",
+      "target": "function:backend/tests/test_llm_adapters.py:test_gibberish_rejection_in_adapters",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_llm_adapters.py",
+      "target": "function:backend/tests/test_llm_adapters.py:test_gibberish_rejection_in_adapters",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/tests/test_llm_adapters.py",
+      "target": "function:backend/tests/test_llm_adapters.py:test_fallback_chain_adapter",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_llm_adapters.py",
+      "target": "function:backend/tests/test_llm_adapters.py:test_fallback_chain_adapter",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/__init__.py",
+      "target": "file:backend/assumption_zero/llm/base.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/__init__.py",
+      "target": "file:backend/assumption_zero/llm/beta_adapter.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/__init__.py",
+      "target": "file:backend/assumption_zero/llm/groq_adapter.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/__init__.py",
+      "target": "file:backend/assumption_zero/llm/hybrid_adapter.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/__init__.py",
+      "target": "file:backend/assumption_zero/llm/mock_adapter.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/__init__.py",
+      "target": "file:backend/assumption_zero/llm/ollama_adapter.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/__init__.py",
+      "target": "file:backend/assumption_zero/llm/openai_compat_adapter.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/__init__.py",
+      "target": "file:backend/assumption_zero/llm/opencode_adapter.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/__init__.py",
+      "target": "file:backend/assumption_zero/llm/openrouter_adapter.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/base.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/beta_adapter.py",
+      "target": "file:backend/assumption_zero/llm/openrouter_adapter.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/beta_adapter.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/fallback_adapter.py",
+      "target": "file:backend/assumption_zero/llm/base.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/fallback_adapter.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/groq_adapter.py",
+      "target": "file:backend/assumption_zero/config.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/groq_adapter.py",
+      "target": "file:backend/assumption_zero/llm/base.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/groq_adapter.py",
+      "target": "file:backend/assumption_zero/llm/openrouter_adapter.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/groq_adapter.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/hybrid_adapter.py",
+      "target": "file:backend/assumption_zero/llm/base.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/hybrid_adapter.py",
+      "target": "file:backend/assumption_zero/llm/groq_adapter.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/hybrid_adapter.py",
+      "target": "file:backend/assumption_zero/llm/openrouter_adapter.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/hybrid_adapter.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/mock_adapter.py",
+      "target": "file:backend/assumption_zero/llm/base.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/mock_adapter.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/ollama_adapter.py",
+      "target": "file:backend/assumption_zero/config.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/ollama_adapter.py",
+      "target": "file:backend/assumption_zero/llm/base.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/ollama_adapter.py",
+      "target": "file:backend/assumption_zero/llm/openrouter_adapter.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/ollama_adapter.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/openai_compat_adapter.py",
+      "target": "file:backend/assumption_zero/config.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/openai_compat_adapter.py",
+      "target": "file:backend/assumption_zero/llm/base.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/openai_compat_adapter.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/opencode_adapter.py",
+      "target": "file:backend/assumption_zero/config.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/opencode_adapter.py",
+      "target": "file:backend/assumption_zero/llm/base.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/opencode_adapter.py",
+      "target": "file:backend/assumption_zero/llm/openrouter_adapter.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/opencode_adapter.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/openrouter_adapter.py",
+      "target": "file:backend/assumption_zero/config.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/openrouter_adapter.py",
+      "target": "file:backend/assumption_zero/llm/base.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/openrouter_adapter.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/tests/test_llm_adapters.py",
+      "target": "file:backend/assumption_zero/llm/__init__.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/tests/test_llm_adapters.py",
+      "target": "file:backend/assumption_zero/services/analysis_service.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "class:backend/assumption_zero/llm/beta_adapter.py:BetaAdapter",
+      "target": "class:backend/assumption_zero/llm/openrouter_adapter.py:OpenRouterAdapter",
+      "type": "inherits",
+      "direction": "forward",
+      "weight": 0.9
+    },
+    {
+      "source": "class:backend/assumption_zero/llm/fallback_adapter.py:FallbackChainAdapter",
+      "target": "class:backend/assumption_zero/llm/base.py:LLMAdapter",
+      "type": "inherits",
+      "direction": "forward",
+      "weight": 0.9
+    },
+    {
+      "source": "class:backend/assumption_zero/llm/groq_adapter.py:GroqAdapter",
+      "target": "class:backend/assumption_zero/llm/base.py:LLMAdapter",
+      "type": "inherits",
+      "direction": "forward",
+      "weight": 0.9
+    },
+    {
+      "source": "class:backend/assumption_zero/llm/hybrid_adapter.py:HybridLLMAdapter",
+      "target": "class:backend/assumption_zero/llm/base.py:LLMAdapter",
+      "type": "inherits",
+      "direction": "forward",
+      "weight": 0.9
+    },
+    {
+      "source": "class:backend/assumption_zero/llm/mock_adapter.py:MockAdapter",
+      "target": "class:backend/assumption_zero/llm/base.py:LLMAdapter",
+      "type": "inherits",
+      "direction": "forward",
+      "weight": 0.9
+    },
+    {
+      "source": "class:backend/assumption_zero/llm/ollama_adapter.py:OllamaAdapter",
+      "target": "class:backend/assumption_zero/llm/base.py:LLMAdapter",
+      "type": "inherits",
+      "direction": "forward",
+      "weight": 0.9
+    },
+    {
+      "source": "class:backend/assumption_zero/llm/openai_compat_adapter.py:OpenAICompatAdapter",
+      "target": "class:backend/assumption_zero/llm/base.py:LLMAdapter",
+      "type": "inherits",
+      "direction": "forward",
+      "weight": 0.9
+    },
+    {
+      "source": "class:backend/assumption_zero/llm/opencode_adapter.py:OpencodeAdapter",
+      "target": "class:backend/assumption_zero/llm/base.py:LLMAdapter",
+      "type": "inherits",
+      "direction": "forward",
+      "weight": 0.9
+    },
+    {
+      "source": "class:backend/assumption_zero/llm/openrouter_adapter.py:OpenRouterAdapter",
+      "target": "class:backend/assumption_zero/llm/base.py:LLMAdapter",
+      "type": "inherits",
+      "direction": "forward",
+      "weight": 0.9
+    },
+    {
+      "source": "class:backend/assumption_zero/llm/hybrid_adapter.py:HybridLLMAdapter",
+      "target": "class:backend/assumption_zero/llm/groq_adapter.py:GroqAdapter",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "class:backend/assumption_zero/llm/hybrid_adapter.py:HybridLLMAdapter",
+      "target": "class:backend/assumption_zero/llm/openrouter_adapter.py:OpenRouterAdapter",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "class:backend/assumption_zero/llm/fallback_adapter.py:FallbackChainAdapter",
+      "target": "class:backend/assumption_zero/llm/mock_adapter.py:MockAdapter",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "function:backend/assumption_zero/llm/openrouter_adapter.py:_parse_output",
+      "target": "function:backend/assumption_zero/llm/openrouter_adapter.py:_repair_and_parse_json",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:backend/tests/test_llm_adapters.py:test_build_all_llm_adapters",
+      "target": "function:backend/assumption_zero/services/analysis_service.py:build_llm_adapter",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:backend/tests/test_llm_adapters.py:test_explicit_provider_never_silently_falls_back_to_mock",
+      "target": "function:backend/assumption_zero/services/analysis_service.py:build_llm_adapter",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:backend/tests/test_llm_adapters.py:test_mock_adapter_parse_prompt",
+      "target": "class:backend/assumption_zero/llm/mock_adapter.py:MockAdapter",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:backend/tests/test_llm_adapters.py:test_gibberish_rejection_in_adapters",
+      "target": "class:backend/assumption_zero/llm/mock_adapter.py:MockAdapter",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:backend/tests/test_llm_adapters.py:test_fallback_chain_adapter",
+      "target": "class:backend/assumption_zero/llm/mock_adapter.py:MockAdapter",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:backend/tests/test_llm_adapters.py:test_fallback_chain_adapter",
+      "target": "class:backend/assumption_zero/llm/fallback_adapter.py:FallbackChainAdapter",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/__init__.py",
+      "target": "file:backend/tests/test_llm_adapters.py",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/fallback_adapter.py",
+      "target": "file:backend/tests/test_llm_adapters.py",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:backend/assumption_zero/llm/mock_adapter.py",
+      "target": "file:backend/tests/test_llm_adapters.py",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    }
+  ]
+}

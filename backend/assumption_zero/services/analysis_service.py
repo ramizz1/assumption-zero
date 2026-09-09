@@ -7,13 +7,14 @@ No database required.
 
 from __future__ import annotations
 
+import asyncio
 import logging
 import time
 import uuid
 from datetime import datetime
 
 import assumption_zero.storage as store
-from assumption_zero.analysis.engine import AnalysisEngine
+from assumption_zero.analysis.engine import AnalysisEngine, ProgressCallback
 from assumption_zero.config import get_settings, is_public_http_url
 from assumption_zero.llm.base import LLMAdapter
 from assumption_zero.llm.fallback_adapter import FallbackChainAdapter
@@ -211,10 +212,25 @@ async def run_analysis(
     research_providers_override: list[str] | None = None,
     research_depth: ResearchDepth = ResearchDepth.DEEP,
     is_demo: bool = False,
-) -> None:
-    """Run the full analysis pipeline. Called as a FastAPI BackgroundTask."""
+    progress_callback: ProgressCallback = None,
+) -> AnalysisResult:
+    """Run and persist an analysis, optionally forwarding its actual stage changes."""
 
     started_at = time.monotonic()
+    created_at = datetime.utcnow()
+
+    def fail_result(message: str) -> AnalysisResult:
+        store.fail_record(analysis_id, message)
+        return AnalysisResult(
+            analysis_id=analysis_id,
+            status=AnalysisStatus.FAILED,
+            stage=AnalysisStage.COMPLETE,
+            created_at=created_at,
+            completed_at=datetime.utcnow(),
+            idea_input=idea,
+            error_message=message,
+            is_demo=is_demo,
+        )
 
     base_url_override = None
     if ai_provider_override in ("openai", "openai_compat", "custom"):
@@ -240,19 +256,15 @@ async def run_analysis(
             base_url_override = None
     if base_url_override:
         if not settings.allow_runtime_provider_urls:
-            store.fail_record(
-                analysis_id,
+            return fail_result(
                 "Runtime provider URL overrides are disabled on this deployment.",
             )
-            return
         if settings.ssrf_protection_enabled and not is_public_http_url(base_url_override):
-            store.fail_record(
-                analysis_id,
+            return fail_result(
                 "Only public HTTP(S) provider URLs are allowed in hosted mode.",
             )
-            return
 
-    async def progress_callback(stage: AnalysisStage, desc: str) -> None:
+    async def report_progress(stage: AnalysisStage, desc: str) -> None:
         store.update_stage(analysis_id, "running", stage.value)
         logger.info(
             "Analysis %s progress stage=%s elapsed_seconds=%.1f",
@@ -260,6 +272,8 @@ async def run_analysis(
             stage.value,
             time.monotonic() - started_at,
         )
+        if progress_callback:
+            await progress_callback(stage, desc)
 
     try:
         llm = build_llm_adapter(
@@ -278,7 +292,7 @@ async def run_analysis(
         result = await engine.run(
             idea=idea,
             analysis_id=analysis_id,
-            progress_callback=progress_callback,
+            progress_callback=report_progress,
             is_demo=is_demo,
         )
 
@@ -295,7 +309,12 @@ async def run_analysis(
                 analysis_id,
                 time.monotonic() - started_at,
             )
+        return result
 
+    except asyncio.CancelledError:
+        store.fail_record(analysis_id, "Analysis stopped before completion. Start a new analysis to retry.")
+        logger.info("Analysis %s cancelled", analysis_id)
+        raise
     except Exception as exc:
         logger.error(
             "Analysis %s failed elapsed_seconds=%.1f: %s",
@@ -303,7 +322,7 @@ async def run_analysis(
             time.monotonic() - started_at,
             redact_sensitive_text(exc),
         )
-        store.fail_record(analysis_id, public_provider_error(exc))
+        return fail_result(public_provider_error(exc))
 
 
 async def get_analysis(

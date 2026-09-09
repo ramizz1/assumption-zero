@@ -1,21 +1,19 @@
-import { lazy, Suspense, useState, useEffect } from 'react'
+import { lazy, Suspense, useState, useEffect, useRef } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { api } from '../lib/api'
 import type { AnalysisResult } from '../types'
-import confetti from 'canvas-confetti'
 import OpportunityGauge from '../components/OpportunityGauge'
 import PerspectiveExplorer from '../components/PerspectiveExplorer'
 import CompetitorCard from '../components/CompetitorCard'
 import ExperimentCard from '../components/ExperimentCard'
-import ProgressView from './ProgressView'
 import ScoreBreakdown from '../components/ScoreBreakdown'
 import FounderToolkit from '../components/FounderToolkit'
 import RegionalMarketPanel from '../components/RegionalMarketPanel'
 import { recommendationBg, recommendationColor, safeExternalUrl } from '../lib/utils'
-import { generateMarkdownReport } from '../lib/report'
+import { generateDecisionBrief, generateMarkdownReport } from '../lib/report'
 import { isNoncommercialIdea } from '../lib/ideaContext'
+import { safeAnalysisMessage } from '../lib/errors'
 
-const DISCLAIMER = "AI analysis is based on available web data and pattern recognition. It is not financial or definitive business advice. Always perform your own due diligence."
 const FinancialSimulator = lazy(() => import('../components/FinancialSimulator'))
 
 interface Props {
@@ -27,7 +25,9 @@ export default function ReportView({ initialResult }: Props) {
   const [result, setResult] = useState<AnalysisResult | null>(initialResult || null)
   const [error, setError] = useState<string | null>(null)
   const [copied, setCopied] = useState(false)
-  const [confettiFired, setConfettiFired] = useState(false)
+  const [copyError, setCopyError] = useState<string | null>(null)
+  const [showSimulator, setShowSimulator] = useState(false)
+  const copyTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
   const [evidenceQuery, setEvidenceQuery] = useState('')
   const [showAllEvidence, setShowAllEvidence] = useState(false)
 
@@ -37,35 +37,28 @@ export default function ReportView({ initialResult }: Props) {
       return
     }
     let interval: number
+    let cancelled = false
     const load = async () => {
       try {
         if (!id) return
         const data = await api.getAnalysis(id)
+        if (cancelled) return
         setResult(data)
 
         if (data.status === 'pending' || data.status === 'running') {
           interval = window.setTimeout(load, 2000)
         }
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to load analysis')
+        if (!cancelled) setError(err instanceof Error ? err.message : 'Failed to load analysis')
       }
     }
     load()
-    return () => clearTimeout(interval)
+    return () => { cancelled = true; clearTimeout(interval) }
   }, [id, initialResult])
 
+  useEffect(() => () => clearTimeout(copyTimer.current), [])
+
   const score = result?.opportunity_score?.total
-  useEffect(() => {
-    if (result && result.status !== 'running' && result.status !== 'pending' && !confettiFired && score !== undefined && score >= 70) {
-      confetti({
-        particleCount: 150,
-        spread: 80,
-        origin: { y: 0.6 },
-        colors: ['#181818', '#e5e5e5', '#a3a3a3'] // monochromatic confetti!
-      })
-      setConfettiFired(true)
-    }
-  }, [result, score, confettiFired])
 
   if (error) {
     return (
@@ -98,9 +91,23 @@ export default function ReportView({ initialResult }: Props) {
     )
   }
 
+  if (result.status === 'failed') {
+    return (
+      <div className="max-w-2xl mx-auto p-6 sm:p-10">
+        <section role="alert" className="verseo-card p-6 space-y-4">
+          <h1 className="text-xl font-display font-bold">Analysis could not finish</h1>
+          <p className="text-sm text-gray-700">{safeAnalysisMessage(result.error_message)}</p>
+          <Link to="/" className="btn-primary inline-block">Return to your idea</Link>
+        </section>
+      </div>
+    )
+  }
+
   const rec = result.recommendation
   const conf = result.evidence_confidence
   const noncommercial = isNoncommercialIdea(result.idea_input)
+  const orderedExperiments = [...result.experiments].sort((a, b) => a.priority - b.priority)
+  const nextExperiment = orderedExperiments[0]
   const normalizedEvidenceQuery = evidenceQuery.trim().toLowerCase()
   const baselineModels = result.models_used.filter((model) => {
     const normalized = model.toLowerCase()
@@ -115,12 +122,14 @@ export default function ReportView({ initialResult }: Props) {
 
   const handleCopyMarkdown = async () => {
     if (!result) return
+    setCopyError(null)
     try {
-      await navigator.clipboard.writeText(generateMarkdownReport(result))
+      await navigator.clipboard.writeText(generateDecisionBrief(result))
       setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
+      clearTimeout(copyTimer.current)
+      copyTimer.current = setTimeout(() => setCopied(false), 2000)
     } catch {
-      setError('Your browser blocked clipboard access. Use Download Markdown instead.')
+      setCopyError('Copy was blocked by your browser. You can still download the report.')
     }
   }
 
@@ -159,7 +168,7 @@ export default function ReportView({ initialResult }: Props) {
               onClick={handleCopyMarkdown}
               className="px-3 py-1.5 rounded-xl border border-gray-200 bg-white hover:bg-gray-50 text-xs font-semibold text-gray-700 transition-all flex items-center gap-1.5 shadow-sm"
             >
-              <span>{copied ? '✓ Copied!' : '📋 Copy Summary'}</span>
+              <span>{copied ? '✓ Copied!' : 'Copy action plan'}</span>
             </button>
 
             <button
@@ -183,12 +192,10 @@ export default function ReportView({ initialResult }: Props) {
           </div>
         </div>
 
-        {/* Disclaimer */}
-        <div className="verseo-card p-4 border border-gray-200 bg-gray-50">
-          <p className="text-xs text-gray-500 text-center uppercase tracking-wider font-mono font-medium">{DISCLAIMER}</p>
-        </div>
+        {copyError && <p role="status" className="text-sm text-amber-800">{copyError}</p>}
 
-        <div className={`rounded-2xl border p-4 ${generativeModels.length > 0 ? 'border-emerald-200 bg-emerald-50 text-emerald-950' : 'border-amber-200 bg-amber-50 text-amber-950'}`}>
+        <details className="rounded-2xl border border-gray-200 p-4 text-xs">
+          <summary className="cursor-pointer font-semibold">Research details and models</summary>
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <div>
               <p className="text-xs font-bold uppercase tracking-wider mb-1">
@@ -205,7 +212,7 @@ export default function ReportView({ initialResult }: Props) {
               {result.models_used.join(' · ') || 'No model completed'}
             </span>
           </div>
-        </div>
+        </details>
 
         {/* 1. Executive Verdict */}
         <section id="verdict" className="verseo-card p-6 sm:p-8">
@@ -244,7 +251,14 @@ export default function ReportView({ initialResult }: Props) {
           </div>
         </section>
 
-        {result.opportunity_score && <ScoreBreakdown score={result.opportunity_score} />}
+        <p className="text-xs text-zinc-600">{result.is_demo ? 'Example report. ' : ''}This research identifies what to test; it does not prove customer demand.</p>
+        {nextExperiment && (
+          <section aria-label="Your next action" className="space-y-3">
+            <h2 className="text-xl font-bold">Test this next</h2>
+            <ExperimentCard experiment={nextExperiment} index={0} />
+          </section>
+        )}
+        {result.opportunity_score && <details className="rounded-xl border p-4"><summary className="cursor-pointer font-semibold">How the score was calculated</summary><ScoreBreakdown score={result.opportunity_score} /></details>}
 
         <section className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <div className="verseo-card p-5 border-l-4 border-l-emerald-500">
@@ -287,28 +301,28 @@ export default function ReportView({ initialResult }: Props) {
         )}
 
         {/* 1.5 Unit Economics Simulator */}
-        {noncommercial ? null : (
-          <Suspense fallback={null}>
-            <FinancialSimulator idea={result.idea_input} />
-          </Suspense>
-        )}
+        {!noncommercial && <details className="rounded-xl border p-4" onToggle={(event) => setShowSimulator(event.currentTarget.open)}>
+          <summary className="cursor-pointer font-semibold">Explore costs and pricing</summary>
+          {showSimulator && <Suspense fallback={<p>Loading calculator…</p>}><FinancialSimulator idea={result.idea_input} /></Suspense>}
+        </details>}
 
         {result.regional_analysis && (
           <RegionalMarketPanel analysis={result.regional_analysis} coverage={result.research_coverage} noncommercial={noncommercial} />
         )}
 
-        {result.founder_toolkit && <FounderToolkit toolkit={result.founder_toolkit} />}
+        {result.founder_toolkit && <details className="rounded-xl border p-4"><summary className="cursor-pointer font-semibold">Interview questions and launch tools</summary><FounderToolkit toolkit={result.founder_toolkit} /></details>}
 
-        {result.experiments.length > 0 && (
-          <section id="experiments" className="space-y-4 pt-4 border-t border-gray-200">
+        {orderedExperiments.length > 1 && (
+          <details id="experiments" className="space-y-4 rounded-xl border p-4">
+            <summary className="cursor-pointer font-semibold">Later tests — run after the first test passes</summary>
             <div>
               <h2 className="section-title text-gray-900 font-display font-black tracking-tight"><span className="text-gray-400">03 /</span> Demand Validation Gates</h2>
               <p className="text-xs text-gray-500 mt-1">Run in order. Each gate tests a different unknown; stop when a failure threshold is reached.</p>
             </div>
             <div className="grid grid-cols-1 gap-4">
-              {result.experiments.map((exp, idx) => <ExperimentCard key={`${exp.test_type}-${exp.title}`} experiment={exp} index={idx} />)}
+              {orderedExperiments.slice(1).map((exp, idx) => <ExperimentCard key={`${exp.test_type}-${exp.title}`} experiment={exp} index={idx + 1} />)}
             </div>
-          </section>
+          </details>
         )}
 
         {/* 2. AI Perspectives */}

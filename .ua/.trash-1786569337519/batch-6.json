@@ -1,0 +1,32 @@
+{
+  "nodes": [
+    {
+      "id": "service:backend/Dockerfile",
+      "type": "service",
+      "name": "Dockerfile",
+      "filePath": "backend/Dockerfile",
+      "summary": "Builds the Python 3.12 backend image, installs the application and curl, provisions persistent-data storage, exposes port 8000, and starts the FastAPI app with Uvicorn.",
+      "tags": ["containerization", "infrastructure", "deployment", "api-handler"],
+      "complexity": "simple",
+      "languageNotes": "Uses a single slim Python stage and installs the local package before copying application code into the runtime image."
+    },
+    {
+      "id": "service:backend/Dockerfile:python",
+      "type": "service",
+      "name": "python",
+      "filePath": "backend/Dockerfile",
+      "summary": "Defines the Python runtime service that hosts Assumption Zero through Uvicorn on port 8000 with its data directory under /app.",
+      "tags": ["containerization", "python", "runtime", "api-service"],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "service:backend/Dockerfile",
+      "target": "service:backend/Dockerfile:python",
+      "type": "deploys",
+      "direction": "forward",
+      "weight": 0.7
+    }
+  ]
+}

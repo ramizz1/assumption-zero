@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { api } from '../lib/api'
+import { api, type AnalysisProgress } from '../lib/api'
 import SavedAnalysesModal from '../components/SavedAnalysesModal'
 import SettingsModal, { getStoredAISettings, saveAISettings, AISettings } from '../components/SettingsModal'
 import ProviderIcon from '../components/ProviderIcon'
@@ -104,6 +104,8 @@ export const HomePage: React.FC = () => {
   const [inputMode, setInputMode] = useState<'prompt' | 'form'>('prompt')
   const [researchDepth, setResearchDepth] = useState<ResearchDepth>('deep')
   const [runElapsedSeconds, setRunElapsedSeconds] = useState(0)
+  const [runProgress, setRunProgress] = useState<AnalysisProgress | null>(null)
+  const [lastUpdateSeconds, setLastUpdateSeconds] = useState(0)
   const activeRequestRef = useRef<AbortController | null>(null)
   const requestTimeoutRef = useRef<number | null>(null)
   const runTimedOutRef = useRef(false)
@@ -195,6 +197,8 @@ export const HomePage: React.FC = () => {
     }
 
     const controller = new AbortController()
+    setRunProgress(null)
+    setLastUpdateSeconds(0)
     activeRequestRef.current = controller
     runTimedOutRef.current = false
     requestTimeoutRef.current = window.setTimeout(() => {
@@ -216,6 +220,11 @@ export const HomePage: React.FC = () => {
   const cancelAnalysis = () => {
     runTimedOutRef.current = false
     activeRequestRef.current?.abort()
+  }
+
+  const receiveProgress = (event: AnalysisProgress) => {
+    setLastUpdateSeconds(event.elapsed_seconds)
+    if (event.type === 'progress') setRunProgress(event)
   }
 
   const handleAnalysisError = (err: unknown, fallback: string) => {
@@ -256,7 +265,7 @@ export const HomePage: React.FC = () => {
 
     try {
       const provider = aiSettings.provider === 'custom' ? 'openai_compat' : aiSettings.provider
-      const result = await api.runAnalysisFromPromptSync({
+      const result = await api.runAnalysisFromPromptStream({
         prompt: rawPromptText,
         ai_provider: provider,
         groq_api_key: aiSettings.groqKey || undefined,
@@ -266,7 +275,7 @@ export const HomePage: React.FC = () => {
         custom_base_url: aiSettings.provider === 'custom' ? (aiSettings.customUrl || undefined) : undefined,
         ollama_base_url: aiSettings.ollamaUrl || undefined,
         research_depth: researchDepth,
-      }, controller.signal)
+      }, receiveProgress, controller.signal)
       saveSessionAnalysis(result)
       navigate(`/analysis/${result.analysis_id}`)
     } catch (err) {
@@ -310,7 +319,7 @@ export const HomePage: React.FC = () => {
         additional_context: idea.additional_context || undefined,
       }
 
-      const result = await api.runAnalysisSync({
+      const result = await api.runAnalysisStream({
         idea: payload,
         ai_provider: provider,
         groq_api_key: aiSettings.groqKey || undefined,
@@ -320,7 +329,7 @@ export const HomePage: React.FC = () => {
         custom_base_url: aiSettings.provider === 'custom' ? (aiSettings.customUrl || undefined) : undefined,
         ollama_base_url: aiSettings.ollamaUrl || undefined,
         research_depth: researchDepth,
-      }, controller.signal)
+      }, receiveProgress, controller.signal)
       saveSessionAnalysis(result)
       navigate(`/analysis/${result.analysis_id}`)
     } catch (err) {
@@ -706,6 +715,8 @@ export const HomePage: React.FC = () => {
                 <AnalysisRunProgress
                   depth={researchDepth}
                   elapsedSeconds={runElapsedSeconds}
+                  progress={runProgress}
+                  lastUpdateSeconds={lastUpdateSeconds}
                   onCancel={cancelAnalysis}
                 />
               )}
@@ -950,6 +961,8 @@ export const HomePage: React.FC = () => {
                 <AnalysisRunProgress
                   depth={researchDepth}
                   elapsedSeconds={runElapsedSeconds}
+                  progress={runProgress}
+                  lastUpdateSeconds={lastUpdateSeconds}
                   onCancel={cancelAnalysis}
                 />
               )}

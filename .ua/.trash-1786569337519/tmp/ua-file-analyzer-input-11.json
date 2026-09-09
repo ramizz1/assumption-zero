@@ -1,0 +1,15 @@
+{
+  "projectRoot": "C:\\Users\\user\\Desktop\\idea\\assumption-zero",
+  "batchFiles": [
+    {"path":"frontend/index.html","language":"html","sizeLines":18,"fileCategory":"markup"},
+    {"path":"frontend/package.json","language":"json","sizeLines":39,"fileCategory":"config"},
+    {"path":"frontend/tsconfig.json","language":"json","sizeLines":22,"fileCategory":"config"},
+    {"path":"frontend/tsconfig.node.json","language":"json","sizeLines":13,"fileCategory":"config"}
+  ],
+  "batchImportData": {
+    "frontend/index.html": [],
+    "frontend/package.json": [],
+    "frontend/tsconfig.json": [],
+    "frontend/tsconfig.node.json": []
+  }
+}

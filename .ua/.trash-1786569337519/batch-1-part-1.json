@@ -1,0 +1,927 @@
+{
+  "nodes": [
+    {
+      "id": "file:frontend/src/App.tsx",
+      "type": "file",
+      "name": "App.tsx",
+      "filePath": "frontend/src/App.tsx",
+      "summary": "Defines the top-level React router, directing the landing route to idea intake and analysis routes to the analysis workflow.",
+      "tags": [
+        "entry-point",
+        "component",
+        "routing"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:frontend/src/App.tsx:App",
+      "type": "function",
+      "name": "App",
+      "filePath": "frontend/src/App.tsx",
+      "lineRange": [
+        8,
+        28
+      ],
+      "summary": "Creates the application route tree for intake and analysis pages.",
+      "tags": [
+        "component",
+        "routing",
+        "entry-point"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:frontend/src/components/CitationBadge.tsx",
+      "type": "file",
+      "name": "CitationBadge.tsx",
+      "filePath": "frontend/src/components/CitationBadge.tsx",
+      "summary": "Renders a compact evidence citation that resolves an evidence identifier and safely links to external source material.",
+      "tags": [
+        "component",
+        "evidence",
+        "security"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:frontend/src/components/CitationBadge.tsx:CitationBadge",
+      "type": "function",
+      "name": "CitationBadge",
+      "filePath": "frontend/src/components/CitationBadge.tsx",
+      "lineRange": [
+        10,
+        42
+      ],
+      "summary": "Resolves and renders one evidence citation with safe link handling and source context.",
+      "tags": [
+        "component",
+        "evidence",
+        "security"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:frontend/src/components/CompetitorCard.tsx",
+      "type": "file",
+      "name": "CompetitorCard.tsx",
+      "filePath": "frontend/src/components/CompetitorCard.tsx",
+      "summary": "Presents a competitor profile with pricing, positioning, strengths, weaknesses, complaints, differentiation, and supporting citations.",
+      "tags": [
+        "component",
+        "competitor-research",
+        "evidence"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:frontend/src/components/CompetitorCard.tsx:CompetitorCard",
+      "type": "function",
+      "name": "CompetitorCard",
+      "filePath": "frontend/src/components/CompetitorCard.tsx",
+      "lineRange": [
+        13,
+        125
+      ],
+      "summary": "Renders a detailed competitor research card and its supporting citations.",
+      "tags": [
+        "component",
+        "competitor-research",
+        "evidence"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:frontend/src/components/DisclaimerBanner.tsx",
+      "type": "file",
+      "name": "DisclaimerBanner.tsx",
+      "filePath": "frontend/src/components/DisclaimerBanner.tsx",
+      "summary": "Displays the shared product disclaimer so research reports communicate the limits of automated analysis.",
+      "tags": [
+        "component",
+        "disclaimer",
+        "risk-communication"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:frontend/src/components/DisclaimerBanner.tsx:DisclaimerBanner",
+      "type": "function",
+      "name": "DisclaimerBanner",
+      "filePath": "frontend/src/components/DisclaimerBanner.tsx",
+      "lineRange": [
+        4,
+        17
+      ],
+      "summary": "Renders the shared automated-analysis disclaimer banner.",
+      "tags": [
+        "component",
+        "disclaimer",
+        "risk-communication"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:frontend/src/components/ExperimentCard.tsx",
+      "type": "file",
+      "name": "ExperimentCard.tsx",
+      "filePath": "frontend/src/components/ExperimentCard.tsx",
+      "summary": "Visualizes a validation experiment with its hypothesis, method, audience, success criteria, cost, timing, and next decision.",
+      "tags": [
+        "component",
+        "experiment",
+        "validation"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:frontend/src/components/ExperimentCard.tsx:ExperimentCard",
+      "type": "function",
+      "name": "ExperimentCard",
+      "filePath": "frontend/src/components/ExperimentCard.tsx",
+      "lineRange": [
+        9,
+        76
+      ],
+      "summary": "Renders the plan, success criteria, and decision guidance for a validation experiment.",
+      "tags": [
+        "component",
+        "experiment",
+        "validation"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:frontend/src/components/FinancialSimulator.tsx",
+      "type": "file",
+      "name": "FinancialSimulator.tsx",
+      "filePath": "frontend/src/components/FinancialSimulator.tsx",
+      "summary": "Provides an interactive unit-economics simulator that derives customer acquisition, lifetime value, payback, break-even, and revenue projections from an idea.",
+      "tags": [
+        "component",
+        "financial-modeling",
+        "simulation"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:frontend/src/components/FinancialSimulator.tsx:FinancialSimulator",
+      "type": "function",
+      "name": "FinancialSimulator",
+      "filePath": "frontend/src/components/FinancialSimulator.tsx",
+      "lineRange": [
+        19,
+        109
+      ],
+      "summary": "Maintains adjustable unit-economics assumptions and calculates financial viability and projection data.",
+      "tags": [
+        "component",
+        "financial-modeling",
+        "simulation"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:frontend/src/components/FinancialSimulator.tsx:Slider",
+      "type": "function",
+      "name": "Slider",
+      "filePath": "frontend/src/components/FinancialSimulator.tsx",
+      "lineRange": [
+        111,
+        121
+      ],
+      "summary": "Renders a labeled range control used to tune simulator assumptions.",
+      "tags": [
+        "component",
+        "form-control",
+        "simulation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:frontend/src/components/FounderToolkit.tsx",
+      "type": "file",
+      "name": "FounderToolkit.tsx",
+      "filePath": "frontend/src/components/FounderToolkit.tsx",
+      "summary": "Renders an execution toolkit covering customer-discovery scripts, channels, metrics, roadmap actions, interviews, and decision rules.",
+      "tags": [
+        "component",
+        "founder-toolkit",
+        "validation"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:frontend/src/components/FounderToolkit.tsx:FounderToolkit",
+      "type": "function",
+      "name": "FounderToolkit",
+      "filePath": "frontend/src/components/FounderToolkit.tsx",
+      "lineRange": [
+        8,
+        115
+      ],
+      "summary": "Renders an actionable founder playbook and supports copying its interview script.",
+      "tags": [
+        "component",
+        "founder-toolkit",
+        "clipboard"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:frontend/src/components/OpportunityGauge.tsx",
+      "type": "file",
+      "name": "OpportunityGauge.tsx",
+      "filePath": "frontend/src/components/OpportunityGauge.tsx",
+      "summary": "Renders a score-driven circular opportunity gauge with normalized geometry, color semantics, and an accessible numeric value.",
+      "tags": [
+        "component",
+        "data-visualization",
+        "scoring"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:frontend/src/components/OpportunityGauge.tsx:OpportunityGauge",
+      "type": "function",
+      "name": "OpportunityGauge",
+      "filePath": "frontend/src/components/OpportunityGauge.tsx",
+      "lineRange": [
+        9,
+        68
+      ],
+      "summary": "Draws a normalized circular opportunity score with semantic colors and labels.",
+      "tags": [
+        "component",
+        "data-visualization",
+        "scoring"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:frontend/src/components/PerspectiveExplorer.tsx",
+      "type": "file",
+      "name": "PerspectiveExplorer.tsx",
+      "filePath": "frontend/src/components/PerspectiveExplorer.tsx",
+      "summary": "Lets users switch among model perspectives and view each recommendation, score, and evidence-backed analysis panel.",
+      "tags": [
+        "component",
+        "multi-model",
+        "evidence"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:frontend/src/components/PerspectiveExplorer.tsx:PerspectiveExplorer",
+      "type": "function",
+      "name": "PerspectiveExplorer",
+      "filePath": "frontend/src/components/PerspectiveExplorer.tsx",
+      "lineRange": [
+        11,
+        70
+      ],
+      "summary": "Manages perspective selection and renders the active model analysis.",
+      "tags": [
+        "component",
+        "multi-model",
+        "state-management"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:frontend/src/components/PerspectivePanel.tsx",
+      "type": "file",
+      "name": "PerspectivePanel.tsx",
+      "filePath": "frontend/src/components/PerspectivePanel.tsx",
+      "summary": "Renders the detailed sections of one analytical perspective, including claims, evidence citations, recommendations, and discipline-specific iconography.",
+      "tags": [
+        "component",
+        "analysis",
+        "evidence"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:frontend/src/components/PerspectivePanel.tsx:PerspectivePanel",
+      "type": "function",
+      "name": "PerspectivePanel",
+      "filePath": "frontend/src/components/PerspectivePanel.tsx",
+      "lineRange": [
+        41,
+        149
+      ],
+      "summary": "Renders structured sections and citations for a single analytical perspective.",
+      "tags": [
+        "component",
+        "analysis",
+        "evidence"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:frontend/src/components/ProviderIcon.tsx",
+      "type": "file",
+      "name": "ProviderIcon.tsx",
+      "filePath": "frontend/src/components/ProviderIcon.tsx",
+      "summary": "Maps supported AI provider identifiers to distinctive inline SVG marks for provider selection interfaces.",
+      "tags": [
+        "component",
+        "ai-provider",
+        "iconography"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:frontend/src/components/ProviderIcon.tsx:ProviderIcon",
+      "type": "function",
+      "name": "ProviderIcon",
+      "filePath": "frontend/src/components/ProviderIcon.tsx",
+      "lineRange": [
+        10,
+        78
+      ],
+      "summary": "Selects and renders the SVG icon for an AI provider identifier.",
+      "tags": [
+        "component",
+        "ai-provider",
+        "iconography"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:frontend/src/components/RegionalMarketPanel.tsx",
+      "type": "file",
+      "name": "RegionalMarketPanel.tsx",
+      "filePath": "frontend/src/components/RegionalMarketPanel.tsx",
+      "summary": "Summarizes regional market attractiveness, launch stance, demand signals, risks, regulatory notes, channels, and localization guidance.",
+      "tags": [
+        "component",
+        "regional-analysis",
+        "market-research"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:frontend/src/components/RegionalMarketPanel.tsx:SignalList",
+      "type": "function",
+      "name": "SignalList",
+      "filePath": "frontend/src/components/RegionalMarketPanel.tsx",
+      "lineRange": [
+        8,
+        25
+      ],
+      "summary": "Renders a labeled regional signal list with an empty-state fallback.",
+      "tags": [
+        "component",
+        "regional-analysis",
+        "list-rendering"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:frontend/src/components/RegionalMarketPanel.tsx:RegionalMarketPanel",
+      "type": "function",
+      "name": "RegionalMarketPanel",
+      "filePath": "frontend/src/components/RegionalMarketPanel.tsx",
+      "lineRange": [
+        27,
+        93
+      ],
+      "summary": "Presents regional opportunity, risks, channels, regulations, and localization advice.",
+      "tags": [
+        "component",
+        "regional-analysis",
+        "market-research"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:frontend/src/components/SavedAnalysesModal.tsx",
+      "type": "file",
+      "name": "SavedAnalysesModal.tsx",
+      "filePath": "frontend/src/components/SavedAnalysesModal.tsx",
+      "summary": "Loads and displays saved analyses in a modal, with navigation, deletion, recommendation styling, and empty or loading states.",
+      "tags": [
+        "component",
+        "saved-analyses",
+        "api-client"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:frontend/src/components/SavedAnalysesModal.tsx:SavedAnalysesModal",
+      "type": "function",
+      "name": "SavedAnalysesModal",
+      "filePath": "frontend/src/components/SavedAnalysesModal.tsx",
+      "lineRange": [
+        13,
+        169
+      ],
+      "summary": "Fetches, displays, opens, and deletes analysis-history entries inside a modal.",
+      "tags": [
+        "component",
+        "saved-analyses",
+        "api-client"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:frontend/src/components/ScoreBreakdown.tsx",
+      "type": "file",
+      "name": "ScoreBreakdown.tsx",
+      "filePath": "frontend/src/components/ScoreBreakdown.tsx",
+      "summary": "Explains the overall opportunity score through weighted sub-scores, confidence, and visual color cues.",
+      "tags": [
+        "component",
+        "scoring",
+        "data-visualization"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:frontend/src/components/ScoreBreakdown.tsx:ScoreBreakdown",
+      "type": "function",
+      "name": "ScoreBreakdown",
+      "filePath": "frontend/src/components/ScoreBreakdown.tsx",
+      "lineRange": [
+        9,
+        70
+      ],
+      "summary": "Renders weighted score dimensions and confidence indicators for an analysis result.",
+      "tags": [
+        "component",
+        "scoring",
+        "data-visualization"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:frontend/src/components/SettingsModal.tsx",
+      "type": "file",
+      "name": "SettingsModal.tsx",
+      "filePath": "frontend/src/components/SettingsModal.tsx",
+      "summary": "Provides persistent AI-provider configuration, credential fields, model selection, endpoint settings, connection testing, and provider-specific guidance.",
+      "tags": [
+        "component",
+        "configuration",
+        "ai-provider"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:frontend/src/components/SettingsModal.tsx:getStoredAISettings",
+      "type": "function",
+      "name": "getStoredAISettings",
+      "filePath": "frontend/src/components/SettingsModal.tsx",
+      "lineRange": [
+        32,
+        57
+      ],
+      "summary": "Reads persisted provider settings and normalizes legacy or missing fields into defaults.",
+      "tags": [
+        "configuration",
+        "persistence",
+        "factory"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:frontend/src/components/SettingsModal.tsx:SettingsModal",
+      "type": "function",
+      "name": "SettingsModal",
+      "filePath": "frontend/src/components/SettingsModal.tsx",
+      "lineRange": [
+        59,
+        388
+      ],
+      "summary": "Manages provider configuration, persistence, validation, and connection testing in a modal.",
+      "tags": [
+        "component",
+        "configuration",
+        "ai-provider"
+      ],
+      "complexity": "complex"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:frontend/src/App.tsx",
+      "target": "function:frontend/src/App.tsx:App",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/App.tsx",
+      "target": "function:frontend/src/App.tsx:App",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:frontend/src/components/CitationBadge.tsx",
+      "target": "function:frontend/src/components/CitationBadge.tsx:CitationBadge",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/components/CitationBadge.tsx",
+      "target": "function:frontend/src/components/CitationBadge.tsx:CitationBadge",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:frontend/src/components/CompetitorCard.tsx",
+      "target": "function:frontend/src/components/CompetitorCard.tsx:CompetitorCard",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/components/CompetitorCard.tsx",
+      "target": "function:frontend/src/components/CompetitorCard.tsx:CompetitorCard",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:frontend/src/components/DisclaimerBanner.tsx",
+      "target": "function:frontend/src/components/DisclaimerBanner.tsx:DisclaimerBanner",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/components/DisclaimerBanner.tsx",
+      "target": "function:frontend/src/components/DisclaimerBanner.tsx:DisclaimerBanner",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:frontend/src/components/ExperimentCard.tsx",
+      "target": "function:frontend/src/components/ExperimentCard.tsx:ExperimentCard",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/components/ExperimentCard.tsx",
+      "target": "function:frontend/src/components/ExperimentCard.tsx:ExperimentCard",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:frontend/src/components/FinancialSimulator.tsx",
+      "target": "function:frontend/src/components/FinancialSimulator.tsx:FinancialSimulator",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/components/FinancialSimulator.tsx",
+      "target": "function:frontend/src/components/FinancialSimulator.tsx:FinancialSimulator",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:frontend/src/components/FinancialSimulator.tsx",
+      "target": "function:frontend/src/components/FinancialSimulator.tsx:Slider",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/components/FounderToolkit.tsx",
+      "target": "function:frontend/src/components/FounderToolkit.tsx:FounderToolkit",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/components/FounderToolkit.tsx",
+      "target": "function:frontend/src/components/FounderToolkit.tsx:FounderToolkit",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:frontend/src/components/OpportunityGauge.tsx",
+      "target": "function:frontend/src/components/OpportunityGauge.tsx:OpportunityGauge",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/components/OpportunityGauge.tsx",
+      "target": "function:frontend/src/components/OpportunityGauge.tsx:OpportunityGauge",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:frontend/src/components/PerspectiveExplorer.tsx",
+      "target": "function:frontend/src/components/PerspectiveExplorer.tsx:PerspectiveExplorer",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/components/PerspectiveExplorer.tsx",
+      "target": "function:frontend/src/components/PerspectiveExplorer.tsx:PerspectiveExplorer",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:frontend/src/components/PerspectivePanel.tsx",
+      "target": "function:frontend/src/components/PerspectivePanel.tsx:PerspectivePanel",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/components/PerspectivePanel.tsx",
+      "target": "function:frontend/src/components/PerspectivePanel.tsx:PerspectivePanel",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:frontend/src/components/ProviderIcon.tsx",
+      "target": "function:frontend/src/components/ProviderIcon.tsx:ProviderIcon",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/components/ProviderIcon.tsx",
+      "target": "function:frontend/src/components/ProviderIcon.tsx:ProviderIcon",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:frontend/src/components/RegionalMarketPanel.tsx",
+      "target": "function:frontend/src/components/RegionalMarketPanel.tsx:SignalList",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/components/RegionalMarketPanel.tsx",
+      "target": "function:frontend/src/components/RegionalMarketPanel.tsx:RegionalMarketPanel",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/components/RegionalMarketPanel.tsx",
+      "target": "function:frontend/src/components/RegionalMarketPanel.tsx:RegionalMarketPanel",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:frontend/src/components/SavedAnalysesModal.tsx",
+      "target": "function:frontend/src/components/SavedAnalysesModal.tsx:SavedAnalysesModal",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/components/SavedAnalysesModal.tsx",
+      "target": "function:frontend/src/components/SavedAnalysesModal.tsx:SavedAnalysesModal",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:frontend/src/components/ScoreBreakdown.tsx",
+      "target": "function:frontend/src/components/ScoreBreakdown.tsx:ScoreBreakdown",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/components/ScoreBreakdown.tsx",
+      "target": "function:frontend/src/components/ScoreBreakdown.tsx:ScoreBreakdown",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:frontend/src/components/SettingsModal.tsx",
+      "target": "function:frontend/src/components/SettingsModal.tsx:getStoredAISettings",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/components/SettingsModal.tsx",
+      "target": "function:frontend/src/components/SettingsModal.tsx:getStoredAISettings",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:frontend/src/components/SettingsModal.tsx",
+      "target": "function:frontend/src/components/SettingsModal.tsx:SettingsModal",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:frontend/src/components/SettingsModal.tsx",
+      "target": "function:frontend/src/components/SettingsModal.tsx:SettingsModal",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:frontend/src/App.tsx",
+      "target": "file:frontend/src/pages/HomePage.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/components/CitationBadge.tsx",
+      "target": "file:frontend/src/lib/utils.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/components/CitationBadge.tsx",
+      "target": "file:frontend/src/types/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/components/CompetitorCard.tsx",
+      "target": "file:frontend/src/components/CitationBadge.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/components/CompetitorCard.tsx",
+      "target": "file:frontend/src/lib/utils.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/components/CompetitorCard.tsx",
+      "target": "file:frontend/src/types/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/components/DisclaimerBanner.tsx",
+      "target": "file:frontend/src/lib/utils.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/components/ExperimentCard.tsx",
+      "target": "file:frontend/src/types/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/components/FinancialSimulator.tsx",
+      "target": "file:frontend/src/types/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/components/FounderToolkit.tsx",
+      "target": "file:frontend/src/types/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/components/OpportunityGauge.tsx",
+      "target": "file:frontend/src/lib/utils.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/components/PerspectiveExplorer.tsx",
+      "target": "file:frontend/src/components/PerspectivePanel.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/components/PerspectiveExplorer.tsx",
+      "target": "file:frontend/src/lib/utils.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/components/PerspectiveExplorer.tsx",
+      "target": "file:frontend/src/types/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/components/PerspectivePanel.tsx",
+      "target": "file:frontend/src/components/CitationBadge.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/components/PerspectivePanel.tsx",
+      "target": "file:frontend/src/lib/utils.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/components/PerspectivePanel.tsx",
+      "target": "file:frontend/src/types/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/components/RegionalMarketPanel.tsx",
+      "target": "file:frontend/src/types/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/components/SavedAnalysesModal.tsx",
+      "target": "file:frontend/src/lib/api.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/components/SavedAnalysesModal.tsx",
+      "target": "file:frontend/src/lib/utils.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/components/SavedAnalysesModal.tsx",
+      "target": "file:frontend/src/types/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/components/ScoreBreakdown.tsx",
+      "target": "file:frontend/src/lib/utils.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/components/ScoreBreakdown.tsx",
+      "target": "file:frontend/src/types/index.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/components/SettingsModal.tsx",
+      "target": "file:frontend/src/components/ProviderIcon.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/components/SettingsModal.tsx",
+      "target": "file:frontend/src/lib/api.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/components/PerspectiveExplorer.tsx",
+      "target": "file:frontend/tests/perspectiveExplorer.test.tsx",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    }
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "nodes": [
+    {
+      "id": "config:.github/ISSUE_TEMPLATE/bug_report.yml",
+      "type": "config",
+      "name": "bug_report.yml",
+      "filePath": ".github/ISSUE_TEMPLATE/bug_report.yml",
+      "summary": "Defines the structured GitHub bug-report form for observed behavior, reproduction steps, affected product surface, environment details, sanitized logs, and a required secret-removal confirmation.",
+      "tags": ["configuration", "issue-template", "bug-reporting", "security", "triage"],
+      "complexity": "moderate",
+      "languageNotes": "Uses GitHub Issue Forms controls and required validations to collect reproducible reports while explicitly discouraging disclosure of sensitive data."
+    },
+    {
+      "id": "config:.github/ISSUE_TEMPLATE/config.yml",
+      "type": "config",
+      "name": "config.yml",
+      "filePath": ".github/ISSUE_TEMPLATE/config.yml",
+      "summary": "Configures the GitHub issue chooser to disable blank issues and direct security vulnerabilities to private repository advisories.",
+      "tags": ["configuration", "issue-template", "security", "triage"],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:.github/ISSUE_TEMPLATE/feature_request.yml",
+      "type": "config",
+      "name": "feature_request.yml",
+      "filePath": ".github/ISSUE_TEMPLATE/feature_request.yml",
+      "summary": "Defines the structured GitHub feature-request form for the user problem, smallest useful outcome, affected product area, and supporting evidence.",
+      "tags": ["configuration", "issue-template", "feature-request", "product-feedback"],
+      "complexity": "simple",
+      "languageNotes": "Uses required GitHub Issue Forms fields to emphasize problem and outcome framing before implementation details."
+    }
+  ],
+  "edges": [
+    {
+      "source": "config:.github/ISSUE_TEMPLATE/config.yml",
+      "target": "config:.github/ISSUE_TEMPLATE/bug_report.yml",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:.github/ISSUE_TEMPLATE/config.yml",
+      "target": "config:.github/ISSUE_TEMPLATE/feature_request.yml",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    }
+  ]
+}

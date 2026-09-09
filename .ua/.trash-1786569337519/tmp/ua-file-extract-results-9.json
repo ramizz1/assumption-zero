@@ -1,0 +1,404 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 7,
+  "filesSkipped": [
+    "start_web.bat"
+  ],
+  "analysisOutcomes": {
+    "structure": {
+      "succeeded": 7,
+      "failed": 0
+    },
+    "callGraph": {
+      "succeeded": 0,
+      "failed": 0,
+      "skipped": 7
+    }
+  },
+  "results": [
+    {
+      "path": ".env.example",
+      "language": "config",
+      "fileCategory": "config",
+      "totalLines": 60,
+      "nonEmptyLines": 50,
+      "definitions": [
+        {
+          "name": "DEBUG",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 7,
+          "endLine": 7
+        },
+        {
+          "name": "SSRF_PROTECTION_ENABLED",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 10,
+          "endLine": 10
+        },
+        {
+          "name": "CORS_ORIGINS",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 13,
+          "endLine": 13
+        },
+        {
+          "name": "AI_PROVIDER",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 18,
+          "endLine": 18
+        },
+        {
+          "name": "OPENROUTER_API_KEY",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 22,
+          "endLine": 22
+        },
+        {
+          "name": "OPENROUTER_MODEL",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 23,
+          "endLine": 23
+        },
+        {
+          "name": "GROQ_API_KEY",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 27,
+          "endLine": 27
+        },
+        {
+          "name": "GROQ_MODEL",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 28,
+          "endLine": 28
+        },
+        {
+          "name": "OPENCODE_API_KEY",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 32,
+          "endLine": 32
+        },
+        {
+          "name": "OPENCODE_BASE_URL",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 33,
+          "endLine": 33
+        },
+        {
+          "name": "OPENCODE_MODEL",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 34,
+          "endLine": 34
+        },
+        {
+          "name": "OLLAMA_BASE_URL",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 38,
+          "endLine": 38
+        },
+        {
+          "name": "OLLAMA_MODEL",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 39,
+          "endLine": 39
+        },
+        {
+          "name": "GITHUB_TOKEN",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 57,
+          "endLine": 57
+        },
+        {
+          "name": "REQUEST_TIMEOUT",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 60,
+          "endLine": 60
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "definitionCount": 15
+      }
+    },
+    {
+      "path": "CONTRIBUTING.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 59,
+      "nonEmptyLines": 41,
+      "sections": [
+        {
+          "heading": "Contributing to Assumption Zero",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "Good contributions",
+          "level": 2,
+          "line": 5
+        },
+        {
+          "heading": "Local setup",
+          "level": 2,
+          "line": 16
+        },
+        {
+          "heading": "Quality checks",
+          "level": 2,
+          "line": 37
+        },
+        {
+          "heading": "Pull requests",
+          "level": 2,
+          "line": 51
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 5
+      }
+    },
+    {
+      "path": "IDEA_GUIDE.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 89,
+      "nonEmptyLines": 66,
+      "sections": [
+        {
+          "heading": "Startup Idea Validation Guide",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "A strong brief",
+          "level": 2,
+          "line": 7
+        },
+        {
+          "heading": "Choose research depth",
+          "level": 2,
+          "line": 43
+        },
+        {
+          "heading": "Regional validation rules",
+          "level": 2,
+          "line": 53
+        },
+        {
+          "heading": "Run it",
+          "level": 2,
+          "line": 64
+        },
+        {
+          "heading": "Make a decision",
+          "level": 2,
+          "line": 87
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 6
+      }
+    },
+    {
+      "path": "README.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 279,
+      "nonEmptyLines": 204,
+      "sections": [
+        {
+          "heading": "Why Assumption Zero?",
+          "level": 2,
+          "line": 37
+        },
+        {
+          "heading": "What you get",
+          "level": 3,
+          "line": 48
+        },
+        {
+          "heading": "How it works",
+          "level": 2,
+          "line": 61
+        },
+        {
+          "heading": "Quick start",
+          "level": 2,
+          "line": 75
+        },
+        {
+          "heading": "Requirements",
+          "level": 3,
+          "line": 77
+        },
+        {
+          "heading": "1. Install the engine",
+          "level": 3,
+          "line": 83
+        },
+        {
+          "heading": "2. Run your first analysis",
+          "level": 3,
+          "line": 104
+        },
+        {
+          "heading": "3. Launch the web interface",
+          "level": 3,
+          "line": 119
+        },
+        {
+          "heading": "AI providers",
+          "level": 2,
+          "line": 145
+        },
+        {
+          "heading": "CLI + Web parity",
+          "level": 2,
+          "line": 160
+        },
+        {
+          "heading": "Opportunity Score",
+          "level": 2,
+          "line": 180
+        },
+        {
+          "heading": "Research and accuracy model",
+          "level": 2,
+          "line": 196
+        },
+        {
+          "heading": "Research depth",
+          "level": 3,
+          "line": 208
+        },
+        {
+          "heading": "Architecture",
+          "level": 2,
+          "line": 220
+        },
+        {
+          "heading": "Development",
+          "level": 2,
+          "line": 239
+        },
+        {
+          "heading": "Deploy safely",
+          "level": 2,
+          "line": 255
+        },
+        {
+          "heading": "Contributing",
+          "level": 2,
+          "line": 268
+        },
+        {
+          "heading": "License",
+          "level": 2,
+          "line": 272
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 18
+      }
+    },
+    {
+      "path": "SECURITY.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 18,
+      "nonEmptyLines": 11,
+      "sections": [
+        {
+          "heading": "Security policy",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "Reporting a vulnerability",
+          "level": 2,
+          "line": 3
+        },
+        {
+          "heading": "Deployment expectations",
+          "level": 2,
+          "line": 16
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 3
+      }
+    },
+    {
+      "path": "docker-compose.yml",
+      "language": "yaml",
+      "fileCategory": "infra",
+      "totalLines": 49,
+      "nonEmptyLines": 47,
+      "sections": [
+        {
+          "heading": "services",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "volumes",
+          "level": 1,
+          "line": 48
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 2
+      }
+    },
+    {
+      "path": "start_web.sh",
+      "language": "shell",
+      "fileCategory": "script",
+      "totalLines": 92,
+      "nonEmptyLines": 78,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    }
+  ]
+}

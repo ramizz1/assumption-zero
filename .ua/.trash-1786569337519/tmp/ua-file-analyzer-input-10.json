@@ -1,0 +1,13 @@
+{
+  "projectRoot": "C:\\Users\\user\\Desktop\\idea\\assumption-zero",
+  "batchFiles": [
+    {"path":".github/ISSUE_TEMPLATE/bug_report.yml","language":"yaml","sizeLines":56,"fileCategory":"config"},
+    {"path":".github/ISSUE_TEMPLATE/config.yml","language":"yaml","sizeLines":5,"fileCategory":"config"},
+    {"path":".github/ISSUE_TEMPLATE/feature_request.yml","language":"yaml","sizeLines":39,"fileCategory":"config"}
+  ],
+  "batchImportData": {
+    ".github/ISSUE_TEMPLATE/bug_report.yml": [],
+    ".github/ISSUE_TEMPLATE/config.yml": [],
+    ".github/ISSUE_TEMPLATE/feature_request.yml": []
+  }
+}

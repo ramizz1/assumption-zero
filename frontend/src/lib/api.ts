@@ -153,7 +153,88 @@ export interface PromptAnalysisRequest {
 
 export type DemoAnalysisRequest = Omit<AnalysisCreateRequest, 'idea'>
 
+export interface AnalysisProgress {
+  type: 'progress' | 'heartbeat'
+  stage?: string
+  description?: string
+  elapsed_seconds: number
+}
+
+async function streamAnalysis(
+  path: string,
+  body: AnalysisCreateRequest | PromptAnalysisRequest,
+  onProgress: (event: AnalysisProgress) => void,
+  signal?: AbortSignal,
+): Promise<AnalysisResult> {
+  const controller = new AbortController()
+  const abort = () => controller.abort()
+  signal?.addEventListener('abort', abort, { once: true })
+  if (signal?.aborted) abort()
+  let idle = false
+  let timer = setTimeout(() => { idle = true; controller.abort() }, 45_000)
+  let reader: ReadableStreamDefaultReader<Uint8Array> | undefined
+  try {
+    const response = await fetch(`${BASE}${path}`, {
+      method: 'POST', body: JSON.stringify(body), signal: controller.signal,
+      headers: { 'Content-Type': 'application/json', Accept: 'application/x-ndjson',
+        'X-Analysis-Owner': getAnalysisOwnerToken() },
+    })
+    if (!response.ok) {
+      throw new ApiRequestError(friendlyApiMessage(response.status, await response.text()), response.status)
+    }
+    if (!response.body) throw new ApiRequestError('No analysis updates were received. Please try again.')
+    reader = response.body.getReader()
+    const decoder = new TextDecoder()
+    let pending = ''
+    const parseLine = (line: string): AnalysisResult | undefined => {
+      const event = JSON.parse(line)
+      if (event.type === 'error') throw new ApiRequestError(safeRequestMessage(event.message))
+      if (event.type === 'result') {
+        if (!event.result || event.result.status !== 'complete' || !event.result.analysis_id) {
+          throw new ApiRequestError('The analysis ended without a complete report. Please try again.')
+        }
+        return event.result as AnalysisResult
+      }
+      if (event.type === 'progress' || event.type === 'heartbeat') onProgress(event)
+    }
+    while (true) {
+      const { value, done } = await reader.read()
+      clearTimeout(timer)
+      timer = setTimeout(() => { idle = true; controller.abort() }, 45_000)
+      pending += decoder.decode(value, { stream: !done })
+      let newline: number
+      while ((newline = pending.indexOf('\n')) >= 0) {
+        const line = pending.slice(0, newline).trim()
+        pending = pending.slice(newline + 1)
+        if (line) { const result = parseLine(line); if (result) return result }
+      }
+      if (done) {
+        if (pending.trim()) { const result = parseLine(pending); if (result) return result }
+        throw new ApiRequestError('The connection ended before the report finished. Your idea is still here; try again.')
+      }
+    }
+  } catch (error) {
+    if (idle) throw new ApiRequestError('No server updates for 45 seconds. Check your connection and try again.')
+    if (signal?.aborted) throw new DOMException('Analysis canceled', 'AbortError')
+    if (error instanceof ApiRequestError) throw error
+    throw new ApiRequestError(SERVICE_UNAVAILABLE_MESSAGE)
+  } finally {
+    clearTimeout(timer)
+    signal?.removeEventListener('abort', abort)
+    controller.abort()
+    await reader?.cancel().catch(() => undefined)
+    reader?.releaseLock()
+  }
+}
+
 export const api = {
+  runAnalysisStream(body: AnalysisCreateRequest, onProgress: (event: AnalysisProgress) => void, signal?: AbortSignal) {
+    return streamAnalysis('/analyses/stream', body, onProgress, signal)
+  },
+
+  runAnalysisFromPromptStream(body: PromptAnalysisRequest, onProgress: (event: AnalysisProgress) => void, signal?: AbortSignal) {
+    return streamAnalysis('/analyses/from-prompt/stream', body, onProgress, signal)
+  },
   health(): Promise<HealthResponse> {
     return request('/health')
   },

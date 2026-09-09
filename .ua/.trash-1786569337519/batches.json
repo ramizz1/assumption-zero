@@ -1,0 +1,3526 @@
+{
+  "schemaVersion": 1,
+  "algorithm": "louvain",
+  "totalFiles": 121,
+  "totalBatches": 12,
+  "exportsByPath": {
+    ".ua/.understandignore": [],
+    "backend/assumption_zero/__init__.py": [],
+    "backend/assumption_zero/analysis/__init__.py": [],
+    "backend/assumption_zero/analysis/citation_validator.py": [
+      "validate_citations"
+    ],
+    "backend/assumption_zero/analysis/competitor_merger.py": [
+      "_normalize",
+      "_similar",
+      "_merge_two",
+      "merge_competitors"
+    ],
+    "backend/assumption_zero/analysis/confidence.py": [
+      "calculate_evidence_confidence"
+    ],
+    "backend/assumption_zero/analysis/disagreement.py": [
+      "detect_disagreements"
+    ],
+    "backend/assumption_zero/analysis/engine.py": [
+      "_assign_evidence_ids",
+      "_normalized_name",
+      "_brand_from_url",
+      "_clean_competitor_name",
+      "_extract_competitors_from_evidence",
+      "_evidence_mentions",
+      "_validated_ai_competitors",
+      "_select_recommendation",
+      "_select_most_dangerous_assumption",
+      "_find_strongest",
+      "_collect_missing_info",
+      "AnalysisEngine"
+    ],
+    "backend/assumption_zero/analysis/experiment_generator.py": [
+      "_pick_experiments",
+      "generate_experiments"
+    ],
+    "backend/assumption_zero/analysis/founder_toolkit.py": [
+      "_split_channels",
+      "_default_channels",
+      "generate_founder_toolkit"
+    ],
+    "backend/assumption_zero/analysis/query_generator.py": [
+      "_clean_phrase",
+      "generate_queries"
+    ],
+    "backend/assumption_zero/analysis/regional_analysis.py": [
+      "_location_tokens",
+      "_is_regional",
+      "_signals",
+      "generate_regional_analysis"
+    ],
+    "backend/assumption_zero/analysis/scoring.py": [
+      "_normalize_dimension_scores",
+      "_avg_dimension_scores",
+      "_confidence_from_evidence",
+      "_find_evidence_for_dimension",
+      "_dimension_explanation",
+      "calculate_opportunity_score"
+    ],
+    "backend/assumption_zero/analysis/unit_economics.py": [
+      "UnitEconomicsResult",
+      "extract_price",
+      "calculate_unit_economics"
+    ],
+    "backend/assumption_zero/api/__init__.py": [],
+    "backend/assumption_zero/api/routes.py": [
+      "_available_providers",
+      "_llm_options",
+      "_validate_selected_provider",
+      "health",
+      "verify_keys_endpoint",
+      "create_analysis_endpoint",
+      "create_analysis_from_prompt_endpoint",
+      "list_analyses_endpoint",
+      "get_analysis_endpoint",
+      "delete_analysis_endpoint",
+      "demo_endpoint"
+    ],
+    "backend/assumption_zero/cli.py": [
+      "_score_color",
+      "_score_bar",
+      "_rec_color",
+      "_status_color",
+      "_conf_color",
+      "_perspective_color",
+      "_print_splash",
+      "_print_section",
+      "_print_disclaimer",
+      "_build_engine_sync",
+      "_run_analysis_sync",
+      "_clean_summary",
+      "_print_report",
+      "_export_markdown",
+      "_export_html",
+      "_ask_idea",
+      "_with_founder_context",
+      "_ask_idea_with_key",
+      "guide",
+      "analyze",
+      "prompt",
+      "demo",
+      "simulate",
+      "verify_provider",
+      "list_cmd",
+      "config_cmd",
+      "show",
+      "export",
+      "delete",
+      "clean",
+      "serve",
+      "version"
+    ],
+    "backend/assumption_zero/config.py": [
+      "is_public_http_url",
+      "Settings",
+      "get_settings"
+    ],
+    "backend/assumption_zero/demo.py": [],
+    "backend/assumption_zero/llm/__init__.py": [],
+    "backend/assumption_zero/llm/base.py": [
+      "DiscoveredCompetitor",
+      "PerspectiveOutput",
+      "build_analysis_prompt",
+      "LLMAdapter"
+    ],
+    "backend/assumption_zero/llm/beta_adapter.py": [
+      "BetaAdapter"
+    ],
+    "backend/assumption_zero/llm/fallback_adapter.py": [
+      "FallbackChainAdapter"
+    ],
+    "backend/assumption_zero/llm/groq_adapter.py": [
+      "GroqAdapter"
+    ],
+    "backend/assumption_zero/llm/hybrid_adapter.py": [
+      "HybridLLMAdapter"
+    ],
+    "backend/assumption_zero/llm/mock_adapter.py": [
+      "_count",
+      "_avg_relevance",
+      "_high_reliability_count",
+      "_compute_scores",
+      "_recommendation_from_avg",
+      "_findings",
+      "MockAdapter"
+    ],
+    "backend/assumption_zero/llm/ollama_adapter.py": [
+      "OllamaAdapter"
+    ],
+    "backend/assumption_zero/llm/openai_compat_adapter.py": [
+      "_parse_output",
+      "OpenAICompatAdapter"
+    ],
+    "backend/assumption_zero/llm/opencode_adapter.py": [
+      "OpencodeAdapter"
+    ],
+    "backend/assumption_zero/llm/openrouter_adapter.py": [
+      "_repair_and_parse_json",
+      "_parse_output",
+      "OpenRouterAdapter"
+    ],
+    "backend/assumption_zero/main.py": [
+      "clean_error_message",
+      "create_app"
+    ],
+    "backend/assumption_zero/models.py": [
+      "Base",
+      "AnalysisRecord",
+      "get_sync_engine",
+      "get_sync_session",
+      "get_async_engine",
+      "get_async_session_maker",
+      "init_db"
+    ],
+    "backend/assumption_zero/research/__init__.py": [],
+    "backend/assumption_zero/research/arxiv_provider.py": [
+      "_stable_id",
+      "ArxivProvider"
+    ],
+    "backend/assumption_zero/research/base.py": [
+      "ResearchProvider"
+    ],
+    "backend/assumption_zero/research/demo_provider.py": [
+      "DemoProvider"
+    ],
+    "backend/assumption_zero/research/github_provider.py": [
+      "_stable_id",
+      "GitHubProvider"
+    ],
+    "backend/assumption_zero/research/hackernews_provider.py": [
+      "_stable_id",
+      "_ev_type_for_hn",
+      "HackerNewsProvider"
+    ],
+    "backend/assumption_zero/research/news_provider.py": [
+      "_stable_id",
+      "NewsSearchProvider"
+    ],
+    "backend/assumption_zero/research/reddit_provider.py": [
+      "_stable_id",
+      "_ev_type",
+      "RedditProvider"
+    ],
+    "backend/assumption_zero/research/searxng_provider.py": [
+      "_stable_id",
+      "_reliability_from_domain",
+      "SearXNGProvider"
+    ],
+    "backend/assumption_zero/research/web_search_provider.py": [
+      "_stable_id",
+      "_ev_type",
+      "WebSearchProvider"
+    ],
+    "backend/assumption_zero/research/wikipedia_provider.py": [
+      "_stable_id",
+      "_ev_type_for_wiki",
+      "WikipediaProvider"
+    ],
+    "backend/assumption_zero/schemas.py": [
+      "EvidenceType",
+      "ReliabilityLevel",
+      "ConfidenceLevel",
+      "AnalysisStatus",
+      "ResearchDepth",
+      "AnalysisStage",
+      "Recommendation",
+      "PerspectiveName",
+      "CompetitorType",
+      "is_gibberish",
+      "IdeaInput",
+      "EvidenceItem",
+      "Competitor",
+      "DimensionScore",
+      "OpportunityScore",
+      "AnalysisPerspective",
+      "DisagreementPosition",
+      "ModelDisagreement",
+      "ValidationExperiment",
+      "FounderAction",
+      "FounderToolkit",
+      "RegionalEvidenceSignal",
+      "RegionalMarketAnalysis",
+      "ResearchCoverage",
+      "AnalysisResult",
+      "AnalysisCreateRequest",
+      "DemoAnalysisRequest",
+      "PromptAnalysisRequest",
+      "AnalysisListItem",
+      "HealthResponse"
+    ],
+    "backend/assumption_zero/services/__init__.py": [],
+    "backend/assumption_zero/services/analysis_service.py": [
+      "build_llm_adapter",
+      "build_research_providers",
+      "create_analysis",
+      "run_analysis",
+      "get_analysis",
+      "list_analyses",
+      "delete_analysis",
+      "_parse_dt"
+    ],
+    "backend/assumption_zero/storage.py": [
+      "_ensure_dirs",
+      "_migrate_legacy_storage",
+      "_read_all",
+      "_write_all",
+      "resolve_id",
+      "_input_path",
+      "_result_path",
+      "create_record",
+      "update_stage",
+      "complete_record",
+      "fail_record",
+      "get_record",
+      "get_input",
+      "get_result",
+      "list_records",
+      "delete_record",
+      "init_storage"
+    ],
+    "backend/tests/__init__.py": [],
+    "backend/tests/conftest.py": [
+      "isolated_storage",
+      "sample_idea",
+      "sample_evidence",
+      "sample_perspectives"
+    ],
+    "backend/tests/test_api.py": [
+      "client",
+      "test_health",
+      "test_health_no_secrets_exposed",
+      "test_create_analysis_returns_id",
+      "test_get_nonexistent_analysis",
+      "test_list_analyses_returns_list",
+      "test_demo_endpoint_returns_id",
+      "test_demo_auto_uses_browser_groq_key",
+      "test_create_analysis_invalid_input",
+      "test_input_too_long_rejected",
+      "test_prompt_length_and_provider_are_bounded",
+      "test_analysis_list_limit_is_bounded"
+    ],
+    "backend/tests/test_citations.py": [
+      "_make_perspective",
+      "test_valid_citations_are_kept",
+      "test_invalid_citations_are_moved",
+      "test_empty_evidence_makes_all_invalid",
+      "test_no_citations_stays_empty"
+    ],
+    "backend/tests/test_cli_parity.py": [
+      "test_cli_exposes_web_equivalent_commands_and_provider_controls",
+      "test_cli_founder_context_flags_override_parsed_idea",
+      "test_unit_economics_matches_web_default_model",
+      "test_cli_analysis_is_saved_for_web_history",
+      "test_history_verdict_filters_work_for_web_and_cli"
+    ],
+    "backend/tests/test_competitors.py": [
+      "_comp",
+      "test_exact_duplicates_merged",
+      "test_name_variant_merged",
+      "test_different_companies_not_merged",
+      "test_empty_list",
+      "test_single_competitor",
+      "test_evidence_ids_deduplicated",
+      "_idea",
+      "_evidence",
+      "test_ai_competitor_requires_real_supporting_citation",
+      "test_ai_competitor_is_grounded_and_uses_evidence_url",
+      "test_user_competitor_without_evidence_is_low_confidence_and_has_no_fake_url",
+      "test_prefix_names_are_not_accidentally_merged",
+      "test_merge_promotes_better_supported_entry"
+    ],
+    "backend/tests/test_confidence.py": [
+      "test_no_evidence_returns_low",
+      "test_many_high_quality_items_returns_high",
+      "test_single_item_returns_low",
+      "test_confidence_is_independent_of_score"
+    ],
+    "backend/tests/test_engine_e2e.py": [
+      "MockAdapter",
+      "MockProvider",
+      "CompetitorProvider",
+      "CompetitorAIAdapter",
+      "test_engine_end_to_end",
+      "test_ai_competitor_survives_grounded_end_to_end_pipeline"
+    ],
+    "backend/tests/test_export.py": [
+      "_make_result",
+      "test_markdown_export_contains_disclaimer",
+      "test_markdown_export_contains_idea_name",
+      "test_markdown_export_contains_score",
+      "test_markdown_export_contains_evidence_ids",
+      "test_json_export_no_secrets",
+      "test_markdown_export_contains_experiments",
+      "test_html_export_structure",
+      "test_exports_include_full_competitor_intelligence"
+    ],
+    "backend/tests/test_founder_toolkit.py": [
+      "_idea",
+      "test_founder_toolkit_contains_measurable_roadmap",
+      "test_founder_toolkit_uses_declared_acquisition_channels"
+    ],
+    "backend/tests/test_llm_adapters.py": [
+      "test_build_all_llm_adapters",
+      "test_explicit_provider_never_silently_falls_back_to_mock",
+      "test_mock_adapter_parse_prompt",
+      "test_gibberish_rejection_in_adapters",
+      "test_fallback_chain_adapter"
+    ],
+    "backend/tests/test_regional_research.py": [
+      "_idea",
+      "_evidence",
+      "test_regional_analysis_counts_only_market_specific_evidence",
+      "test_research_depth_controls_query_and_perspective_volume",
+      "test_no_key_parser_uses_only_user_supplied_competitors_and_region"
+    ],
+    "backend/tests/test_scoring.py": [
+      "test_weights_sum_to_100",
+      "test_all_seven_dimensions_present",
+      "test_score_calculation_deterministic",
+      "test_score_is_within_bounds",
+      "test_score_has_correct_dimension_count",
+      "test_weighted_scores_sum_to_total",
+      "test_score_no_perspectives",
+      "test_score_all_high",
+      "test_score_all_low"
+    ],
+    "backend/tests/test_validation_errors.py": [
+      "test_clean_error_message_helper",
+      "test_gibberish_prompt_endpoint_returns_clean_error",
+      "test_empty_prompt_returns_clean_error",
+      "test_verify_keys_endpoint_success",
+      "test_verify_keys_missing_key_returns_400",
+      "test_release_debug_value_does_not_break_startup",
+      "test_ssrf_url_filter_blocks_local_and_non_http_targets"
+    ],
+    "frontend/postcss.config.js": [],
+    "frontend/src/App.tsx": [
+      "App"
+    ],
+    "frontend/src/components/CitationBadge.tsx": [
+      "CitationBadge"
+    ],
+    "frontend/src/components/CompetitorCard.tsx": [
+      "CompetitorCard"
+    ],
+    "frontend/src/components/DisclaimerBanner.tsx": [
+      "DisclaimerBanner"
+    ],
+    "frontend/src/components/ExperimentCard.tsx": [
+      "ExperimentCard"
+    ],
+    "frontend/src/components/FinancialSimulator.tsx": [
+      "FinancialSimulator"
+    ],
+    "frontend/src/components/FounderToolkit.tsx": [
+      "FounderToolkit"
+    ],
+    "frontend/src/components/OpportunityGauge.tsx": [
+      "OpportunityGauge"
+    ],
+    "frontend/src/components/PerspectiveExplorer.tsx": [
+      "PerspectiveExplorer"
+    ],
+    "frontend/src/components/PerspectivePanel.tsx": [
+      "PerspectivePanel"
+    ],
+    "frontend/src/components/ProviderIcon.tsx": [
+      "ProviderIcon"
+    ],
+    "frontend/src/components/RegionalMarketPanel.tsx": [
+      "RegionalMarketPanel"
+    ],
+    "frontend/src/components/SavedAnalysesModal.tsx": [
+      "SavedAnalysesModal"
+    ],
+    "frontend/src/components/ScoreBreakdown.tsx": [
+      "ScoreBreakdown"
+    ],
+    "frontend/src/components/SettingsModal.tsx": [
+      "getStoredAISettings",
+      "SettingsModal"
+    ],
+    "frontend/src/hooks/useAnalysis.ts": [
+      "useAnalysis"
+    ],
+    "frontend/src/lib/api.ts": [
+      "api"
+    ],
+    "frontend/src/lib/readiness.ts": [
+      "assessPromptReadiness",
+      "assessFormReadiness"
+    ],
+    "frontend/src/lib/report.ts": [
+      "generateMarkdownReport"
+    ],
+    "frontend/src/lib/utils.ts": [
+      "scoreColor",
+      "scoreBgColor",
+      "scoreBorderColor",
+      "recommendationColor",
+      "recommendationBg",
+      "confidenceColor",
+      "reliabilityBadge",
+      "formatDate",
+      "safeExternalUrl",
+      "stageLabel",
+      "DISCLAIMER"
+    ],
+    "frontend/src/main.tsx": [],
+    "frontend/src/pages/AnalysisPage.tsx": [
+      "AnalysisPage"
+    ],
+    "frontend/src/pages/DocsPage.tsx": [
+      "DocsPage"
+    ],
+    "frontend/src/pages/HomePage.tsx": [
+      "HomePage"
+    ],
+    "frontend/src/pages/ProgressView.tsx": [
+      "ProgressView"
+    ],
+    "frontend/src/pages/ReportView.tsx": [
+      "ReportView"
+    ],
+    "frontend/src/types/index.ts": [],
+    "frontend/tailwind.config.js": [],
+    "frontend/tests/citation.test.ts": [],
+    "frontend/tests/docs.test.tsx": [],
+    "frontend/tests/perspectiveExplorer.test.tsx": [],
+    "frontend/tests/readiness.test.ts": [],
+    "frontend/tests/score.test.ts": [],
+    "frontend/tests/setup.ts": [],
+    "frontend/vite.config.ts": []
+  },
+  "batches": [
+    {
+      "batchIndex": 1,
+      "files": [
+        {
+          "path": "frontend/src/App.tsx",
+          "language": "typescript",
+          "sizeLines": 28,
+          "fileCategory": "code"
+        },
+        {
+          "path": "frontend/src/components/CitationBadge.tsx",
+          "language": "typescript",
+          "sizeLines": 42,
+          "fileCategory": "code"
+        },
+        {
+          "path": "frontend/src/components/CompetitorCard.tsx",
+          "language": "typescript",
+          "sizeLines": 125,
+          "fileCategory": "code"
+        },
+        {
+          "path": "frontend/src/components/DisclaimerBanner.tsx",
+          "language": "typescript",
+          "sizeLines": 17,
+          "fileCategory": "code"
+        },
+        {
+          "path": "frontend/src/components/ExperimentCard.tsx",
+          "language": "typescript",
+          "sizeLines": 76,
+          "fileCategory": "code"
+        },
+        {
+          "path": "frontend/src/components/FinancialSimulator.tsx",
+          "language": "typescript",
+          "sizeLines": 130,
+          "fileCategory": "code"
+        },
+        {
+          "path": "frontend/src/components/FounderToolkit.tsx",
+          "language": "typescript",
+          "sizeLines": 115,
+          "fileCategory": "code"
+        },
+        {
+          "path": "frontend/src/components/OpportunityGauge.tsx",
+          "language": "typescript",
+          "sizeLines": 68,
+          "fileCategory": "code"
+        },
+        {
+          "path": "frontend/src/components/PerspectiveExplorer.tsx",
+          "language": "typescript",
+          "sizeLines": 70,
+          "fileCategory": "code"
+        },
+        {
+          "path": "frontend/src/components/PerspectivePanel.tsx",
+          "language": "typescript",
+          "sizeLines": 149,
+          "fileCategory": "code"
+        },
+        {
+          "path": "frontend/src/components/ProviderIcon.tsx",
+          "language": "typescript",
+          "sizeLines": 80,
+          "fileCategory": "code"
+        },
+        {
+          "path": "frontend/src/components/RegionalMarketPanel.tsx",
+          "language": "typescript",
+          "sizeLines": 93,
+          "fileCategory": "code"
+        },
+        {
+          "path": "frontend/src/components/SavedAnalysesModal.tsx",
+          "language": "typescript",
+          "sizeLines": 171,
+          "fileCategory": "code"
+        },
+        {
+          "path": "frontend/src/components/ScoreBreakdown.tsx",
+          "language": "typescript",
+          "sizeLines": 70,
+          "fileCategory": "code"
+        },
+        {
+          "path": "frontend/src/components/SettingsModal.tsx",
+          "language": "typescript",
+          "sizeLines": 390,
+          "fileCategory": "code"
+        },
+        {
+          "path": "frontend/src/hooks/useAnalysis.ts",
+          "language": "typescript",
+          "sizeLines": 46,
+          "fileCategory": "code"
+        },
+        {
+          "path": "frontend/src/lib/api.ts",
+          "language": "typescript",
+          "sizeLines": 125,
+          "fileCategory": "code"
+        },
+        {
+          "path": "frontend/src/lib/readiness.ts",
+          "language": "typescript",
+          "sizeLines": 118,
+          "fileCategory": "code"
+        },
+        {
+          "path": "frontend/src/lib/report.ts",
+          "language": "typescript",
+          "sizeLines": 164,
+          "fileCategory": "code"
+        },
+        {
+          "path": "frontend/src/lib/utils.ts",
+          "language": "typescript",
+          "sizeLines": 97,
+          "fileCategory": "code"
+        },
+        {
+          "path": "frontend/src/main.tsx",
+          "language": "typescript",
+          "sizeLines": 10,
+          "fileCategory": "code"
+        },
+        {
+          "path": "frontend/src/pages/AnalysisPage.tsx",
+          "language": "typescript",
+          "sizeLines": 104,
+          "fileCategory": "code"
+        },
+        {
+          "path": "frontend/src/pages/HomePage.tsx",
+          "language": "typescript",
+          "sizeLines": 977,
+          "fileCategory": "code"
+        },
+        {
+          "path": "frontend/src/pages/ProgressView.tsx",
+          "language": "typescript",
+          "sizeLines": 117,
+          "fileCategory": "code"
+        },
+        {
+          "path": "frontend/src/pages/ReportView.tsx",
+          "language": "typescript",
+          "sizeLines": 383,
+          "fileCategory": "code"
+        },
+        {
+          "path": "frontend/src/types/index.ts",
+          "language": "typescript",
+          "sizeLines": 246,
+          "fileCategory": "code"
+        },
+        {
+          "path": "frontend/tests/citation.test.ts",
+          "language": "typescript",
+          "sizeLines": 53,
+          "fileCategory": "code"
+        },
+        {
+          "path": "frontend/tests/perspectiveExplorer.test.tsx",
+          "language": "typescript",
+          "sizeLines": 49,
+          "fileCategory": "code"
+        },
+        {
+          "path": "frontend/tests/readiness.test.ts",
+          "language": "typescript",
+          "sizeLines": 42,
+          "fileCategory": "code"
+        },
+        {
+          "path": "frontend/tests/score.test.ts",
+          "language": "typescript",
+          "sizeLines": 94,
+          "fileCategory": "code"
+        }
+      ],
+      "batchImportData": {
+        "frontend/src/App.tsx": [
+          "frontend/src/pages/HomePage.tsx"
+        ],
+        "frontend/src/components/CitationBadge.tsx": [
+          "frontend/src/lib/utils.ts",
+          "frontend/src/types/index.ts"
+        ],
+        "frontend/src/components/CompetitorCard.tsx": [
+          "frontend/src/components/CitationBadge.tsx",
+          "frontend/src/lib/utils.ts",
+          "frontend/src/types/index.ts"
+        ],
+        "frontend/src/components/DisclaimerBanner.tsx": [
+          "frontend/src/lib/utils.ts"
+        ],
+        "frontend/src/components/ExperimentCard.tsx": [
+          "frontend/src/types/index.ts"
+        ],
+        "frontend/src/components/FinancialSimulator.tsx": [
+          "frontend/src/types/index.ts"
+        ],
+        "frontend/src/components/FounderToolkit.tsx": [
+          "frontend/src/types/index.ts"
+        ],
+        "frontend/src/components/OpportunityGauge.tsx": [
+          "frontend/src/lib/utils.ts"
+        ],
+        "frontend/src/components/PerspectiveExplorer.tsx": [
+          "frontend/src/components/PerspectivePanel.tsx",
+          "frontend/src/lib/utils.ts",
+          "frontend/src/types/index.ts"
+        ],
+        "frontend/src/components/PerspectivePanel.tsx": [
+          "frontend/src/components/CitationBadge.tsx",
+          "frontend/src/lib/utils.ts",
+          "frontend/src/types/index.ts"
+        ],
+        "frontend/src/components/ProviderIcon.tsx": [],
+        "frontend/src/components/RegionalMarketPanel.tsx": [
+          "frontend/src/types/index.ts"
+        ],
+        "frontend/src/components/SavedAnalysesModal.tsx": [
+          "frontend/src/lib/api.ts",
+          "frontend/src/lib/utils.ts",
+          "frontend/src/types/index.ts"
+        ],
+        "frontend/src/components/ScoreBreakdown.tsx": [
+          "frontend/src/lib/utils.ts",
+          "frontend/src/types/index.ts"
+        ],
+        "frontend/src/components/SettingsModal.tsx": [
+          "frontend/src/components/ProviderIcon.tsx",
+          "frontend/src/lib/api.ts"
+        ],
+        "frontend/src/hooks/useAnalysis.ts": [
+          "frontend/src/lib/api.ts",
+          "frontend/src/types/index.ts"
+        ],
+        "frontend/src/lib/api.ts": [
+          "frontend/src/types/index.ts"
+        ],
+        "frontend/src/lib/readiness.ts": [],
+        "frontend/src/lib/report.ts": [
+          "frontend/src/types/index.ts"
+        ],
+        "frontend/src/lib/utils.ts": [
+          "frontend/src/types/index.ts"
+        ],
+        "frontend/src/main.tsx": [
+          "frontend/src/App.tsx",
+          "frontend/src/index.css"
+        ],
+        "frontend/src/pages/AnalysisPage.tsx": [
+          "frontend/src/components/DisclaimerBanner.tsx",
+          "frontend/src/hooks/useAnalysis.ts",
+          "frontend/src/pages/ProgressView.tsx",
+          "frontend/src/pages/ReportView.tsx"
+        ],
+        "frontend/src/pages/HomePage.tsx": [
+          "frontend/src/components/ProviderIcon.tsx",
+          "frontend/src/components/SavedAnalysesModal.tsx",
+          "frontend/src/components/SettingsModal.tsx",
+          "frontend/src/lib/api.ts",
+          "frontend/src/lib/readiness.ts",
+          "frontend/src/types/index.ts"
+        ],
+        "frontend/src/pages/ProgressView.tsx": [
+          "frontend/src/lib/utils.ts",
+          "frontend/src/types/index.ts"
+        ],
+        "frontend/src/pages/ReportView.tsx": [
+          "frontend/src/components/CompetitorCard.tsx",
+          "frontend/src/components/ExperimentCard.tsx",
+          "frontend/src/components/FinancialSimulator.tsx",
+          "frontend/src/components/FounderToolkit.tsx",
+          "frontend/src/components/OpportunityGauge.tsx",
+          "frontend/src/components/PerspectiveExplorer.tsx",
+          "frontend/src/components/RegionalMarketPanel.tsx",
+          "frontend/src/components/ScoreBreakdown.tsx",
+          "frontend/src/lib/api.ts",
+          "frontend/src/lib/report.ts",
+          "frontend/src/lib/utils.ts",
+          "frontend/src/pages/ProgressView.tsx",
+          "frontend/src/types/index.ts"
+        ],
+        "frontend/src/types/index.ts": [],
+        "frontend/tests/citation.test.ts": [
+          "frontend/src/lib/utils.ts"
+        ],
+        "frontend/tests/perspectiveExplorer.test.tsx": [
+          "frontend/src/components/PerspectiveExplorer.tsx",
+          "frontend/src/types/index.ts"
+        ],
+        "frontend/tests/readiness.test.ts": [
+          "frontend/src/lib/readiness.ts"
+        ],
+        "frontend/tests/score.test.ts": [
+          "frontend/src/lib/utils.ts",
+          "frontend/src/types/index.ts"
+        ]
+      },
+      "neighborMap": {
+        "frontend/src/main.tsx": [
+          {
+            "path": "frontend/src/index.css",
+            "batchIndex": 12,
+            "symbols": []
+          }
+        ]
+      }
+    },
+    {
+      "batchIndex": 2,
+      "files": [
+        {
+          "path": "backend/assumption_zero/analysis/__init__.py",
+          "language": "python",
+          "sizeLines": 21,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/assumption_zero/analysis/citation_validator.py",
+          "language": "python",
+          "sizeLines": 41,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/assumption_zero/analysis/competitor_merger.py",
+          "language": "python",
+          "sizeLines": 109,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/assumption_zero/analysis/confidence.py",
+          "language": "python",
+          "sizeLines": 92,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/assumption_zero/analysis/disagreement.py",
+          "language": "python",
+          "sizeLines": 117,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/assumption_zero/analysis/engine.py",
+          "language": "python",
+          "sizeLines": 745,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/assumption_zero/analysis/experiment_generator.py",
+          "language": "python",
+          "sizeLines": 130,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/assumption_zero/analysis/founder_toolkit.py",
+          "language": "python",
+          "sizeLines": 147,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/assumption_zero/analysis/query_generator.py",
+          "language": "python",
+          "sizeLines": 158,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/assumption_zero/analysis/regional_analysis.py",
+          "language": "python",
+          "sizeLines": 145,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/assumption_zero/analysis/scoring.py",
+          "language": "python",
+          "sizeLines": 186,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/assumption_zero/demo.py",
+          "language": "python",
+          "sizeLines": 36,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/assumption_zero/research/demo_provider.py",
+          "language": "python",
+          "sizeLines": 43,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/assumption_zero/schemas.py",
+          "language": "python",
+          "sizeLines": 539,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/tests/conftest.py",
+          "language": "python",
+          "sizeLines": 170,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/tests/test_citations.py",
+          "language": "python",
+          "sizeLines": 53,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/tests/test_competitors.py",
+          "language": "python",
+          "sizeLines": 185,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/tests/test_confidence.py",
+          "language": "python",
+          "sizeLines": 49,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/tests/test_engine_e2e.py",
+          "language": "python",
+          "sizeLines": 165,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/tests/test_founder_toolkit.py",
+          "language": "python",
+          "sizeLines": 49,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/tests/test_regional_research.py",
+          "language": "python",
+          "sizeLines": 138,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/tests/test_scoring.py",
+          "language": "python",
+          "sizeLines": 85,
+          "fileCategory": "code"
+        }
+      ],
+      "batchImportData": {
+        "backend/assumption_zero/analysis/__init__.py": [
+          "backend/assumption_zero/analysis/citation_validator.py",
+          "backend/assumption_zero/analysis/competitor_merger.py",
+          "backend/assumption_zero/analysis/confidence.py",
+          "backend/assumption_zero/analysis/disagreement.py",
+          "backend/assumption_zero/analysis/engine.py",
+          "backend/assumption_zero/analysis/experiment_generator.py",
+          "backend/assumption_zero/analysis/query_generator.py",
+          "backend/assumption_zero/analysis/scoring.py"
+        ],
+        "backend/assumption_zero/analysis/citation_validator.py": [
+          "backend/assumption_zero/schemas.py"
+        ],
+        "backend/assumption_zero/analysis/competitor_merger.py": [
+          "backend/assumption_zero/schemas.py"
+        ],
+        "backend/assumption_zero/analysis/confidence.py": [
+          "backend/assumption_zero/schemas.py"
+        ],
+        "backend/assumption_zero/analysis/disagreement.py": [
+          "backend/assumption_zero/schemas.py"
+        ],
+        "backend/assumption_zero/analysis/engine.py": [
+          "backend/assumption_zero/analysis/citation_validator.py",
+          "backend/assumption_zero/analysis/competitor_merger.py",
+          "backend/assumption_zero/analysis/confidence.py",
+          "backend/assumption_zero/analysis/disagreement.py",
+          "backend/assumption_zero/analysis/experiment_generator.py",
+          "backend/assumption_zero/analysis/founder_toolkit.py",
+          "backend/assumption_zero/analysis/query_generator.py",
+          "backend/assumption_zero/analysis/regional_analysis.py",
+          "backend/assumption_zero/analysis/scoring.py",
+          "backend/assumption_zero/llm/base.py",
+          "backend/assumption_zero/research/base.py",
+          "backend/assumption_zero/schemas.py"
+        ],
+        "backend/assumption_zero/analysis/experiment_generator.py": [
+          "backend/assumption_zero/schemas.py"
+        ],
+        "backend/assumption_zero/analysis/founder_toolkit.py": [
+          "backend/assumption_zero/schemas.py"
+        ],
+        "backend/assumption_zero/analysis/query_generator.py": [
+          "backend/assumption_zero/schemas.py"
+        ],
+        "backend/assumption_zero/analysis/regional_analysis.py": [
+          "backend/assumption_zero/schemas.py"
+        ],
+        "backend/assumption_zero/analysis/scoring.py": [
+          "backend/assumption_zero/schemas.py"
+        ],
+        "backend/assumption_zero/demo.py": [
+          "backend/assumption_zero/schemas.py"
+        ],
+        "backend/assumption_zero/research/demo_provider.py": [
+          "backend/assumption_zero/research/base.py",
+          "backend/assumption_zero/schemas.py"
+        ],
+        "backend/assumption_zero/schemas.py": [],
+        "backend/tests/conftest.py": [
+          "backend/assumption_zero/schemas.py"
+        ],
+        "backend/tests/test_citations.py": [
+          "backend/assumption_zero/analysis/citation_validator.py",
+          "backend/assumption_zero/schemas.py"
+        ],
+        "backend/tests/test_competitors.py": [
+          "backend/assumption_zero/analysis/competitor_merger.py",
+          "backend/assumption_zero/analysis/engine.py",
+          "backend/assumption_zero/llm/base.py",
+          "backend/assumption_zero/schemas.py"
+        ],
+        "backend/tests/test_confidence.py": [
+          "backend/assumption_zero/analysis/confidence.py",
+          "backend/assumption_zero/schemas.py"
+        ],
+        "backend/tests/test_engine_e2e.py": [
+          "backend/assumption_zero/analysis/engine.py",
+          "backend/assumption_zero/llm/base.py",
+          "backend/assumption_zero/research/base.py",
+          "backend/assumption_zero/schemas.py"
+        ],
+        "backend/tests/test_founder_toolkit.py": [
+          "backend/assumption_zero/analysis/experiment_generator.py",
+          "backend/assumption_zero/analysis/founder_toolkit.py",
+          "backend/assumption_zero/schemas.py"
+        ],
+        "backend/tests/test_regional_research.py": [
+          "backend/assumption_zero/analysis/engine.py",
+          "backend/assumption_zero/analysis/query_generator.py",
+          "backend/assumption_zero/analysis/regional_analysis.py",
+          "backend/assumption_zero/llm/mock_adapter.py",
+          "backend/assumption_zero/schemas.py"
+        ],
+        "backend/tests/test_scoring.py": [
+          "backend/assumption_zero/analysis/scoring.py"
+        ]
+      },
+      "neighborMap": {
+        "backend/assumption_zero/analysis/engine.py": [
+          {
+            "path": "backend/assumption_zero/llm/base.py",
+            "batchIndex": 4,
+            "symbols": [
+              "DiscoveredCompetitor",
+              "PerspectiveOutput",
+              "build_analysis_prompt",
+              "LLMAdapter"
+            ]
+          },
+          {
+            "path": "backend/assumption_zero/research/base.py",
+            "batchIndex": 3,
+            "symbols": [
+              "ResearchProvider"
+            ]
+          },
+          {
+            "path": "backend/assumption_zero/services/analysis_service.py",
+            "batchIndex": 3,
+            "symbols": [
+              "build_llm_adapter",
+              "build_research_providers",
+              "create_analysis",
+              "run_analysis",
+              "get_analysis",
+              "list_analyses",
+              "delete_analysis",
+              "_parse_dt"
+            ]
+          }
+        ],
+        "backend/assumption_zero/demo.py": [
+          {
+            "path": "backend/assumption_zero/api/routes.py",
+            "batchIndex": 3,
+            "symbols": [
+              "_available_providers",
+              "_llm_options",
+              "_validate_selected_provider",
+              "health",
+              "verify_keys_endpoint",
+              "create_analysis_endpoint",
+              "create_analysis_from_prompt_endpoint",
+              "list_analyses_endpoint",
+              "get_analysis_endpoint",
+              "delete_analysis_endpoint",
+              "demo_endpoint"
+            ]
+          }
+        ],
+        "backend/assumption_zero/research/demo_provider.py": [
+          {
+            "path": "backend/assumption_zero/research/base.py",
+            "batchIndex": 3,
+            "symbols": [
+              "ResearchProvider"
+            ]
+          }
+        ],
+        "backend/assumption_zero/schemas.py": [
+          {
+            "path": "backend/assumption_zero/api/routes.py",
+            "batchIndex": 3,
+            "symbols": [
+              "_available_providers",
+              "_llm_options",
+              "_validate_selected_provider",
+              "health",
+              "verify_keys_endpoint",
+              "create_analysis_endpoint",
+              "create_analysis_from_prompt_endpoint",
+              "list_analyses_endpoint",
+              "get_analysis_endpoint",
+              "delete_analysis_endpoint",
+              "demo_endpoint"
+            ]
+          },
+          {
+            "path": "backend/assumption_zero/llm/base.py",
+            "batchIndex": 4,
+            "symbols": [
+              "DiscoveredCompetitor",
+              "PerspectiveOutput",
+              "build_analysis_prompt",
+              "LLMAdapter"
+            ]
+          },
+          {
+            "path": "backend/assumption_zero/llm/beta_adapter.py",
+            "batchIndex": 4,
+            "symbols": [
+              "BetaAdapter"
+            ]
+          },
+          {
+            "path": "backend/assumption_zero/llm/fallback_adapter.py",
+            "batchIndex": 4,
+            "symbols": [
+              "FallbackChainAdapter"
+            ]
+          },
+          {
+            "path": "backend/assumption_zero/llm/groq_adapter.py",
+            "batchIndex": 4,
+            "symbols": [
+              "GroqAdapter"
+            ]
+          },
+          {
+            "path": "backend/assumption_zero/llm/hybrid_adapter.py",
+            "batchIndex": 4,
+            "symbols": [
+              "HybridLLMAdapter"
+            ]
+          },
+          {
+            "path": "backend/assumption_zero/llm/mock_adapter.py",
+            "batchIndex": 4,
+            "symbols": [
+              "_count",
+              "_avg_relevance",
+              "_high_reliability_count",
+              "_compute_scores",
+              "_recommendation_from_avg",
+              "_findings",
+              "MockAdapter"
+            ]
+          },
+          {
+            "path": "backend/assumption_zero/llm/ollama_adapter.py",
+            "batchIndex": 4,
+            "symbols": [
+              "OllamaAdapter"
+            ]
+          },
+          {
+            "path": "backend/assumption_zero/llm/openai_compat_adapter.py",
+            "batchIndex": 4,
+            "symbols": [
+              "_parse_output",
+              "OpenAICompatAdapter"
+            ]
+          },
+          {
+            "path": "backend/assumption_zero/llm/opencode_adapter.py",
+            "batchIndex": 4,
+            "symbols": [
+              "OpencodeAdapter"
+            ]
+          },
+          {
+            "path": "backend/assumption_zero/llm/openrouter_adapter.py",
+            "batchIndex": 4,
+            "symbols": [
+              "_repair_and_parse_json",
+              "_parse_output",
+              "OpenRouterAdapter"
+            ]
+          },
+          {
+            "path": "backend/assumption_zero/research/arxiv_provider.py",
+            "batchIndex": 3,
+            "symbols": [
+              "_stable_id",
+              "ArxivProvider"
+            ]
+          },
+          {
+            "path": "backend/assumption_zero/research/base.py",
+            "batchIndex": 3,
+            "symbols": [
+              "ResearchProvider"
+            ]
+          },
+          {
+            "path": "backend/assumption_zero/research/github_provider.py",
+            "batchIndex": 3,
+            "symbols": [
+              "_stable_id",
+              "GitHubProvider"
+            ]
+          },
+          {
+            "path": "backend/assumption_zero/research/hackernews_provider.py",
+            "batchIndex": 3,
+            "symbols": [
+              "_stable_id",
+              "_ev_type_for_hn",
+              "HackerNewsProvider"
+            ]
+          },
+          {
+            "path": "backend/assumption_zero/research/news_provider.py",
+            "batchIndex": 3,
+            "symbols": [
+              "_stable_id",
+              "NewsSearchProvider"
+            ]
+          },
+          {
+            "path": "backend/assumption_zero/research/reddit_provider.py",
+            "batchIndex": 3,
+            "symbols": [
+              "_stable_id",
+              "_ev_type",
+              "RedditProvider"
+            ]
+          },
+          {
+            "path": "backend/assumption_zero/research/searxng_provider.py",
+            "batchIndex": 3,
+            "symbols": [
+              "_stable_id",
+              "_reliability_from_domain",
+              "SearXNGProvider"
+            ]
+          },
+          {
+            "path": "backend/assumption_zero/research/web_search_provider.py",
+            "batchIndex": 3,
+            "symbols": [
+              "_stable_id",
+              "_ev_type",
+              "WebSearchProvider"
+            ]
+          },
+          {
+            "path": "backend/assumption_zero/research/wikipedia_provider.py",
+            "batchIndex": 3,
+            "symbols": [
+              "_stable_id",
+              "_ev_type_for_wiki",
+              "WikipediaProvider"
+            ]
+          },
+          {
+            "path": "backend/assumption_zero/services/analysis_service.py",
+            "batchIndex": 3,
+            "symbols": [
+              "build_llm_adapter",
+              "build_research_providers",
+              "create_analysis",
+              "run_analysis",
+              "get_analysis",
+              "list_analyses",
+              "delete_analysis",
+              "_parse_dt"
+            ]
+          },
+          {
+            "path": "backend/tests/test_cli_parity.py",
+            "batchIndex": 5,
+            "symbols": [
+              "test_cli_exposes_web_equivalent_commands_and_provider_controls",
+              "test_cli_founder_context_flags_override_parsed_idea",
+              "test_unit_economics_matches_web_default_model",
+              "test_cli_analysis_is_saved_for_web_history",
+              "test_history_verdict_filters_work_for_web_and_cli"
+            ]
+          },
+          {
+            "path": "backend/tests/test_export.py",
+            "batchIndex": 5,
+            "symbols": [
+              "_make_result",
+              "test_markdown_export_contains_disclaimer",
+              "test_markdown_export_contains_idea_name",
+              "test_markdown_export_contains_score",
+              "test_markdown_export_contains_evidence_ids",
+              "test_json_export_no_secrets",
+              "test_markdown_export_contains_experiments",
+              "test_html_export_structure",
+              "test_exports_include_full_competitor_intelligence"
+            ]
+          }
+        ],
+        "backend/tests/test_competitors.py": [
+          {
+            "path": "backend/assumption_zero/llm/base.py",
+            "batchIndex": 4,
+            "symbols": [
+              "DiscoveredCompetitor",
+              "PerspectiveOutput",
+              "build_analysis_prompt",
+              "LLMAdapter"
+            ]
+          }
+        ],
+        "backend/tests/test_engine_e2e.py": [
+          {
+            "path": "backend/assumption_zero/llm/base.py",
+            "batchIndex": 4,
+            "symbols": [
+              "DiscoveredCompetitor",
+              "PerspectiveOutput",
+              "build_analysis_prompt",
+              "LLMAdapter"
+            ]
+          },
+          {
+            "path": "backend/assumption_zero/research/base.py",
+            "batchIndex": 3,
+            "symbols": [
+              "ResearchProvider"
+            ]
+          }
+        ],
+        "backend/tests/test_regional_research.py": [
+          {
+            "path": "backend/assumption_zero/llm/mock_adapter.py",
+            "batchIndex": 4,
+            "symbols": [
+              "_count",
+              "_avg_relevance",
+              "_high_reliability_count",
+              "_compute_scores",
+              "_recommendation_from_avg",
+              "_findings",
+              "MockAdapter"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "batchIndex": 3,
+      "files": [
+        {
+          "path": "backend/assumption_zero/api/routes.py",
+          "language": "python",
+          "sizeLines": 350,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/assumption_zero/config.py",
+          "language": "python",
+          "sizeLines": 142,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/assumption_zero/models.py",
+          "language": "python",
+          "sizeLines": 96,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/assumption_zero/research/__init__.py",
+          "language": "python",
+          "sizeLines": 22,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/assumption_zero/research/arxiv_provider.py",
+          "language": "python",
+          "sizeLines": 139,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/assumption_zero/research/base.py",
+          "language": "python",
+          "sizeLines": 60,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/assumption_zero/research/github_provider.py",
+          "language": "python",
+          "sizeLines": 131,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/assumption_zero/research/hackernews_provider.py",
+          "language": "python",
+          "sizeLines": 133,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/assumption_zero/research/news_provider.py",
+          "language": "python",
+          "sizeLines": 120,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/assumption_zero/research/reddit_provider.py",
+          "language": "python",
+          "sizeLines": 189,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/assumption_zero/research/searxng_provider.py",
+          "language": "python",
+          "sizeLines": 157,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/assumption_zero/research/web_search_provider.py",
+          "language": "python",
+          "sizeLines": 136,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/assumption_zero/research/wikipedia_provider.py",
+          "language": "python",
+          "sizeLines": 155,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/assumption_zero/services/analysis_service.py",
+          "language": "python",
+          "sizeLines": 376,
+          "fileCategory": "code"
+        }
+      ],
+      "batchImportData": {
+        "backend/assumption_zero/api/routes.py": [
+          "backend/assumption_zero/__init__.py",
+          "backend/assumption_zero/config.py",
+          "backend/assumption_zero/demo.py",
+          "backend/assumption_zero/research/github_provider.py",
+          "backend/assumption_zero/research/hackernews_provider.py",
+          "backend/assumption_zero/research/reddit_provider.py",
+          "backend/assumption_zero/research/searxng_provider.py",
+          "backend/assumption_zero/research/wikipedia_provider.py",
+          "backend/assumption_zero/schemas.py",
+          "backend/assumption_zero/services/analysis_service.py"
+        ],
+        "backend/assumption_zero/config.py": [],
+        "backend/assumption_zero/models.py": [
+          "backend/assumption_zero/config.py"
+        ],
+        "backend/assumption_zero/research/__init__.py": [
+          "backend/assumption_zero/research/arxiv_provider.py",
+          "backend/assumption_zero/research/base.py",
+          "backend/assumption_zero/research/github_provider.py",
+          "backend/assumption_zero/research/hackernews_provider.py",
+          "backend/assumption_zero/research/news_provider.py",
+          "backend/assumption_zero/research/reddit_provider.py",
+          "backend/assumption_zero/research/searxng_provider.py",
+          "backend/assumption_zero/research/web_search_provider.py",
+          "backend/assumption_zero/research/wikipedia_provider.py"
+        ],
+        "backend/assumption_zero/research/arxiv_provider.py": [
+          "backend/assumption_zero/config.py",
+          "backend/assumption_zero/research/base.py",
+          "backend/assumption_zero/schemas.py"
+        ],
+        "backend/assumption_zero/research/base.py": [
+          "backend/assumption_zero/schemas.py"
+        ],
+        "backend/assumption_zero/research/github_provider.py": [
+          "backend/assumption_zero/config.py",
+          "backend/assumption_zero/research/base.py",
+          "backend/assumption_zero/schemas.py"
+        ],
+        "backend/assumption_zero/research/hackernews_provider.py": [
+          "backend/assumption_zero/config.py",
+          "backend/assumption_zero/research/base.py",
+          "backend/assumption_zero/schemas.py"
+        ],
+        "backend/assumption_zero/research/news_provider.py": [
+          "backend/assumption_zero/config.py",
+          "backend/assumption_zero/research/base.py",
+          "backend/assumption_zero/schemas.py"
+        ],
+        "backend/assumption_zero/research/reddit_provider.py": [
+          "backend/assumption_zero/config.py",
+          "backend/assumption_zero/research/base.py",
+          "backend/assumption_zero/schemas.py"
+        ],
+        "backend/assumption_zero/research/searxng_provider.py": [
+          "backend/assumption_zero/config.py",
+          "backend/assumption_zero/research/base.py",
+          "backend/assumption_zero/schemas.py"
+        ],
+        "backend/assumption_zero/research/web_search_provider.py": [
+          "backend/assumption_zero/config.py",
+          "backend/assumption_zero/research/base.py",
+          "backend/assumption_zero/schemas.py"
+        ],
+        "backend/assumption_zero/research/wikipedia_provider.py": [
+          "backend/assumption_zero/config.py",
+          "backend/assumption_zero/research/base.py",
+          "backend/assumption_zero/schemas.py"
+        ],
+        "backend/assumption_zero/services/analysis_service.py": [
+          "backend/assumption_zero/analysis/engine.py",
+          "backend/assumption_zero/config.py",
+          "backend/assumption_zero/llm/base.py",
+          "backend/assumption_zero/llm/fallback_adapter.py",
+          "backend/assumption_zero/llm/groq_adapter.py",
+          "backend/assumption_zero/llm/mock_adapter.py",
+          "backend/assumption_zero/llm/ollama_adapter.py",
+          "backend/assumption_zero/llm/openai_compat_adapter.py",
+          "backend/assumption_zero/llm/opencode_adapter.py",
+          "backend/assumption_zero/llm/openrouter_adapter.py",
+          "backend/assumption_zero/research/arxiv_provider.py",
+          "backend/assumption_zero/research/base.py",
+          "backend/assumption_zero/research/github_provider.py",
+          "backend/assumption_zero/research/hackernews_provider.py",
+          "backend/assumption_zero/research/news_provider.py",
+          "backend/assumption_zero/research/reddit_provider.py",
+          "backend/assumption_zero/research/searxng_provider.py",
+          "backend/assumption_zero/research/web_search_provider.py",
+          "backend/assumption_zero/research/wikipedia_provider.py",
+          "backend/assumption_zero/schemas.py",
+          "backend/assumption_zero/storage.py"
+        ]
+      },
+      "neighborMap": {
+        "backend/assumption_zero/api/routes.py": [
+          {
+            "path": "backend/assumption_zero/__init__.py",
+            "batchIndex": 5,
+            "symbols": []
+          },
+          {
+            "path": "backend/assumption_zero/demo.py",
+            "batchIndex": 2,
+            "symbols": []
+          },
+          {
+            "path": "backend/assumption_zero/schemas.py",
+            "batchIndex": 2,
+            "symbols": [
+              "EvidenceType",
+              "ReliabilityLevel",
+              "ConfidenceLevel",
+              "AnalysisStatus",
+              "ResearchDepth",
+              "AnalysisStage",
+              "Recommendation",
+              "PerspectiveName",
+              "CompetitorType",
+              "is_gibberish",
+              "IdeaInput",
+              "EvidenceItem",
+              "Competitor",
+              "DimensionScore",
+              "OpportunityScore",
+              "AnalysisPerspective",
+              "DisagreementPosition",
+              "ModelDisagreement",
+              "ValidationExperiment",
+              "FounderAction",
+              "FounderToolkit",
+              "RegionalEvidenceSignal",
+              "RegionalMarketAnalysis",
+              "ResearchCoverage",
+              "AnalysisResult",
+              "AnalysisCreateRequest",
+              "DemoAnalysisRequest",
+              "PromptAnalysisRequest",
+              "AnalysisListItem",
+              "HealthResponse"
+            ]
+          },
+          {
+            "path": "backend/assumption_zero/main.py",
+            "batchIndex": 5,
+            "symbols": [
+              "clean_error_message",
+              "create_app"
+            ]
+          }
+        ],
+        "backend/assumption_zero/config.py": [
+          {
+            "path": "backend/assumption_zero/llm/groq_adapter.py",
+            "batchIndex": 4,
+            "symbols": [
+              "GroqAdapter"
+            ]
+          },
+          {
+            "path": "backend/assumption_zero/llm/ollama_adapter.py",
+            "batchIndex": 4,
+            "symbols": [
+              "OllamaAdapter"
+            ]
+          },
+          {
+            "path": "backend/assumption_zero/llm/openai_compat_adapter.py",
+            "batchIndex": 4,
+            "symbols": [
+              "_parse_output",
+              "OpenAICompatAdapter"
+            ]
+          },
+          {
+            "path": "backend/assumption_zero/llm/opencode_adapter.py",
+            "batchIndex": 4,
+            "symbols": [
+              "OpencodeAdapter"
+            ]
+          },
+          {
+            "path": "backend/assumption_zero/llm/openrouter_adapter.py",
+            "batchIndex": 4,
+            "symbols": [
+              "_repair_and_parse_json",
+              "_parse_output",
+              "OpenRouterAdapter"
+            ]
+          },
+          {
+            "path": "backend/assumption_zero/main.py",
+            "batchIndex": 5,
+            "symbols": [
+              "clean_error_message",
+              "create_app"
+            ]
+          },
+          {
+            "path": "backend/tests/test_validation_errors.py",
+            "batchIndex": 5,
+            "symbols": [
+              "test_clean_error_message_helper",
+              "test_gibberish_prompt_endpoint_returns_clean_error",
+              "test_empty_prompt_returns_clean_error",
+              "test_verify_keys_endpoint_success",
+              "test_verify_keys_missing_key_returns_400",
+              "test_release_debug_value_does_not_break_startup",
+              "test_ssrf_url_filter_blocks_local_and_non_http_targets"
+            ]
+          }
+        ],
+        "backend/assumption_zero/research/arxiv_provider.py": [
+          {
+            "path": "backend/assumption_zero/schemas.py",
+            "batchIndex": 2,
+            "symbols": [
+              "EvidenceType",
+              "ReliabilityLevel",
+              "ConfidenceLevel",
+              "AnalysisStatus",
+              "ResearchDepth",
+              "AnalysisStage",
+              "Recommendation",
+              "PerspectiveName",
+              "CompetitorType",
+              "is_gibberish",
+              "IdeaInput",
+              "EvidenceItem",
+              "Competitor",
+              "DimensionScore",
+              "OpportunityScore",
+              "AnalysisPerspective",
+              "DisagreementPosition",
+              "ModelDisagreement",
+              "ValidationExperiment",
+              "FounderAction",
+              "FounderToolkit",
+              "RegionalEvidenceSignal",
+              "RegionalMarketAnalysis",
+              "ResearchCoverage",
+              "AnalysisResult",
+              "AnalysisCreateRequest",
+              "DemoAnalysisRequest",
+              "PromptAnalysisRequest",
+              "AnalysisListItem",
+              "HealthResponse"
+            ]
+          }
+        ],
+        "backend/assumption_zero/research/base.py": [
+          {
+            "path": "backend/assumption_zero/schemas.py",
+            "batchIndex": 2,
+            "symbols": [
+              "EvidenceType",
+              "ReliabilityLevel",
+              "ConfidenceLevel",
+              "AnalysisStatus",
+              "ResearchDepth",
+              "AnalysisStage",
+              "Recommendation",
+              "PerspectiveName",
+              "CompetitorType",
+              "is_gibberish",
+              "IdeaInput",
+              "EvidenceItem",
+              "Competitor",
+              "DimensionScore",
+              "OpportunityScore",
+              "AnalysisPerspective",
+              "DisagreementPosition",
+              "ModelDisagreement",
+              "ValidationExperiment",
+              "FounderAction",
+              "FounderToolkit",
+              "RegionalEvidenceSignal",
+              "RegionalMarketAnalysis",
+              "ResearchCoverage",
+              "AnalysisResult",
+              "AnalysisCreateRequest",
+              "DemoAnalysisRequest",
+              "PromptAnalysisRequest",
+              "AnalysisListItem",
+              "HealthResponse"
+            ]
+          },
+          {
+            "path": "backend/assumption_zero/analysis/engine.py",
+            "batchIndex": 2,
+            "symbols": [
+              "_assign_evidence_ids",
+              "_normalized_name",
+              "_brand_from_url",
+              "_clean_competitor_name",
+              "_extract_competitors_from_evidence",
+              "_evidence_mentions",
+              "_validated_ai_competitors",
+              "_select_recommendation",
+              "_select_most_dangerous_assumption",
+              "_find_strongest",
+              "_collect_missing_info",
+              "AnalysisEngine"
+            ]
+          },
+          {
+            "path": "backend/assumption_zero/research/demo_provider.py",
+            "batchIndex": 2,
+            "symbols": [
+              "DemoProvider"
+            ]
+          },
+          {
+            "path": "backend/tests/test_engine_e2e.py",
+            "batchIndex": 2,
+            "symbols": [
+              "MockAdapter",
+              "MockProvider",
+              "CompetitorProvider",
+              "CompetitorAIAdapter",
+              "test_engine_end_to_end",
+              "test_ai_competitor_survives_grounded_end_to_end_pipeline"
+            ]
+          }
+        ],
+        "backend/assumption_zero/research/github_provider.py": [
+          {
+            "path": "backend/assumption_zero/schemas.py",
+            "batchIndex": 2,
+            "symbols": [
+              "EvidenceType",
+              "ReliabilityLevel",
+              "ConfidenceLevel",
+              "AnalysisStatus",
+              "ResearchDepth",
+              "AnalysisStage",
+              "Recommendation",
+              "PerspectiveName",
+              "CompetitorType",
+              "is_gibberish",
+              "IdeaInput",
+              "EvidenceItem",
+              "Competitor",
+              "DimensionScore",
+              "OpportunityScore",
+              "AnalysisPerspective",
+              "DisagreementPosition",
+              "ModelDisagreement",
+              "ValidationExperiment",
+              "FounderAction",
+              "FounderToolkit",
+              "RegionalEvidenceSignal",
+              "RegionalMarketAnalysis",
+              "ResearchCoverage",
+              "AnalysisResult",
+              "AnalysisCreateRequest",
+              "DemoAnalysisRequest",
+              "PromptAnalysisRequest",
+              "AnalysisListItem",
+              "HealthResponse"
+            ]
+          }
+        ],
+        "backend/assumption_zero/research/hackernews_provider.py": [
+          {
+            "path": "backend/assumption_zero/schemas.py",
+            "batchIndex": 2,
+            "symbols": [
+              "EvidenceType",
+              "ReliabilityLevel",
+              "ConfidenceLevel",
+              "AnalysisStatus",
+              "ResearchDepth",
+              "AnalysisStage",
+              "Recommendation",
+              "PerspectiveName",
+              "CompetitorType",
+              "is_gibberish",
+              "IdeaInput",
+              "EvidenceItem",
+              "Competitor",
+              "DimensionScore",
+              "OpportunityScore",
+              "AnalysisPerspective",
+              "DisagreementPosition",
+              "ModelDisagreement",
+              "ValidationExperiment",
+              "FounderAction",
+              "FounderToolkit",
+              "RegionalEvidenceSignal",
+              "RegionalMarketAnalysis",
+              "ResearchCoverage",
+              "AnalysisResult",
+              "AnalysisCreateRequest",
+              "DemoAnalysisRequest",
+              "PromptAnalysisRequest",
+              "AnalysisListItem",
+              "HealthResponse"
+            ]
+          }
+        ],
+        "backend/assumption_zero/research/news_provider.py": [
+          {
+            "path": "backend/assumption_zero/schemas.py",
+            "batchIndex": 2,
+            "symbols": [
+              "EvidenceType",
+              "ReliabilityLevel",
+              "ConfidenceLevel",
+              "AnalysisStatus",
+              "ResearchDepth",
+              "AnalysisStage",
+              "Recommendation",
+              "PerspectiveName",
+              "CompetitorType",
+              "is_gibberish",
+              "IdeaInput",
+              "EvidenceItem",
+              "Competitor",
+              "DimensionScore",
+              "OpportunityScore",
+              "AnalysisPerspective",
+              "DisagreementPosition",
+              "ModelDisagreement",
+              "ValidationExperiment",
+              "FounderAction",
+              "FounderToolkit",
+              "RegionalEvidenceSignal",
+              "RegionalMarketAnalysis",
+              "ResearchCoverage",
+              "AnalysisResult",
+              "AnalysisCreateRequest",
+              "DemoAnalysisRequest",
+              "PromptAnalysisRequest",
+              "AnalysisListItem",
+              "HealthResponse"
+            ]
+          }
+        ],
+        "backend/assumption_zero/research/reddit_provider.py": [
+          {
+            "path": "backend/assumption_zero/schemas.py",
+            "batchIndex": 2,
+            "symbols": [
+              "EvidenceType",
+              "ReliabilityLevel",
+              "ConfidenceLevel",
+              "AnalysisStatus",
+              "ResearchDepth",
+              "AnalysisStage",
+              "Recommendation",
+              "PerspectiveName",
+              "CompetitorType",
+              "is_gibberish",
+              "IdeaInput",
+              "EvidenceItem",
+              "Competitor",
+              "DimensionScore",
+              "OpportunityScore",
+              "AnalysisPerspective",
+              "DisagreementPosition",
+              "ModelDisagreement",
+              "ValidationExperiment",
+              "FounderAction",
+              "FounderToolkit",
+              "RegionalEvidenceSignal",
+              "RegionalMarketAnalysis",
+              "ResearchCoverage",
+              "AnalysisResult",
+              "AnalysisCreateRequest",
+              "DemoAnalysisRequest",
+              "PromptAnalysisRequest",
+              "AnalysisListItem",
+              "HealthResponse"
+            ]
+          }
+        ],
+        "backend/assumption_zero/research/searxng_provider.py": [
+          {
+            "path": "backend/assumption_zero/schemas.py",
+            "batchIndex": 2,
+            "symbols": [
+              "EvidenceType",
+              "ReliabilityLevel",
+              "ConfidenceLevel",
+              "AnalysisStatus",
+              "ResearchDepth",
+              "AnalysisStage",
+              "Recommendation",
+              "PerspectiveName",
+              "CompetitorType",
+              "is_gibberish",
+              "IdeaInput",
+              "EvidenceItem",
+              "Competitor",
+              "DimensionScore",
+              "OpportunityScore",
+              "AnalysisPerspective",
+              "DisagreementPosition",
+              "ModelDisagreement",
+              "ValidationExperiment",
+              "FounderAction",
+              "FounderToolkit",
+              "RegionalEvidenceSignal",
+              "RegionalMarketAnalysis",
+              "ResearchCoverage",
+              "AnalysisResult",
+              "AnalysisCreateRequest",
+              "DemoAnalysisRequest",
+              "PromptAnalysisRequest",
+              "AnalysisListItem",
+              "HealthResponse"
+            ]
+          }
+        ],
+        "backend/assumption_zero/research/web_search_provider.py": [
+          {
+            "path": "backend/assumption_zero/schemas.py",
+            "batchIndex": 2,
+            "symbols": [
+              "EvidenceType",
+              "ReliabilityLevel",
+              "ConfidenceLevel",
+              "AnalysisStatus",
+              "ResearchDepth",
+              "AnalysisStage",
+              "Recommendation",
+              "PerspectiveName",
+              "CompetitorType",
+              "is_gibberish",
+              "IdeaInput",
+              "EvidenceItem",
+              "Competitor",
+              "DimensionScore",
+              "OpportunityScore",
+              "AnalysisPerspective",
+              "DisagreementPosition",
+              "ModelDisagreement",
+              "ValidationExperiment",
+              "FounderAction",
+              "FounderToolkit",
+              "RegionalEvidenceSignal",
+              "RegionalMarketAnalysis",
+              "ResearchCoverage",
+              "AnalysisResult",
+              "AnalysisCreateRequest",
+              "DemoAnalysisRequest",
+              "PromptAnalysisRequest",
+              "AnalysisListItem",
+              "HealthResponse"
+            ]
+          }
+        ],
+        "backend/assumption_zero/research/wikipedia_provider.py": [
+          {
+            "path": "backend/assumption_zero/schemas.py",
+            "batchIndex": 2,
+            "symbols": [
+              "EvidenceType",
+              "ReliabilityLevel",
+              "ConfidenceLevel",
+              "AnalysisStatus",
+              "ResearchDepth",
+              "AnalysisStage",
+              "Recommendation",
+              "PerspectiveName",
+              "CompetitorType",
+              "is_gibberish",
+              "IdeaInput",
+              "EvidenceItem",
+              "Competitor",
+              "DimensionScore",
+              "OpportunityScore",
+              "AnalysisPerspective",
+              "DisagreementPosition",
+              "ModelDisagreement",
+              "ValidationExperiment",
+              "FounderAction",
+              "FounderToolkit",
+              "RegionalEvidenceSignal",
+              "RegionalMarketAnalysis",
+              "ResearchCoverage",
+              "AnalysisResult",
+              "AnalysisCreateRequest",
+              "DemoAnalysisRequest",
+              "PromptAnalysisRequest",
+              "AnalysisListItem",
+              "HealthResponse"
+            ]
+          }
+        ],
+        "backend/assumption_zero/services/analysis_service.py": [
+          {
+            "path": "backend/assumption_zero/analysis/engine.py",
+            "batchIndex": 2,
+            "symbols": [
+              "_assign_evidence_ids",
+              "_normalized_name",
+              "_brand_from_url",
+              "_clean_competitor_name",
+              "_extract_competitors_from_evidence",
+              "_evidence_mentions",
+              "_validated_ai_competitors",
+              "_select_recommendation",
+              "_select_most_dangerous_assumption",
+              "_find_strongest",
+              "_collect_missing_info",
+              "AnalysisEngine"
+            ]
+          },
+          {
+            "path": "backend/assumption_zero/llm/base.py",
+            "batchIndex": 4,
+            "symbols": [
+              "DiscoveredCompetitor",
+              "PerspectiveOutput",
+              "build_analysis_prompt",
+              "LLMAdapter"
+            ]
+          },
+          {
+            "path": "backend/assumption_zero/llm/fallback_adapter.py",
+            "batchIndex": 4,
+            "symbols": [
+              "FallbackChainAdapter"
+            ]
+          },
+          {
+            "path": "backend/assumption_zero/llm/groq_adapter.py",
+            "batchIndex": 4,
+            "symbols": [
+              "GroqAdapter"
+            ]
+          },
+          {
+            "path": "backend/assumption_zero/llm/mock_adapter.py",
+            "batchIndex": 4,
+            "symbols": [
+              "_count",
+              "_avg_relevance",
+              "_high_reliability_count",
+              "_compute_scores",
+              "_recommendation_from_avg",
+              "_findings",
+              "MockAdapter"
+            ]
+          },
+          {
+            "path": "backend/assumption_zero/llm/ollama_adapter.py",
+            "batchIndex": 4,
+            "symbols": [
+              "OllamaAdapter"
+            ]
+          },
+          {
+            "path": "backend/assumption_zero/llm/openai_compat_adapter.py",
+            "batchIndex": 4,
+            "symbols": [
+              "_parse_output",
+              "OpenAICompatAdapter"
+            ]
+          },
+          {
+            "path": "backend/assumption_zero/llm/opencode_adapter.py",
+            "batchIndex": 4,
+            "symbols": [
+              "OpencodeAdapter"
+            ]
+          },
+          {
+            "path": "backend/assumption_zero/llm/openrouter_adapter.py",
+            "batchIndex": 4,
+            "symbols": [
+              "_repair_and_parse_json",
+              "_parse_output",
+              "OpenRouterAdapter"
+            ]
+          },
+          {
+            "path": "backend/assumption_zero/schemas.py",
+            "batchIndex": 2,
+            "symbols": [
+              "EvidenceType",
+              "ReliabilityLevel",
+              "ConfidenceLevel",
+              "AnalysisStatus",
+              "ResearchDepth",
+              "AnalysisStage",
+              "Recommendation",
+              "PerspectiveName",
+              "CompetitorType",
+              "is_gibberish",
+              "IdeaInput",
+              "EvidenceItem",
+              "Competitor",
+              "DimensionScore",
+              "OpportunityScore",
+              "AnalysisPerspective",
+              "DisagreementPosition",
+              "ModelDisagreement",
+              "ValidationExperiment",
+              "FounderAction",
+              "FounderToolkit",
+              "RegionalEvidenceSignal",
+              "RegionalMarketAnalysis",
+              "ResearchCoverage",
+              "AnalysisResult",
+              "AnalysisCreateRequest",
+              "DemoAnalysisRequest",
+              "PromptAnalysisRequest",
+              "AnalysisListItem",
+              "HealthResponse"
+            ]
+          },
+          {
+            "path": "backend/assumption_zero/storage.py",
+            "batchIndex": 5,
+            "symbols": [
+              "_ensure_dirs",
+              "_migrate_legacy_storage",
+              "_read_all",
+              "_write_all",
+              "resolve_id",
+              "_input_path",
+              "_result_path",
+              "create_record",
+              "update_stage",
+              "complete_record",
+              "fail_record",
+              "get_record",
+              "get_input",
+              "get_result",
+              "list_records",
+              "delete_record",
+              "init_storage"
+            ]
+          },
+          {
+            "path": "backend/tests/test_llm_adapters.py",
+            "batchIndex": 4,
+            "symbols": [
+              "test_build_all_llm_adapters",
+              "test_explicit_provider_never_silently_falls_back_to_mock",
+              "test_mock_adapter_parse_prompt",
+              "test_gibberish_rejection_in_adapters",
+              "test_fallback_chain_adapter"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "batchIndex": 4,
+      "files": [
+        {
+          "path": "backend/assumption_zero/llm/__init__.py",
+          "language": "python",
+          "sizeLines": 23,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/assumption_zero/llm/base.py",
+          "language": "python",
+          "sizeLines": 446,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/assumption_zero/llm/beta_adapter.py",
+          "language": "python",
+          "sizeLines": 40,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/assumption_zero/llm/fallback_adapter.py",
+          "language": "python",
+          "sizeLines": 116,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/assumption_zero/llm/groq_adapter.py",
+          "language": "python",
+          "sizeLines": 201,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/assumption_zero/llm/hybrid_adapter.py",
+          "language": "python",
+          "sizeLines": 131,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/assumption_zero/llm/mock_adapter.py",
+          "language": "python",
+          "sizeLines": 455,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/assumption_zero/llm/ollama_adapter.py",
+          "language": "python",
+          "sizeLines": 188,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/assumption_zero/llm/openai_compat_adapter.py",
+          "language": "python",
+          "sizeLines": 197,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/assumption_zero/llm/opencode_adapter.py",
+          "language": "python",
+          "sizeLines": 191,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/assumption_zero/llm/openrouter_adapter.py",
+          "language": "python",
+          "sizeLines": 332,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/tests/test_llm_adapters.py",
+          "language": "python",
+          "sizeLines": 63,
+          "fileCategory": "code"
+        }
+      ],
+      "batchImportData": {
+        "backend/assumption_zero/llm/__init__.py": [
+          "backend/assumption_zero/llm/base.py",
+          "backend/assumption_zero/llm/beta_adapter.py",
+          "backend/assumption_zero/llm/groq_adapter.py",
+          "backend/assumption_zero/llm/hybrid_adapter.py",
+          "backend/assumption_zero/llm/mock_adapter.py",
+          "backend/assumption_zero/llm/ollama_adapter.py",
+          "backend/assumption_zero/llm/openai_compat_adapter.py",
+          "backend/assumption_zero/llm/opencode_adapter.py",
+          "backend/assumption_zero/llm/openrouter_adapter.py"
+        ],
+        "backend/assumption_zero/llm/base.py": [
+          "backend/assumption_zero/schemas.py"
+        ],
+        "backend/assumption_zero/llm/beta_adapter.py": [
+          "backend/assumption_zero/llm/openrouter_adapter.py",
+          "backend/assumption_zero/schemas.py"
+        ],
+        "backend/assumption_zero/llm/fallback_adapter.py": [
+          "backend/assumption_zero/llm/base.py",
+          "backend/assumption_zero/schemas.py"
+        ],
+        "backend/assumption_zero/llm/groq_adapter.py": [
+          "backend/assumption_zero/config.py",
+          "backend/assumption_zero/llm/base.py",
+          "backend/assumption_zero/llm/openrouter_adapter.py",
+          "backend/assumption_zero/schemas.py"
+        ],
+        "backend/assumption_zero/llm/hybrid_adapter.py": [
+          "backend/assumption_zero/llm/base.py",
+          "backend/assumption_zero/llm/groq_adapter.py",
+          "backend/assumption_zero/llm/openrouter_adapter.py",
+          "backend/assumption_zero/schemas.py"
+        ],
+        "backend/assumption_zero/llm/mock_adapter.py": [
+          "backend/assumption_zero/llm/base.py",
+          "backend/assumption_zero/schemas.py"
+        ],
+        "backend/assumption_zero/llm/ollama_adapter.py": [
+          "backend/assumption_zero/config.py",
+          "backend/assumption_zero/llm/base.py",
+          "backend/assumption_zero/llm/openrouter_adapter.py",
+          "backend/assumption_zero/schemas.py"
+        ],
+        "backend/assumption_zero/llm/openai_compat_adapter.py": [
+          "backend/assumption_zero/config.py",
+          "backend/assumption_zero/llm/base.py",
+          "backend/assumption_zero/schemas.py"
+        ],
+        "backend/assumption_zero/llm/opencode_adapter.py": [
+          "backend/assumption_zero/config.py",
+          "backend/assumption_zero/llm/base.py",
+          "backend/assumption_zero/llm/openrouter_adapter.py",
+          "backend/assumption_zero/schemas.py"
+        ],
+        "backend/assumption_zero/llm/openrouter_adapter.py": [
+          "backend/assumption_zero/config.py",
+          "backend/assumption_zero/llm/base.py",
+          "backend/assumption_zero/schemas.py"
+        ],
+        "backend/tests/test_llm_adapters.py": [
+          "backend/assumption_zero/llm/__init__.py",
+          "backend/assumption_zero/services/analysis_service.py"
+        ]
+      },
+      "neighborMap": {
+        "backend/assumption_zero/llm/base.py": [
+          {
+            "path": "backend/assumption_zero/schemas.py",
+            "batchIndex": 2,
+            "symbols": [
+              "EvidenceType",
+              "ReliabilityLevel",
+              "ConfidenceLevel",
+              "AnalysisStatus",
+              "ResearchDepth",
+              "AnalysisStage",
+              "Recommendation",
+              "PerspectiveName",
+              "CompetitorType",
+              "is_gibberish",
+              "IdeaInput",
+              "EvidenceItem",
+              "Competitor",
+              "DimensionScore",
+              "OpportunityScore",
+              "AnalysisPerspective",
+              "DisagreementPosition",
+              "ModelDisagreement",
+              "ValidationExperiment",
+              "FounderAction",
+              "FounderToolkit",
+              "RegionalEvidenceSignal",
+              "RegionalMarketAnalysis",
+              "ResearchCoverage",
+              "AnalysisResult",
+              "AnalysisCreateRequest",
+              "DemoAnalysisRequest",
+              "PromptAnalysisRequest",
+              "AnalysisListItem",
+              "HealthResponse"
+            ]
+          },
+          {
+            "path": "backend/assumption_zero/analysis/engine.py",
+            "batchIndex": 2,
+            "symbols": [
+              "_assign_evidence_ids",
+              "_normalized_name",
+              "_brand_from_url",
+              "_clean_competitor_name",
+              "_extract_competitors_from_evidence",
+              "_evidence_mentions",
+              "_validated_ai_competitors",
+              "_select_recommendation",
+              "_select_most_dangerous_assumption",
+              "_find_strongest",
+              "_collect_missing_info",
+              "AnalysisEngine"
+            ]
+          },
+          {
+            "path": "backend/assumption_zero/services/analysis_service.py",
+            "batchIndex": 3,
+            "symbols": [
+              "build_llm_adapter",
+              "build_research_providers",
+              "create_analysis",
+              "run_analysis",
+              "get_analysis",
+              "list_analyses",
+              "delete_analysis",
+              "_parse_dt"
+            ]
+          },
+          {
+            "path": "backend/tests/test_competitors.py",
+            "batchIndex": 2,
+            "symbols": [
+              "_comp",
+              "test_exact_duplicates_merged",
+              "test_name_variant_merged",
+              "test_different_companies_not_merged",
+              "test_empty_list",
+              "test_single_competitor",
+              "test_evidence_ids_deduplicated",
+              "_idea",
+              "_evidence",
+              "test_ai_competitor_requires_real_supporting_citation",
+              "test_ai_competitor_is_grounded_and_uses_evidence_url",
+              "test_user_competitor_without_evidence_is_low_confidence_and_has_no_fake_url",
+              "test_prefix_names_are_not_accidentally_merged",
+              "test_merge_promotes_better_supported_entry"
+            ]
+          },
+          {
+            "path": "backend/tests/test_engine_e2e.py",
+            "batchIndex": 2,
+            "symbols": [
+              "MockAdapter",
+              "MockProvider",
+              "CompetitorProvider",
+              "CompetitorAIAdapter",
+              "test_engine_end_to_end",
+              "test_ai_competitor_survives_grounded_end_to_end_pipeline"
+            ]
+          }
+        ],
+        "backend/assumption_zero/llm/beta_adapter.py": [
+          {
+            "path": "backend/assumption_zero/schemas.py",
+            "batchIndex": 2,
+            "symbols": [
+              "EvidenceType",
+              "ReliabilityLevel",
+              "ConfidenceLevel",
+              "AnalysisStatus",
+              "ResearchDepth",
+              "AnalysisStage",
+              "Recommendation",
+              "PerspectiveName",
+              "CompetitorType",
+              "is_gibberish",
+              "IdeaInput",
+              "EvidenceItem",
+              "Competitor",
+              "DimensionScore",
+              "OpportunityScore",
+              "AnalysisPerspective",
+              "DisagreementPosition",
+              "ModelDisagreement",
+              "ValidationExperiment",
+              "FounderAction",
+              "FounderToolkit",
+              "RegionalEvidenceSignal",
+              "RegionalMarketAnalysis",
+              "ResearchCoverage",
+              "AnalysisResult",
+              "AnalysisCreateRequest",
+              "DemoAnalysisRequest",
+              "PromptAnalysisRequest",
+              "AnalysisListItem",
+              "HealthResponse"
+            ]
+          }
+        ],
+        "backend/assumption_zero/llm/fallback_adapter.py": [
+          {
+            "path": "backend/assumption_zero/schemas.py",
+            "batchIndex": 2,
+            "symbols": [
+              "EvidenceType",
+              "ReliabilityLevel",
+              "ConfidenceLevel",
+              "AnalysisStatus",
+              "ResearchDepth",
+              "AnalysisStage",
+              "Recommendation",
+              "PerspectiveName",
+              "CompetitorType",
+              "is_gibberish",
+              "IdeaInput",
+              "EvidenceItem",
+              "Competitor",
+              "DimensionScore",
+              "OpportunityScore",
+              "AnalysisPerspective",
+              "DisagreementPosition",
+              "ModelDisagreement",
+              "ValidationExperiment",
+              "FounderAction",
+              "FounderToolkit",
+              "RegionalEvidenceSignal",
+              "RegionalMarketAnalysis",
+              "ResearchCoverage",
+              "AnalysisResult",
+              "AnalysisCreateRequest",
+              "DemoAnalysisRequest",
+              "PromptAnalysisRequest",
+              "AnalysisListItem",
+              "HealthResponse"
+            ]
+          },
+          {
+            "path": "backend/assumption_zero/services/analysis_service.py",
+            "batchIndex": 3,
+            "symbols": [
+              "build_llm_adapter",
+              "build_research_providers",
+              "create_analysis",
+              "run_analysis",
+              "get_analysis",
+              "list_analyses",
+              "delete_analysis",
+              "_parse_dt"
+            ]
+          }
+        ],
+        "backend/assumption_zero/llm/groq_adapter.py": [
+          {
+            "path": "backend/assumption_zero/config.py",
+            "batchIndex": 3,
+            "symbols": [
+              "is_public_http_url",
+              "Settings",
+              "get_settings"
+            ]
+          },
+          {
+            "path": "backend/assumption_zero/schemas.py",
+            "batchIndex": 2,
+            "symbols": [
+              "EvidenceType",
+              "ReliabilityLevel",
+              "ConfidenceLevel",
+              "AnalysisStatus",
+              "ResearchDepth",
+              "AnalysisStage",
+              "Recommendation",
+              "PerspectiveName",
+              "CompetitorType",
+              "is_gibberish",
+              "IdeaInput",
+              "EvidenceItem",
+              "Competitor",
+              "DimensionScore",
+              "OpportunityScore",
+              "AnalysisPerspective",
+              "DisagreementPosition",
+              "ModelDisagreement",
+              "ValidationExperiment",
+              "FounderAction",
+              "FounderToolkit",
+              "RegionalEvidenceSignal",
+              "RegionalMarketAnalysis",
+              "ResearchCoverage",
+              "AnalysisResult",
+              "AnalysisCreateRequest",
+              "DemoAnalysisRequest",
+              "PromptAnalysisRequest",
+              "AnalysisListItem",
+              "HealthResponse"
+            ]
+          },
+          {
+            "path": "backend/assumption_zero/services/analysis_service.py",
+            "batchIndex": 3,
+            "symbols": [
+              "build_llm_adapter",
+              "build_research_providers",
+              "create_analysis",
+              "run_analysis",
+              "get_analysis",
+              "list_analyses",
+              "delete_analysis",
+              "_parse_dt"
+            ]
+          }
+        ],
+        "backend/assumption_zero/llm/hybrid_adapter.py": [
+          {
+            "path": "backend/assumption_zero/schemas.py",
+            "batchIndex": 2,
+            "symbols": [
+              "EvidenceType",
+              "ReliabilityLevel",
+              "ConfidenceLevel",
+              "AnalysisStatus",
+              "ResearchDepth",
+              "AnalysisStage",
+              "Recommendation",
+              "PerspectiveName",
+              "CompetitorType",
+              "is_gibberish",
+              "IdeaInput",
+              "EvidenceItem",
+              "Competitor",
+              "DimensionScore",
+              "OpportunityScore",
+              "AnalysisPerspective",
+              "DisagreementPosition",
+              "ModelDisagreement",
+              "ValidationExperiment",
+              "FounderAction",
+              "FounderToolkit",
+              "RegionalEvidenceSignal",
+              "RegionalMarketAnalysis",
+              "ResearchCoverage",
+              "AnalysisResult",
+              "AnalysisCreateRequest",
+              "DemoAnalysisRequest",
+              "PromptAnalysisRequest",
+              "AnalysisListItem",
+              "HealthResponse"
+            ]
+          }
+        ],
+        "backend/assumption_zero/llm/mock_adapter.py": [
+          {
+            "path": "backend/assumption_zero/schemas.py",
+            "batchIndex": 2,
+            "symbols": [
+              "EvidenceType",
+              "ReliabilityLevel",
+              "ConfidenceLevel",
+              "AnalysisStatus",
+              "ResearchDepth",
+              "AnalysisStage",
+              "Recommendation",
+              "PerspectiveName",
+              "CompetitorType",
+              "is_gibberish",
+              "IdeaInput",
+              "EvidenceItem",
+              "Competitor",
+              "DimensionScore",
+              "OpportunityScore",
+              "AnalysisPerspective",
+              "DisagreementPosition",
+              "ModelDisagreement",
+              "ValidationExperiment",
+              "FounderAction",
+              "FounderToolkit",
+              "RegionalEvidenceSignal",
+              "RegionalMarketAnalysis",
+              "ResearchCoverage",
+              "AnalysisResult",
+              "AnalysisCreateRequest",
+              "DemoAnalysisRequest",
+              "PromptAnalysisRequest",
+              "AnalysisListItem",
+              "HealthResponse"
+            ]
+          },
+          {
+            "path": "backend/assumption_zero/services/analysis_service.py",
+            "batchIndex": 3,
+            "symbols": [
+              "build_llm_adapter",
+              "build_research_providers",
+              "create_analysis",
+              "run_analysis",
+              "get_analysis",
+              "list_analyses",
+              "delete_analysis",
+              "_parse_dt"
+            ]
+          },
+          {
+            "path": "backend/tests/test_regional_research.py",
+            "batchIndex": 2,
+            "symbols": [
+              "_idea",
+              "_evidence",
+              "test_regional_analysis_counts_only_market_specific_evidence",
+              "test_research_depth_controls_query_and_perspective_volume",
+              "test_no_key_parser_uses_only_user_supplied_competitors_and_region"
+            ]
+          }
+        ],
+        "backend/assumption_zero/llm/ollama_adapter.py": [
+          {
+            "path": "backend/assumption_zero/config.py",
+            "batchIndex": 3,
+            "symbols": [
+              "is_public_http_url",
+              "Settings",
+              "get_settings"
+            ]
+          },
+          {
+            "path": "backend/assumption_zero/schemas.py",
+            "batchIndex": 2,
+            "symbols": [
+              "EvidenceType",
+              "ReliabilityLevel",
+              "ConfidenceLevel",
+              "AnalysisStatus",
+              "ResearchDepth",
+              "AnalysisStage",
+              "Recommendation",
+              "PerspectiveName",
+              "CompetitorType",
+              "is_gibberish",
+              "IdeaInput",
+              "EvidenceItem",
+              "Competitor",
+              "DimensionScore",
+              "OpportunityScore",
+              "AnalysisPerspective",
+              "DisagreementPosition",
+              "ModelDisagreement",
+              "ValidationExperiment",
+              "FounderAction",
+              "FounderToolkit",
+              "RegionalEvidenceSignal",
+              "RegionalMarketAnalysis",
+              "ResearchCoverage",
+              "AnalysisResult",
+              "AnalysisCreateRequest",
+              "DemoAnalysisRequest",
+              "PromptAnalysisRequest",
+              "AnalysisListItem",
+              "HealthResponse"
+            ]
+          },
+          {
+            "path": "backend/assumption_zero/services/analysis_service.py",
+            "batchIndex": 3,
+            "symbols": [
+              "build_llm_adapter",
+              "build_research_providers",
+              "create_analysis",
+              "run_analysis",
+              "get_analysis",
+              "list_analyses",
+              "delete_analysis",
+              "_parse_dt"
+            ]
+          }
+        ],
+        "backend/assumption_zero/llm/openai_compat_adapter.py": [
+          {
+            "path": "backend/assumption_zero/config.py",
+            "batchIndex": 3,
+            "symbols": [
+              "is_public_http_url",
+              "Settings",
+              "get_settings"
+            ]
+          },
+          {
+            "path": "backend/assumption_zero/schemas.py",
+            "batchIndex": 2,
+            "symbols": [
+              "EvidenceType",
+              "ReliabilityLevel",
+              "ConfidenceLevel",
+              "AnalysisStatus",
+              "ResearchDepth",
+              "AnalysisStage",
+              "Recommendation",
+              "PerspectiveName",
+              "CompetitorType",
+              "is_gibberish",
+              "IdeaInput",
+              "EvidenceItem",
+              "Competitor",
+              "DimensionScore",
+              "OpportunityScore",
+              "AnalysisPerspective",
+              "DisagreementPosition",
+              "ModelDisagreement",
+              "ValidationExperiment",
+              "FounderAction",
+              "FounderToolkit",
+              "RegionalEvidenceSignal",
+              "RegionalMarketAnalysis",
+              "ResearchCoverage",
+              "AnalysisResult",
+              "AnalysisCreateRequest",
+              "DemoAnalysisRequest",
+              "PromptAnalysisRequest",
+              "AnalysisListItem",
+              "HealthResponse"
+            ]
+          },
+          {
+            "path": "backend/assumption_zero/services/analysis_service.py",
+            "batchIndex": 3,
+            "symbols": [
+              "build_llm_adapter",
+              "build_research_providers",
+              "create_analysis",
+              "run_analysis",
+              "get_analysis",
+              "list_analyses",
+              "delete_analysis",
+              "_parse_dt"
+            ]
+          }
+        ],
+        "backend/assumption_zero/llm/opencode_adapter.py": [
+          {
+            "path": "backend/assumption_zero/config.py",
+            "batchIndex": 3,
+            "symbols": [
+              "is_public_http_url",
+              "Settings",
+              "get_settings"
+            ]
+          },
+          {
+            "path": "backend/assumption_zero/schemas.py",
+            "batchIndex": 2,
+            "symbols": [
+              "EvidenceType",
+              "ReliabilityLevel",
+              "ConfidenceLevel",
+              "AnalysisStatus",
+              "ResearchDepth",
+              "AnalysisStage",
+              "Recommendation",
+              "PerspectiveName",
+              "CompetitorType",
+              "is_gibberish",
+              "IdeaInput",
+              "EvidenceItem",
+              "Competitor",
+              "DimensionScore",
+              "OpportunityScore",
+              "AnalysisPerspective",
+              "DisagreementPosition",
+              "ModelDisagreement",
+              "ValidationExperiment",
+              "FounderAction",
+              "FounderToolkit",
+              "RegionalEvidenceSignal",
+              "RegionalMarketAnalysis",
+              "ResearchCoverage",
+              "AnalysisResult",
+              "AnalysisCreateRequest",
+              "DemoAnalysisRequest",
+              "PromptAnalysisRequest",
+              "AnalysisListItem",
+              "HealthResponse"
+            ]
+          },
+          {
+            "path": "backend/assumption_zero/services/analysis_service.py",
+            "batchIndex": 3,
+            "symbols": [
+              "build_llm_adapter",
+              "build_research_providers",
+              "create_analysis",
+              "run_analysis",
+              "get_analysis",
+              "list_analyses",
+              "delete_analysis",
+              "_parse_dt"
+            ]
+          }
+        ],
+        "backend/assumption_zero/llm/openrouter_adapter.py": [
+          {
+            "path": "backend/assumption_zero/config.py",
+            "batchIndex": 3,
+            "symbols": [
+              "is_public_http_url",
+              "Settings",
+              "get_settings"
+            ]
+          },
+          {
+            "path": "backend/assumption_zero/schemas.py",
+            "batchIndex": 2,
+            "symbols": [
+              "EvidenceType",
+              "ReliabilityLevel",
+              "ConfidenceLevel",
+              "AnalysisStatus",
+              "ResearchDepth",
+              "AnalysisStage",
+              "Recommendation",
+              "PerspectiveName",
+              "CompetitorType",
+              "is_gibberish",
+              "IdeaInput",
+              "EvidenceItem",
+              "Competitor",
+              "DimensionScore",
+              "OpportunityScore",
+              "AnalysisPerspective",
+              "DisagreementPosition",
+              "ModelDisagreement",
+              "ValidationExperiment",
+              "FounderAction",
+              "FounderToolkit",
+              "RegionalEvidenceSignal",
+              "RegionalMarketAnalysis",
+              "ResearchCoverage",
+              "AnalysisResult",
+              "AnalysisCreateRequest",
+              "DemoAnalysisRequest",
+              "PromptAnalysisRequest",
+              "AnalysisListItem",
+              "HealthResponse"
+            ]
+          },
+          {
+            "path": "backend/assumption_zero/services/analysis_service.py",
+            "batchIndex": 3,
+            "symbols": [
+              "build_llm_adapter",
+              "build_research_providers",
+              "create_analysis",
+              "run_analysis",
+              "get_analysis",
+              "list_analyses",
+              "delete_analysis",
+              "_parse_dt"
+            ]
+          }
+        ],
+        "backend/tests/test_llm_adapters.py": [
+          {
+            "path": "backend/assumption_zero/services/analysis_service.py",
+            "batchIndex": 3,
+            "symbols": [
+              "build_llm_adapter",
+              "build_research_providers",
+              "create_analysis",
+              "run_analysis",
+              "get_analysis",
+              "list_analyses",
+              "delete_analysis",
+              "_parse_dt"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "batchIndex": 5,
+      "files": [
+        {
+          "path": "backend/assumption_zero/__init__.py",
+          "language": "python",
+          "sizeLines": 4,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/assumption_zero/analysis/unit_economics.py",
+          "language": "python",
+          "sizeLines": 74,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/assumption_zero/cli.py",
+          "language": "python",
+          "sizeLines": 2331,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/assumption_zero/main.py",
+          "language": "python",
+          "sizeLines": 124,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/assumption_zero/storage.py",
+          "language": "python",
+          "sizeLines": 273,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/tests/test_api.py",
+          "language": "python",
+          "sizeLines": 142,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/tests/test_cli_parity.py",
+          "language": "python",
+          "sizeLines": 119,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/tests/test_export.py",
+          "language": "python",
+          "sizeLines": 135,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/tests/test_validation_errors.py",
+          "language": "python",
+          "sizeLines": 72,
+          "fileCategory": "code"
+        }
+      ],
+      "batchImportData": {
+        "backend/assumption_zero/__init__.py": [],
+        "backend/assumption_zero/analysis/unit_economics.py": [],
+        "backend/assumption_zero/cli.py": [
+          "backend/assumption_zero/__init__.py"
+        ],
+        "backend/assumption_zero/main.py": [
+          "backend/assumption_zero/__init__.py",
+          "backend/assumption_zero/api/routes.py",
+          "backend/assumption_zero/config.py",
+          "backend/assumption_zero/storage.py"
+        ],
+        "backend/assumption_zero/storage.py": [],
+        "backend/tests/test_api.py": [
+          "backend/assumption_zero/main.py"
+        ],
+        "backend/tests/test_cli_parity.py": [
+          "backend/assumption_zero/analysis/unit_economics.py",
+          "backend/assumption_zero/cli.py",
+          "backend/assumption_zero/schemas.py",
+          "backend/assumption_zero/storage.py"
+        ],
+        "backend/tests/test_export.py": [
+          "backend/assumption_zero/cli.py",
+          "backend/assumption_zero/schemas.py"
+        ],
+        "backend/tests/test_validation_errors.py": [
+          "backend/assumption_zero/config.py",
+          "backend/assumption_zero/main.py"
+        ]
+      },
+      "neighborMap": {
+        "backend/assumption_zero/__init__.py": [
+          {
+            "path": "backend/assumption_zero/api/routes.py",
+            "batchIndex": 3,
+            "symbols": [
+              "_available_providers",
+              "_llm_options",
+              "_validate_selected_provider",
+              "health",
+              "verify_keys_endpoint",
+              "create_analysis_endpoint",
+              "create_analysis_from_prompt_endpoint",
+              "list_analyses_endpoint",
+              "get_analysis_endpoint",
+              "delete_analysis_endpoint",
+              "demo_endpoint"
+            ]
+          }
+        ],
+        "backend/assumption_zero/main.py": [
+          {
+            "path": "backend/assumption_zero/api/routes.py",
+            "batchIndex": 3,
+            "symbols": [
+              "_available_providers",
+              "_llm_options",
+              "_validate_selected_provider",
+              "health",
+              "verify_keys_endpoint",
+              "create_analysis_endpoint",
+              "create_analysis_from_prompt_endpoint",
+              "list_analyses_endpoint",
+              "get_analysis_endpoint",
+              "delete_analysis_endpoint",
+              "demo_endpoint"
+            ]
+          },
+          {
+            "path": "backend/assumption_zero/config.py",
+            "batchIndex": 3,
+            "symbols": [
+              "is_public_http_url",
+              "Settings",
+              "get_settings"
+            ]
+          }
+        ],
+        "backend/assumption_zero/storage.py": [
+          {
+            "path": "backend/assumption_zero/services/analysis_service.py",
+            "batchIndex": 3,
+            "symbols": [
+              "build_llm_adapter",
+              "build_research_providers",
+              "create_analysis",
+              "run_analysis",
+              "get_analysis",
+              "list_analyses",
+              "delete_analysis",
+              "_parse_dt"
+            ]
+          }
+        ],
+        "backend/tests/test_cli_parity.py": [
+          {
+            "path": "backend/assumption_zero/schemas.py",
+            "batchIndex": 2,
+            "symbols": [
+              "EvidenceType",
+              "ReliabilityLevel",
+              "ConfidenceLevel",
+              "AnalysisStatus",
+              "ResearchDepth",
+              "AnalysisStage",
+              "Recommendation",
+              "PerspectiveName",
+              "CompetitorType",
+              "is_gibberish",
+              "IdeaInput",
+              "EvidenceItem",
+              "Competitor",
+              "DimensionScore",
+              "OpportunityScore",
+              "AnalysisPerspective",
+              "DisagreementPosition",
+              "ModelDisagreement",
+              "ValidationExperiment",
+              "FounderAction",
+              "FounderToolkit",
+              "RegionalEvidenceSignal",
+              "RegionalMarketAnalysis",
+              "ResearchCoverage",
+              "AnalysisResult",
+              "AnalysisCreateRequest",
+              "DemoAnalysisRequest",
+              "PromptAnalysisRequest",
+              "AnalysisListItem",
+              "HealthResponse"
+            ]
+          }
+        ],
+        "backend/tests/test_export.py": [
+          {
+            "path": "backend/assumption_zero/schemas.py",
+            "batchIndex": 2,
+            "symbols": [
+              "EvidenceType",
+              "ReliabilityLevel",
+              "ConfidenceLevel",
+              "AnalysisStatus",
+              "ResearchDepth",
+              "AnalysisStage",
+              "Recommendation",
+              "PerspectiveName",
+              "CompetitorType",
+              "is_gibberish",
+              "IdeaInput",
+              "EvidenceItem",
+              "Competitor",
+              "DimensionScore",
+              "OpportunityScore",
+              "AnalysisPerspective",
+              "DisagreementPosition",
+              "ModelDisagreement",
+              "ValidationExperiment",
+              "FounderAction",
+              "FounderToolkit",
+              "RegionalEvidenceSignal",
+              "RegionalMarketAnalysis",
+              "ResearchCoverage",
+              "AnalysisResult",
+              "AnalysisCreateRequest",
+              "DemoAnalysisRequest",
+              "PromptAnalysisRequest",
+              "AnalysisListItem",
+              "HealthResponse"
+            ]
+          }
+        ],
+        "backend/tests/test_validation_errors.py": [
+          {
+            "path": "backend/assumption_zero/config.py",
+            "batchIndex": 3,
+            "symbols": [
+              "is_public_http_url",
+              "Settings",
+              "get_settings"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "batchIndex": 6,
+      "files": [
+        {
+          "path": "backend/Dockerfile",
+          "language": "dockerfile",
+          "sizeLines": 23,
+          "fileCategory": "infra"
+        }
+      ],
+      "batchImportData": {
+        "backend/Dockerfile": []
+      },
+      "neighborMap": {}
+    },
+    {
+      "batchIndex": 7,
+      "files": [
+        {
+          "path": "frontend/Dockerfile",
+          "language": "dockerfile",
+          "sizeLines": 23,
+          "fileCategory": "infra"
+        }
+      ],
+      "batchImportData": {
+        "frontend/Dockerfile": []
+      },
+      "neighborMap": {}
+    },
+    {
+      "batchIndex": 8,
+      "files": [
+        {
+          "path": ".github/workflows/ci.yml",
+          "language": "yaml",
+          "sizeLines": 53,
+          "fileCategory": "infra"
+        }
+      ],
+      "batchImportData": {
+        ".github/workflows/ci.yml": []
+      },
+      "neighborMap": {}
+    },
+    {
+      "batchIndex": 9,
+      "files": [
+        {
+          "path": ".env.example",
+          "language": "config",
+          "sizeLines": 60,
+          "fileCategory": "config"
+        },
+        {
+          "path": "CONTRIBUTING.md",
+          "language": "markdown",
+          "sizeLines": 59,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "IDEA_GUIDE.md",
+          "language": "markdown",
+          "sizeLines": 89,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "README.md",
+          "language": "markdown",
+          "sizeLines": 279,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "SECURITY.md",
+          "language": "markdown",
+          "sizeLines": 18,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "docker-compose.yml",
+          "language": "yaml",
+          "sizeLines": 49,
+          "fileCategory": "infra"
+        },
+        {
+          "path": "start_web.bat",
+          "language": "batch",
+          "sizeLines": 130,
+          "fileCategory": "script"
+        },
+        {
+          "path": "start_web.sh",
+          "language": "shell",
+          "sizeLines": 92,
+          "fileCategory": "script"
+        }
+      ],
+      "batchImportData": {
+        ".env.example": [],
+        "CONTRIBUTING.md": [],
+        "IDEA_GUIDE.md": [],
+        "README.md": [],
+        "SECURITY.md": [],
+        "docker-compose.yml": [],
+        "start_web.bat": [],
+        "start_web.sh": []
+      },
+      "neighborMap": {}
+    },
+    {
+      "batchIndex": 10,
+      "files": [
+        {
+          "path": ".github/ISSUE_TEMPLATE/bug_report.yml",
+          "language": "yaml",
+          "sizeLines": 56,
+          "fileCategory": "config"
+        },
+        {
+          "path": ".github/ISSUE_TEMPLATE/config.yml",
+          "language": "yaml",
+          "sizeLines": 5,
+          "fileCategory": "config"
+        },
+        {
+          "path": ".github/ISSUE_TEMPLATE/feature_request.yml",
+          "language": "yaml",
+          "sizeLines": 39,
+          "fileCategory": "config"
+        }
+      ],
+      "batchImportData": {
+        ".github/ISSUE_TEMPLATE/bug_report.yml": [],
+        ".github/ISSUE_TEMPLATE/config.yml": [],
+        ".github/ISSUE_TEMPLATE/feature_request.yml": []
+      },
+      "neighborMap": {}
+    },
+    {
+      "batchIndex": 11,
+      "files": [
+        {
+          "path": "frontend/index.html",
+          "language": "html",
+          "sizeLines": 18,
+          "fileCategory": "markup"
+        },
+        {
+          "path": "frontend/package.json",
+          "language": "json",
+          "sizeLines": 39,
+          "fileCategory": "config"
+        },
+        {
+          "path": "frontend/tsconfig.json",
+          "language": "json",
+          "sizeLines": 22,
+          "fileCategory": "config"
+        },
+        {
+          "path": "frontend/tsconfig.node.json",
+          "language": "json",
+          "sizeLines": 13,
+          "fileCategory": "config"
+        }
+      ],
+      "batchImportData": {
+        "frontend/index.html": [],
+        "frontend/package.json": [],
+        "frontend/tsconfig.json": [],
+        "frontend/tsconfig.node.json": []
+      },
+      "neighborMap": {}
+    },
+    {
+      "batchIndex": 12,
+      "files": [
+        {
+          "path": ".github/PULL_REQUEST_TEMPLATE.md",
+          "language": "markdown",
+          "sizeLines": 18,
+          "fileCategory": "docs"
+        },
+        {
+          "path": ".ua/.understandignore",
+          "language": "unknown",
+          "sizeLines": 103,
+          "fileCategory": "code"
+        },
+        {
+          "path": ".ua/config.json",
+          "language": "json",
+          "sizeLines": 3,
+          "fileCategory": "config"
+        },
+        {
+          "path": "backend/README.md",
+          "language": "markdown",
+          "sizeLines": 5,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "backend/assumption_zero/api/__init__.py",
+          "language": "python",
+          "sizeLines": 1,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/assumption_zero/services/__init__.py",
+          "language": "python",
+          "sizeLines": 1,
+          "fileCategory": "code"
+        },
+        {
+          "path": "backend/pyproject.toml",
+          "language": "toml",
+          "sizeLines": 64,
+          "fileCategory": "config"
+        },
+        {
+          "path": "backend/tests/__init__.py",
+          "language": "python",
+          "sizeLines": 1,
+          "fileCategory": "code"
+        },
+        {
+          "path": "examples/sample-idea.json",
+          "language": "json",
+          "sizeLines": 25,
+          "fileCategory": "config"
+        },
+        {
+          "path": "frontend/postcss.config.js",
+          "language": "javascript",
+          "sizeLines": 6,
+          "fileCategory": "code"
+        },
+        {
+          "path": "frontend/src/index.css",
+          "language": "css",
+          "sizeLines": 284,
+          "fileCategory": "markup"
+        },
+        {
+          "path": "frontend/src/pages/DocsPage.tsx",
+          "language": "typescript",
+          "sizeLines": 280,
+          "fileCategory": "code"
+        },
+        {
+          "path": "frontend/tailwind.config.js",
+          "language": "javascript",
+          "sizeLines": 26,
+          "fileCategory": "code"
+        },
+        {
+          "path": "frontend/tests/docs.test.tsx",
+          "language": "typescript",
+          "sizeLines": 15,
+          "fileCategory": "code"
+        },
+        {
+          "path": "frontend/tests/setup.ts",
+          "language": "typescript",
+          "sizeLines": 1,
+          "fileCategory": "code"
+        },
+        {
+          "path": "frontend/vite.config.ts",
+          "language": "typescript",
+          "sizeLines": 21,
+          "fileCategory": "code"
+        }
+      ],
+      "batchImportData": {
+        ".github/PULL_REQUEST_TEMPLATE.md": [],
+        ".ua/.understandignore": [],
+        ".ua/config.json": [],
+        "backend/README.md": [],
+        "backend/assumption_zero/api/__init__.py": [],
+        "backend/assumption_zero/services/__init__.py": [],
+        "backend/pyproject.toml": [],
+        "backend/tests/__init__.py": [],
+        "examples/sample-idea.json": [],
+        "frontend/postcss.config.js": [],
+        "frontend/src/index.css": [],
+        "frontend/src/pages/DocsPage.tsx": [],
+        "frontend/tailwind.config.js": [],
+        "frontend/tests/docs.test.tsx": [
+          "frontend/src/pages/DocsPage.tsx"
+        ],
+        "frontend/tests/setup.ts": [],
+        "frontend/vite.config.ts": []
+      },
+      "neighborMap": {
+        "frontend/src/index.css": [
+          {
+            "path": "frontend/src/main.tsx",
+            "batchIndex": 1,
+            "symbols": []
+          }
+        ]
+      }
+    }
+  ]
+}

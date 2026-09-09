@@ -3,6 +3,41 @@ import { isNoncommercialIdea } from './ideaContext'
 
 const list = (items?: string[]) => items?.length ? items.map((item) => `- ${item}`).join('\n') : '- None recorded'
 
+export function generateDecisionBrief(result: AnalysisResult): string {
+  const nextTest = [...result.experiments].sort((a, b) => a.priority - b.priority)[0]
+  return [
+    `# ${result.idea_input.name} — Action plan`,
+    '',
+    `Recommendation: ${result.recommendation || 'Not available'}`,
+    `Evidence confidence: ${result.evidence_confidence || 'Not assessed'}`,
+    ...(result.is_demo ? ['Example report — not a new analysis of your idea.'] : []),
+    'Research informs this recommendation; it does not prove demand.',
+    '',
+    `Riskiest assumption: ${result.most_dangerous_assumption || 'Not identified'}`,
+    `Strongest support: ${result.strongest_supporting || 'Insufficient evidence'}`,
+    `Strongest contradiction: ${result.strongest_contradicting || 'Insufficient evidence'}`,
+    '',
+    '## Test next',
+    '',
+    ...(nextTest ? [
+      nextTest.title,
+      `Assumption: ${nextTest.assumption_tested}`,
+      `Time: ${nextTest.estimated_time} | Cost: ${nextTest.estimated_cost_range}`,
+      `Sample: ${nextTest.target_sample}`,
+      nextTest.procedure,
+      `Measure: ${nextTest.primary_metric}`,
+      `Continue if: ${nextTest.success_threshold}`,
+      `Stop or revise if: ${nextTest.failure_threshold}`,
+      `Decision: ${nextTest.decision_after}`,
+      ...(nextTest.legal_ethical ? [`Test safeguards: ${nextTest.legal_ethical}`] : []),
+    ] : ['No validation test was generated. Define a target sample and success/failure thresholds before spending.']),
+    '',
+    '## Open questions',
+    '',
+    list(result.missing_information.slice(0, 3)),
+  ].join('\n')
+}
+
 export function generateMarkdownReport(result: AnalysisResult): string {
   const score = result.opportunity_score
   const noncommercial = isNoncommercialIdea(result.idea_input)

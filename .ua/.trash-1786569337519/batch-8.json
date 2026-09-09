@@ -1,0 +1,15 @@
+{
+  "nodes": [
+    {
+      "id": "pipeline:.github/workflows/ci.yml",
+      "type": "pipeline",
+      "name": "ci.yml",
+      "filePath": ".github/workflows/ci.yml",
+      "summary": "Runs continuous integration on pushes and pull requests to main or master, executing the Python 3.12 pytest suite and independently installing and building the Node.js 20 frontend.",
+      "tags": ["ci-cd", "pipeline", "test", "build-system", "automation"],
+      "complexity": "simple",
+      "languageNotes": "Defines independent backend-tests and frontend-build jobs with dependency caching through the official setup actions."
+    }
+  ],
+  "edges": []
+}

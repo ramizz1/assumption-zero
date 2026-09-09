@@ -1,0 +1,1046 @@
+{
+  "nodes": [
+    {
+      "id": "file:backend/assumption_zero/analysis/__init__.py",
+      "type": "file",
+      "name": "__init__.py",
+      "filePath": "backend/assumption_zero/analysis/__init__.py",
+      "summary": "Public package barrel exposing the validation engine’s core analysis helpers and orchestration API.",
+      "tags": [
+        "entry-point",
+        "barrel",
+        "analysis",
+        "exports"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/assumption_zero/analysis/citation_validator.py",
+      "type": "file",
+      "name": "citation_validator.py",
+      "filePath": "backend/assumption_zero/analysis/citation_validator.py",
+      "summary": "Validates model-supplied evidence citations, preserving known evidence identifiers and moving unknown identifiers into each perspective’s invalid-citation list.",
+      "tags": [
+        "validation",
+        "citations",
+        "evidence",
+        "analysis"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/assumption_zero/analysis/citation_validator.py:validate_citations",
+      "type": "function",
+      "name": "validate_citations",
+      "filePath": "backend/assumption_zero/analysis/citation_validator.py",
+      "lineRange": [
+        15,
+        41
+      ],
+      "summary": "Reconciles cited evidence identifiers in model perspectives against the collected evidence set.",
+      "tags": [
+        "analysis",
+        "function",
+        "public-api"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/assumption_zero/analysis/competitor_merger.py",
+      "type": "file",
+      "name": "competitor_merger.py",
+      "filePath": "backend/assumption_zero/analysis/competitor_merger.py",
+      "summary": "Normalizes, compares, merges, and ranks competitor records so duplicate discoveries become a single evidence-rich competitor profile.",
+      "tags": [
+        "competitor-research",
+        "deduplication",
+        "normalization",
+        "analysis"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:backend/assumption_zero/analysis/competitor_merger.py:_normalize",
+      "type": "function",
+      "name": "_normalize",
+      "filePath": "backend/assumption_zero/analysis/competitor_merger.py",
+      "lineRange": [
+        22,
+        28
+      ],
+      "summary": "Supports normalize as an internal step in normalizes, compares, merges, and ranks competitor records so duplicate discoveries become a single evidence-rich competitor profile.",
+      "tags": [
+        "analysis",
+        "function",
+        "internal-helper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/assumption_zero/analysis/competitor_merger.py:_similar",
+      "type": "function",
+      "name": "_similar",
+      "filePath": "backend/assumption_zero/analysis/competitor_merger.py",
+      "lineRange": [
+        31,
+        38
+      ],
+      "summary": "Supports similar as an internal step in normalizes, compares, merges, and ranks competitor records so duplicate discoveries become a single evidence-rich competitor profile.",
+      "tags": [
+        "analysis",
+        "function",
+        "internal-helper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/assumption_zero/analysis/competitor_merger.py:_merge_two",
+      "type": "function",
+      "name": "_merge_two",
+      "filePath": "backend/assumption_zero/analysis/competitor_merger.py",
+      "lineRange": [
+        41,
+        80
+      ],
+      "summary": "Supports merge two as an internal step in normalizes, compares, merges, and ranks competitor records so duplicate discoveries become a single evidence-rich competitor profile.",
+      "tags": [
+        "analysis",
+        "function",
+        "internal-helper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/assumption_zero/analysis/competitor_merger.py:merge_competitors",
+      "type": "function",
+      "name": "merge_competitors",
+      "filePath": "backend/assumption_zero/analysis/competitor_merger.py",
+      "lineRange": [
+        83,
+        109
+      ],
+      "summary": "Deduplicates and ranks competitor profiles while preserving the strongest combined evidence and attributes.",
+      "tags": [
+        "analysis",
+        "function",
+        "public-api"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/assumption_zero/analysis/confidence.py",
+      "type": "file",
+      "name": "confidence.py",
+      "filePath": "backend/assumption_zero/analysis/confidence.py",
+      "summary": "Calculates evidence-confidence levels from source volume, diversity, reliability, recency, and citation validity across model perspectives.",
+      "tags": [
+        "confidence-scoring",
+        "evidence",
+        "citations",
+        "analysis"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:backend/assumption_zero/analysis/confidence.py:calculate_evidence_confidence",
+      "type": "function",
+      "name": "calculate_evidence_confidence",
+      "filePath": "backend/assumption_zero/analysis/confidence.py",
+      "lineRange": [
+        27,
+        92
+      ],
+      "summary": "Computes an evidence-confidence level from quantity, diversity, reliability, recency, and citation coverage.",
+      "tags": [
+        "analysis",
+        "function",
+        "public-api"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:backend/assumption_zero/analysis/disagreement.py",
+      "type": "file",
+      "name": "disagreement.py",
+      "filePath": "backend/assumption_zero/analysis/disagreement.py",
+      "summary": "Detects recommendation, dimension-score, and assumption disagreements between model perspectives and records the competing positions for review.",
+      "tags": [
+        "multi-model",
+        "disagreement-detection",
+        "analysis",
+        "validation"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:backend/assumption_zero/analysis/disagreement.py:detect_disagreements",
+      "type": "function",
+      "name": "detect_disagreements",
+      "filePath": "backend/assumption_zero/analysis/disagreement.py",
+      "lineRange": [
+        20,
+        117
+      ],
+      "summary": "Compares model perspectives and emits structured disagreements for conflicting recommendations, scores, and assumptions.",
+      "tags": [
+        "analysis",
+        "function",
+        "public-api"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:backend/assumption_zero/analysis/engine.py",
+      "type": "file",
+      "name": "engine.py",
+      "filePath": "backend/assumption_zero/analysis/engine.py",
+      "summary": "Orchestrates the complete validation pipeline: research collection, parallel model perspectives, grounded competitor extraction, scoring, confidence, regional analysis, experiments, and founder guidance.",
+      "tags": [
+        "service",
+        "orchestration",
+        "analysis-engine",
+        "research-pipeline",
+        "entry-point"
+      ],
+      "complexity": "complex",
+      "languageNotes": "Uses asynchronous provider/model orchestration with defensive error isolation around external integrations."
+    },
+    {
+      "id": "function:backend/assumption_zero/analysis/engine.py:_assign_evidence_ids",
+      "type": "function",
+      "name": "_assign_evidence_ids",
+      "filePath": "backend/assumption_zero/analysis/engine.py",
+      "lineRange": [
+        71,
+        86
+      ],
+      "summary": "Supports assign evidence ids as an internal step in orchestrates the complete validation pipeline: research collection, parallel model perspectives, grounded competitor extraction, scoring, confidence, regional analysis, experiments, and founder guidance.",
+      "tags": [
+        "analysis",
+        "function",
+        "internal-helper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/assumption_zero/analysis/engine.py:_normalized_name",
+      "type": "function",
+      "name": "_normalized_name",
+      "filePath": "backend/assumption_zero/analysis/engine.py",
+      "lineRange": [
+        107,
+        113
+      ],
+      "summary": "Supports normalized name as an internal step in orchestrates the complete validation pipeline: research collection, parallel model perspectives, grounded competitor extraction, scoring, confidence, regional analysis, experiments, and founder guidance.",
+      "tags": [
+        "analysis",
+        "function",
+        "internal-helper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/assumption_zero/analysis/engine.py:_brand_from_url",
+      "type": "function",
+      "name": "_brand_from_url",
+      "filePath": "backend/assumption_zero/analysis/engine.py",
+      "lineRange": [
+        116,
+        127
+      ],
+      "summary": "Supports brand from url as an internal step in orchestrates the complete validation pipeline: research collection, parallel model perspectives, grounded competitor extraction, scoring, confidence, regional analysis, experiments, and founder guidance.",
+      "tags": [
+        "analysis",
+        "function",
+        "internal-helper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/assumption_zero/analysis/engine.py:_clean_competitor_name",
+      "type": "function",
+      "name": "_clean_competitor_name",
+      "filePath": "backend/assumption_zero/analysis/engine.py",
+      "lineRange": [
+        130,
+        181
+      ],
+      "summary": "Supports clean competitor name as an internal step in orchestrates the complete validation pipeline: research collection, parallel model perspectives, grounded competitor extraction, scoring, confidence, regional analysis, experiments, and founder guidance.",
+      "tags": [
+        "analysis",
+        "function",
+        "internal-helper"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:backend/assumption_zero/analysis/engine.py:_extract_competitors_from_evidence",
+      "type": "function",
+      "name": "_extract_competitors_from_evidence",
+      "filePath": "backend/assumption_zero/analysis/engine.py",
+      "lineRange": [
+        184,
+        262
+      ],
+      "summary": "Supports extract competitors from evidence as an internal step in orchestrates the complete validation pipeline: research collection, parallel model perspectives, grounded competitor extraction, scoring, confidence, regional analysis, experiments, and founder guidance.",
+      "tags": [
+        "analysis",
+        "function",
+        "internal-helper"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:backend/assumption_zero/analysis/engine.py:_evidence_mentions",
+      "type": "function",
+      "name": "_evidence_mentions",
+      "filePath": "backend/assumption_zero/analysis/engine.py",
+      "lineRange": [
+        265,
+        273
+      ],
+      "summary": "Supports evidence mentions as an internal step in orchestrates the complete validation pipeline: research collection, parallel model perspectives, grounded competitor extraction, scoring, confidence, regional analysis, experiments, and founder guidance.",
+      "tags": [
+        "analysis",
+        "function",
+        "internal-helper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/assumption_zero/analysis/engine.py:_validated_ai_competitors",
+      "type": "function",
+      "name": "_validated_ai_competitors",
+      "filePath": "backend/assumption_zero/analysis/engine.py",
+      "lineRange": [
+        276,
+        330
+      ],
+      "summary": "Supports validated ai competitors as an internal step in orchestrates the complete validation pipeline: research collection, parallel model perspectives, grounded competitor extraction, scoring, confidence, regional analysis, experiments, and founder guidance.",
+      "tags": [
+        "analysis",
+        "function",
+        "internal-helper"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:backend/assumption_zero/analysis/engine.py:_select_recommendation",
+      "type": "function",
+      "name": "_select_recommendation",
+      "filePath": "backend/assumption_zero/analysis/engine.py",
+      "lineRange": [
+        333,
+        346
+      ],
+      "summary": "Supports select recommendation as an internal step in orchestrates the complete validation pipeline: research collection, parallel model perspectives, grounded competitor extraction, scoring, confidence, regional analysis, experiments, and founder guidance.",
+      "tags": [
+        "analysis",
+        "function",
+        "internal-helper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/assumption_zero/analysis/engine.py:_select_most_dangerous_assumption",
+      "type": "function",
+      "name": "_select_most_dangerous_assumption",
+      "filePath": "backend/assumption_zero/analysis/engine.py",
+      "lineRange": [
+        349,
+        357
+      ],
+      "summary": "Supports select most dangerous assumption as an internal step in orchestrates the complete validation pipeline: research collection, parallel model perspectives, grounded competitor extraction, scoring, confidence, regional analysis, experiments, and founder guidance.",
+      "tags": [
+        "analysis",
+        "function",
+        "internal-helper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/assumption_zero/analysis/engine.py:_find_strongest",
+      "type": "function",
+      "name": "_find_strongest",
+      "filePath": "backend/assumption_zero/analysis/engine.py",
+      "lineRange": [
+        360,
+        379
+      ],
+      "summary": "Supports find strongest as an internal step in orchestrates the complete validation pipeline: research collection, parallel model perspectives, grounded competitor extraction, scoring, confidence, regional analysis, experiments, and founder guidance.",
+      "tags": [
+        "analysis",
+        "function",
+        "internal-helper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/assumption_zero/analysis/engine.py:_collect_missing_info",
+      "type": "function",
+      "name": "_collect_missing_info",
+      "filePath": "backend/assumption_zero/analysis/engine.py",
+      "lineRange": [
+        382,
+        411
+      ],
+      "summary": "Supports collect missing info as an internal step in orchestrates the complete validation pipeline: research collection, parallel model perspectives, grounded competitor extraction, scoring, confidence, regional analysis, experiments, and founder guidance.",
+      "tags": [
+        "analysis",
+        "function",
+        "internal-helper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/assumption_zero/analysis/engine.py:AnalysisEngine",
+      "type": "class",
+      "name": "AnalysisEngine",
+      "filePath": "backend/assumption_zero/analysis/engine.py",
+      "lineRange": [
+        414,
+        745
+      ],
+      "summary": "Coordinates research providers and model adapters through the full evidence-backed idea-validation workflow.",
+      "tags": [
+        "service",
+        "orchestration",
+        "class"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:backend/assumption_zero/analysis/experiment_generator.py",
+      "type": "file",
+      "name": "experiment_generator.py",
+      "filePath": "backend/assumption_zero/analysis/experiment_generator.py",
+      "summary": "Selects prioritized validation experiments from reusable templates based on the idea, evidence, and model perspectives.",
+      "tags": [
+        "experiment-generation",
+        "validation",
+        "recommendation",
+        "analysis"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:backend/assumption_zero/analysis/experiment_generator.py:_pick_experiments",
+      "type": "function",
+      "name": "_pick_experiments",
+      "filePath": "backend/assumption_zero/analysis/experiment_generator.py",
+      "lineRange": [
+        91,
+        121
+      ],
+      "summary": "Supports pick experiments as an internal step in selects prioritized validation experiments from reusable templates based on the idea, evidence, and model perspectives.",
+      "tags": [
+        "analysis",
+        "function",
+        "internal-helper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/assumption_zero/analysis/experiment_generator.py:generate_experiments",
+      "type": "function",
+      "name": "generate_experiments",
+      "filePath": "backend/assumption_zero/analysis/experiment_generator.py",
+      "lineRange": [
+        124,
+        130
+      ],
+      "summary": "Returns prioritized validation experiments tailored to the idea and current evidence.",
+      "tags": [
+        "analysis",
+        "function",
+        "public-api"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/assumption_zero/analysis/founder_toolkit.py",
+      "type": "file",
+      "name": "founder_toolkit.py",
+      "filePath": "backend/assumption_zero/analysis/founder_toolkit.py",
+      "summary": "Transforms analysis outcomes into a founder-facing toolkit with positioning, channels, metrics, interview prompts, decision rules, and a phased action roadmap.",
+      "tags": [
+        "founder-toolkit",
+        "roadmap",
+        "recommendation",
+        "analysis"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:backend/assumption_zero/analysis/founder_toolkit.py:_split_channels",
+      "type": "function",
+      "name": "_split_channels",
+      "filePath": "backend/assumption_zero/analysis/founder_toolkit.py",
+      "lineRange": [
+        15,
+        18
+      ],
+      "summary": "Supports split channels as an internal step in transforms analysis outcomes into a founder-facing toolkit with positioning, channels, metrics, interview prompts, decision rules, and a phased action roadmap.",
+      "tags": [
+        "analysis",
+        "function",
+        "internal-helper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/assumption_zero/analysis/founder_toolkit.py:_default_channels",
+      "type": "function",
+      "name": "_default_channels",
+      "filePath": "backend/assumption_zero/analysis/founder_toolkit.py",
+      "lineRange": [
+        21,
+        33
+      ],
+      "summary": "Supports default channels as an internal step in transforms analysis outcomes into a founder-facing toolkit with positioning, channels, metrics, interview prompts, decision rules, and a phased action roadmap.",
+      "tags": [
+        "analysis",
+        "function",
+        "internal-helper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/assumption_zero/analysis/founder_toolkit.py:generate_founder_toolkit",
+      "type": "function",
+      "name": "generate_founder_toolkit",
+      "filePath": "backend/assumption_zero/analysis/founder_toolkit.py",
+      "lineRange": [
+        36,
+        147
+      ],
+      "summary": "Builds actionable positioning, channel, metric, interview, and roadmap guidance for the founder.",
+      "tags": [
+        "analysis",
+        "function",
+        "public-api"
+      ],
+      "complexity": "moderate"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:backend/assumption_zero/analysis/__init__.py",
+      "target": "file:backend/assumption_zero/analysis/citation_validator.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/__init__.py",
+      "target": "file:backend/assumption_zero/analysis/competitor_merger.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/__init__.py",
+      "target": "file:backend/assumption_zero/analysis/confidence.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/__init__.py",
+      "target": "file:backend/assumption_zero/analysis/disagreement.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/__init__.py",
+      "target": "file:backend/assumption_zero/analysis/engine.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/__init__.py",
+      "target": "file:backend/assumption_zero/analysis/experiment_generator.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/__init__.py",
+      "target": "file:backend/assumption_zero/analysis/query_generator.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/__init__.py",
+      "target": "file:backend/assumption_zero/analysis/scoring.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/citation_validator.py",
+      "target": "function:backend/assumption_zero/analysis/citation_validator.py:validate_citations",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/citation_validator.py",
+      "target": "function:backend/assumption_zero/analysis/citation_validator.py:validate_citations",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/citation_validator.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/competitor_merger.py",
+      "target": "function:backend/assumption_zero/analysis/competitor_merger.py:_normalize",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/competitor_merger.py",
+      "target": "function:backend/assumption_zero/analysis/competitor_merger.py:_normalize",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/competitor_merger.py",
+      "target": "function:backend/assumption_zero/analysis/competitor_merger.py:_similar",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/competitor_merger.py",
+      "target": "function:backend/assumption_zero/analysis/competitor_merger.py:_similar",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/competitor_merger.py",
+      "target": "function:backend/assumption_zero/analysis/competitor_merger.py:_merge_two",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/competitor_merger.py",
+      "target": "function:backend/assumption_zero/analysis/competitor_merger.py:_merge_two",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/competitor_merger.py",
+      "target": "function:backend/assumption_zero/analysis/competitor_merger.py:merge_competitors",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/competitor_merger.py",
+      "target": "function:backend/assumption_zero/analysis/competitor_merger.py:merge_competitors",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/competitor_merger.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/confidence.py",
+      "target": "function:backend/assumption_zero/analysis/confidence.py:calculate_evidence_confidence",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/confidence.py",
+      "target": "function:backend/assumption_zero/analysis/confidence.py:calculate_evidence_confidence",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/confidence.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/disagreement.py",
+      "target": "function:backend/assumption_zero/analysis/disagreement.py:detect_disagreements",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/disagreement.py",
+      "target": "function:backend/assumption_zero/analysis/disagreement.py:detect_disagreements",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/disagreement.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/engine.py",
+      "target": "function:backend/assumption_zero/analysis/engine.py:_assign_evidence_ids",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/engine.py",
+      "target": "function:backend/assumption_zero/analysis/engine.py:_assign_evidence_ids",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/engine.py",
+      "target": "function:backend/assumption_zero/analysis/engine.py:_normalized_name",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/engine.py",
+      "target": "function:backend/assumption_zero/analysis/engine.py:_normalized_name",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/engine.py",
+      "target": "function:backend/assumption_zero/analysis/engine.py:_brand_from_url",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/engine.py",
+      "target": "function:backend/assumption_zero/analysis/engine.py:_brand_from_url",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/engine.py",
+      "target": "function:backend/assumption_zero/analysis/engine.py:_clean_competitor_name",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/engine.py",
+      "target": "function:backend/assumption_zero/analysis/engine.py:_clean_competitor_name",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/engine.py",
+      "target": "function:backend/assumption_zero/analysis/engine.py:_extract_competitors_from_evidence",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/engine.py",
+      "target": "function:backend/assumption_zero/analysis/engine.py:_extract_competitors_from_evidence",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/engine.py",
+      "target": "function:backend/assumption_zero/analysis/engine.py:_evidence_mentions",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/engine.py",
+      "target": "function:backend/assumption_zero/analysis/engine.py:_evidence_mentions",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/engine.py",
+      "target": "function:backend/assumption_zero/analysis/engine.py:_validated_ai_competitors",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/engine.py",
+      "target": "function:backend/assumption_zero/analysis/engine.py:_validated_ai_competitors",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/engine.py",
+      "target": "function:backend/assumption_zero/analysis/engine.py:_select_recommendation",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/engine.py",
+      "target": "function:backend/assumption_zero/analysis/engine.py:_select_recommendation",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/engine.py",
+      "target": "function:backend/assumption_zero/analysis/engine.py:_select_most_dangerous_assumption",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/engine.py",
+      "target": "function:backend/assumption_zero/analysis/engine.py:_select_most_dangerous_assumption",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/engine.py",
+      "target": "function:backend/assumption_zero/analysis/engine.py:_find_strongest",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/engine.py",
+      "target": "function:backend/assumption_zero/analysis/engine.py:_find_strongest",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/engine.py",
+      "target": "function:backend/assumption_zero/analysis/engine.py:_collect_missing_info",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/engine.py",
+      "target": "function:backend/assumption_zero/analysis/engine.py:_collect_missing_info",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/engine.py",
+      "target": "class:backend/assumption_zero/analysis/engine.py:AnalysisEngine",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/engine.py",
+      "target": "class:backend/assumption_zero/analysis/engine.py:AnalysisEngine",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/engine.py",
+      "target": "file:backend/assumption_zero/analysis/citation_validator.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/engine.py",
+      "target": "file:backend/assumption_zero/analysis/competitor_merger.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/engine.py",
+      "target": "file:backend/assumption_zero/analysis/confidence.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/engine.py",
+      "target": "file:backend/assumption_zero/analysis/disagreement.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/engine.py",
+      "target": "file:backend/assumption_zero/analysis/experiment_generator.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/engine.py",
+      "target": "file:backend/assumption_zero/analysis/founder_toolkit.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/engine.py",
+      "target": "file:backend/assumption_zero/analysis/query_generator.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/engine.py",
+      "target": "file:backend/assumption_zero/analysis/regional_analysis.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/engine.py",
+      "target": "file:backend/assumption_zero/analysis/scoring.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/engine.py",
+      "target": "file:backend/assumption_zero/llm/base.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/engine.py",
+      "target": "file:backend/assumption_zero/research/base.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/engine.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/experiment_generator.py",
+      "target": "function:backend/assumption_zero/analysis/experiment_generator.py:_pick_experiments",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/experiment_generator.py",
+      "target": "function:backend/assumption_zero/analysis/experiment_generator.py:_pick_experiments",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/experiment_generator.py",
+      "target": "function:backend/assumption_zero/analysis/experiment_generator.py:generate_experiments",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/experiment_generator.py",
+      "target": "function:backend/assumption_zero/analysis/experiment_generator.py:generate_experiments",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/experiment_generator.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/founder_toolkit.py",
+      "target": "function:backend/assumption_zero/analysis/founder_toolkit.py:_split_channels",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/founder_toolkit.py",
+      "target": "function:backend/assumption_zero/analysis/founder_toolkit.py:_split_channels",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/founder_toolkit.py",
+      "target": "function:backend/assumption_zero/analysis/founder_toolkit.py:_default_channels",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/founder_toolkit.py",
+      "target": "function:backend/assumption_zero/analysis/founder_toolkit.py:_default_channels",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/founder_toolkit.py",
+      "target": "function:backend/assumption_zero/analysis/founder_toolkit.py:generate_founder_toolkit",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/founder_toolkit.py",
+      "target": "function:backend/assumption_zero/analysis/founder_toolkit.py:generate_founder_toolkit",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/founder_toolkit.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    }
+  ]
+}

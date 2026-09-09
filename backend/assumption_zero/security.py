@@ -206,7 +206,7 @@ class SecurityMiddleware:
             async def replay_body() -> Message:
                 nonlocal delivered
                 if delivered:
-                    return {"type": "http.disconnect"}
+                    return await receive()
                 delivered = True
                 return {"type": "http.request", "body": bytes(body), "more_body": False}
 

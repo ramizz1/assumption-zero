@@ -1,0 +1,1105 @@
+{
+  "nodes": [
+    {
+      "id": "file:backend/assumption_zero/api/routes.py",
+      "type": "file",
+      "name": "routes.py",
+      "filePath": "backend/assumption_zero/api/routes.py",
+      "summary": "Defines the FastAPI HTTP surface for health checks, credential verification, idea and prompt analysis creation, history retrieval, deletion, and demo execution.",
+      "tags": [
+        "api-handler",
+        "fastapi",
+        "routing",
+        "analysis-service",
+        "entry-point"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:backend/assumption_zero/api/routes.py:_available_providers",
+      "type": "function",
+      "name": "_available_providers",
+      "filePath": "backend/assumption_zero/api/routes.py",
+      "lineRange": [
+        51,
+        56
+      ],
+      "summary": "Returns availability information for every configured AI and research provider.",
+      "tags": [
+        "utility",
+        "configuration",
+        "database"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/assumption_zero/api/routes.py:_llm_options",
+      "type": "function",
+      "name": "_llm_options",
+      "filePath": "backend/assumption_zero/api/routes.py",
+      "lineRange": [
+        62,
+        92
+      ],
+      "summary": "Normalizes the selected provider’s API key, model, and base-URL overrides from an API request.",
+      "tags": [
+        "utility",
+        "configuration",
+        "database"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/assumption_zero/api/routes.py:_validate_selected_provider",
+      "type": "function",
+      "name": "_validate_selected_provider",
+      "filePath": "backend/assumption_zero/api/routes.py",
+      "lineRange": [
+        95,
+        106
+      ],
+      "summary": "Rejects requests that select unsupported or unavailable AI providers.",
+      "tags": [
+        "utility",
+        "configuration",
+        "database"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/assumption_zero/api/routes.py:health",
+      "type": "function",
+      "name": "health",
+      "filePath": "backend/assumption_zero/api/routes.py",
+      "lineRange": [
+        110,
+        118
+      ],
+      "summary": "Returns application health, version, provider availability, and demo-mode status.",
+      "tags": [
+        "api-handler",
+        "fastapi",
+        "endpoint"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/assumption_zero/api/routes.py:verify_keys_endpoint",
+      "type": "function",
+      "name": "verify_keys_endpoint",
+      "filePath": "backend/assumption_zero/api/routes.py",
+      "lineRange": [
+        122,
+        201
+      ],
+      "summary": "Checks supplied provider credentials and endpoints, returning per-provider verification results without persisting secrets.",
+      "tags": [
+        "api-handler",
+        "fastapi",
+        "endpoint"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:backend/assumption_zero/api/routes.py:create_analysis_endpoint",
+      "type": "function",
+      "name": "create_analysis_endpoint",
+      "filePath": "backend/assumption_zero/api/routes.py",
+      "lineRange": [
+        205,
+        233
+      ],
+      "summary": "Creates an analysis record from structured idea input and schedules background execution.",
+      "tags": [
+        "api-handler",
+        "fastapi",
+        "endpoint"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/assumption_zero/api/routes.py:create_analysis_from_prompt_endpoint",
+      "type": "function",
+      "name": "create_analysis_from_prompt_endpoint",
+      "filePath": "backend/assumption_zero/api/routes.py",
+      "lineRange": [
+        237,
+        292
+      ],
+      "summary": "Parses a free-form founder prompt into structured idea input, creates the record, and schedules analysis.",
+      "tags": [
+        "api-handler",
+        "fastapi",
+        "endpoint"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:backend/assumption_zero/api/routes.py:list_analyses_endpoint",
+      "type": "function",
+      "name": "list_analyses_endpoint",
+      "filePath": "backend/assumption_zero/api/routes.py",
+      "lineRange": [
+        296,
+        301
+      ],
+      "summary": "Returns filtered and limited analysis-history summaries.",
+      "tags": [
+        "api-handler",
+        "fastapi",
+        "endpoint"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/assumption_zero/api/routes.py:get_analysis_endpoint",
+      "type": "function",
+      "name": "get_analysis_endpoint",
+      "filePath": "backend/assumption_zero/api/routes.py",
+      "lineRange": [
+        305,
+        309
+      ],
+      "summary": "Returns a stored analysis result by identifier.",
+      "tags": [
+        "api-handler",
+        "fastapi",
+        "endpoint"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/assumption_zero/api/routes.py:delete_analysis_endpoint",
+      "type": "function",
+      "name": "delete_analysis_endpoint",
+      "filePath": "backend/assumption_zero/api/routes.py",
+      "lineRange": [
+        313,
+        316
+      ],
+      "summary": "Deletes a stored analysis result by identifier.",
+      "tags": [
+        "api-handler",
+        "fastapi",
+        "endpoint"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/assumption_zero/api/routes.py:demo_endpoint",
+      "type": "function",
+      "name": "demo_endpoint",
+      "filePath": "backend/assumption_zero/api/routes.py",
+      "lineRange": [
+        320,
+        350
+      ],
+      "summary": "Creates and schedules a deterministic demo analysis using bundled idea data.",
+      "tags": [
+        "api-handler",
+        "fastapi",
+        "endpoint"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/assumption_zero/config.py",
+      "type": "file",
+      "name": "config.py",
+      "filePath": "backend/assumption_zero/config.py",
+      "summary": "Defines environment-backed application settings, validates provider and URL configuration, masks secrets, and exposes a cached settings instance.",
+      "tags": [
+        "configuration",
+        "validation",
+        "security",
+        "settings",
+        "pydantic"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "Uses Pydantic Settings with cached construction and explicit public-URL validation for configurable network endpoints."
+    },
+    {
+      "id": "function:backend/assumption_zero/config.py:is_public_http_url",
+      "type": "function",
+      "name": "is_public_http_url",
+      "filePath": "backend/assumption_zero/config.py",
+      "lineRange": [
+        18,
+        41
+      ],
+      "summary": "Validates that a configured HTTP URL is public and rejects local, private, or non-HTTP destinations to reduce SSRF risk.",
+      "tags": [
+        "utility",
+        "configuration",
+        "database"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/assumption_zero/config.py:get_settings",
+      "type": "function",
+      "name": "get_settings",
+      "filePath": "backend/assumption_zero/config.py",
+      "lineRange": [
+        141,
+        142
+      ],
+      "summary": "Returns the process-wide cached application settings object.",
+      "tags": [
+        "utility",
+        "configuration",
+        "database"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/assumption_zero/config.py:Settings",
+      "type": "class",
+      "name": "Settings",
+      "filePath": "backend/assumption_zero/config.py",
+      "lineRange": [
+        43,
+        137
+      ],
+      "summary": "Environment-backed settings model with provider validation, safe URL checks, secret masking, and runtime limits.",
+      "tags": [
+        "configuration",
+        "validation",
+        "pydantic"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:backend/assumption_zero/models.py",
+      "type": "file",
+      "name": "models.py",
+      "filePath": "backend/assumption_zero/models.py",
+      "summary": "Defines SQLAlchemy persistence models plus cached synchronous and asynchronous engines, session factories, and database initialization helpers.",
+      "tags": [
+        "data-model",
+        "database",
+        "sqlalchemy",
+        "persistence"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:backend/assumption_zero/models.py:get_sync_engine",
+      "type": "function",
+      "name": "get_sync_engine",
+      "filePath": "backend/assumption_zero/models.py",
+      "lineRange": [
+        49,
+        58
+      ],
+      "summary": "Lazily constructs and caches the synchronous SQLAlchemy engine.",
+      "tags": [
+        "utility",
+        "configuration",
+        "database"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/assumption_zero/models.py:get_sync_session",
+      "type": "function",
+      "name": "get_sync_session",
+      "filePath": "backend/assumption_zero/models.py",
+      "lineRange": [
+        61,
+        65
+      ],
+      "summary": "Returns the cached synchronous SQLAlchemy session factory.",
+      "tags": [
+        "utility",
+        "configuration",
+        "database"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/assumption_zero/models.py:get_async_engine",
+      "type": "function",
+      "name": "get_async_engine",
+      "filePath": "backend/assumption_zero/models.py",
+      "lineRange": [
+        74,
+        81
+      ],
+      "summary": "Lazily constructs and caches the asynchronous SQLAlchemy engine.",
+      "tags": [
+        "utility",
+        "configuration",
+        "database"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/assumption_zero/models.py:get_async_session_maker",
+      "type": "function",
+      "name": "get_async_session_maker",
+      "filePath": "backend/assumption_zero/models.py",
+      "lineRange": [
+        84,
+        90
+      ],
+      "summary": "Returns the cached asynchronous SQLAlchemy session factory.",
+      "tags": [
+        "utility",
+        "configuration",
+        "database"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/assumption_zero/models.py:init_db",
+      "type": "function",
+      "name": "init_db",
+      "filePath": "backend/assumption_zero/models.py",
+      "lineRange": [
+        93,
+        96
+      ],
+      "summary": "Creates the configured database tables through the SQLAlchemy metadata.",
+      "tags": [
+        "utility",
+        "configuration",
+        "database"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/assumption_zero/models.py:Base",
+      "type": "class",
+      "name": "Base",
+      "filePath": "backend/assumption_zero/models.py",
+      "lineRange": [
+        15,
+        16
+      ],
+      "summary": "Declarative SQLAlchemy base shared by persistent application models.",
+      "tags": [
+        "data-model",
+        "sqlalchemy",
+        "persistence"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/assumption_zero/models.py:AnalysisRecord",
+      "type": "class",
+      "name": "AnalysisRecord",
+      "filePath": "backend/assumption_zero/models.py",
+      "lineRange": [
+        19,
+        40
+      ],
+      "summary": "Persistent database record storing analysis lifecycle state, serialized input/result payloads, scores, recommendations, and timestamps.",
+      "tags": [
+        "data-model",
+        "sqlalchemy",
+        "persistence"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/assumption_zero/research/__init__.py",
+      "type": "file",
+      "name": "__init__.py",
+      "filePath": "backend/assumption_zero/research/__init__.py",
+      "summary": "Public package barrel exposing the research-provider abstraction and all bundled evidence-source implementations.",
+      "tags": [
+        "entry-point",
+        "barrel",
+        "research",
+        "exports"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/assumption_zero/research/arxiv_provider.py",
+      "type": "file",
+      "name": "arxiv_provider.py",
+      "filePath": "backend/assumption_zero/research/arxiv_provider.py",
+      "summary": "Implements an arXiv research provider that searches academic papers and converts results into normalized evidence records.",
+      "tags": [
+        "research-provider",
+        "academic-research",
+        "evidence",
+        "service"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "Uses asynchronous HTTP access and maps heterogeneous source responses into the shared EvidenceItem schema."
+    },
+    {
+      "id": "function:backend/assumption_zero/research/arxiv_provider.py:_stable_id",
+      "type": "function",
+      "name": "_stable_id",
+      "filePath": "backend/assumption_zero/research/arxiv_provider.py",
+      "lineRange": [
+        33,
+        34
+      ],
+      "summary": "Creates a deterministic evidence identifier from a source URL.",
+      "tags": [
+        "research",
+        "evidence",
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/assumption_zero/research/arxiv_provider.py:ArxivProvider",
+      "type": "class",
+      "name": "ArxivProvider",
+      "filePath": "backend/assumption_zero/research/arxiv_provider.py",
+      "lineRange": [
+        37,
+        139
+      ],
+      "summary": "Research-provider implementation for academic-paper evidence from arXiv.",
+      "tags": [
+        "research-provider",
+        "service",
+        "evidence"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:backend/assumption_zero/research/base.py",
+      "type": "file",
+      "name": "base.py",
+      "filePath": "backend/assumption_zero/research/base.py",
+      "summary": "Defines the abstract asynchronous contract and shared text-truncation behavior implemented by all research providers.",
+      "tags": [
+        "research-provider",
+        "interface",
+        "abstraction",
+        "service"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Uses asynchronous HTTP access and maps heterogeneous source responses into the shared EvidenceItem schema."
+    },
+    {
+      "id": "class:backend/assumption_zero/research/base.py:ResearchProvider",
+      "type": "class",
+      "name": "ResearchProvider",
+      "filePath": "backend/assumption_zero/research/base.py",
+      "lineRange": [
+        10,
+        60
+      ],
+      "summary": "Abstract asynchronous interface defining provider identity, availability, search, and shared passage truncation.",
+      "tags": [
+        "research-provider",
+        "service",
+        "evidence"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:backend/assumption_zero/research/github_provider.py",
+      "type": "file",
+      "name": "github_provider.py",
+      "filePath": "backend/assumption_zero/research/github_provider.py",
+      "summary": "Implements GitHub repository search and maps repository metadata into normalized competitor and validation evidence.",
+      "tags": [
+        "research-provider",
+        "github",
+        "competitor-research",
+        "service"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "Uses asynchronous HTTP access and maps heterogeneous source responses into the shared EvidenceItem schema."
+    },
+    {
+      "id": "function:backend/assumption_zero/research/github_provider.py:_stable_id",
+      "type": "function",
+      "name": "_stable_id",
+      "filePath": "backend/assumption_zero/research/github_provider.py",
+      "lineRange": [
+        38,
+        39
+      ],
+      "summary": "Creates a deterministic evidence identifier from a source URL.",
+      "tags": [
+        "research",
+        "evidence",
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/assumption_zero/research/github_provider.py:GitHubProvider",
+      "type": "class",
+      "name": "GitHubProvider",
+      "filePath": "backend/assumption_zero/research/github_provider.py",
+      "lineRange": [
+        42,
+        131
+      ],
+      "summary": "Research-provider implementation for repository and developer-ecosystem evidence from GitHub.",
+      "tags": [
+        "research-provider",
+        "service",
+        "evidence"
+      ],
+      "complexity": "moderate"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:backend/assumption_zero/api/routes.py",
+      "target": "function:backend/assumption_zero/api/routes.py:_available_providers",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/api/routes.py",
+      "target": "function:backend/assumption_zero/api/routes.py:_available_providers",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/api/routes.py",
+      "target": "function:backend/assumption_zero/api/routes.py:_llm_options",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/api/routes.py",
+      "target": "function:backend/assumption_zero/api/routes.py:_llm_options",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/api/routes.py",
+      "target": "function:backend/assumption_zero/api/routes.py:_validate_selected_provider",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/api/routes.py",
+      "target": "function:backend/assumption_zero/api/routes.py:_validate_selected_provider",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/api/routes.py",
+      "target": "function:backend/assumption_zero/api/routes.py:health",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/api/routes.py",
+      "target": "function:backend/assumption_zero/api/routes.py:health",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/api/routes.py",
+      "target": "function:backend/assumption_zero/api/routes.py:verify_keys_endpoint",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/api/routes.py",
+      "target": "function:backend/assumption_zero/api/routes.py:verify_keys_endpoint",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/api/routes.py",
+      "target": "function:backend/assumption_zero/api/routes.py:create_analysis_endpoint",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/api/routes.py",
+      "target": "function:backend/assumption_zero/api/routes.py:create_analysis_endpoint",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/api/routes.py",
+      "target": "function:backend/assumption_zero/api/routes.py:create_analysis_from_prompt_endpoint",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/api/routes.py",
+      "target": "function:backend/assumption_zero/api/routes.py:create_analysis_from_prompt_endpoint",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/api/routes.py",
+      "target": "function:backend/assumption_zero/api/routes.py:list_analyses_endpoint",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/api/routes.py",
+      "target": "function:backend/assumption_zero/api/routes.py:list_analyses_endpoint",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/api/routes.py",
+      "target": "function:backend/assumption_zero/api/routes.py:get_analysis_endpoint",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/api/routes.py",
+      "target": "function:backend/assumption_zero/api/routes.py:get_analysis_endpoint",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/api/routes.py",
+      "target": "function:backend/assumption_zero/api/routes.py:delete_analysis_endpoint",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/api/routes.py",
+      "target": "function:backend/assumption_zero/api/routes.py:delete_analysis_endpoint",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/api/routes.py",
+      "target": "function:backend/assumption_zero/api/routes.py:demo_endpoint",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/api/routes.py",
+      "target": "function:backend/assumption_zero/api/routes.py:demo_endpoint",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/api/routes.py",
+      "target": "file:backend/assumption_zero/__init__.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/api/routes.py",
+      "target": "file:backend/assumption_zero/config.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/api/routes.py",
+      "target": "file:backend/assumption_zero/demo.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/api/routes.py",
+      "target": "file:backend/assumption_zero/research/github_provider.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/api/routes.py",
+      "target": "file:backend/assumption_zero/research/hackernews_provider.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/api/routes.py",
+      "target": "file:backend/assumption_zero/research/reddit_provider.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/api/routes.py",
+      "target": "file:backend/assumption_zero/research/searxng_provider.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/api/routes.py",
+      "target": "file:backend/assumption_zero/research/wikipedia_provider.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/api/routes.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/api/routes.py",
+      "target": "file:backend/assumption_zero/services/analysis_service.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/config.py",
+      "target": "function:backend/assumption_zero/config.py:is_public_http_url",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/config.py",
+      "target": "function:backend/assumption_zero/config.py:is_public_http_url",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/config.py",
+      "target": "function:backend/assumption_zero/config.py:get_settings",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/config.py",
+      "target": "function:backend/assumption_zero/config.py:get_settings",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/config.py",
+      "target": "class:backend/assumption_zero/config.py:Settings",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/config.py",
+      "target": "class:backend/assumption_zero/config.py:Settings",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/models.py",
+      "target": "function:backend/assumption_zero/models.py:get_sync_engine",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/models.py",
+      "target": "function:backend/assumption_zero/models.py:get_sync_engine",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/models.py",
+      "target": "function:backend/assumption_zero/models.py:get_sync_session",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/models.py",
+      "target": "function:backend/assumption_zero/models.py:get_sync_session",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/models.py",
+      "target": "function:backend/assumption_zero/models.py:get_async_engine",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/models.py",
+      "target": "function:backend/assumption_zero/models.py:get_async_engine",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/models.py",
+      "target": "function:backend/assumption_zero/models.py:get_async_session_maker",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/models.py",
+      "target": "function:backend/assumption_zero/models.py:get_async_session_maker",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/models.py",
+      "target": "function:backend/assumption_zero/models.py:init_db",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/models.py",
+      "target": "function:backend/assumption_zero/models.py:init_db",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/models.py",
+      "target": "class:backend/assumption_zero/models.py:Base",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/models.py",
+      "target": "class:backend/assumption_zero/models.py:Base",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/models.py",
+      "target": "class:backend/assumption_zero/models.py:AnalysisRecord",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/models.py",
+      "target": "class:backend/assumption_zero/models.py:AnalysisRecord",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/models.py",
+      "target": "file:backend/assumption_zero/config.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/__init__.py",
+      "target": "file:backend/assumption_zero/research/arxiv_provider.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/__init__.py",
+      "target": "file:backend/assumption_zero/research/base.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/__init__.py",
+      "target": "file:backend/assumption_zero/research/github_provider.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/__init__.py",
+      "target": "file:backend/assumption_zero/research/hackernews_provider.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/__init__.py",
+      "target": "file:backend/assumption_zero/research/news_provider.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/__init__.py",
+      "target": "file:backend/assumption_zero/research/reddit_provider.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/__init__.py",
+      "target": "file:backend/assumption_zero/research/searxng_provider.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/__init__.py",
+      "target": "file:backend/assumption_zero/research/web_search_provider.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/__init__.py",
+      "target": "file:backend/assumption_zero/research/wikipedia_provider.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/arxiv_provider.py",
+      "target": "function:backend/assumption_zero/research/arxiv_provider.py:_stable_id",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/research/arxiv_provider.py",
+      "target": "function:backend/assumption_zero/research/arxiv_provider.py:_stable_id",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/research/arxiv_provider.py",
+      "target": "class:backend/assumption_zero/research/arxiv_provider.py:ArxivProvider",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/research/arxiv_provider.py",
+      "target": "class:backend/assumption_zero/research/arxiv_provider.py:ArxivProvider",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/research/arxiv_provider.py",
+      "target": "file:backend/assumption_zero/config.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/arxiv_provider.py",
+      "target": "file:backend/assumption_zero/research/base.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/arxiv_provider.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/base.py",
+      "target": "class:backend/assumption_zero/research/base.py:ResearchProvider",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/research/base.py",
+      "target": "class:backend/assumption_zero/research/base.py:ResearchProvider",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/research/base.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/github_provider.py",
+      "target": "function:backend/assumption_zero/research/github_provider.py:_stable_id",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/research/github_provider.py",
+      "target": "function:backend/assumption_zero/research/github_provider.py:_stable_id",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/research/github_provider.py",
+      "target": "class:backend/assumption_zero/research/github_provider.py:GitHubProvider",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/research/github_provider.py",
+      "target": "class:backend/assumption_zero/research/github_provider.py:GitHubProvider",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/research/github_provider.py",
+      "target": "file:backend/assumption_zero/config.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/github_provider.py",
+      "target": "file:backend/assumption_zero/research/base.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/github_provider.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    }
+  ]
+}

@@ -33,7 +33,7 @@ from assumption_zero.llm.base import (
     build_analysis_prompt,
     build_clarification_messages,
 )
-from assumption_zero.llm.model_catalog import catalog_model_ids, completion_content, ordered_models
+from assumption_zero.llm.model_catalog import catalog_model_ids, completion_content, ordered_models, post_chat
 from assumption_zero.schemas import EvidenceItem, IdeaInput, PerspectiveName, Recommendation
 
 logger = logging.getLogger(__name__)
@@ -203,7 +203,7 @@ class OpenAICompatAdapter(LLMAdapter):
                 if json_mode and "api.openai.com" in self._base_url:
                     payload["response_format"] = {"type": "json_object"}
                 try:
-                    resp = await client.post(url, json=payload)
+                    resp = await post_chat(client, url, payload)
                 except Exception as exc:
                     logger.info(
                         "OpenAI-compatible request transport failed (%s)", type(exc).__name__
@@ -219,7 +219,10 @@ class OpenAICompatAdapter(LLMAdapter):
                         resp.status_code,
                     )
                     continue
-                data = resp.json()
+                try:
+                    data = resp.json()
+                except ValueError:
+                    continue
                 content = completion_content(data)
                 if content:
                     actual_model = str(data.get("model") or model_name)

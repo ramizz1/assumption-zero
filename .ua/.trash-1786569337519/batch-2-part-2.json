@@ -1,0 +1,1795 @@
+{
+  "nodes": [
+    {
+      "id": "file:backend/assumption_zero/analysis/query_generator.py",
+      "type": "file",
+      "name": "query_generator.py",
+      "filePath": "backend/assumption_zero/analysis/query_generator.py",
+      "summary": "Generates categorized market, competitor, pricing, regional, regulatory, and validation research queries from structured idea details.",
+      "tags": [
+        "query-generation",
+        "research",
+        "market-analysis",
+        "utility"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:backend/assumption_zero/analysis/query_generator.py:_clean_phrase",
+      "type": "function",
+      "name": "_clean_phrase",
+      "filePath": "backend/assumption_zero/analysis/query_generator.py",
+      "lineRange": [
+        34,
+        42
+      ],
+      "summary": "Supports clean phrase as an internal step in generates categorized market, competitor, pricing, regional, regulatory, and validation research queries from structured idea details.",
+      "tags": [
+        "analysis",
+        "function",
+        "internal-helper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/assumption_zero/analysis/query_generator.py:generate_queries",
+      "type": "function",
+      "name": "generate_queries",
+      "filePath": "backend/assumption_zero/analysis/query_generator.py",
+      "lineRange": [
+        45,
+        158
+      ],
+      "summary": "Creates categorized research queries from the idea’s market, customer, geography, and competitor context.",
+      "tags": [
+        "analysis",
+        "function",
+        "public-api"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:backend/assumption_zero/analysis/regional_analysis.py",
+      "type": "file",
+      "name": "regional_analysis.py",
+      "filePath": "backend/assumption_zero/analysis/regional_analysis.py",
+      "summary": "Filters evidence for geography-specific signals and produces regional demand, pricing, regulatory, distribution, localization, and research-gap assessments.",
+      "tags": [
+        "regional-analysis",
+        "market-research",
+        "evidence",
+        "scoring"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:backend/assumption_zero/analysis/regional_analysis.py:_location_tokens",
+      "type": "function",
+      "name": "_location_tokens",
+      "filePath": "backend/assumption_zero/analysis/regional_analysis.py",
+      "lineRange": [
+        27,
+        33
+      ],
+      "summary": "Supports location tokens as an internal step in filters evidence for geography-specific signals and produces regional demand, pricing, regulatory, distribution, localization, and research-gap assessments.",
+      "tags": [
+        "analysis",
+        "function",
+        "internal-helper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/assumption_zero/analysis/regional_analysis.py:_is_regional",
+      "type": "function",
+      "name": "_is_regional",
+      "filePath": "backend/assumption_zero/analysis/regional_analysis.py",
+      "lineRange": [
+        36,
+        41
+      ],
+      "summary": "Supports is regional as an internal step in filters evidence for geography-specific signals and produces regional demand, pricing, regulatory, distribution, localization, and research-gap assessments.",
+      "tags": [
+        "analysis",
+        "function",
+        "internal-helper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/assumption_zero/analysis/regional_analysis.py:_signals",
+      "type": "function",
+      "name": "_signals",
+      "filePath": "backend/assumption_zero/analysis/regional_analysis.py",
+      "lineRange": [
+        44,
+        54
+      ],
+      "summary": "Supports signals as an internal step in filters evidence for geography-specific signals and produces regional demand, pricing, regulatory, distribution, localization, and research-gap assessments.",
+      "tags": [
+        "analysis",
+        "function",
+        "internal-helper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/assumption_zero/analysis/regional_analysis.py:generate_regional_analysis",
+      "type": "function",
+      "name": "generate_regional_analysis",
+      "filePath": "backend/assumption_zero/analysis/regional_analysis.py",
+      "lineRange": [
+        57,
+        145
+      ],
+      "summary": "Produces geography-specific market scores, signals, localization needs, and evidence gaps.",
+      "tags": [
+        "analysis",
+        "function",
+        "public-api"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:backend/assumption_zero/analysis/scoring.py",
+      "type": "file",
+      "name": "scoring.py",
+      "filePath": "backend/assumption_zero/analysis/scoring.py",
+      "summary": "Aggregates model dimension scores into a weighted opportunity score with evidence links, confidence, explanations, and missing-information notes.",
+      "tags": [
+        "opportunity-scoring",
+        "evidence",
+        "aggregation",
+        "analysis"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:backend/assumption_zero/analysis/scoring.py:_normalize_dimension_scores",
+      "type": "function",
+      "name": "_normalize_dimension_scores",
+      "filePath": "backend/assumption_zero/analysis/scoring.py",
+      "lineRange": [
+        72,
+        82
+      ],
+      "summary": "Supports normalize dimension scores as an internal step in aggregates model dimension scores into a weighted opportunity score with evidence links, confidence, explanations, and missing-information notes.",
+      "tags": [
+        "analysis",
+        "function",
+        "internal-helper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/assumption_zero/analysis/scoring.py:_avg_dimension_scores",
+      "type": "function",
+      "name": "_avg_dimension_scores",
+      "filePath": "backend/assumption_zero/analysis/scoring.py",
+      "lineRange": [
+        85,
+        99
+      ],
+      "summary": "Supports avg dimension scores as an internal step in aggregates model dimension scores into a weighted opportunity score with evidence links, confidence, explanations, and missing-information notes.",
+      "tags": [
+        "analysis",
+        "function",
+        "internal-helper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/assumption_zero/analysis/scoring.py:_confidence_from_evidence",
+      "type": "function",
+      "name": "_confidence_from_evidence",
+      "filePath": "backend/assumption_zero/analysis/scoring.py",
+      "lineRange": [
+        102,
+        111
+      ],
+      "summary": "Supports confidence from evidence as an internal step in aggregates model dimension scores into a weighted opportunity score with evidence links, confidence, explanations, and missing-information notes.",
+      "tags": [
+        "analysis",
+        "function",
+        "internal-helper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/assumption_zero/analysis/scoring.py:_find_evidence_for_dimension",
+      "type": "function",
+      "name": "_find_evidence_for_dimension",
+      "filePath": "backend/assumption_zero/analysis/scoring.py",
+      "lineRange": [
+        114,
+        130
+      ],
+      "summary": "Supports find evidence for dimension as an internal step in aggregates model dimension scores into a weighted opportunity score with evidence links, confidence, explanations, and missing-information notes.",
+      "tags": [
+        "analysis",
+        "function",
+        "internal-helper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/assumption_zero/analysis/scoring.py:_dimension_explanation",
+      "type": "function",
+      "name": "_dimension_explanation",
+      "filePath": "backend/assumption_zero/analysis/scoring.py",
+      "lineRange": [
+        133,
+        140
+      ],
+      "summary": "Supports dimension explanation as an internal step in aggregates model dimension scores into a weighted opportunity score with evidence links, confidence, explanations, and missing-information notes.",
+      "tags": [
+        "analysis",
+        "function",
+        "internal-helper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/assumption_zero/analysis/scoring.py:calculate_opportunity_score",
+      "type": "function",
+      "name": "calculate_opportunity_score",
+      "filePath": "backend/assumption_zero/analysis/scoring.py",
+      "lineRange": [
+        143,
+        186
+      ],
+      "summary": "Calculates the weighted seven-dimension opportunity score and supporting evidence explanations.",
+      "tags": [
+        "analysis",
+        "function",
+        "public-api"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/assumption_zero/demo.py",
+      "type": "file",
+      "name": "demo.py",
+      "filePath": "backend/assumption_zero/demo.py",
+      "summary": "Provides deterministic demo analysis data for product previews and local demonstrations without external research or model calls.",
+      "tags": [
+        "demo",
+        "sample-data",
+        "development",
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/assumption_zero/research/demo_provider.py",
+      "type": "file",
+      "name": "demo_provider.py",
+      "filePath": "backend/assumption_zero/research/demo_provider.py",
+      "summary": "Implements a deterministic research provider that returns bundled demo evidence while conforming to the standard research-provider interface.",
+      "tags": [
+        "research-provider",
+        "demo",
+        "service",
+        "test-double"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/assumption_zero/research/demo_provider.py:DemoProvider",
+      "type": "class",
+      "name": "DemoProvider",
+      "filePath": "backend/assumption_zero/research/demo_provider.py",
+      "lineRange": [
+        14,
+        43
+      ],
+      "summary": "Research-provider implementation that serves deterministic bundled evidence for demo runs.",
+      "tags": [
+        "service",
+        "orchestration",
+        "class"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/assumption_zero/schemas.py",
+      "type": "file",
+      "name": "schemas.py",
+      "filePath": "backend/assumption_zero/schemas.py",
+      "summary": "Defines the project’s enums and Pydantic models for ideas, evidence, competitors, perspectives, scores, experiments, regional analysis, API requests, and analysis results, including input validation.",
+      "tags": [
+        "data-model",
+        "type-definition",
+        "validation",
+        "pydantic",
+        "schema-definition"
+      ],
+      "complexity": "complex",
+      "languageNotes": "Uses Pydantic field validators and model validators to enforce input quality and provider constraints at API boundaries."
+    },
+    {
+      "id": "function:backend/assumption_zero/schemas.py:is_gibberish",
+      "type": "function",
+      "name": "is_gibberish",
+      "filePath": "backend/assumption_zero/schemas.py",
+      "lineRange": [
+        121,
+        157
+      ],
+      "summary": "Applies lexical and character-distribution heuristics to reject empty or nonsensical user input.",
+      "tags": [
+        "analysis",
+        "function",
+        "public-api"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/assumption_zero/schemas.py:EvidenceType",
+      "type": "class",
+      "name": "EvidenceType",
+      "filePath": "backend/assumption_zero/schemas.py",
+      "lineRange": [
+        19,
+        32
+      ],
+      "summary": "Enumerates the supported evidence type values used across validation models and API payloads.",
+      "tags": [
+        "data-model",
+        "pydantic",
+        "type-definition"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/assumption_zero/schemas.py:ReliabilityLevel",
+      "type": "class",
+      "name": "ReliabilityLevel",
+      "filePath": "backend/assumption_zero/schemas.py",
+      "lineRange": [
+        35,
+        38
+      ],
+      "summary": "Enumerates the supported reliability level values used across validation models and API payloads.",
+      "tags": [
+        "data-model",
+        "pydantic",
+        "type-definition"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/assumption_zero/schemas.py:ConfidenceLevel",
+      "type": "class",
+      "name": "ConfidenceLevel",
+      "filePath": "backend/assumption_zero/schemas.py",
+      "lineRange": [
+        41,
+        44
+      ],
+      "summary": "Enumerates the supported confidence level values used across validation models and API payloads.",
+      "tags": [
+        "data-model",
+        "pydantic",
+        "type-definition"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/assumption_zero/schemas.py:AnalysisStatus",
+      "type": "class",
+      "name": "AnalysisStatus",
+      "filePath": "backend/assumption_zero/schemas.py",
+      "lineRange": [
+        47,
+        51
+      ],
+      "summary": "Enumerates the supported analysis status values used across validation models and API payloads.",
+      "tags": [
+        "data-model",
+        "pydantic",
+        "type-definition"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/assumption_zero/schemas.py:ResearchDepth",
+      "type": "class",
+      "name": "ResearchDepth",
+      "filePath": "backend/assumption_zero/schemas.py",
+      "lineRange": [
+        54,
+        57
+      ],
+      "summary": "Enumerates the supported research depth values used across validation models and API payloads.",
+      "tags": [
+        "data-model",
+        "pydantic",
+        "type-definition"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/assumption_zero/schemas.py:AnalysisStage",
+      "type": "class",
+      "name": "AnalysisStage",
+      "filePath": "backend/assumption_zero/schemas.py",
+      "lineRange": [
+        60,
+        69
+      ],
+      "summary": "Enumerates the supported analysis stage values used across validation models and API payloads.",
+      "tags": [
+        "data-model",
+        "pydantic",
+        "type-definition"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/assumption_zero/schemas.py:Recommendation",
+      "type": "class",
+      "name": "Recommendation",
+      "filePath": "backend/assumption_zero/schemas.py",
+      "lineRange": [
+        85,
+        89
+      ],
+      "summary": "Enumerates the supported recommendation values used across validation models and API payloads.",
+      "tags": [
+        "data-model",
+        "pydantic",
+        "type-definition"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/assumption_zero/schemas.py:PerspectiveName",
+      "type": "class",
+      "name": "PerspectiveName",
+      "filePath": "backend/assumption_zero/schemas.py",
+      "lineRange": [
+        92,
+        97
+      ],
+      "summary": "Enumerates the supported perspective name values used across validation models and API payloads.",
+      "tags": [
+        "data-model",
+        "pydantic",
+        "type-definition"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/assumption_zero/schemas.py:CompetitorType",
+      "type": "class",
+      "name": "CompetitorType",
+      "filePath": "backend/assumption_zero/schemas.py",
+      "lineRange": [
+        109,
+        111
+      ],
+      "summary": "Enumerates the supported competitor type values used across validation models and API payloads.",
+      "tags": [
+        "data-model",
+        "pydantic",
+        "type-definition"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/assumption_zero/schemas.py:IdeaInput",
+      "type": "class",
+      "name": "IdeaInput",
+      "filePath": "backend/assumption_zero/schemas.py",
+      "lineRange": [
+        160,
+        211
+      ],
+      "summary": "Pydantic data model representing idea input within the validation engine’s typed contracts.",
+      "tags": [
+        "data-model",
+        "pydantic",
+        "type-definition"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:backend/assumption_zero/schemas.py:EvidenceItem",
+      "type": "class",
+      "name": "EvidenceItem",
+      "filePath": "backend/assumption_zero/schemas.py",
+      "lineRange": [
+        218,
+        237
+      ],
+      "summary": "Pydantic data model representing evidence item within the validation engine’s typed contracts.",
+      "tags": [
+        "data-model",
+        "pydantic",
+        "type-definition"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/assumption_zero/schemas.py:Competitor",
+      "type": "class",
+      "name": "Competitor",
+      "filePath": "backend/assumption_zero/schemas.py",
+      "lineRange": [
+        244,
+        256
+      ],
+      "summary": "Pydantic data model representing competitor within the validation engine’s typed contracts.",
+      "tags": [
+        "data-model",
+        "pydantic",
+        "type-definition"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/assumption_zero/schemas.py:DimensionScore",
+      "type": "class",
+      "name": "DimensionScore",
+      "filePath": "backend/assumption_zero/schemas.py",
+      "lineRange": [
+        263,
+        273
+      ],
+      "summary": "Pydantic data model representing dimension score within the validation engine’s typed contracts.",
+      "tags": [
+        "data-model",
+        "pydantic",
+        "type-definition"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/assumption_zero/schemas.py:OpportunityScore",
+      "type": "class",
+      "name": "OpportunityScore",
+      "filePath": "backend/assumption_zero/schemas.py",
+      "lineRange": [
+        276,
+        278
+      ],
+      "summary": "Pydantic data model representing opportunity score within the validation engine’s typed contracts.",
+      "tags": [
+        "data-model",
+        "pydantic",
+        "type-definition"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/assumption_zero/schemas.py:AnalysisPerspective",
+      "type": "class",
+      "name": "AnalysisPerspective",
+      "filePath": "backend/assumption_zero/schemas.py",
+      "lineRange": [
+        285,
+        297
+      ],
+      "summary": "Pydantic data model representing analysis perspective within the validation engine’s typed contracts.",
+      "tags": [
+        "data-model",
+        "pydantic",
+        "type-definition"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/assumption_zero/schemas.py:DisagreementPosition",
+      "type": "class",
+      "name": "DisagreementPosition",
+      "filePath": "backend/assumption_zero/schemas.py",
+      "lineRange": [
+        304,
+        308
+      ],
+      "summary": "Pydantic data model representing disagreement position within the validation engine’s typed contracts.",
+      "tags": [
+        "data-model",
+        "pydantic",
+        "type-definition"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/assumption_zero/schemas.py:ModelDisagreement",
+      "type": "class",
+      "name": "ModelDisagreement",
+      "filePath": "backend/assumption_zero/schemas.py",
+      "lineRange": [
+        311,
+        315
+      ],
+      "summary": "Pydantic data model representing model disagreement within the validation engine’s typed contracts.",
+      "tags": [
+        "data-model",
+        "pydantic",
+        "type-definition"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/assumption_zero/schemas.py:ValidationExperiment",
+      "type": "class",
+      "name": "ValidationExperiment",
+      "filePath": "backend/assumption_zero/schemas.py",
+      "lineRange": [
+        322,
+        333
+      ],
+      "summary": "Pydantic data model representing validation experiment within the validation engine’s typed contracts.",
+      "tags": [
+        "data-model",
+        "pydantic",
+        "type-definition"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/assumption_zero/schemas.py:FounderAction",
+      "type": "class",
+      "name": "FounderAction",
+      "filePath": "backend/assumption_zero/schemas.py",
+      "lineRange": [
+        336,
+        344
+      ],
+      "summary": "Pydantic data model representing founder action within the validation engine’s typed contracts.",
+      "tags": [
+        "data-model",
+        "pydantic",
+        "type-definition"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/assumption_zero/schemas.py:FounderToolkit",
+      "type": "class",
+      "name": "FounderToolkit",
+      "filePath": "backend/assumption_zero/schemas.py",
+      "lineRange": [
+        347,
+        357
+      ],
+      "summary": "Pydantic data model representing founder toolkit within the validation engine’s typed contracts.",
+      "tags": [
+        "data-model",
+        "pydantic",
+        "type-definition"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/assumption_zero/schemas.py:RegionalEvidenceSignal",
+      "type": "class",
+      "name": "RegionalEvidenceSignal",
+      "filePath": "backend/assumption_zero/schemas.py",
+      "lineRange": [
+        360,
+        365
+      ],
+      "summary": "Pydantic data model representing regional evidence signal within the validation engine’s typed contracts.",
+      "tags": [
+        "data-model",
+        "pydantic",
+        "type-definition"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/assumption_zero/schemas.py:RegionalMarketAnalysis",
+      "type": "class",
+      "name": "RegionalMarketAnalysis",
+      "filePath": "backend/assumption_zero/schemas.py",
+      "lineRange": [
+        368,
+        382
+      ],
+      "summary": "Pydantic data model representing regional market analysis within the validation engine’s typed contracts.",
+      "tags": [
+        "data-model",
+        "pydantic",
+        "type-definition"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/assumption_zero/schemas.py:ResearchCoverage",
+      "type": "class",
+      "name": "ResearchCoverage",
+      "filePath": "backend/assumption_zero/schemas.py",
+      "lineRange": [
+        385,
+        391
+      ],
+      "summary": "Pydantic data model representing research coverage within the validation engine’s typed contracts.",
+      "tags": [
+        "data-model",
+        "pydantic",
+        "type-definition"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/assumption_zero/schemas.py:AnalysisResult",
+      "type": "class",
+      "name": "AnalysisResult",
+      "filePath": "backend/assumption_zero/schemas.py",
+      "lineRange": [
+        398,
+        440
+      ],
+      "summary": "Pydantic data model representing analysis result within the validation engine’s typed contracts.",
+      "tags": [
+        "data-model",
+        "pydantic",
+        "type-definition"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/assumption_zero/schemas.py:AnalysisCreateRequest",
+      "type": "class",
+      "name": "AnalysisCreateRequest",
+      "filePath": "backend/assumption_zero/schemas.py",
+      "lineRange": [
+        447,
+        471
+      ],
+      "summary": "Pydantic data model representing analysis create request within the validation engine’s typed contracts.",
+      "tags": [
+        "data-model",
+        "pydantic",
+        "type-definition"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/assumption_zero/schemas.py:DemoAnalysisRequest",
+      "type": "class",
+      "name": "DemoAnalysisRequest",
+      "filePath": "backend/assumption_zero/schemas.py",
+      "lineRange": [
+        474,
+        490
+      ],
+      "summary": "Pydantic data model representing demo analysis request within the validation engine’s typed contracts.",
+      "tags": [
+        "data-model",
+        "pydantic",
+        "type-definition"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/assumption_zero/schemas.py:PromptAnalysisRequest",
+      "type": "class",
+      "name": "PromptAnalysisRequest",
+      "filePath": "backend/assumption_zero/schemas.py",
+      "lineRange": [
+        493,
+        519
+      ],
+      "summary": "Pydantic data model representing prompt analysis request within the validation engine’s typed contracts.",
+      "tags": [
+        "data-model",
+        "pydantic",
+        "type-definition"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/assumption_zero/schemas.py:AnalysisListItem",
+      "type": "class",
+      "name": "AnalysisListItem",
+      "filePath": "backend/assumption_zero/schemas.py",
+      "lineRange": [
+        522,
+        531
+      ],
+      "summary": "Pydantic data model representing analysis list item within the validation engine’s typed contracts.",
+      "tags": [
+        "data-model",
+        "pydantic",
+        "type-definition"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/assumption_zero/schemas.py:HealthResponse",
+      "type": "class",
+      "name": "HealthResponse",
+      "filePath": "backend/assumption_zero/schemas.py",
+      "lineRange": [
+        534,
+        539
+      ],
+      "summary": "Pydantic data model representing health response within the validation engine’s typed contracts.",
+      "tags": [
+        "data-model",
+        "pydantic",
+        "type-definition"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/tests/conftest.py",
+      "type": "file",
+      "name": "conftest.py",
+      "filePath": "backend/tests/conftest.py",
+      "summary": "Defines reusable pytest fixtures for isolated storage, sample ideas, evidence, and multi-model perspectives used throughout backend tests.",
+      "tags": [
+        "test",
+        "fixtures",
+        "pytest",
+        "sample-data"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:backend/tests/conftest.py:isolated_storage",
+      "type": "function",
+      "name": "isolated_storage",
+      "filePath": "backend/tests/conftest.py",
+      "lineRange": [
+        21,
+        31
+      ],
+      "summary": "Temporarily redirects persistence paths so each test runs against isolated storage.",
+      "tags": [
+        "test",
+        "pytest",
+        "validation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/tests/conftest.py:sample_idea",
+      "type": "function",
+      "name": "sample_idea",
+      "filePath": "backend/tests/conftest.py",
+      "lineRange": [
+        35,
+        47
+      ],
+      "summary": "Creates a representative structured startup idea for tests.",
+      "tags": [
+        "test",
+        "pytest",
+        "validation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/tests/conftest.py:sample_evidence",
+      "type": "function",
+      "name": "sample_evidence",
+      "filePath": "backend/tests/conftest.py",
+      "lineRange": [
+        51,
+        98
+      ],
+      "summary": "Creates representative supporting and contradicting evidence records for tests.",
+      "tags": [
+        "test",
+        "pytest",
+        "validation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/tests/conftest.py:sample_perspectives",
+      "type": "function",
+      "name": "sample_perspectives",
+      "filePath": "backend/tests/conftest.py",
+      "lineRange": [
+        102,
+        170
+      ],
+      "summary": "Creates deterministic multi-model perspective fixtures tied to sample evidence.",
+      "tags": [
+        "test",
+        "pytest",
+        "validation"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:backend/tests/test_citations.py",
+      "type": "file",
+      "name": "test_citations.py",
+      "filePath": "backend/tests/test_citations.py",
+      "summary": "Verifies that citation validation preserves valid evidence IDs, rejects unknown IDs, and handles empty evidence and citation lists.",
+      "tags": [
+        "test",
+        "citations",
+        "validation",
+        "pytest"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/tests/test_citations.py:_make_perspective",
+      "type": "function",
+      "name": "_make_perspective",
+      "filePath": "backend/tests/test_citations.py",
+      "lineRange": [
+        8,
+        22
+      ],
+      "summary": "Supports make perspective as an internal step in verifies that citation validation preserves valid evidence ids, rejects unknown ids, and handles empty evidence and citation lists.",
+      "tags": [
+        "test",
+        "pytest",
+        "validation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/tests/test_citations.py:test_valid_citations_are_kept",
+      "type": "function",
+      "name": "test_valid_citations_are_kept",
+      "filePath": "backend/tests/test_citations.py",
+      "lineRange": [
+        25,
+        29
+      ],
+      "summary": "Verifies that valid citations are kept.",
+      "tags": [
+        "test",
+        "pytest",
+        "validation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/tests/test_citations.py:test_invalid_citations_are_moved",
+      "type": "function",
+      "name": "test_invalid_citations_are_moved",
+      "filePath": "backend/tests/test_citations.py",
+      "lineRange": [
+        32,
+        39
+      ],
+      "summary": "Verifies that invalid citations are moved.",
+      "tags": [
+        "test",
+        "pytest",
+        "validation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/tests/test_citations.py:test_empty_evidence_makes_all_invalid",
+      "type": "function",
+      "name": "test_empty_evidence_makes_all_invalid",
+      "filePath": "backend/tests/test_citations.py",
+      "lineRange": [
+        42,
+        46
+      ],
+      "summary": "Verifies that empty evidence makes all invalid.",
+      "tags": [
+        "test",
+        "pytest",
+        "validation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/tests/test_citations.py:test_no_citations_stays_empty",
+      "type": "function",
+      "name": "test_no_citations_stays_empty",
+      "filePath": "backend/tests/test_citations.py",
+      "lineRange": [
+        49,
+        53
+      ],
+      "summary": "Verifies that no citations stays empty.",
+      "tags": [
+        "test",
+        "pytest",
+        "validation"
+      ],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:backend/assumption_zero/analysis/query_generator.py",
+      "target": "function:backend/assumption_zero/analysis/query_generator.py:_clean_phrase",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/query_generator.py",
+      "target": "function:backend/assumption_zero/analysis/query_generator.py:_clean_phrase",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/query_generator.py",
+      "target": "function:backend/assumption_zero/analysis/query_generator.py:generate_queries",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/query_generator.py",
+      "target": "function:backend/assumption_zero/analysis/query_generator.py:generate_queries",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/query_generator.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/regional_analysis.py",
+      "target": "function:backend/assumption_zero/analysis/regional_analysis.py:_location_tokens",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/regional_analysis.py",
+      "target": "function:backend/assumption_zero/analysis/regional_analysis.py:_location_tokens",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/regional_analysis.py",
+      "target": "function:backend/assumption_zero/analysis/regional_analysis.py:_is_regional",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/regional_analysis.py",
+      "target": "function:backend/assumption_zero/analysis/regional_analysis.py:_is_regional",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/regional_analysis.py",
+      "target": "function:backend/assumption_zero/analysis/regional_analysis.py:_signals",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/regional_analysis.py",
+      "target": "function:backend/assumption_zero/analysis/regional_analysis.py:_signals",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/regional_analysis.py",
+      "target": "function:backend/assumption_zero/analysis/regional_analysis.py:generate_regional_analysis",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/regional_analysis.py",
+      "target": "function:backend/assumption_zero/analysis/regional_analysis.py:generate_regional_analysis",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/regional_analysis.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/scoring.py",
+      "target": "function:backend/assumption_zero/analysis/scoring.py:_normalize_dimension_scores",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/scoring.py",
+      "target": "function:backend/assumption_zero/analysis/scoring.py:_normalize_dimension_scores",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/scoring.py",
+      "target": "function:backend/assumption_zero/analysis/scoring.py:_avg_dimension_scores",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/scoring.py",
+      "target": "function:backend/assumption_zero/analysis/scoring.py:_avg_dimension_scores",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/scoring.py",
+      "target": "function:backend/assumption_zero/analysis/scoring.py:_confidence_from_evidence",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/scoring.py",
+      "target": "function:backend/assumption_zero/analysis/scoring.py:_confidence_from_evidence",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/scoring.py",
+      "target": "function:backend/assumption_zero/analysis/scoring.py:_find_evidence_for_dimension",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/scoring.py",
+      "target": "function:backend/assumption_zero/analysis/scoring.py:_find_evidence_for_dimension",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/scoring.py",
+      "target": "function:backend/assumption_zero/analysis/scoring.py:_dimension_explanation",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/scoring.py",
+      "target": "function:backend/assumption_zero/analysis/scoring.py:_dimension_explanation",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/scoring.py",
+      "target": "function:backend/assumption_zero/analysis/scoring.py:calculate_opportunity_score",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/scoring.py",
+      "target": "function:backend/assumption_zero/analysis/scoring.py:calculate_opportunity_score",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/analysis/scoring.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/demo.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/demo_provider.py",
+      "target": "class:backend/assumption_zero/research/demo_provider.py:DemoProvider",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/research/demo_provider.py",
+      "target": "class:backend/assumption_zero/research/demo_provider.py:DemoProvider",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/research/demo_provider.py",
+      "target": "file:backend/assumption_zero/research/base.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/research/demo_provider.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/assumption_zero/schemas.py",
+      "target": "function:backend/assumption_zero/schemas.py:is_gibberish",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/schemas.py",
+      "target": "function:backend/assumption_zero/schemas.py:is_gibberish",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/schemas.py",
+      "target": "class:backend/assumption_zero/schemas.py:EvidenceType",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/schemas.py",
+      "target": "class:backend/assumption_zero/schemas.py:EvidenceType",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/schemas.py",
+      "target": "class:backend/assumption_zero/schemas.py:ReliabilityLevel",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/schemas.py",
+      "target": "class:backend/assumption_zero/schemas.py:ReliabilityLevel",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/schemas.py",
+      "target": "class:backend/assumption_zero/schemas.py:ConfidenceLevel",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/schemas.py",
+      "target": "class:backend/assumption_zero/schemas.py:ConfidenceLevel",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/schemas.py",
+      "target": "class:backend/assumption_zero/schemas.py:AnalysisStatus",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/schemas.py",
+      "target": "class:backend/assumption_zero/schemas.py:AnalysisStatus",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/schemas.py",
+      "target": "class:backend/assumption_zero/schemas.py:ResearchDepth",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/schemas.py",
+      "target": "class:backend/assumption_zero/schemas.py:ResearchDepth",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/schemas.py",
+      "target": "class:backend/assumption_zero/schemas.py:AnalysisStage",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/schemas.py",
+      "target": "class:backend/assumption_zero/schemas.py:AnalysisStage",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/schemas.py",
+      "target": "class:backend/assumption_zero/schemas.py:Recommendation",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/schemas.py",
+      "target": "class:backend/assumption_zero/schemas.py:Recommendation",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/schemas.py",
+      "target": "class:backend/assumption_zero/schemas.py:PerspectiveName",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/schemas.py",
+      "target": "class:backend/assumption_zero/schemas.py:PerspectiveName",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/schemas.py",
+      "target": "class:backend/assumption_zero/schemas.py:CompetitorType",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/schemas.py",
+      "target": "class:backend/assumption_zero/schemas.py:CompetitorType",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/schemas.py",
+      "target": "class:backend/assumption_zero/schemas.py:IdeaInput",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/schemas.py",
+      "target": "class:backend/assumption_zero/schemas.py:IdeaInput",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/schemas.py",
+      "target": "class:backend/assumption_zero/schemas.py:EvidenceItem",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/schemas.py",
+      "target": "class:backend/assumption_zero/schemas.py:EvidenceItem",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/schemas.py",
+      "target": "class:backend/assumption_zero/schemas.py:Competitor",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/schemas.py",
+      "target": "class:backend/assumption_zero/schemas.py:Competitor",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/schemas.py",
+      "target": "class:backend/assumption_zero/schemas.py:DimensionScore",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/schemas.py",
+      "target": "class:backend/assumption_zero/schemas.py:DimensionScore",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/schemas.py",
+      "target": "class:backend/assumption_zero/schemas.py:OpportunityScore",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/schemas.py",
+      "target": "class:backend/assumption_zero/schemas.py:OpportunityScore",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/schemas.py",
+      "target": "class:backend/assumption_zero/schemas.py:AnalysisPerspective",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/schemas.py",
+      "target": "class:backend/assumption_zero/schemas.py:AnalysisPerspective",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/schemas.py",
+      "target": "class:backend/assumption_zero/schemas.py:DisagreementPosition",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/schemas.py",
+      "target": "class:backend/assumption_zero/schemas.py:DisagreementPosition",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/schemas.py",
+      "target": "class:backend/assumption_zero/schemas.py:ModelDisagreement",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/schemas.py",
+      "target": "class:backend/assumption_zero/schemas.py:ModelDisagreement",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/schemas.py",
+      "target": "class:backend/assumption_zero/schemas.py:ValidationExperiment",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/schemas.py",
+      "target": "class:backend/assumption_zero/schemas.py:ValidationExperiment",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/schemas.py",
+      "target": "class:backend/assumption_zero/schemas.py:FounderAction",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/schemas.py",
+      "target": "class:backend/assumption_zero/schemas.py:FounderAction",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/schemas.py",
+      "target": "class:backend/assumption_zero/schemas.py:FounderToolkit",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/schemas.py",
+      "target": "class:backend/assumption_zero/schemas.py:FounderToolkit",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/schemas.py",
+      "target": "class:backend/assumption_zero/schemas.py:RegionalEvidenceSignal",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/schemas.py",
+      "target": "class:backend/assumption_zero/schemas.py:RegionalEvidenceSignal",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/schemas.py",
+      "target": "class:backend/assumption_zero/schemas.py:RegionalMarketAnalysis",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/schemas.py",
+      "target": "class:backend/assumption_zero/schemas.py:RegionalMarketAnalysis",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/schemas.py",
+      "target": "class:backend/assumption_zero/schemas.py:ResearchCoverage",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/schemas.py",
+      "target": "class:backend/assumption_zero/schemas.py:ResearchCoverage",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/schemas.py",
+      "target": "class:backend/assumption_zero/schemas.py:AnalysisResult",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/schemas.py",
+      "target": "class:backend/assumption_zero/schemas.py:AnalysisResult",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/schemas.py",
+      "target": "class:backend/assumption_zero/schemas.py:AnalysisCreateRequest",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/schemas.py",
+      "target": "class:backend/assumption_zero/schemas.py:AnalysisCreateRequest",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/schemas.py",
+      "target": "class:backend/assumption_zero/schemas.py:DemoAnalysisRequest",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/schemas.py",
+      "target": "class:backend/assumption_zero/schemas.py:DemoAnalysisRequest",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/schemas.py",
+      "target": "class:backend/assumption_zero/schemas.py:PromptAnalysisRequest",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/schemas.py",
+      "target": "class:backend/assumption_zero/schemas.py:PromptAnalysisRequest",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/schemas.py",
+      "target": "class:backend/assumption_zero/schemas.py:AnalysisListItem",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/schemas.py",
+      "target": "class:backend/assumption_zero/schemas.py:AnalysisListItem",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/assumption_zero/schemas.py",
+      "target": "class:backend/assumption_zero/schemas.py:HealthResponse",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/assumption_zero/schemas.py",
+      "target": "class:backend/assumption_zero/schemas.py:HealthResponse",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/tests/conftest.py",
+      "target": "function:backend/tests/conftest.py:isolated_storage",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/conftest.py",
+      "target": "function:backend/tests/conftest.py:isolated_storage",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/tests/conftest.py",
+      "target": "function:backend/tests/conftest.py:sample_idea",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/conftest.py",
+      "target": "function:backend/tests/conftest.py:sample_idea",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/tests/conftest.py",
+      "target": "function:backend/tests/conftest.py:sample_evidence",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/conftest.py",
+      "target": "function:backend/tests/conftest.py:sample_evidence",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/tests/conftest.py",
+      "target": "function:backend/tests/conftest.py:sample_perspectives",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/conftest.py",
+      "target": "function:backend/tests/conftest.py:sample_perspectives",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/tests/conftest.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/tests/test_citations.py",
+      "target": "function:backend/tests/test_citations.py:_make_perspective",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_citations.py",
+      "target": "function:backend/tests/test_citations.py:_make_perspective",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/tests/test_citations.py",
+      "target": "function:backend/tests/test_citations.py:test_valid_citations_are_kept",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_citations.py",
+      "target": "function:backend/tests/test_citations.py:test_valid_citations_are_kept",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/tests/test_citations.py",
+      "target": "function:backend/tests/test_citations.py:test_invalid_citations_are_moved",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_citations.py",
+      "target": "function:backend/tests/test_citations.py:test_invalid_citations_are_moved",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/tests/test_citations.py",
+      "target": "function:backend/tests/test_citations.py:test_empty_evidence_makes_all_invalid",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_citations.py",
+      "target": "function:backend/tests/test_citations.py:test_empty_evidence_makes_all_invalid",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/tests/test_citations.py",
+      "target": "function:backend/tests/test_citations.py:test_no_citations_stays_empty",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_citations.py",
+      "target": "function:backend/tests/test_citations.py:test_no_citations_stays_empty",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/tests/test_citations.py",
+      "target": "file:backend/assumption_zero/analysis/citation_validator.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/tests/test_citations.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    }
+  ]
+}

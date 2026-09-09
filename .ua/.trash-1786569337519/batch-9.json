@@ -1,0 +1,137 @@
+{
+  "nodes": [
+    {
+      "id": "config:.env.example",
+      "type": "config",
+      "name": ".env.example",
+      "filePath": ".env.example",
+      "summary": "Documents the environment variables for application behavior, browser origins, AI provider credentials and models, local or compatible endpoints, GitHub access, and request timeouts.",
+      "tags": ["configuration", "environment", "ai-providers", "security"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "document:CONTRIBUTING.md",
+      "type": "document",
+      "name": "CONTRIBUTING.md",
+      "filePath": "CONTRIBUTING.md",
+      "summary": "Contributor guide covering valuable contribution areas, local backend and frontend setup, quality checks, secret handling, and pull-request expectations across five sections.",
+      "tags": ["documentation", "development", "contributing", "quality-checks"],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:IDEA_GUIDE.md",
+      "type": "document",
+      "name": "IDEA_GUIDE.md",
+      "filePath": "IDEA_GUIDE.md",
+      "summary": "Founder-facing guide for writing a strong validation brief, choosing research depth, handling regional validation, running the engine, and turning evidence into a decision.",
+      "tags": ["documentation", "startup-validation", "research-depth", "decision-making"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "document:README.md",
+      "type": "document",
+      "name": "README.md",
+      "filePath": "README.md",
+      "summary": "Comprehensive project overview and quick-start guide covering the validation workflow, CLI and web usage, model providers, scoring, research accuracy, architecture, development, and safe deployment across eighteen sections.",
+      "tags": ["documentation", "entry-point", "architecture", "quick-start", "deployment"],
+      "complexity": "complex"
+    },
+    {
+      "id": "document:SECURITY.md",
+      "type": "document",
+      "name": "SECURITY.md",
+      "filePath": "SECURITY.md",
+      "summary": "Security policy explaining private vulnerability reporting expectations and the operator’s responsibility for safe deployment.",
+      "tags": ["documentation", "security", "vulnerability-reporting", "deployment"],
+      "complexity": "simple"
+    },
+    {
+      "id": "service:docker-compose.yml",
+      "type": "service",
+      "name": "docker-compose.yml",
+      "filePath": "docker-compose.yml",
+      "summary": "Orchestrates backend and frontend containers, exposes the API and web ports, persists analysis data, forwards provider configuration, adds an API health check, and starts the frontend after the backend.",
+      "tags": ["orchestration", "infrastructure", "containerization", "deployment"],
+      "complexity": "simple",
+      "languageNotes": "Defines two Compose services and a persistent named volume, with the frontend depending on the backend and the backend guarded by an HTTP health check."
+    },
+    {
+      "id": "file:start_web.bat",
+      "type": "file",
+      "name": "start_web.bat",
+      "filePath": "start_web.bat",
+      "summary": "Windows development launcher that checks prerequisites, provisions backend and frontend dependencies, creates data directories, starts both servers in separate command windows, and opens the web interface.",
+      "tags": ["entry-point", "development", "launcher", "windows"],
+      "complexity": "moderate",
+      "languageNotes": "Uses a linear Batch workflow with errorlevel checks and generated temporary helper scripts; it defines no callable labels."
+    },
+    {
+      "id": "file:start_web.sh",
+      "type": "file",
+      "name": "start_web.sh",
+      "filePath": "start_web.sh",
+      "summary": "Unix development launcher that checks prerequisites, provisions dependencies and data storage, starts backend and frontend processes, opens the browser when supported, and cleans up child processes on termination.",
+      "tags": ["entry-point", "development", "launcher", "shell"],
+      "complexity": "moderate",
+      "languageNotes": "Uses fail-fast Bash execution, background process IDs, and signal trapping for coordinated shutdown; it defines no named functions."
+    }
+  ],
+  "edges": [
+    {
+      "source": "document:README.md",
+      "target": "config:.env.example",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:README.md",
+      "target": "document:CONTRIBUTING.md",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:README.md",
+      "target": "document:SECURITY.md",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:README.md",
+      "target": "document:IDEA_GUIDE.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "service:docker-compose.yml",
+      "target": "config:.env.example",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:start_web.bat",
+      "target": "file:start_web.sh",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:start_web.bat",
+      "target": "service:docker-compose.yml",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:start_web.sh",
+      "target": "service:docker-compose.yml",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    }
+  ]
+}

@@ -1,151 +1,49 @@
-import React from 'react'
 import type { ResearchDepth } from '../types'
+import type { AnalysisProgress } from '../lib/api'
 
 export const ANALYSIS_REQUEST_TIMEOUT_MS = 270_000
-
-const EXPECTED_SECONDS: Record<ResearchDepth, number> = {
-  standard: 75,
-  deep: 135,
-  exhaustive: 240,
-}
-
-const DEPTH_LABELS: Record<ResearchDepth, string> = {
-  standard: 'Standard',
-  deep: 'Deep regional',
-  exhaustive: 'Exhaustive',
-}
-
-export interface AnalysisRunEstimate {
-  percent: number
-  phase: string
-  detail: string
-  delayed: boolean
-}
+const STAGES = [
+  ['starting_analysis', 'Connecting'], ['parsing_idea', 'Understanding your idea'],
+  ['clarifying_idea', 'Clarifying assumptions'], ['generating_queries', 'Planning research'],
+  ['collecting_evidence', 'Collecting evidence'], ['finding_competitors', 'Finding competitors'],
+  ['running_perspectives', 'Analyzing evidence'], ['checking_citations', 'Checking citations'],
+  ['calculating_scores', 'Evaluating the opportunity'],
+  ['generating_experiments', 'Preparing your action plan'], ['complete', 'Saving your report'],
+]
 
 export function formatElapsedTime(elapsedSeconds: number): string {
   const seconds = Math.max(0, Math.floor(elapsedSeconds))
-  const minutes = Math.floor(seconds / 60)
-  const remainder = seconds % 60
-  return minutes > 0 ? `${minutes}m ${remainder.toString().padStart(2, '0')}s` : `${remainder}s`
+  return seconds >= 60 ? `${Math.floor(seconds / 60)}m ${(seconds % 60).toString().padStart(2, '0')}s` : `${seconds}s`
 }
 
-export function estimateAnalysisRun(
-  elapsedSeconds: number,
-  depth: ResearchDepth,
-): AnalysisRunEstimate {
-  const expectedSeconds = EXPECTED_SECONDS[depth]
-  const ratio = Math.max(0, elapsedSeconds) / expectedSeconds
-  const percent = Math.min(94, Math.round(8 + Math.min(1, ratio) * 82))
-
-  if (ratio < 0.08) {
-    return {
-      percent,
-      phase: 'Connecting to the AI provider',
-      detail: 'Starting the selected model and checking the analysis request.',
-      delayed: false,
-    }
-  }
-  if (ratio < 0.18) {
-    return {
-      percent,
-      phase: 'Understanding your idea',
-      detail: 'Extracting the customer, problem, offer, geography, and assumptions.',
-      delayed: false,
-    }
-  }
-  if (ratio < 0.55) {
-    return {
-      percent,
-      phase: 'Collecting live market evidence',
-      detail: 'Searching multiple sources and deduplicating useful evidence.',
-      delayed: false,
-    }
-  }
-  if (ratio < 0.88) {
-    return {
-      percent,
-      phase: 'Running independent AI perspectives',
-      detail: 'Comparing market, customer, regional, investor, and builder viewpoints.',
-      delayed: false,
-    }
-  }
-
-  return {
-    percent,
-    phase: 'Checking citations and finishing the report',
-    detail: ratio >= 1
-      ? 'Still working—provider response times vary. The request will stop safely before the hosting limit.'
-      : 'Scoring the evidence and preparing experiments and recommendations.',
-    delayed: ratio >= 1,
-  }
-}
-
-interface AnalysisRunProgressProps {
+export default function AnalysisRunProgress({ depth, elapsedSeconds, progress, lastUpdateSeconds, onCancel }: {
   depth: ResearchDepth
   elapsedSeconds: number
+  progress: AnalysisProgress | null
+  lastUpdateSeconds: number
   onCancel: () => void
-}
-
-const AnalysisRunProgress: React.FC<AnalysisRunProgressProps> = ({
-  depth,
-  elapsedSeconds,
-  onCancel,
-}) => {
-  const estimate = estimateAnalysisRun(elapsedSeconds, depth)
-  const elapsed = formatElapsedTime(elapsedSeconds)
-
+}) {
+  const index = Math.max(0, STAGES.findIndex(([stage]) => stage === progress?.stage))
+  const waiting = elapsedSeconds - lastUpdateSeconds > 25
   return (
-    <div
-      className={`rounded-2xl border p-4 text-left ${
-        estimate.delayed ? 'border-amber-300 bg-amber-50' : 'border-emerald-200 bg-emerald-50'
-      }`}
-      aria-live="polite"
-      aria-atomic="true"
-    >
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <p className="text-xs font-mono font-bold uppercase tracking-wider text-zinc-700">
-            Analysis in progress
-          </p>
-          <p className="mt-1 text-sm font-bold text-zinc-950">{estimate.phase}</p>
+    <section className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-left" aria-label="Analysis progress">
+      <div className="flex justify-between gap-4">
+        <div role="status" aria-live="polite">
+          <p className="text-xs font-mono text-zinc-600">Analysis in progress</p>
+          <p className="mt-1 text-sm font-bold text-zinc-950">{STAGES[index][1]}</p>
+          <p className="mt-1 text-xs text-zinc-600">{progress?.description || 'Waiting for the server to accept your request.'}</p>
         </div>
-        <span className="shrink-0 font-mono text-xs font-bold tabular-nums text-zinc-600">
-          {elapsed}
-        </span>
+        <span className="shrink-0 text-xs font-mono tabular-nums">{formatElapsedTime(elapsedSeconds)}</span>
       </div>
-
-      <div
-        className="mt-3 h-2.5 overflow-hidden rounded-full border border-black/5 bg-white"
-        role="progressbar"
-        aria-label="Estimated analysis progress"
-        aria-valuemin={0}
-        aria-valuemax={100}
-        aria-valuenow={estimate.percent}
-        aria-valuetext={`${estimate.percent}% estimated, ${estimate.phase}`}
-      >
-        <div
-          className="h-full rounded-full bg-emerald-700 transition-[width] duration-1000 ease-linear"
-          style={{ width: `${estimate.percent}%` }}
-        />
+      <div role="progressbar" aria-label="Analysis stages" aria-valuemin={0} aria-valuemax={STAGES.length}
+        aria-valuenow={index} aria-valuetext={`${STAGES[index][1]} — server-reported stage`}
+        className="mt-3 h-2.5 overflow-hidden rounded-full bg-white">
+        <div className="h-full rounded-full bg-emerald-700 transition-[width] duration-300" style={{ width: `${Math.max(3, index / STAGES.length * 100)}%` }} />
       </div>
-
-      <div className="mt-2 flex items-start justify-between gap-4">
-        <div>
-          <p className="text-[11px] leading-relaxed text-zinc-700">{estimate.detail}</p>
-          <p className="mt-1 text-[10px] font-mono text-zinc-500">
-            {estimate.percent}% estimated · {DEPTH_LABELS[depth]} research · exact timing depends on live providers
-          </p>
-        </div>
-        <button
-          type="button"
-          onClick={onCancel}
-          className="shrink-0 rounded-lg border border-zinc-300 bg-white px-3 py-1.5 text-[11px] font-bold text-zinc-700 transition-colors hover:border-zinc-500 hover:text-zinc-950"
-        >
-          Cancel
-        </button>
+      <div className="mt-3 flex items-center justify-between gap-3">
+        <p className="text-[11px] text-zinc-600">{waiting ? 'Waiting for the next server update…' : 'Live server updates'} · {depth} research</p>
+        <button type="button" onClick={onCancel} className="rounded-lg border border-zinc-300 bg-white px-3 py-1.5 text-xs font-bold">Cancel</button>
       </div>
-    </div>
+    </section>
   )
 }
-
-export default AnalysisRunProgress

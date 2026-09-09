@@ -27,7 +27,7 @@ from assumption_zero.llm.base import (
     build_clarification_messages,
     build_raw_idea_message,
 )
-from assumption_zero.llm.model_catalog import completion_content
+from assumption_zero.llm.model_catalog import completion_content, post_chat
 from assumption_zero.schemas import EvidenceItem, IdeaInput, PerspectiveName, Recommendation
 
 logger = logging.getLogger(__name__)
@@ -144,6 +144,11 @@ def _repair_and_parse_json(text: str) -> dict:
 
 def _parse_output(raw: str, perspective_name: PerspectiveName, model_id: str) -> PerspectiveOutput:
     data = _repair_and_parse_json(raw)
+    if (not isinstance(data, dict) or not isinstance(data.get("summary"), str)
+            or not data["summary"].strip() or not data.get("key_findings")
+            or not isinstance(data.get("dimension_scores"), dict)
+            or not data["dimension_scores"]):
+        raise ValueError("AI response did not contain a usable structured analysis.")
 
     rec = data.get("recommendation", "Test First")
     if rec not in _VALID_RECOMMENDATIONS:
@@ -243,7 +248,11 @@ class OpenRouterAdapter(LLMAdapter):
                         "messages": messages,
                         "temperature": 0.3,
                     }
-                    resp = await client.post(url, json=payload)
+                    try:
+                        resp = await post_chat(client, url, payload)
+                    except httpx.TransportError:
+                        logger.info("OpenRouter transport failed; trying next route")
+                        continue
                     last_status = resp.status_code
                     if resp.status_code == 401:
                         raise RuntimeError("AI provider rejected the API key (HTTP 401).")
@@ -255,7 +264,10 @@ class OpenRouterAdapter(LLMAdapter):
                         )
                         continue
 
-                    data = resp.json()
+                    try:
+                        data = resp.json()
+                    except ValueError:
+                        continue
                     content = completion_content(data)
                     if content:
                         actual_model = str(data.get("model") or model_name)
@@ -339,6 +351,8 @@ class OpenRouterAdapter(LLMAdapter):
             parsed_data["additional_context"] = raw_text
 
             return IdeaInput(**parsed_data)
+        except (RuntimeError, httpx.HTTPError):
+            raise
         except Exception as exc:
-            logger.debug("OpenRouter parse_raw_prompt failed (%s) — using fallback extractor", exc)
+            logger.debug("OpenRouter prompt structure unusable (%s); extracting supplied fields", type(exc).__name__)
             return await super().parse_raw_prompt(raw_text)

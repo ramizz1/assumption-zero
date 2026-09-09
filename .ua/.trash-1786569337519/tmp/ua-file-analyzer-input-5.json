@@ -1,0 +1,25 @@
+{
+  "projectRoot": "C:\\Users\\user\\Desktop\\idea\\assumption-zero",
+  "batchFiles": [
+    {"path":"backend/assumption_zero/__init__.py","language":"python","sizeLines":4,"fileCategory":"code"},
+    {"path":"backend/assumption_zero/analysis/unit_economics.py","language":"python","sizeLines":74,"fileCategory":"code"},
+    {"path":"backend/assumption_zero/cli.py","language":"python","sizeLines":2331,"fileCategory":"code"},
+    {"path":"backend/assumption_zero/main.py","language":"python","sizeLines":124,"fileCategory":"code"},
+    {"path":"backend/assumption_zero/storage.py","language":"python","sizeLines":273,"fileCategory":"code"},
+    {"path":"backend/tests/test_api.py","language":"python","sizeLines":142,"fileCategory":"code"},
+    {"path":"backend/tests/test_cli_parity.py","language":"python","sizeLines":119,"fileCategory":"code"},
+    {"path":"backend/tests/test_export.py","language":"python","sizeLines":135,"fileCategory":"code"},
+    {"path":"backend/tests/test_validation_errors.py","language":"python","sizeLines":72,"fileCategory":"code"}
+  ],
+  "batchImportData": {
+    "backend/assumption_zero/__init__.py": [],
+    "backend/assumption_zero/analysis/unit_economics.py": [],
+    "backend/assumption_zero/cli.py": ["backend/assumption_zero/__init__.py"],
+    "backend/assumption_zero/main.py": ["backend/assumption_zero/__init__.py","backend/assumption_zero/api/routes.py","backend/assumption_zero/config.py","backend/assumption_zero/storage.py"],
+    "backend/assumption_zero/storage.py": [],
+    "backend/tests/test_api.py": ["backend/assumption_zero/main.py"],
+    "backend/tests/test_cli_parity.py": ["backend/assumption_zero/analysis/unit_economics.py","backend/assumption_zero/cli.py","backend/assumption_zero/schemas.py","backend/assumption_zero/storage.py"],
+    "backend/tests/test_export.py": ["backend/assumption_zero/cli.py","backend/assumption_zero/schemas.py"],
+    "backend/tests/test_validation_errors.py": ["backend/assumption_zero/config.py","backend/assumption_zero/main.py"]
+  }
+}

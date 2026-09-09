@@ -1,0 +1,7 @@
+{
+  "projectRoot": "C:\\Users\\user\\Desktop\\idea\\assumption-zero",
+  "batchFiles": [
+    {"path":"backend/Dockerfile","language":"dockerfile","sizeLines":23,"fileCategory":"infra"}
+  ],
+  "batchImportData": {"backend/Dockerfile": []}
+}

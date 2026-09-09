@@ -1,0 +1,35 @@
+{
+  "issues": [],
+  "warnings": [
+    "Node 'pipeline:.github/workflows/ci.yml' has no edges (orphan)",
+    "Node 'document:.github/PULL_REQUEST_TEMPLATE.md' has no edges (orphan)"
+  ],
+  "stats": {
+    "totalNodes": 446,
+    "totalEdges": 1034,
+    "totalLayers": 10,
+    "tourSteps": 13,
+    "nodeTypes": {
+      "file": 101,
+      "function": 262,
+      "class": 60,
+      "service": 6,
+      "pipeline": 1,
+      "config": 10,
+      "document": 6
+    },
+    "edgeTypes": {
+      "contains": 322,
+      "exports": 317,
+      "imports": 238,
+      "tested_by": 8,
+      "calls": 110,
+      "inherits": 9,
+      "depends_on": 6,
+      "deploys": 2,
+      "documents": 5,
+      "related": 7,
+      "configures": 10
+    }
+  }
+}

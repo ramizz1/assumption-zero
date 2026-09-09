@@ -1,0 +1,14 @@
+{
+  "fixedSectionOk": true,
+  "nodesRecovered": 0,
+  "edgesRestored": 0,
+  "crossBatchEdgesAdded": 0,
+  "typesRemapped": 0,
+  "complexityRemapped": 0,
+  "notes": [
+    "The merge report contained no ID corrections, dangling-edge drops, unknown node types, or unknown complexity values.",
+    "All 238 import relationships from the scanner importMap are represented by exactly matching imports edges in the assembled graph.",
+    "The 446 nodes and 1034 edges passed required-field, ID-prefix, line-range, direction, weight, duplicate, and dangling-reference checks.",
+    "Existing tested_by edges use production-to-test direction; the path-convention supplement had no missing relationships to add."
+  ]
+}

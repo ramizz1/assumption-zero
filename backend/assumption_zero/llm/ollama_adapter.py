@@ -233,6 +233,8 @@ class OllamaAdapter(LLMAdapter):
             parsed_data["additional_context"] = raw_text
 
             return IdeaInput(**parsed_data)
+        except (RuntimeError, httpx.HTTPError):
+            raise
         except Exception as exc:
-            logger.debug("Ollama parse_raw_prompt failed (%s) — using fallback extractor", exc)
+            logger.debug("Ollama prompt structure unusable (%s); extracting supplied fields", type(exc).__name__)
             return await super().parse_raw_prompt(raw_text)

@@ -1,0 +1,269 @@
+{
+  "nodes": [
+    {
+      "id": "document:.github/PULL_REQUEST_TEMPLATE.md",
+      "type": "document",
+      "name": "PULL_REQUEST_TEMPLATE.md",
+      "filePath": ".github/PULL_REQUEST_TEMPLATE.md",
+      "summary": "Pull-request checklist prompting contributors to explain changes and motivation, report verification results, confirm security and documentation checks, and attach screenshots for UI changes.",
+      "tags": ["documentation", "contributing", "pull-request", "quality-checks"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:.ua/.understandignore",
+      "type": "file",
+      "name": ".understandignore",
+      "filePath": ".ua/.understandignore",
+      "summary": "Generated, fully commented ignore-pattern template for controlling future Understand Anything scans, including project artifacts, caches, documentation, examples, and language-specific test conventions.",
+      "tags": ["configuration", "analysis-scope", "ignore-patterns", "generated"],
+      "complexity": "moderate",
+      "languageNotes": "Uses gitignore-compatible syntax, but all project-specific suggestions remain commented and therefore inactive."
+    },
+    {
+      "id": "config:.ua/config.json",
+      "type": "config",
+      "name": "config.json",
+      "filePath": ".ua/config.json",
+      "summary": "Configures Understand Anything graph generation to produce English textual output.",
+      "tags": ["configuration", "knowledge-graph", "localization", "analysis"],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:backend/README.md",
+      "type": "document",
+      "name": "README.md",
+      "filePath": "backend/README.md",
+      "summary": "Brief backend overview identifying the FastAPI API and Python CLI and directing readers to the main project guide for setup, usage, testing, and deployment.",
+      "tags": ["documentation", "backend", "fastapi", "cli"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/assumption_zero/api/__init__.py",
+      "type": "file",
+      "name": "__init__.py",
+      "filePath": "backend/assumption_zero/api/__init__.py",
+      "summary": "Marks the FastAPI routing directory as an importable Python package.",
+      "tags": ["package-marker", "api", "python", "entry-point"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/assumption_zero/services/__init__.py",
+      "type": "file",
+      "name": "__init__.py",
+      "filePath": "backend/assumption_zero/services/__init__.py",
+      "summary": "Marks the backend application-service directory as an importable Python package.",
+      "tags": ["package-marker", "service", "python", "entry-point"],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:backend/pyproject.toml",
+      "type": "config",
+      "name": "pyproject.toml",
+      "filePath": "backend/pyproject.toml",
+      "summary": "Defines Python 3.12 package metadata, runtime and development dependencies, the azero CLI entry point, setuptools packaging, pytest behavior, Ruff formatting limits, and mypy settings.",
+      "tags": ["configuration", "python", "build-system", "dependencies", "tooling"],
+      "complexity": "moderate",
+      "languageNotes": "Uses PEP 621 project metadata and setuptools, with separate pytest, Ruff, and mypy tool sections."
+    },
+    {
+      "id": "file:backend/tests/__init__.py",
+      "type": "file",
+      "name": "__init__.py",
+      "filePath": "backend/tests/__init__.py",
+      "summary": "Marks the backend test suite as an importable Python package.",
+      "tags": ["test", "package-marker", "pytest", "python"],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:examples/sample-idea.json",
+      "type": "config",
+      "name": "sample-idea.json",
+      "filePath": "examples/sample-idea.json",
+      "summary": "Complete example validation brief for a privacy-first, on-device legal meeting summarizer, covering customer, problem, solution, economics, founder constraints, channels, competitors, assumptions, and regulation.",
+      "tags": ["sample-data", "startup-idea", "validation-input", "documentation"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:frontend/postcss.config.js",
+      "type": "file",
+      "name": "postcss.config.js",
+      "filePath": "frontend/postcss.config.js",
+      "summary": "Configures PostCSS to process frontend styles with Tailwind CSS and Autoprefixer.",
+      "tags": ["configuration", "css", "postcss", "build-system"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:frontend/src/index.css",
+      "type": "file",
+      "name": "index.css",
+      "filePath": "frontend/src/index.css",
+      "summary": "Defines global Tailwind layers, typography and page defaults, reusable cards, buttons, inputs, badges, navigation and depth effects, ambient animations, responsive behavior, reduced-motion accessibility, and print styling.",
+      "tags": ["stylesheet", "tailwind", "design-system", "accessibility", "responsive-design"],
+      "complexity": "complex",
+      "languageNotes": "Combines Tailwind directives and @apply composition with custom keyframes, motion-reduction overrides, and print-specific rules."
+    },
+    {
+      "id": "file:frontend/src/pages/DocsPage.tsx",
+      "type": "file",
+      "name": "DocsPage.tsx",
+      "filePath": "frontend/src/pages/DocsPage.tsx",
+      "summary": "Renders the founder documentation page with navigation and detailed guidance on briefing, research depth, evidence interpretation, a 30-day validation playbook, metrics, CLI commands, and frequently asked questions.",
+      "tags": ["component", "documentation", "react", "founder-guide", "ui"],
+      "complexity": "complex",
+      "languageNotes": "Uses a large declarative React component with mapped content tables and reusable local section and code-block renderers."
+    },
+    {
+      "id": "function:frontend/src/pages/DocsPage.tsx:DocsPage",
+      "type": "function",
+      "name": "DocsPage",
+      "filePath": "frontend/src/pages/DocsPage.tsx",
+      "lineRange": [29, 280],
+      "summary": "Builds the complete interactive documentation and founder playbook page from structured navigation, guidance, reference, and FAQ content.",
+      "tags": ["component", "react", "documentation", "ui"],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:frontend/tailwind.config.js",
+      "type": "file",
+      "name": "tailwind.config.js",
+      "filePath": "frontend/tailwind.config.js",
+      "summary": "Configures Tailwind content discovery and extends the frontend theme with surface, card, border, Verseo palette, and sans, display, and monospace font families.",
+      "tags": ["configuration", "tailwind", "design-system", "build-system"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:frontend/tests/docs.test.tsx",
+      "type": "file",
+      "name": "docs.test.tsx",
+      "filePath": "frontend/tests/docs.test.tsx",
+      "summary": "Vitest component test that renders the documentation page in a memory router and verifies the business playbook, CLI reference, and interview milestone content.",
+      "tags": ["test", "component-test", "vitest", "documentation"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:frontend/tests/setup.ts",
+      "type": "file",
+      "name": "setup.ts",
+      "filePath": "frontend/tests/setup.ts",
+      "summary": "Loads DOM-aware Testing Library matchers into the frontend Vitest environment.",
+      "tags": ["test", "setup", "testing-library", "vitest"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:frontend/vite.config.ts",
+      "type": "file",
+      "name": "vite.config.ts",
+      "filePath": "frontend/vite.config.ts",
+      "summary": "Configures Vite with React, a development server on port 5173, an API proxy to the local backend, and a jsdom Vitest environment using the shared test setup.",
+      "tags": ["configuration", "vite", "development-server", "test", "proxy"],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:frontend/src/pages/DocsPage.tsx",
+      "target": "function:frontend/src/pages/DocsPage.tsx:DocsPage",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:frontend/src/pages/DocsPage.tsx",
+      "target": "function:frontend/src/pages/DocsPage.tsx:DocsPage",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:frontend/tests/docs.test.tsx",
+      "target": "file:frontend/src/pages/DocsPage.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/pages/DocsPage.tsx",
+      "target": "file:frontend/tests/docs.test.tsx",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:frontend/postcss.config.js",
+      "target": "file:frontend/src/index.css",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:frontend/tailwind.config.js",
+      "target": "file:frontend/src/index.css",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:frontend/vite.config.ts",
+      "target": "file:frontend/src/pages/DocsPage.tsx",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:frontend/vite.config.ts",
+      "target": "file:frontend/tests/setup.ts",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:backend/pyproject.toml",
+      "target": "file:backend/assumption_zero/api/__init__.py",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:backend/pyproject.toml",
+      "target": "file:backend/assumption_zero/services/__init__.py",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:backend/pyproject.toml",
+      "target": "file:backend/tests/__init__.py",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "document:backend/README.md",
+      "target": "file:backend/assumption_zero/api/__init__.py",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:backend/README.md",
+      "target": "file:backend/assumption_zero/services/__init__.py",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "config:.ua/config.json",
+      "target": "file:.ua/.understandignore",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "config:examples/sample-idea.json",
+      "target": "document:backend/README.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    }
+  ]
+}

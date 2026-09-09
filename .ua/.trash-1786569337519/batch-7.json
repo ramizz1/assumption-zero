@@ -1,0 +1,48 @@
+{
+  "nodes": [
+    {
+      "id": "service:frontend/Dockerfile",
+      "type": "service",
+      "name": "Dockerfile",
+      "filePath": "frontend/Dockerfile",
+      "summary": "Builds the Vite frontend in Node.js and serves the production assets from Nginx with SPA fallback routing and an /api proxy to the backend service.",
+      "tags": ["containerization", "infrastructure", "deployment", "reverse-proxy", "frontend"],
+      "complexity": "simple",
+      "languageNotes": "Uses a two-stage build so Node.js tooling is excluded from the final Nginx runtime image."
+    },
+    {
+      "id": "service:frontend/Dockerfile:builder",
+      "type": "service",
+      "name": "builder",
+      "filePath": "frontend/Dockerfile",
+      "summary": "Installs locked frontend dependencies in Node.js 20 and compiles the Vite application into production assets.",
+      "tags": ["containerization", "build-system", "nodejs", "frontend"],
+      "complexity": "simple"
+    },
+    {
+      "id": "service:frontend/Dockerfile:nginx",
+      "type": "service",
+      "name": "nginx",
+      "filePath": "frontend/Dockerfile",
+      "summary": "Serves the compiled frontend on port 80, falls back to index.html for client-side routes, and proxies API requests to the backend container.",
+      "tags": ["containerization", "runtime", "reverse-proxy", "static-hosting"],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "service:frontend/Dockerfile",
+      "target": "service:frontend/Dockerfile:nginx",
+      "type": "deploys",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "service:frontend/Dockerfile:nginx",
+      "target": "service:frontend/Dockerfile:builder",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    }
+  ]
+}

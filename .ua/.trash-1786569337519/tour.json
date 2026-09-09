@@ -1,0 +1,150 @@
+[
+  {
+    "order": 1,
+    "title": "Project Overview",
+    "description": "Begin with the project guide to understand Assumption Zero as an evidence-first startup validation system rather than a generic idea generator. It introduces the shared CLI and web experience, live research, multi-perspective analysis, explicit scoring, citation safeguards, and deployment model that the rest of the tour will unpack.",
+    "nodeIds": [
+      "document:README.md"
+    ]
+  },
+  {
+    "order": 2,
+    "title": "React Startup Path",
+    "description": "The browser application starts by mounting React, installing routing, and loading the global visual system before the root component selects a page. Following this topology first shows how a user reaches the idea-intake workflow and where page-level features attach.",
+    "nodeIds": [
+      "file:frontend/src/main.tsx",
+      "file:frontend/src/App.tsx",
+      "file:frontend/src/index.css"
+    ],
+    "languageLesson": "React entry points compose behavior through components and providers: StrictMode and BrowserRouter wrap the root component, while imported CSS establishes shared presentation without adding runtime state."
+  },
+  {
+    "order": 3,
+    "title": "Idea Intake Flow",
+    "description": "HomePage turns a raw prompt or structured brief into a validated analysis request, using the readiness helpers and shared TypeScript contracts before calling the API client. This is the frontend boundary where provider choices, research depth, saved analyses, and user input become the backend request model.",
+    "nodeIds": [
+      "file:frontend/src/pages/HomePage.tsx",
+      "file:frontend/src/lib/readiness.ts",
+      "file:frontend/src/lib/api.ts",
+      "file:frontend/src/types/index.ts"
+    ],
+    "languageLesson": "React hooks keep transient form and request state inside the component tree, while TypeScript interfaces make the browser-to-API contract explicit at compile time."
+  },
+  {
+    "order": 4,
+    "title": "Shared Application Entry",
+    "description": "The FastAPI application and route module expose health, provider verification, analysis creation, history, deletion, and demo operations, while the Typer CLI offers the same engine from the terminal. Reading these entry points together makes the central design clear: web and CLI are delivery mechanisms over one application workflow and shared history.",
+    "nodeIds": [
+      "file:backend/assumption_zero/main.py",
+      "file:backend/assumption_zero/api/routes.py",
+      "file:backend/assumption_zero/cli.py"
+    ],
+    "languageLesson": "FastAPI and Typer both use Python decorators and type annotations to turn ordinary functions into validated HTTP endpoints or CLI commands, keeping interface declarations close to implementation."
+  },
+  {
+    "order": 5,
+    "title": "Contracts and Persistence",
+    "description": "The Pydantic schemas define the vocabulary shared by API requests, evidence, competitors, perspectives, scores, experiments, and final results. Storage and database models preserve analysis history, while the canonical sample brief demonstrates the complete input shape that flows through those contracts.",
+    "nodeIds": [
+      "file:backend/assumption_zero/schemas.py",
+      "file:backend/assumption_zero/storage.py",
+      "file:backend/assumption_zero/models.py",
+      "config:examples/sample-idea.json"
+    ],
+    "languageLesson": "Pydantic models combine Python type hints with runtime validation, so malformed requests fail at the boundary while validated objects remain strongly structured throughout the engine."
+  },
+  {
+    "order": 6,
+    "title": "Analysis Orchestration",
+    "description": "The application service constructs research and model providers, manages persistence, and owns the analysis lifecycle initiated by the API or CLI. It delegates the substantive work to AnalysisEngine, which coordinates collection, parallel perspectives, grounding, scoring, regional interpretation, experiments, and founder guidance.",
+    "nodeIds": [
+      "file:backend/assumption_zero/services/analysis_service.py",
+      "file:backend/assumption_zero/analysis/engine.py"
+    ],
+    "languageLesson": "Python async/await lets the engine overlap independent provider and model calls while preserving a readable sequential orchestration style at the service boundary."
+  },
+  {
+    "order": 7,
+    "title": "Evidence Collection",
+    "description": "Research begins with query generation tailored to market, competitor, pricing, regional, regulatory, and validation questions. A common asynchronous provider contract then normalizes results from web, repository, and community sources into evidence records the engine can compare and cite consistently.",
+    "nodeIds": [
+      "file:backend/assumption_zero/analysis/query_generator.py",
+      "file:backend/assumption_zero/research/base.py",
+      "file:backend/assumption_zero/research/searxng_provider.py",
+      "file:backend/assumption_zero/research/github_provider.py",
+      "file:backend/assumption_zero/research/reddit_provider.py"
+    ],
+    "languageLesson": "An abstract base class defines one provider protocol, allowing heterogeneous HTTP integrations to be scheduled uniformly and replaced with deterministic test doubles."
+  },
+  {
+    "order": 8,
+    "title": "Model Perspective Layer",
+    "description": "The LLM base module builds compact evidence-aware prompts and validates each perspective into a common output model. OpenRouter supplies hosted model access, the deterministic adapter keeps the product useful without a working generative provider, and the fallback chain translates provider failures into controlled retries; environment configuration supplies credentials and endpoint choices.",
+    "nodeIds": [
+      "file:backend/assumption_zero/llm/base.py",
+      "file:backend/assumption_zero/llm/openrouter_adapter.py",
+      "file:backend/assumption_zero/llm/mock_adapter.py",
+      "file:backend/assumption_zero/llm/fallback_adapter.py",
+      "config:.env.example"
+    ],
+    "languageLesson": "The adapter pattern keeps provider-specific authentication and response quirks behind one asynchronous interface, while validated output models stop malformed model JSON from leaking into downstream scoring."
+  },
+  {
+    "order": 9,
+    "title": "Grounding and Scoring",
+    "description": "Once perspectives return, citation validation rejects unknown evidence references, competitor merging consolidates duplicate discoveries, and confidence measures evidence quality independently from opportunity. Disagreement detection preserves meaningful model conflicts, while scoring converts the supported dimensions into the explicit opportunity result shown to founders.",
+    "nodeIds": [
+      "file:backend/assumption_zero/analysis/citation_validator.py",
+      "file:backend/assumption_zero/analysis/competitor_merger.py",
+      "file:backend/assumption_zero/analysis/confidence.py",
+      "file:backend/assumption_zero/analysis/disagreement.py",
+      "file:backend/assumption_zero/analysis/scoring.py"
+    ]
+  },
+  {
+    "order": 10,
+    "title": "Founder Decision Outputs",
+    "description": "The engine turns grounded analysis into region-specific conclusions, transparent unit economics, prioritized validation experiments, and a practical founder operating toolkit. These modules bridge the gap between a numerical verdict and concrete next actions with measurable pass, pivot, or stop criteria.",
+    "nodeIds": [
+      "file:backend/assumption_zero/analysis/regional_analysis.py",
+      "file:backend/assumption_zero/analysis/unit_economics.py",
+      "file:backend/assumption_zero/analysis/experiment_generator.py",
+      "file:backend/assumption_zero/analysis/founder_toolkit.py"
+    ]
+  },
+  {
+    "order": 11,
+    "title": "Report Experience",
+    "description": "ReportView consumes the completed contract and composes the opportunity gauge, model-perspective explorer, competitor evidence, and founder toolkit into the final browser experience. This closes the runtime loop begun in Step 2: backend evidence and decisions become inspectable, exportable UI rather than an opaque score.",
+    "nodeIds": [
+      "file:frontend/src/pages/ReportView.tsx",
+      "file:frontend/src/components/OpportunityGauge.tsx",
+      "file:frontend/src/components/PerspectiveExplorer.tsx",
+      "file:frontend/src/components/CompetitorCard.tsx",
+      "file:frontend/src/components/FounderToolkit.tsx"
+    ],
+    "languageLesson": "React component composition lets the report remain a page-level orchestrator while specialized child components own focused visual and interaction responsibilities."
+  },
+  {
+    "order": 12,
+    "title": "Container Topology",
+    "description": "The backend image packages FastAPI and Uvicorn, while the multi-stage frontend image compiles Vite assets and serves them through Nginx with API proxying. Docker Compose joins both services, persists analysis data, forwards provider configuration, and waits on backend health before starting the web tier.",
+    "nodeIds": [
+      "service:backend/Dockerfile",
+      "service:frontend/Dockerfile",
+      "service:docker-compose.yml"
+    ],
+    "languageLesson": "Multi-stage Docker builds separate compilation dependencies from the runtime image; Compose adds service networking, health checks, dependency ordering, environment injection, and persistent volumes."
+  },
+  {
+    "order": 13,
+    "title": "Verification Pipeline",
+    "description": "Finish with the CI workflow and representative backend and frontend tests to see how architectural promises are enforced. GitHub Actions independently runs the Python suite and installs and builds the React application, while end-to-end and component tests exercise the analysis engine and evidence-facing UI with deterministic inputs.",
+    "nodeIds": [
+      "pipeline:.github/workflows/ci.yml",
+      "file:backend/tests/test_engine_e2e.py",
+      "file:frontend/tests/perspectiveExplorer.test.tsx"
+    ],
+    "languageLesson": "GitHub Actions YAML separates trigger conditions, parallel jobs, and sequential steps; deterministic test doubles keep network-dependent analysis paths reproducible in CI."
+  }
+]

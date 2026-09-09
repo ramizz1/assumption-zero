@@ -22,7 +22,7 @@ from assumption_zero.llm.base import (
     build_clarification_messages,
     build_raw_idea_message,
 )
-from assumption_zero.llm.model_catalog import catalog_model_ids, completion_content, ordered_models
+from assumption_zero.llm.model_catalog import catalog_model_ids, completion_content, ordered_models, post_chat
 from assumption_zero.llm.openrouter_adapter import _parse_output, _repair_and_parse_json
 from assumption_zero.schemas import EvidenceItem, IdeaInput, PerspectiveName
 
@@ -155,7 +155,7 @@ class OpencodeAdapter(LLMAdapter):
                     "temperature": 0.2,
                 }
                 try:
-                    resp = await client.post(url, json=payload)
+                    resp = await post_chat(client, url, payload)
                 except Exception as exc:
                     logger.info("OpenCode request transport failed (%s)", type(exc).__name__)
                     continue
@@ -169,7 +169,10 @@ class OpencodeAdapter(LLMAdapter):
                         resp.status_code,
                     )
                     continue
-                data = resp.json()
+                try:
+                    data = resp.json()
+                except ValueError:
+                    continue
                 content = completion_content(data)
                 if content:
                     actual_model = str(data.get("model") or model_name)
@@ -252,6 +255,8 @@ class OpencodeAdapter(LLMAdapter):
             parsed_data["additional_context"] = raw_text
 
             return IdeaInput(**parsed_data)
+        except (RuntimeError, httpx.HTTPError):
+            raise
         except Exception as exc:
-            logger.debug("OpenCode parse_raw_prompt failed (%s) — using fallback extractor", exc)
+            logger.debug("OpenCode prompt structure unusable (%s); extracting supplied fields", type(exc).__name__)
             return await super().parse_raw_prompt(raw_text)

@@ -1,0 +1,856 @@
+{
+  "nodes": [
+    {
+      "id": "file:backend/tests/test_cli_parity.py",
+      "type": "file",
+      "name": "test_cli_parity.py",
+      "filePath": "backend/tests/test_cli_parity.py",
+      "summary": "Checks that CLI commands and provider controls match web capabilities and that CLI runs share storage, filtering, and unit-economics behavior with the web application.",
+      "tags": [
+        "test",
+        "cli",
+        "integration",
+        "regression",
+        "feature-parity"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:backend/tests/test_cli_parity.py:test_cli_exposes_web_equivalent_commands_and_provider_controls",
+      "type": "function",
+      "name": "test_cli_exposes_web_equivalent_commands_and_provider_controls",
+      "filePath": "backend/tests/test_cli_parity.py",
+      "lineRange": [
+        19,
+        45
+      ],
+      "summary": "Asserts CLI help exposes the web-equivalent workflow commands, research controls, provider options, and founder-context flags.",
+      "tags": [
+        "test",
+        "regression",
+        "cli"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/tests/test_cli_parity.py:test_cli_founder_context_flags_override_parsed_idea",
+      "type": "function",
+      "name": "test_cli_founder_context_flags_override_parsed_idea",
+      "filePath": "backend/tests/test_cli_parity.py",
+      "lineRange": [
+        48,
+        59
+      ],
+      "summary": "Verifies CLI founder-context flags replace only the specified fields of a parsed idea.",
+      "tags": [
+        "test",
+        "regression",
+        "cli"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/tests/test_cli_parity.py:test_unit_economics_matches_web_default_model",
+      "type": "function",
+      "name": "test_unit_economics_matches_web_default_model",
+      "filePath": "backend/tests/test_cli_parity.py",
+      "lineRange": [
+        62,
+        75
+      ],
+      "summary": "Checks shared unit-economics calculations against the web simulator's expected default scenario.",
+      "tags": [
+        "test",
+        "regression",
+        "cli"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/tests/test_cli_parity.py:test_cli_analysis_is_saved_for_web_history",
+      "type": "function",
+      "name": "test_cli_analysis_is_saved_for_web_history",
+      "filePath": "backend/tests/test_cli_parity.py",
+      "lineRange": [
+        78,
+        98
+      ],
+      "summary": "Runs a fake CLI analysis and verifies its metadata and result are available to web history storage.",
+      "tags": [
+        "test",
+        "regression",
+        "cli"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/tests/test_cli_parity.py:test_history_verdict_filters_work_for_web_and_cli",
+      "type": "function",
+      "name": "test_history_verdict_filters_work_for_web_and_cli",
+      "filePath": "backend/tests/test_cli_parity.py",
+      "lineRange": [
+        102,
+        119
+      ],
+      "summary": "Persists a completed recommendation and verifies shared history filtering by verdict and run status.",
+      "tags": [
+        "test",
+        "regression",
+        "cli"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/tests/test_export.py",
+      "type": "file",
+      "name": "test_export.py",
+      "filePath": "backend/tests/test_export.py",
+      "summary": "Validates Markdown, HTML, and JSON analysis exports for required verdict, evidence, experiment, competitor, disclaimer, and secret-safety content.",
+      "tags": [
+        "test",
+        "serialization",
+        "reporting",
+        "regression",
+        "security"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:backend/tests/test_export.py:_make_result",
+      "type": "function",
+      "name": "_make_result",
+      "filePath": "backend/tests/test_export.py",
+      "lineRange": [
+        21,
+        52
+      ],
+      "summary": "Builds a representative completed AnalysisResult fixture with calculated score, confidence, evidence, and experiments for export tests.",
+      "tags": [
+        "test",
+        "factory",
+        "data-model"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/tests/test_export.py:test_markdown_export_contains_disclaimer",
+      "type": "function",
+      "name": "test_markdown_export_contains_disclaimer",
+      "filePath": "backend/tests/test_export.py",
+      "lineRange": [
+        55,
+        58
+      ],
+      "summary": "Ensures Markdown exports include the decision-support disclaimer.",
+      "tags": [
+        "test",
+        "regression",
+        "serialization"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/tests/test_export.py:test_markdown_export_contains_idea_name",
+      "type": "function",
+      "name": "test_markdown_export_contains_idea_name",
+      "filePath": "backend/tests/test_export.py",
+      "lineRange": [
+        61,
+        64
+      ],
+      "summary": "Ensures Markdown exports identify the analyzed idea.",
+      "tags": [
+        "test",
+        "regression",
+        "serialization"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/tests/test_export.py:test_markdown_export_contains_score",
+      "type": "function",
+      "name": "test_markdown_export_contains_score",
+      "filePath": "backend/tests/test_export.py",
+      "lineRange": [
+        67,
+        70
+      ],
+      "summary": "Ensures Markdown exports include the opportunity-score section.",
+      "tags": [
+        "test",
+        "regression",
+        "serialization"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/tests/test_export.py:test_markdown_export_contains_evidence_ids",
+      "type": "function",
+      "name": "test_markdown_export_contains_evidence_ids",
+      "filePath": "backend/tests/test_export.py",
+      "lineRange": [
+        73,
+        77
+      ],
+      "summary": "Ensures Markdown exports retain evidence citation identifiers.",
+      "tags": [
+        "test",
+        "regression",
+        "serialization"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/tests/test_export.py:test_json_export_no_secrets",
+      "type": "function",
+      "name": "test_json_export_no_secrets",
+      "filePath": "backend/tests/test_export.py",
+      "lineRange": [
+        80,
+        89
+      ],
+      "summary": "Checks serialized analysis JSON does not contain recognizable credential values.",
+      "tags": [
+        "test",
+        "regression",
+        "serialization"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/tests/test_export.py:test_markdown_export_contains_experiments",
+      "type": "function",
+      "name": "test_markdown_export_contains_experiments",
+      "filePath": "backend/tests/test_export.py",
+      "lineRange": [
+        92,
+        96
+      ],
+      "summary": "Ensures Markdown exports include generated validation experiments.",
+      "tags": [
+        "test",
+        "regression",
+        "serialization"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/tests/test_export.py:test_html_export_structure",
+      "type": "function",
+      "name": "test_html_export_structure",
+      "filePath": "backend/tests/test_export.py",
+      "lineRange": [
+        99,
+        107
+      ],
+      "summary": "Checks standalone HTML exports include their document shell, idea, verdict, score breakdown, and disclaimer.",
+      "tags": [
+        "test",
+        "regression",
+        "serialization"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/tests/test_export.py:test_exports_include_full_competitor_intelligence",
+      "type": "function",
+      "name": "test_exports_include_full_competitor_intelligence",
+      "filePath": "backend/tests/test_export.py",
+      "lineRange": [
+        110,
+        135
+      ],
+      "summary": "Ensures Markdown and HTML exports retain verified competitor details, evidence, strengths, complaints, and confidence.",
+      "tags": [
+        "test",
+        "regression",
+        "serialization"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/tests/test_validation_errors.py",
+      "type": "file",
+      "name": "test_validation_errors.py",
+      "filePath": "backend/tests/test_validation_errors.py",
+      "summary": "Covers clean API validation messages, provider-key verification, release-mode debug parsing, and SSRF URL filtering safeguards.",
+      "tags": [
+        "test",
+        "validation",
+        "security",
+        "api-handler",
+        "regression"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:backend/tests/test_validation_errors.py:test_clean_error_message_helper",
+      "type": "function",
+      "name": "test_clean_error_message_helper",
+      "filePath": "backend/tests/test_validation_errors.py",
+      "lineRange": [
+        12,
+        23
+      ],
+      "summary": "Checks that public error cleanup removes Pydantic metadata while retaining the actionable validation message.",
+      "tags": [
+        "test",
+        "regression",
+        "validation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/tests/test_validation_errors.py:test_gibberish_prompt_endpoint_returns_clean_error",
+      "type": "function",
+      "name": "test_gibberish_prompt_endpoint_returns_clean_error",
+      "filePath": "backend/tests/test_validation_errors.py",
+      "lineRange": [
+        26,
+        34
+      ],
+      "summary": "Checks gibberish prompts produce a clean public error without framework boilerplate.",
+      "tags": [
+        "test",
+        "regression",
+        "validation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/tests/test_validation_errors.py:test_empty_prompt_returns_clean_error",
+      "type": "function",
+      "name": "test_empty_prompt_returns_clean_error",
+      "filePath": "backend/tests/test_validation_errors.py",
+      "lineRange": [
+        37,
+        44
+      ],
+      "summary": "Checks whitespace-only prompts return a non-empty clean validation message.",
+      "tags": [
+        "test",
+        "regression",
+        "validation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/tests/test_validation_errors.py:test_verify_keys_endpoint_success",
+      "type": "function",
+      "name": "test_verify_keys_endpoint_success",
+      "filePath": "backend/tests/test_validation_errors.py",
+      "lineRange": [
+        47,
+        53
+      ],
+      "summary": "Checks provider verification succeeds for the mock provider and returns a clear status message.",
+      "tags": [
+        "test",
+        "regression",
+        "validation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/tests/test_validation_errors.py:test_verify_keys_missing_key_returns_400",
+      "type": "function",
+      "name": "test_verify_keys_missing_key_returns_400",
+      "filePath": "backend/tests/test_validation_errors.py",
+      "lineRange": [
+        56,
+        60
+      ],
+      "summary": "Checks provider verification rejects an empty required API key with HTTP 400.",
+      "tags": [
+        "test",
+        "regression",
+        "validation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/tests/test_validation_errors.py:test_release_debug_value_does_not_break_startup",
+      "type": "function",
+      "name": "test_release_debug_value_does_not_break_startup",
+      "filePath": "backend/tests/test_validation_errors.py",
+      "lineRange": [
+        63,
+        65
+      ],
+      "summary": "Checks the release debug value is safely normalized to false during settings construction.",
+      "tags": [
+        "test",
+        "regression",
+        "validation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/tests/test_validation_errors.py:test_ssrf_url_filter_blocks_local_and_non_http_targets",
+      "type": "function",
+      "name": "test_ssrf_url_filter_blocks_local_and_non_http_targets",
+      "filePath": "backend/tests/test_validation_errors.py",
+      "lineRange": [
+        68,
+        72
+      ],
+      "summary": "Checks the provider URL guard rejects loopback, metadata-service, and file URLs while allowing a public HTTPS address.",
+      "tags": [
+        "test",
+        "regression",
+        "validation"
+      ],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:backend/tests/test_cli_parity.py",
+      "target": "function:backend/tests/test_cli_parity.py:test_cli_exposes_web_equivalent_commands_and_provider_controls",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_cli_parity.py",
+      "target": "function:backend/tests/test_cli_parity.py:test_cli_exposes_web_equivalent_commands_and_provider_controls",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/tests/test_cli_parity.py",
+      "target": "function:backend/tests/test_cli_parity.py:test_cli_founder_context_flags_override_parsed_idea",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_cli_parity.py",
+      "target": "function:backend/tests/test_cli_parity.py:test_cli_founder_context_flags_override_parsed_idea",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/tests/test_cli_parity.py",
+      "target": "function:backend/tests/test_cli_parity.py:test_unit_economics_matches_web_default_model",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_cli_parity.py",
+      "target": "function:backend/tests/test_cli_parity.py:test_unit_economics_matches_web_default_model",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/tests/test_cli_parity.py",
+      "target": "function:backend/tests/test_cli_parity.py:test_cli_analysis_is_saved_for_web_history",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_cli_parity.py",
+      "target": "function:backend/tests/test_cli_parity.py:test_cli_analysis_is_saved_for_web_history",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/tests/test_cli_parity.py",
+      "target": "function:backend/tests/test_cli_parity.py:test_history_verdict_filters_work_for_web_and_cli",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_cli_parity.py",
+      "target": "function:backend/tests/test_cli_parity.py:test_history_verdict_filters_work_for_web_and_cli",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/tests/test_export.py",
+      "target": "function:backend/tests/test_export.py:_make_result",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_export.py",
+      "target": "function:backend/tests/test_export.py:_make_result",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/tests/test_export.py",
+      "target": "function:backend/tests/test_export.py:test_markdown_export_contains_disclaimer",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_export.py",
+      "target": "function:backend/tests/test_export.py:test_markdown_export_contains_disclaimer",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/tests/test_export.py",
+      "target": "function:backend/tests/test_export.py:test_markdown_export_contains_idea_name",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_export.py",
+      "target": "function:backend/tests/test_export.py:test_markdown_export_contains_idea_name",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/tests/test_export.py",
+      "target": "function:backend/tests/test_export.py:test_markdown_export_contains_score",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_export.py",
+      "target": "function:backend/tests/test_export.py:test_markdown_export_contains_score",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/tests/test_export.py",
+      "target": "function:backend/tests/test_export.py:test_markdown_export_contains_evidence_ids",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_export.py",
+      "target": "function:backend/tests/test_export.py:test_markdown_export_contains_evidence_ids",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/tests/test_export.py",
+      "target": "function:backend/tests/test_export.py:test_json_export_no_secrets",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_export.py",
+      "target": "function:backend/tests/test_export.py:test_json_export_no_secrets",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/tests/test_export.py",
+      "target": "function:backend/tests/test_export.py:test_markdown_export_contains_experiments",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_export.py",
+      "target": "function:backend/tests/test_export.py:test_markdown_export_contains_experiments",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/tests/test_export.py",
+      "target": "function:backend/tests/test_export.py:test_html_export_structure",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_export.py",
+      "target": "function:backend/tests/test_export.py:test_html_export_structure",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/tests/test_export.py",
+      "target": "function:backend/tests/test_export.py:test_exports_include_full_competitor_intelligence",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_export.py",
+      "target": "function:backend/tests/test_export.py:test_exports_include_full_competitor_intelligence",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/tests/test_validation_errors.py",
+      "target": "function:backend/tests/test_validation_errors.py:test_clean_error_message_helper",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_validation_errors.py",
+      "target": "function:backend/tests/test_validation_errors.py:test_clean_error_message_helper",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/tests/test_validation_errors.py",
+      "target": "function:backend/tests/test_validation_errors.py:test_gibberish_prompt_endpoint_returns_clean_error",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_validation_errors.py",
+      "target": "function:backend/tests/test_validation_errors.py:test_gibberish_prompt_endpoint_returns_clean_error",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/tests/test_validation_errors.py",
+      "target": "function:backend/tests/test_validation_errors.py:test_empty_prompt_returns_clean_error",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_validation_errors.py",
+      "target": "function:backend/tests/test_validation_errors.py:test_empty_prompt_returns_clean_error",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/tests/test_validation_errors.py",
+      "target": "function:backend/tests/test_validation_errors.py:test_verify_keys_endpoint_success",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_validation_errors.py",
+      "target": "function:backend/tests/test_validation_errors.py:test_verify_keys_endpoint_success",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/tests/test_validation_errors.py",
+      "target": "function:backend/tests/test_validation_errors.py:test_verify_keys_missing_key_returns_400",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_validation_errors.py",
+      "target": "function:backend/tests/test_validation_errors.py:test_verify_keys_missing_key_returns_400",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/tests/test_validation_errors.py",
+      "target": "function:backend/tests/test_validation_errors.py:test_release_debug_value_does_not_break_startup",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_validation_errors.py",
+      "target": "function:backend/tests/test_validation_errors.py:test_release_debug_value_does_not_break_startup",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/tests/test_validation_errors.py",
+      "target": "function:backend/tests/test_validation_errors.py:test_ssrf_url_filter_blocks_local_and_non_http_targets",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:backend/tests/test_validation_errors.py",
+      "target": "function:backend/tests/test_validation_errors.py:test_ssrf_url_filter_blocks_local_and_non_http_targets",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/tests/test_cli_parity.py",
+      "target": "file:backend/assumption_zero/analysis/unit_economics.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/tests/test_cli_parity.py",
+      "target": "file:backend/assumption_zero/cli.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/tests/test_cli_parity.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/tests/test_cli_parity.py",
+      "target": "file:backend/assumption_zero/storage.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/tests/test_export.py",
+      "target": "file:backend/assumption_zero/cli.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/tests/test_export.py",
+      "target": "file:backend/assumption_zero/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/tests/test_validation_errors.py",
+      "target": "file:backend/assumption_zero/config.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/tests/test_validation_errors.py",
+      "target": "file:backend/assumption_zero/main.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "function:backend/tests/test_export.py:test_markdown_export_contains_disclaimer",
+      "target": "function:backend/tests/test_export.py:_make_result",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:backend/tests/test_export.py:test_markdown_export_contains_idea_name",
+      "target": "function:backend/tests/test_export.py:_make_result",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:backend/tests/test_export.py:test_markdown_export_contains_score",
+      "target": "function:backend/tests/test_export.py:_make_result",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:backend/tests/test_export.py:test_markdown_export_contains_evidence_ids",
+      "target": "function:backend/tests/test_export.py:_make_result",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:backend/tests/test_export.py:test_json_export_no_secrets",
+      "target": "function:backend/tests/test_export.py:_make_result",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:backend/tests/test_export.py:test_markdown_export_contains_experiments",
+      "target": "function:backend/tests/test_export.py:_make_result",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:backend/tests/test_export.py:test_html_export_structure",
+      "target": "function:backend/tests/test_export.py:_make_result",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:backend/tests/test_export.py:test_exports_include_full_competitor_intelligence",
+      "target": "function:backend/tests/test_export.py:_make_result",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:backend/tests/test_cli_parity.py:test_history_verdict_filters_work_for_web_and_cli",
+      "target": "function:backend/assumption_zero/services/analysis_service.py:list_analyses",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:backend/tests/test_cli_parity.py:test_cli_analysis_is_saved_for_web_history",
+      "target": "class:backend/assumption_zero/schemas.py:AnalysisResult",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:backend/tests/test_export.py:_make_result",
+      "target": "class:backend/assumption_zero/schemas.py:AnalysisResult",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:backend/tests/test_export.py:test_exports_include_full_competitor_intelligence",
+      "target": "class:backend/assumption_zero/schemas.py:Competitor",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:backend/tests/test_validation_errors.py:test_release_debug_value_does_not_break_startup",
+      "target": "class:backend/assumption_zero/config.py:Settings",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:backend/tests/test_validation_errors.py:test_ssrf_url_filter_blocks_local_and_non_http_targets",
+      "target": "function:backend/assumption_zero/config.py:is_public_http_url",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    }
+  ]
+}

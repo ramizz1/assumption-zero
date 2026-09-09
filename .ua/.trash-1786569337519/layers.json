@@ -1,0 +1,196 @@
+[
+  {
+    "id": "layer:frontend-ui",
+    "name": "Frontend UI",
+    "description": "React pages, reusable result components, application bootstrapping, and the responsive visual system for idea intake and evidence-backed reports.",
+    "nodeIds": [
+      "file:frontend/index.html",
+      "file:frontend/src/App.tsx",
+      "file:frontend/src/components/CitationBadge.tsx",
+      "file:frontend/src/components/CompetitorCard.tsx",
+      "file:frontend/src/components/DisclaimerBanner.tsx",
+      "file:frontend/src/components/ExperimentCard.tsx",
+      "file:frontend/src/components/FinancialSimulator.tsx",
+      "file:frontend/src/components/FounderToolkit.tsx",
+      "file:frontend/src/components/OpportunityGauge.tsx",
+      "file:frontend/src/components/PerspectiveExplorer.tsx",
+      "file:frontend/src/components/PerspectivePanel.tsx",
+      "file:frontend/src/components/ProviderIcon.tsx",
+      "file:frontend/src/components/RegionalMarketPanel.tsx",
+      "file:frontend/src/components/SavedAnalysesModal.tsx",
+      "file:frontend/src/components/ScoreBreakdown.tsx",
+      "file:frontend/src/components/SettingsModal.tsx",
+      "file:frontend/src/index.css",
+      "file:frontend/src/main.tsx",
+      "file:frontend/src/pages/AnalysisPage.tsx",
+      "file:frontend/src/pages/DocsPage.tsx",
+      "file:frontend/src/pages/HomePage.tsx",
+      "file:frontend/src/pages/ProgressView.tsx",
+      "file:frontend/src/pages/ReportView.tsx"
+    ]
+  },
+  {
+    "id": "layer:frontend-client",
+    "name": "Frontend Client and Shared Logic",
+    "description": "Typed API access, analysis polling, readiness checks, report serialization, presentation utilities, and browser-side domain contracts.",
+    "nodeIds": [
+      "file:frontend/src/hooks/useAnalysis.ts",
+      "file:frontend/src/lib/api.ts",
+      "file:frontend/src/lib/readiness.ts",
+      "file:frontend/src/lib/report.ts",
+      "file:frontend/src/lib/utils.ts",
+      "file:frontend/src/types/index.ts"
+    ]
+  },
+  {
+    "id": "layer:api-application",
+    "name": "API and Application Layer",
+    "description": "FastAPI and CLI entry points plus application services that construct providers, run analyses, and expose the persisted analysis lifecycle.",
+    "nodeIds": [
+      "file:backend/assumption_zero/__init__.py",
+      "file:backend/assumption_zero/api/__init__.py",
+      "file:backend/assumption_zero/api/routes.py",
+      "file:backend/assumption_zero/cli.py",
+      "file:backend/assumption_zero/main.py",
+      "file:backend/assumption_zero/services/__init__.py",
+      "file:backend/assumption_zero/services/analysis_service.py"
+    ]
+  },
+  {
+    "id": "layer:analysis-engine",
+    "name": "Analysis Engine",
+    "description": "Core validation logic for orchestration, citation grounding, competitor consolidation, confidence, disagreements, scoring, regional conclusions, experiments, and founder actions.",
+    "nodeIds": [
+      "file:backend/assumption_zero/analysis/__init__.py",
+      "file:backend/assumption_zero/analysis/citation_validator.py",
+      "file:backend/assumption_zero/analysis/competitor_merger.py",
+      "file:backend/assumption_zero/analysis/confidence.py",
+      "file:backend/assumption_zero/analysis/disagreement.py",
+      "file:backend/assumption_zero/analysis/engine.py",
+      "file:backend/assumption_zero/analysis/experiment_generator.py",
+      "file:backend/assumption_zero/analysis/founder_toolkit.py",
+      "file:backend/assumption_zero/analysis/query_generator.py",
+      "file:backend/assumption_zero/analysis/regional_analysis.py",
+      "file:backend/assumption_zero/analysis/scoring.py",
+      "file:backend/assumption_zero/analysis/unit_economics.py"
+    ]
+  },
+  {
+    "id": "layer:research",
+    "name": "Evidence Research Layer",
+    "description": "Research-provider abstractions and source integrations that collect and normalize web, community, repository, news, academic, and reference evidence.",
+    "nodeIds": [
+      "file:backend/assumption_zero/research/__init__.py",
+      "file:backend/assumption_zero/research/arxiv_provider.py",
+      "file:backend/assumption_zero/research/base.py",
+      "file:backend/assumption_zero/research/demo_provider.py",
+      "file:backend/assumption_zero/research/github_provider.py",
+      "file:backend/assumption_zero/research/hackernews_provider.py",
+      "file:backend/assumption_zero/research/news_provider.py",
+      "file:backend/assumption_zero/research/reddit_provider.py",
+      "file:backend/assumption_zero/research/searxng_provider.py",
+      "file:backend/assumption_zero/research/web_search_provider.py",
+      "file:backend/assumption_zero/research/wikipedia_provider.py"
+    ]
+  },
+  {
+    "id": "layer:llm-integration",
+    "name": "LLM Integration Layer",
+    "description": "Shared model contracts, evidence-aware prompting, deterministic analysis, provider adapters, model routing, and resilient failover across local and hosted AI services.",
+    "nodeIds": [
+      "file:backend/assumption_zero/llm/__init__.py",
+      "file:backend/assumption_zero/llm/base.py",
+      "file:backend/assumption_zero/llm/beta_adapter.py",
+      "file:backend/assumption_zero/llm/fallback_adapter.py",
+      "file:backend/assumption_zero/llm/groq_adapter.py",
+      "file:backend/assumption_zero/llm/hybrid_adapter.py",
+      "file:backend/assumption_zero/llm/mock_adapter.py",
+      "file:backend/assumption_zero/llm/ollama_adapter.py",
+      "file:backend/assumption_zero/llm/openai_compat_adapter.py",
+      "file:backend/assumption_zero/llm/opencode_adapter.py",
+      "file:backend/assumption_zero/llm/openrouter_adapter.py"
+    ]
+  },
+  {
+    "id": "layer:data-contracts",
+    "name": "Data Contracts and Persistence",
+    "description": "Validated domain schemas, database and file-storage models, demo fixtures, and the canonical example input used across the validation engine.",
+    "nodeIds": [
+      "config:examples/sample-idea.json",
+      "file:backend/assumption_zero/demo.py",
+      "file:backend/assumption_zero/models.py",
+      "file:backend/assumption_zero/schemas.py",
+      "file:backend/assumption_zero/storage.py"
+    ]
+  },
+  {
+    "id": "layer:test",
+    "name": "Test Layer",
+    "description": "Pytest and Vitest suites that verify API, CLI, analysis, research, model-adapter, UI, validation, scoring, export, and security behavior.",
+    "nodeIds": [
+      "file:backend/tests/__init__.py",
+      "file:backend/tests/conftest.py",
+      "file:backend/tests/test_api.py",
+      "file:backend/tests/test_citations.py",
+      "file:backend/tests/test_cli_parity.py",
+      "file:backend/tests/test_competitors.py",
+      "file:backend/tests/test_confidence.py",
+      "file:backend/tests/test_engine_e2e.py",
+      "file:backend/tests/test_export.py",
+      "file:backend/tests/test_founder_toolkit.py",
+      "file:backend/tests/test_llm_adapters.py",
+      "file:backend/tests/test_regional_research.py",
+      "file:backend/tests/test_scoring.py",
+      "file:backend/tests/test_validation_errors.py",
+      "file:frontend/tests/citation.test.ts",
+      "file:frontend/tests/docs.test.tsx",
+      "file:frontend/tests/perspectiveExplorer.test.tsx",
+      "file:frontend/tests/readiness.test.ts",
+      "file:frontend/tests/score.test.ts",
+      "file:frontend/tests/setup.ts"
+    ]
+  },
+  {
+    "id": "layer:infrastructure-config",
+    "name": "Infrastructure and Configuration",
+    "description": "Container topology, CI, development launchers, environment settings, package manifests, build tools, repository templates, and knowledge-graph configuration.",
+    "nodeIds": [
+      "config:.env.example",
+      "config:.github/ISSUE_TEMPLATE/bug_report.yml",
+      "config:.github/ISSUE_TEMPLATE/config.yml",
+      "config:.github/ISSUE_TEMPLATE/feature_request.yml",
+      "config:.ua/config.json",
+      "config:backend/pyproject.toml",
+      "config:frontend/package.json",
+      "config:frontend/tsconfig.json",
+      "config:frontend/tsconfig.node.json",
+      "file:.ua/.understandignore",
+      "file:backend/assumption_zero/config.py",
+      "file:frontend/postcss.config.js",
+      "file:frontend/tailwind.config.js",
+      "file:frontend/vite.config.ts",
+      "file:start_web.bat",
+      "file:start_web.sh",
+      "pipeline:.github/workflows/ci.yml",
+      "service:backend/Dockerfile",
+      "service:backend/Dockerfile:python",
+      "service:docker-compose.yml",
+      "service:frontend/Dockerfile",
+      "service:frontend/Dockerfile:builder",
+      "service:frontend/Dockerfile:nginx"
+    ]
+  },
+  {
+    "id": "layer:documentation",
+    "name": "Documentation",
+    "description": "Project, backend, validation, security, contribution, and pull-request guidance for users, operators, and contributors.",
+    "nodeIds": [
+      "document:.github/PULL_REQUEST_TEMPLATE.md",
+      "document:CONTRIBUTING.md",
+      "document:IDEA_GUIDE.md",
+      "document:README.md",
+      "document:SECURITY.md",
+      "document:backend/README.md"
+    ]
+  }
+]
