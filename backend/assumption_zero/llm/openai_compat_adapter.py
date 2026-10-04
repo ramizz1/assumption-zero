@@ -33,7 +33,12 @@ from assumption_zero.llm.base import (
     build_analysis_prompt,
     build_clarification_messages,
 )
-from assumption_zero.llm.model_catalog import catalog_model_ids, completion_content, ordered_models, post_chat
+from assumption_zero.llm.model_catalog import (
+    catalog_model_ids,
+    completion_content,
+    ordered_models,
+    post_chat,
+)
 from assumption_zero.schemas import EvidenceItem, IdeaInput, PerspectiveName, Recommendation
 
 logger = logging.getLogger(__name__)

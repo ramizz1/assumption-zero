@@ -22,7 +22,12 @@ from assumption_zero.llm.base import (
     build_clarification_messages,
     build_raw_idea_message,
 )
-from assumption_zero.llm.model_catalog import catalog_model_ids, completion_content, ordered_models, post_chat
+from assumption_zero.llm.model_catalog import (
+    catalog_model_ids,
+    completion_content,
+    ordered_models,
+    post_chat,
+)
 from assumption_zero.llm.openrouter_adapter import _parse_output, _repair_and_parse_json
 from assumption_zero.schemas import EvidenceItem, IdeaInput, PerspectiveName
 

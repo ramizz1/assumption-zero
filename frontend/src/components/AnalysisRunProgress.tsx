@@ -2,6 +2,32 @@ import type { ResearchDepth } from '../types'
 import type { AnalysisProgress } from '../lib/api'
 
 export const ANALYSIS_REQUEST_TIMEOUT_MS = 270_000
+const DEPTH_DURATION_SECONDS: Record<ResearchDepth, number> = {
+  standard: 90,
+  deep: 180,
+  exhaustive: 255,
+}
+
+export function estimateAnalysisRun(elapsedSeconds: number, depth: ResearchDepth) {
+  const elapsed = Math.max(0, elapsedSeconds)
+  const duration = DEPTH_DURATION_SECONDS[depth]
+  const ratio = Math.min(elapsed / duration, 0.96)
+  const percent = Math.max(3, Math.round(ratio * 100))
+  const phase = ratio < 0.12
+    ? 'Connecting to the analysis engine'
+    : ratio < 0.48
+      ? 'Collecting market evidence'
+      : ratio < 0.78
+        ? 'Running independent AI perspectives'
+        : 'Preparing scores and validation experiments'
+
+  return {
+    phase,
+    percent,
+    delayed: elapsed >= Math.min(duration, 240),
+  }
+}
+
 const STAGES = [
   ['starting_analysis', 'Connecting'], ['parsing_idea', 'Understanding your idea'],
   ['clarifying_idea', 'Clarifying assumptions'], ['generating_queries', 'Planning research'],
@@ -16,29 +42,32 @@ export function formatElapsedTime(elapsedSeconds: number): string {
   return seconds >= 60 ? `${Math.floor(seconds / 60)}m ${(seconds % 60).toString().padStart(2, '0')}s` : `${seconds}s`
 }
 
-export default function AnalysisRunProgress({ depth, elapsedSeconds, progress, lastUpdateSeconds, onCancel }: {
+export default function AnalysisRunProgress({ depth, elapsedSeconds, progress = null, lastUpdateSeconds = 0, onCancel }: {
   depth: ResearchDepth
   elapsedSeconds: number
-  progress: AnalysisProgress | null
-  lastUpdateSeconds: number
+  progress?: AnalysisProgress | null
+  lastUpdateSeconds?: number
   onCancel: () => void
 }) {
   const index = Math.max(0, STAGES.findIndex(([stage]) => stage === progress?.stage))
+  const estimate = estimateAnalysisRun(elapsedSeconds, depth)
+  const percent = progress ? Math.max(3, index / STAGES.length * 100) : estimate.percent
+  const phase = progress ? STAGES[index][1] : estimate.phase
   const waiting = elapsedSeconds - lastUpdateSeconds > 25
   return (
     <section className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-left" aria-label="Analysis progress">
       <div className="flex justify-between gap-4">
         <div role="status" aria-live="polite">
           <p className="text-xs font-mono text-zinc-600">Analysis in progress</p>
-          <p className="mt-1 text-sm font-bold text-zinc-950">{STAGES[index][1]}</p>
+          <p className="mt-1 text-sm font-bold text-zinc-950">{phase}</p>
           <p className="mt-1 text-xs text-zinc-600">{progress?.description || 'Waiting for the server to accept your request.'}</p>
         </div>
         <span className="shrink-0 text-xs font-mono tabular-nums">{formatElapsedTime(elapsedSeconds)}</span>
       </div>
-      <div role="progressbar" aria-label="Analysis stages" aria-valuemin={0} aria-valuemax={STAGES.length}
-        aria-valuenow={index} aria-valuetext={`${STAGES[index][1]} — server-reported stage`}
+      <div role="progressbar" aria-label="Estimated analysis progress" aria-valuemin={0} aria-valuemax={100}
+        aria-valuenow={Math.round(percent)} aria-valuetext={`${phase} — ${progress ? 'server-reported stage' : 'time-based estimate'}`}
         className="mt-3 h-2.5 overflow-hidden rounded-full bg-white">
-        <div className="h-full rounded-full bg-emerald-700 transition-[width] duration-300" style={{ width: `${Math.max(3, index / STAGES.length * 100)}%` }} />
+        <div className="h-full rounded-full bg-emerald-700 transition-[width] duration-300" style={{ width: `${percent}%` }} />
       </div>
       <div className="mt-3 flex items-center justify-between gap-3">
         <p className="text-[11px] text-zinc-600">{waiting ? 'Waiting for the next server update…' : 'Live server updates'} · {depth} research</p>
