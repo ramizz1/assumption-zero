@@ -519,6 +519,7 @@ class ProviderOptions(BaseModel):
     ollama_base_url: str | None = Field(None, max_length=2048)
     research_providers: list[str] | None = Field(None, max_length=10)
     research_depth: ResearchDepth = ResearchDepth.DEEP
+    run_without_ai: bool = False
 
     @field_validator(
         "openrouter_api_key",

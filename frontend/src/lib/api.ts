@@ -20,6 +20,7 @@ export interface AnalysisCreateRequest {
   ollama_base_url?: string
   research_providers?: string[]
   research_depth?: ResearchDepth
+  run_without_ai?: boolean
 }
 
 const BASE = (import.meta.env.VITE_API_BASE_URL || '/api').replace(/\/$/, '')
@@ -149,6 +150,7 @@ export interface PromptAnalysisRequest {
   ollama_base_url?: string
   research_providers?: string[]
   research_depth?: ResearchDepth
+  run_without_ai?: boolean
 }
 
 export type DemoAnalysisRequest = Omit<AnalysisCreateRequest, 'idea'>

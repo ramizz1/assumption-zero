@@ -131,6 +131,9 @@ def require_owner_hash(
 
 def _llm_options(body: ProviderRequest) -> tuple[str | None, str | None, str | None]:
     """Resolve an explicit provider override without collapsing Auto mode."""
+    if body.run_without_ai:
+        return "mock", None, None
+
     provider = body.ai_provider or "auto"
 
     api_key = None
@@ -180,10 +183,13 @@ def _validate_selected_provider(body: ProviderRequest) -> str | None:
     """Reject an unconfigured explicit provider before starting a long research run."""
     provider, api_key, base_url = _llm_options(body)
     _validate_runtime_provider_url(base_url)
-    if provider == "mock":
+    if provider == "mock" and not body.run_without_ai:
         raise HTTPException(
             status_code=400,
-            detail="Real analyses require a configured AI provider. Mock mode is not allowed.",
+            detail=(
+                "Real analyses require a configured AI provider unless evidence-only mode "
+                "is explicitly confirmed."
+            ),
         )
     try:
         build_llm_adapter(
@@ -201,6 +207,27 @@ def _validate_selected_provider(body: ProviderRequest) -> str | None:
         )
         raise HTTPException(status_code=400, detail=public_provider_error(exc)) from None
     return provider
+
+
+async def _parse_prompt_with_fallback(body: PromptAnalysisRequest, provider: str | None):
+    """Parse a valid prompt, falling back only when generated structure is malformed."""
+    _, api_key_override, base_url_override = _llm_options(body)
+    llm = build_llm_adapter(
+        provider_override=provider,
+        api_key_override=api_key_override,
+        api_keys=_provider_keys(body),
+        base_url_override=base_url_override,
+        allow_mock_fallback=body.run_without_ai,
+    )
+    try:
+        return await llm.parse_raw_prompt(body.prompt)
+    except ValueError as exc:
+        logger.info(
+            "Provider returned an invalid prompt structure; using deterministic parser: %s",
+            redact_sensitive_text(exc),
+        )
+        baseline = build_llm_adapter(provider_override="mock", allow_mock_fallback=True)
+        return await baseline.parse_raw_prompt(body.prompt)
 
 
 @router.get("/health", response_model=HealthResponse)
@@ -443,18 +470,10 @@ async def create_analysis_from_prompt_endpoint(
 ) -> dict:
     """Analyze a startup idea from a single freeform text prompt."""
 
-    provider, api_key_override, base_url_override = _llm_options(body)
-
-    _validate_runtime_provider_url(base_url_override)
+    provider = _validate_selected_provider(body)
 
     try:
-        llm = build_llm_adapter(
-            provider_override=provider,
-            api_key_override=api_key_override,
-            api_keys=_provider_keys(body),
-            base_url_override=base_url_override,
-        )
-        parsed_idea = await llm.parse_raw_prompt(body.prompt)
+        parsed_idea = await _parse_prompt_with_fallback(body, provider)
     except ValueError as exc:
         logger.info("Prompt validation failed: %s", redact_sensitive_text(exc))
         raise HTTPException(
@@ -509,17 +528,9 @@ async def create_analysis_from_prompt_sync_endpoint(
     owner_hash: str = Depends(require_owner_hash),
 ) -> AnalysisResult:
     """Parse a prompt with real AI, then return the completed analysis."""
-    provider, api_key_override, base_url_override = _llm_options(body)
-    _validate_runtime_provider_url(base_url_override)
+    provider = _validate_selected_provider(body)
     try:
-        llm = build_llm_adapter(
-            provider_override=provider,
-            api_key_override=api_key_override,
-            api_keys=_provider_keys(body),
-            base_url_override=base_url_override,
-            allow_mock_fallback=False,
-        )
-        parsed_idea = await llm.parse_raw_prompt(body.prompt)
+        parsed_idea = await _parse_prompt_with_fallback(body, provider)
     except ValueError as exc:
         logger.info("Prompt validation failed: %s", redact_sensitive_text(exc))
         raise HTTPException(
@@ -557,11 +568,7 @@ def _stream_analysis(body: AnalysisCreateRequest | PromptAnalysisRequest, owner_
                 async with asyncio.timeout(ANALYSIS_DEADLINE_SECONDS):
                     if isinstance(body, PromptAnalysisRequest):
                         await progress("parsing_idea", "Understanding your idea")
-                        _, key, base = _llm_options(body)
-                        llm = build_llm_adapter(provider_override=provider, api_key_override=key,
-                                                api_keys=_provider_keys(body), base_url_override=base,
-                                                allow_mock_fallback=False)
-                        idea = await llm.parse_raw_prompt(body.prompt)
+                        idea = await _parse_prompt_with_fallback(body, provider)
                     else:
                         idea = body.idea
                     analysis_id = await create_analysis(idea=idea, owner_hash=owner_hash)

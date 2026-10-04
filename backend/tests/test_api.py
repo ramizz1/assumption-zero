@@ -10,7 +10,10 @@ from unittest.mock import AsyncMock, patch
 import pytest
 from fastapi.testclient import TestClient
 
+from assumption_zero.api.routes import _parse_prompt_with_fallback
+from assumption_zero.llm.mock_adapter import MockAdapter
 from assumption_zero.main import app
+from assumption_zero.schemas import PromptAnalysisRequest
 
 
 @pytest.fixture
@@ -76,6 +79,87 @@ def test_sync_analysis_requires_real_ai(client):
     )
     assert resp.status_code == 400
     assert "require a configured AI provider" in resp.json()["detail"]
+
+
+def test_prompt_analysis_can_explicitly_run_without_ai(client):
+    with patch("assumption_zero.api.routes.run_analysis", new_callable=AsyncMock) as run:
+        resp = client.post(
+            "/api/analyses/from-prompt",
+            json={
+                "ai_provider": "auto",
+                "run_without_ai": True,
+                "prompt": (
+                    "ClinicFlow helps small dental clinics in Azerbaijan replace manual "
+                    "appointment reminders with automated SMS scheduling."
+                ),
+            },
+        )
+
+    assert resp.status_code == 202
+    assert resp.json()["parsed_idea"]["target_customer"]
+    run.assert_awaited_once()
+    assert run.await_args.kwargs["ai_provider_override"] == "mock"
+
+
+def test_structured_analysis_can_explicitly_run_without_ai(client):
+    with patch("assumption_zero.api.routes.run_analysis", new_callable=AsyncMock) as run:
+        resp = client.post(
+            "/api/analyses",
+            json={
+                "ai_provider": "auto",
+                "run_without_ai": True,
+                "idea": {
+                    "name": "ClinicFlow",
+                    "description": "Automated appointment reminders for dental clinics",
+                    "problem": "Small clinics lose revenue when patients miss appointments",
+                    "target_customer": "Small dental clinics",
+                    "geography": "Azerbaijan",
+                },
+            },
+        )
+
+    assert resp.status_code == 202
+    run.assert_awaited_once()
+    assert run.await_args.kwargs["ai_provider_override"] == "mock"
+
+
+def test_prompt_mock_provider_requires_explicit_without_ai_opt_in(client):
+    resp = client.post(
+        "/api/analyses/from-prompt",
+        json={
+            "ai_provider": "mock",
+            "prompt": (
+                "ClinicFlow helps small dental clinics in Azerbaijan replace manual "
+                "appointment reminders with automated SMS scheduling."
+            ),
+        },
+    )
+
+    assert resp.status_code == 400
+    assert "explicitly confirmed" in resp.json()["detail"]
+
+
+@pytest.mark.asyncio
+async def test_malformed_ai_prompt_structure_uses_deterministic_parser():
+    provider = AsyncMock()
+    provider.parse_raw_prompt.side_effect = ValueError("provider returned invalid JSON")
+    body = PromptAnalysisRequest(
+        ai_provider="groq",
+        groq_api_key="test-groq-key",
+        prompt=(
+            "ClinicFlow helps small dental clinics in Azerbaijan replace manual "
+            "appointment reminders with automated SMS scheduling."
+        ),
+    )
+
+    with patch(
+        "assumption_zero.api.routes.build_llm_adapter",
+        side_effect=[provider, MockAdapter()],
+    ):
+        parsed = await _parse_prompt_with_fallback(body, "groq")
+
+    assert parsed.name.startswith("ClinicFlow")
+    assert parsed.geography == "Azerbaijan"
 
 
 def test_get_nonexistent_analysis(client):

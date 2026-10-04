@@ -89,6 +89,27 @@ const SAMPLE_IDEA = {
   additional_context: "Planning to use OpenAI Whisper for transcription and a local Llama model for summarization. Initial target is solo practitioners in the US who already use case management software."
 }
 
+export function shouldOfferEvidenceOnly(settings: AISettings): boolean {
+  if (settings.provider === 'ollama') return false
+  if (settings.provider === 'auto' || settings.provider === 'beta' || settings.provider === 'hybrid') {
+    return !(
+      settings.groqKey
+      || settings.openrouterKey
+      || settings.opencodeKey
+      || settings.openaiKey
+      || settings.customKey
+    )
+  }
+  const selectedCredential = {
+    groq: settings.groqKey,
+    openrouter: settings.openrouterKey,
+    opencode: settings.opencodeKey,
+    openai_compat: settings.openaiKey,
+    custom: settings.customKey || settings.openaiKey,
+  }[settings.provider]
+  return !selectedCredential
+}
+
 export const HomePage: React.FC = () => {
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
@@ -103,6 +124,7 @@ export const HomePage: React.FC = () => {
   const [aiSettings, setAiSettings] = useState<AISettings>(getStoredAISettings)
   const [inputMode, setInputMode] = useState<'prompt' | 'form'>('prompt')
   const [researchDepth, setResearchDepth] = useState<ResearchDepth>('deep')
+  const [runningWithoutAi, setRunningWithoutAi] = useState(false)
   const [runElapsedSeconds, setRunElapsedSeconds] = useState(0)
   const [runProgress, setRunProgress] = useState<AnalysisProgress | null>(null)
   const [lastUpdateSeconds, setLastUpdateSeconds] = useState(0)
@@ -238,6 +260,22 @@ export const HomePage: React.FC = () => {
       setError(err instanceof Error ? err.message : fallback)
     }
     setLoading(false)
+    setRunningWithoutAi(false)
+  }
+
+  const chooseEvidenceOnlyMode = (): boolean | null => {
+    if (!shouldOfferEvidenceOnly(aiSettings)) return false
+    const accepted = window.confirm(
+      'No API key is configured in this browser.\n\n'
+      + 'Press OK to continue in evidence-only mode without AI-generated perspectives. '
+      + 'You will still get live research, competitors, deterministic scoring, and validation experiments.\n\n'
+      + 'Press Cancel to configure an AI provider instead.',
+    )
+    if (!accepted) {
+      setIsSettingsOpen(true)
+      return null
+    }
+    return true
   }
 
   const update = (field: keyof typeof idea) => (
@@ -259,7 +297,10 @@ export const HomePage: React.FC = () => {
   const handleAnalyzePrompt = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!rawPromptText.trim()) return
+    const runWithoutAi = chooseEvidenceOnlyMode()
+    if (runWithoutAi === null) return
     setLoading(true)
+    setRunningWithoutAi(runWithoutAi)
     setError(null)
     const controller = beginAnalysisRequest()
 
@@ -275,6 +316,7 @@ export const HomePage: React.FC = () => {
         custom_base_url: aiSettings.provider === 'custom' ? (aiSettings.customUrl || undefined) : undefined,
         ollama_base_url: aiSettings.ollamaUrl || undefined,
         research_depth: researchDepth,
+        run_without_ai: runWithoutAi,
       }, receiveProgress, controller.signal)
       saveSessionAnalysis(result)
       navigate(`/analysis/${result.analysis_id}`)
@@ -287,7 +329,10 @@ export const HomePage: React.FC = () => {
 
   const handleAnalyzeForm = async (e: React.FormEvent) => {
     e.preventDefault()
+    const runWithoutAi = chooseEvidenceOnlyMode()
+    if (runWithoutAi === null) return
     setLoading(true)
+    setRunningWithoutAi(runWithoutAi)
     setError(null)
     const controller = beginAnalysisRequest()
 
@@ -329,6 +374,7 @@ export const HomePage: React.FC = () => {
         custom_base_url: aiSettings.provider === 'custom' ? (aiSettings.customUrl || undefined) : undefined,
         ollama_base_url: aiSettings.ollamaUrl || undefined,
         research_depth: researchDepth,
+        run_without_ai: runWithoutAi,
       }, receiveProgress, controller.signal)
       saveSessionAnalysis(result)
       navigate(`/analysis/${result.analysis_id}`)
@@ -380,15 +426,7 @@ export const HomePage: React.FC = () => {
     opencode: 'OpenCode',
     custom: 'Custom provider',
   }[aiSettings.provider] + (aiSettings.provider === 'auto' && autoProvider ? ` → ${autoProvider}` : '')
-  const browserCredential = {
-    groq: aiSettings.groqKey,
-    openrouter: aiSettings.openrouterKey,
-    opencode: aiSettings.opencodeKey,
-    openai_compat: aiSettings.openaiKey,
-    custom: aiSettings.customKey || aiSettings.openaiKey,
-  }[aiSettings.provider as 'groq' | 'openrouter' | 'opencode' | 'openai_compat' | 'custom']
-  const browserKeyMissing = ['groq', 'openrouter', 'opencode', 'openai_compat', 'custom'].includes(aiSettings.provider)
-    && !browserCredential
+  const browserKeyMissing = shouldOfferEvidenceOnly(aiSettings)
 
   return (
     <div className="min-h-screen flex flex-col overflow-x-hidden verseo-grid motion-scene text-zinc-900 selection:bg-zinc-200" style={{backgroundColor: '#ffffff'}}>
@@ -627,7 +665,7 @@ export const HomePage: React.FC = () => {
             </div>
             <p className={`text-[11px] ${browserKeyMissing ? 'text-amber-700' : 'text-zinc-500'}`}>
               Next run: <strong>{providerLabel}</strong>. {browserKeyMissing
-                ? 'No key is stored in this browser; the run will be rejected unless the backend has one configured.'
+                ? 'No key is stored in this browser; you will be asked whether to continue in evidence-only mode.'
                 : 'The completed report will show the exact model that produced it.'}
             </p>
           </div>
@@ -705,7 +743,9 @@ export const HomePage: React.FC = () => {
                   disabled={loading || rawPromptText.trim().length < 20 || backendStatus === 'offline'}
                   className="btn-primary w-full py-4 text-base flex justify-center items-center gap-2"
                 >
-                  {loading ? 'Running AI Engine & Live Research...' : <><LucideSparkles /> Analyze MVP Idea Now</>}
+                  {loading
+                    ? (runningWithoutAi ? 'Running Evidence-Only Research...' : 'Running AI Engine & Live Research...')
+                    : <><LucideSparkles /> Analyze MVP Idea Now</>}
                 </button>
                 <button type="button" onClick={handleDemo} disabled={loading} className="btn-ghost px-5 py-4">
                   View token-free example
@@ -721,7 +761,7 @@ export const HomePage: React.FC = () => {
                 />
               )}
               <p className="text-center text-[11px] text-zinc-500">
-                The example is a precomputed report and uses 0 AI credits. Your own analysis always uses a real configured AI provider.
+                No API key? You can explicitly continue with deterministic evidence analysis and no generative AI calls.
               </p>
             </form>
           ) : (
@@ -951,7 +991,9 @@ export const HomePage: React.FC = () => {
                   disabled={loading || backendStatus === 'offline'}
                   className="btn-primary w-full py-4 text-base flex justify-center items-center gap-2"
                 >
-                  {loading ? 'Running AI Engine & Live Research...' : <><LucideSparkles /> Analyze MVP Idea Now</>}
+                  {loading
+                    ? (runningWithoutAi ? 'Running Evidence-Only Research...' : 'Running AI Engine & Live Research...')
+                    : <><LucideSparkles /> Analyze MVP Idea Now</>}
                 </button>
                 <button type="button" onClick={handleDemo} disabled={loading} className="btn-ghost px-5 py-4">
                   View token-free example
@@ -967,7 +1009,7 @@ export const HomePage: React.FC = () => {
                 />
               )}
               <p className="text-center text-[11px] text-zinc-500">
-                The example is a precomputed report and uses 0 AI credits. Your own analysis always uses a real configured AI provider.
+                No API key? You can explicitly continue with deterministic evidence analysis and no generative AI calls.
               </p>
             </form>
           )}
