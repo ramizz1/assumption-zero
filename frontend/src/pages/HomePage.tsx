@@ -265,15 +265,24 @@ export const HomePage: React.FC = () => {
 
   const chooseEvidenceOnlyMode = (): boolean | null => {
     if (!shouldOfferEvidenceOnly(aiSettings)) return false
-    const accepted = window.confirm(
-      'No API key is configured in this browser.\n\n'
-      + 'Press OK to continue in evidence-only mode without AI-generated perspectives. '
-      + 'You will still get live research, competitors, deterministic scoring, and validation experiments.\n\n'
-      + 'Press Cancel to configure an AI provider instead.',
-    )
-    if (!accepted) {
-      setIsSettingsOpen(true)
-      return null
+    // In Auto mode, seamlessly continue in evidence-only mode if no keys are configured
+    if (aiSettings.provider === 'auto' || aiSettings.provider === 'beta' || aiSettings.provider === 'hybrid') {
+      return true
+    }
+    // For an explicit remote provider with missing key, prompt or open settings
+    try {
+      const accepted = window.confirm(
+        `No API key is configured for ${aiSettings.provider.toUpperCase()}.\n\n`
+        + 'Press OK to continue in evidence-only mode without AI-generated perspectives. '
+        + 'You will still get live research, competitors, deterministic scoring, and validation experiments.\n\n'
+        + 'Press Cancel to configure an AI provider instead.',
+      )
+      if (!accepted) {
+        setIsSettingsOpen(true)
+        return null
+      }
+    } catch {
+      return true
     }
     return true
   }
@@ -584,6 +593,8 @@ export const HomePage: React.FC = () => {
                   ? 'Invalid Startup Idea Prompt'
                   : error.includes('402') || error.includes('429') || error.includes('quota')
                   ? 'No AI Tokens Available (Quota Exceeded)'
+                  : error.includes('API key is missing')
+                  ? 'AI Provider Setup Required'
                   : 'Analysis Request Failed'}
               </h4>
               <p className="text-xs text-red-600 leading-relaxed">{safeRequestMessage(error)}</p>

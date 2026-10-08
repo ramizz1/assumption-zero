@@ -276,11 +276,12 @@ async def run_analysis(
             await progress_callback(stage, desc)
 
     try:
+        allow_mock = is_demo or (ai_provider_override in (None, "auto", "beta", "hybrid", "mock"))
         llm = build_llm_adapter(
             provider_override=ai_provider_override,
             api_keys=api_keys,
             base_url_override=base_url_override,
-            allow_mock_fallback=is_demo,
+            allow_mock_fallback=allow_mock,
         )
         providers = build_research_providers(research_providers_override)
         engine = AnalysisEngine(

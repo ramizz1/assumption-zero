@@ -191,13 +191,14 @@ def _validate_selected_provider(body: ProviderRequest) -> str | None:
                 "is explicitly confirmed."
             ),
         )
+    allow_mock = body.run_without_ai or provider in (None, "auto", "beta", "hybrid")
     try:
         build_llm_adapter(
             provider_override=provider,
             api_key_override=api_key,
             api_keys=_provider_keys(body),
             base_url_override=base_url,
-            allow_mock_fallback=False,
+            allow_mock_fallback=allow_mock,
         )
     except ValueError as exc:
         logger.warning(
@@ -225,7 +226,7 @@ async def _parse_prompt_with_fallback(body: PromptAnalysisRequest, provider: str
             api_key_override=api_key_override,
             api_keys=_provider_keys(body),
             base_url_override=base_url_override,
-            allow_mock_fallback=body.run_without_ai,
+            allow_mock_fallback=True,
         )
         return await llm.parse_raw_prompt(body.prompt)
     except ValueError as exc:

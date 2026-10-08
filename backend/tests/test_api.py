@@ -292,3 +292,21 @@ def test_gibberish_prompt_rejection_message(client):
     )
     assert resp.status_code in (400, 422)
     assert "gibberish" in resp.json()["detail"].lower()
+def test_auto_mode_without_keys_runs_seamlessly(client):
+    with patch("assumption_zero.api.routes.run_analysis", new_callable=AsyncMock) as run:
+        resp = client.post(
+            "/api/analyses/from-prompt",
+            json={
+                "ai_provider": "auto",
+                "prompt": (
+                    "• What it is: A personalized AI study companion for university students.\n"
+                    "• The Problem It Solves: Students struggle to retain lectures and cram inefficiently before exams.\n"
+                    "• How It Works: Students upload lecture slides or audio; the AI generates customized flashcards."
+                ),
+            },
+        )
+    assert resp.status_code == 202
+    data = resp.json()
+    assert data["status"] == "pending"
+    assert data["parsed_idea"]["name"]
+    run.assert_awaited_once()
