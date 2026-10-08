@@ -316,7 +316,8 @@ class LLMAdapter(ABC):
     async def parse_raw_prompt(self, raw_text: str) -> IdeaInput:
         """
         Parse a single natural language text prompt into a structured IdeaInput.
-        Uses intelligent pattern extraction for name, geography, competitors, and problem.
+        Uses intelligent pattern extraction for name, geography, competitors, problem, and solution.
+        Supports standard punctuation, Unicode bullet points, numbered lists, and multi-line sections.
         """
         import re
 
@@ -328,56 +329,112 @@ class LLMAdapter(ABC):
                 "The input text appears to be random characters or gibberish. Please enter a valid product or business idea."
             )
 
-        # 1. Extract Name (look for **Name**, "Name", 'Name', or keywords after 'called', 'named', 'project')
-        name = ""
-        bold_matches = re.findall(r"\*\*([^*]{3,35})\*\*", text)
-        if bold_matches:
-            for bm in bold_matches:
-                if not bm.lower().startswith(
-                    ("product", "core", "business", "current", "required", "competit", "summary")
-                ):
-                    if len(bm.strip()) >= 4:
-                        name = bm.strip()
-                        break
+        bullet_re = r"(?:[•·▪▫‣⁃–—\-*#\u2022\u25cf\u25cb\u25e6\u25aa\u25ab]|\d+[\.\)]|\([0-9a-zA-Z]+\))"
 
-        if not name or len(name) < 4:
-            called_matches = re.findall(
-                r"(?:called|named|project|app|product|service)\s+([A-Z0-9\u0400-\u04FF\u0100-\u017F][A-Za-z0-9\.\-\_\u0400-\u04FF\u0100-\u017F]{3,25})",
-                text,
-                re.IGNORECASE,
+        def extract_section(*labels: str, limit: int = 2000) -> str | None:
+            """Extract a full multi-line section headed by bullet/label until the next section."""
+            label_pattern = "|".join(re.escape(label) for label in labels)
+            pattern = (
+                rf"(?im)(?:^|\n)\s*(?:{bullet_re}\s*)?(?:\*\*)?(?:{label_pattern})(?:\*\*)?\s*[:\-–—]\s*"
+                rf"([\s\S]*?)"
+                rf"(?=(?:\n\s*{bullet_re}\s*(?:\*\*)?[A-Z])|\Z)"
             )
-            if called_matches:
-                name = called_matches[0].strip()
-
-        if not name or len(name) < 4:
-            clean_words = text.splitlines()[0].strip("#* ").split()
-            valid_words = [
-                w
-                for w in clean_words
-                if not w.lower().startswith(
-                    ("act", "create", "analyze", "please", "i", "want", "build")
-                )
-            ]
-            name = " ".join(valid_words[:4]).strip() if valid_words else "New Startup Idea"
-            if len(name) < 4:
-                name = "New Startup Idea"
+            match = re.search(pattern, text)
+            if match:
+                val = match.group(1).strip()
+                return val[:limit] if val else None
+            return None
 
         def extract_labeled(*labels: str, limit: int = 1000) -> str | None:
+            """Extract a single labeled inline property."""
             label_pattern = "|".join(re.escape(label) for label in labels)
             match = re.search(
-                rf"(?im)(?:^|\n)\s*(?:[-*#]\s*)?(?:\*\*)?(?:{label_pattern})(?:\*\*)?\s*[:\-]\s*([^\n]+)",
+                rf"(?im)(?:^|\n)\s*(?:{bullet_re}\s*)?(?:\*\*)?(?:{label_pattern})(?:\*\*)?\s*[:\-–—]\s*([^\n]+)",
                 text,
             )
             return match.group(1).strip().rstrip(".;")[:limit] if match else None
 
-        labeled_name = extract_labeled("name", "product name", "idea name", limit=60)
-        if labeled_name:
-            name = labeled_name
+        # 1. Structured Section Extraction
+        what_section = extract_section(
+            "what it is", "description", "idea", "product", "concept", "overview", "summary",
+            "about", "product description", "idea summary",
+        )
+        problem_section = extract_section(
+            "the problem it solves", "problem it solves", "the problem", "problem", "pain",
+            "pain point", "pain points", "problem solved", "problem statement", "customer pain",
+            "the need", "challenge",
+        )
+        solution_section = extract_section(
+            "how it works", "the solution", "solution", "proposed solution", "what it does",
+            "how it solves it", "our solution", "key features",
+        )
+        customer_section = extract_section(
+            "target customer", "target customers", "target user", "target users",
+            "target audience", "audience", "who it's for", "who its for", "customer",
+            "customers", "ideal customer", "users", "clients",
+        )
 
-        # 2. Extract geography and localization. Explicit labels win, then
-        # known country mentions, then a conservative "in Place" pattern.
+        # 2. Extract Name
+        name = extract_labeled("name", "product name", "idea name", "project name", "startup name", "app name", "title", limit=60)
+        if not name:
+            bold_matches = re.findall(r"\*\*([^*]{2,35})\*\*", text[:250])
+            for bm in bold_matches:
+                cand = bm.strip()
+                if not cand.lower().startswith((
+                    "what", "the problem", "problem", "solution", "how", "target", "audience",
+                    "note", "core", "step", "feature", "summary", "overview",
+                )):
+                    if len(cand) >= 2:
+                        name = cand
+                        break
+
+        if not name:
+            called = re.search(
+                r"(?:called|named|project|app|product|service)\s+[\"']?([A-Za-z0-9\.\-\_\s]{2,30}?)[\"']?(?=[,\.;\n\)]|\s+that|\s+which|\s+is|\s+helps)",
+                text,
+                re.IGNORECASE,
+            )
+            if called:
+                cand = called.group(1).strip()
+                if len(cand) >= 2:
+                    name = cand
+
+        if not name:
+            first_line = text.splitlines()[0].strip()
+            first_line_clean = re.sub(rf"^{bullet_re}+\s*", "", first_line)
+            dash_split = re.split(r"\s+[—–\-]\s+", first_line_clean, maxsplit=1)
+            if len(dash_split) == 2 and 2 <= len(dash_split[0].strip()) <= 40:
+                name = dash_split[0].strip()
+
+        if not name:
+            source = what_section or text.splitlines()[0]
+            cleaned = re.sub(rf"^{bullet_re}+\s*", "", source.strip())
+            cleaned = re.sub(r"^(?:what it is|idea|concept|description|summary|overview|product)\s*[:\-–—]\s*", "", cleaned, flags=re.IGNORECASE)
+            cleaned = re.sub(r"^(?:i(?:\s+want\s+to\s+build|\s+want\s+to\s+create|\s+am\s+building|\'m\s+building)|we(?:\s+want\s+to\s+build|\s+are\s+building)|building|creating|developing)\s+(?:a|an|the)?\s*", "", cleaned, flags=re.IGNORECASE)
+            cleaned = re.sub(r"^(?:a|an|the)\s+(?:platform|marketplace|app|application|service|tool|software|solution|system|website|portal)\s+(?:where|that|for|to|which)\s+", "", cleaned, flags=re.IGNORECASE)
+            cleaned = re.sub(r"\(.*?\)", "", cleaned)
+            first_word_match = re.match(
+                r"^([A-Z][a-zA-Z0-9_\-\.]+(?:\s+[A-Z][a-zA-Z0-9_\-\.]+)?)\s+(?:helps?|is|provides|allows|enables|offers|aims|solves)\b",
+                cleaned,
+            )
+            if first_word_match and len(first_word_match.group(1)) >= 2:
+                name = first_word_match.group(1)
+            else:
+                words = [w.strip('.,;:\'\"[]') for w in cleaned.split() if w.strip('.,;:\'\"[]')]
+                words = [w for w in words if w.lower() not in {"can", "could", "where", "that", "which", "their", "with", "from", "into", "and", "or", "to", "for", "browse", "book", "a", "an", "the"}]
+                if words:
+                    def _preserve_or_cap(w: str) -> str:
+                        if any(c.isupper() for c in w[1:]):
+                            return w
+                        return w.capitalize()
+                    name = " ".join(_preserve_or_cap(w) for w in words[:4])
+
+        if not name or len(name) < 2:
+            name = "New Startup Idea"
+
+        # 3. Extract Geography & Localization
         geography = (
-            extract_labeled("geography", "target region", "target market", "location", limit=200)
+            extract_labeled("geography", "target region", "target market", "location", "region", "country", "market", limit=200)
             or "global"
         )
         geo_map = {
@@ -425,8 +482,7 @@ class LLMAdapter(ABC):
             if currency_match:
                 currency = currency_match.group(1).upper()
 
-        # 3. Extract competitors only when the user explicitly labels them.
-        # Hardcoded product names would bias unrelated ideas.
+        # 4. Extract Competitors
         competitors_value = extract_labeled(
             "competitor", "competitors", "alternatives", "current alternatives", limit=500
         )
@@ -435,46 +491,63 @@ class LLMAdapter(ABC):
             if competitors_value
             else []
         )
-
         known_competitors = ", ".join(comps_found[:8]) if comps_found else None
 
-        # 4. Extract target customer from text
-        labeled_customer = extract_labeled(
+        # 5. Extract Target Customer
+        target_customer = customer_section or extract_labeled(
             "target customer", "target user", "audience", "buyer", "customer", limit=500
         )
-        cust_match = re.search(r"(?:for|serving|used by)\s+([^.\n]{5,120})", text, re.IGNORECASE)
-        if labeled_customer:
-            target_customer = labeled_customer
-        elif cust_match:
-            target_customer = cust_match.group(1).strip().rstrip(",;")
-        else:
-            # Infer from product description
-            target_customer = f"{name} target users"
+        if not target_customer:
+            cust_match = re.search(
+                r"(?:where|for|serving|used by|targeted at|helps?)\s+([A-Za-z0-9\s\(\),/\-]{4,100}?)\s+(?:can|to|replace|struggle|looking|want|need)\b",
+                text,
+                re.IGNORECASE,
+            )
+            if cust_match:
+                target_customer = cust_match.group(1).strip()
+            else:
+                simple_cust = re.search(r"(?:for|serving|used by)\s+([^.\n]{5,120})", text, re.IGNORECASE)
+                if simple_cust:
+                    target_customer = simple_cust.group(1).strip().rstrip(",;")
+                else:
+                    target_customer = f"{name} target users"
 
-        # 5. Extract Description & Problem
+        # 6. Extract Description & Problem
         paragraphs = [
             p.strip()
             for p in text.split("\n\n")
             if p.strip() and not p.strip().startswith(("#", "Act as", "Create a"))
         ]
-        desc = extract_labeled("description", "idea", "product", limit=2000) or (
-            paragraphs[0][:2000] if paragraphs else text[:2000]
+        if not paragraphs:
+            paragraphs = [p.strip() for p in text.splitlines() if p.strip()]
+
+        desc = (
+            what_section
+            or extract_labeled("description", "idea", "product", limit=2000)
+            or (paragraphs[0][:2000] if paragraphs else text[:2000])
         )
-        prob = extract_labeled("problem", "pain", "problem solved", limit=2000) or (
-            paragraphs[1][:2000] if len(paragraphs) > 1 else desc
+        prob = (
+            problem_section
+            or extract_labeled("problem", "pain", "problem solved", limit=2000)
+            or (paragraphs[1][:2000] if len(paragraphs) > 1 else desc)
         )
+        if prob == desc and len(paragraphs) > 1:
+            prob = paragraphs[1][:2000]
+
+        # 7. Extract Solution
+        solution = solution_section or extract_labeled("solution", "proposed solution", limit=1500)
 
         return IdeaInput(
             name=name[:60],
-            description=desc,
-            problem=prob,
+            description=desc[:2000],
+            problem=prob[:2000],
             target_customer=target_customer[:120],
-            geography=geography,
+            geography=geography[:200],
             market_language=market_language,
             currency=currency,
             industry=extract_labeled("industry", "vertical", "sector", limit=200),
             startup_stage=extract_labeled("stage", "startup stage", "current stage", limit=100),
-            solution=extract_labeled("solution", "proposed solution", limit=1500),
+            solution=solution[:1500] if solution else None,
             business_model=extract_labeled("business model", "monetization", limit=500),
             price=extract_labeled("price", "pricing", limit=200),
             founder_skills=extract_labeled("founder skills", "skills", limit=1000),

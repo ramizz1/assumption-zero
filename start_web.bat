@@ -16,6 +16,7 @@ set "ROOT=%~dp0"
 set "BACKEND=%ROOT%backend"
 set "FRONTEND=%ROOT%frontend"
 set "VENV=%BACKEND%\.venv"
+if "%AZERO_BACKEND_PORT%"=="" set "AZERO_BACKEND_PORT=8010"
 
 :: -- Check Python -------------------------------------------------------------
 python --version >nul 2>&1
@@ -85,7 +86,7 @@ set "FRONTEND_SCRIPT=%TEMP%\azero_frontend_start.bat"
 echo @echo off
 echo title Assumption Zero - Backend API
 echo cd /d %BACKEND%
-echo %VENV%\Scripts\uvicorn.exe assumption_zero.main:app --host 0.0.0.0 --port 8000 --reload
+echo %VENV%\Scripts\uvicorn.exe assumption_zero.main:app --host 0.0.0.0 --port %AZERO_BACKEND_PORT% --reload
 echo pause
 ) > "%BACKEND_SCRIPT%"
 
@@ -93,13 +94,14 @@ echo pause
 echo @echo off
 echo title Assumption Zero - Frontend
 echo cd /d %FRONTEND%
+echo set "VITE_API_PROXY_TARGET=http://127.0.0.1:%AZERO_BACKEND_PORT%"
 echo npm run dev
 echo pause
 ) > "%FRONTEND_SCRIPT%"
 
 :: -- Start Backend in new window ----------------------------------------------
 echo.
-echo [INFO] Starting backend API on http://localhost:8000 ...
+echo [INFO] Starting backend API on http://localhost:%AZERO_BACKEND_PORT% ...
 start "Assumption Zero - Backend" cmd /k "%BACKEND_SCRIPT%"
 
 :: -- Give backend a moment to boot --------------------------------------------
@@ -121,8 +123,8 @@ echo  ==============================================================
 echo  =  DONE - Assumption Zero is running!                       =
 echo  =                                                           =
 echo  =  Frontend:  http://localhost:5173                         =
-echo  =  Backend:   http://localhost:8000                         =
-echo  =  API Docs:  http://localhost:8000/docs                    =
+echo  =  Backend:   http://localhost:%AZERO_BACKEND_PORT%                         =
+echo  =  API Docs:  http://localhost:%AZERO_BACKEND_PORT%/docs                    =
 echo  =                                                           =
 echo  =  Close the Backend/Frontend windows to stop the app.     =
 echo  ==============================================================

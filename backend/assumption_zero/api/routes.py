@@ -210,20 +210,37 @@ def _validate_selected_provider(body: ProviderRequest) -> str | None:
 
 
 async def _parse_prompt_with_fallback(body: PromptAnalysisRequest, provider: str | None):
-    """Parse a valid prompt, falling back only when generated structure is malformed."""
+    """Parse a valid prompt, falling back to deterministic parser if AI fails or returns malformed data."""
+    from assumption_zero.schemas import is_gibberish
+
+    if is_gibberish(body.prompt.strip()):
+        raise ValueError(
+            "The startup idea appears to be random characters or gibberish. Please describe your product idea in plain words."
+        )
+
     _, api_key_override, base_url_override = _llm_options(body)
-    llm = build_llm_adapter(
-        provider_override=provider,
-        api_key_override=api_key_override,
-        api_keys=_provider_keys(body),
-        base_url_override=base_url_override,
-        allow_mock_fallback=body.run_without_ai,
-    )
     try:
+        llm = build_llm_adapter(
+            provider_override=provider,
+            api_key_override=api_key_override,
+            api_keys=_provider_keys(body),
+            base_url_override=base_url_override,
+            allow_mock_fallback=body.run_without_ai,
+        )
         return await llm.parse_raw_prompt(body.prompt)
     except ValueError as exc:
+        if is_gibberish(body.prompt.strip()):
+            raise
         logger.info(
             "Provider returned an invalid prompt structure; using deterministic parser: %s",
+            redact_sensitive_text(exc),
+        )
+        baseline = build_llm_adapter(provider_override="mock", allow_mock_fallback=True)
+        return await baseline.parse_raw_prompt(body.prompt)
+    except Exception as exc:
+        logger.warning(
+            "AI provider failed during prompt parsing (%s); using deterministic parser: %s",
+            type(exc).__name__,
             redact_sensitive_text(exc),
         )
         baseline = build_llm_adapter(provider_override="mock", allow_mock_fallback=True)
@@ -476,9 +493,10 @@ async def create_analysis_from_prompt_endpoint(
         parsed_idea = await _parse_prompt_with_fallback(body, provider)
     except ValueError as exc:
         logger.info("Prompt validation failed: %s", redact_sensitive_text(exc))
+        detail = str(exc) if str(exc) else "The startup idea could not be parsed. Add the customer, problem, and solution."
         raise HTTPException(
             status_code=400,
-            detail="The startup idea could not be parsed. Add the customer, problem, and solution.",
+            detail=detail,
         ) from None
     except RuntimeError as exc:
         logger.warning("Prompt provider unavailable: %s", redact_sensitive_text(exc))
@@ -533,9 +551,10 @@ async def create_analysis_from_prompt_sync_endpoint(
         parsed_idea = await _parse_prompt_with_fallback(body, provider)
     except ValueError as exc:
         logger.info("Prompt validation failed: %s", redact_sensitive_text(exc))
+        detail = str(exc) if str(exc) else "The startup idea could not be parsed. Add the customer, problem, and solution."
         raise HTTPException(
             status_code=400,
-            detail="The startup idea could not be parsed. Add the customer, problem, and solution.",
+            detail=detail,
         ) from None
     except RuntimeError as exc:
         logger.warning("Prompt provider unavailable: %s", redact_sensitive_text(exc))
@@ -586,6 +605,9 @@ def _stream_analysis(body: AnalysisCreateRequest | PromptAnalysisRequest, owner_
                         await queue.put({"type": "error", "message": result.error_message})
                     else:
                         await queue.put({"type": "result", "result": result.model_dump(mode="json")})
+            except ValueError as exc:
+                logger.info("Analysis stream prompt validation failed: %s", redact_sensitive_text(exc))
+                await queue.put({"type": "error", "message": str(exc) or "The startup idea could not be parsed."})
             except TimeoutError:
                 logger.warning("Analysis request exceeded its deadline")
                 await queue.put({"type": "error", "message":

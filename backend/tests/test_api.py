@@ -248,3 +248,47 @@ def test_prompt_length_and_provider_are_bounded(client):
 def test_analysis_list_limit_is_bounded(client):
     assert client.get("/api/analyses?limit=0").status_code == 422
     assert client.get("/api/analyses?limit=101").status_code == 422
+@pytest.mark.asyncio
+async def test_user_bulleted_prompt_parsing():
+    body = PromptAnalysisRequest(
+        prompt=(
+            "• What it is: A personalized AI study companion for university students.\n"
+            "• The Problem It Solves: Students struggle to retain lectures and cram inefficiently before exams.\n"
+            "• How It Works: Students upload lecture slides or audio; the AI generates customized flashcards, quizzes, and spaced-repetition schedules."
+        ),
+        run_without_ai=True,
+    )
+    parsed = await _parse_prompt_with_fallback(body, "mock")
+    assert parsed.name
+    assert "study" in parsed.name.lower() or "companion" in parsed.name.lower()
+    assert "students" in parsed.target_customer.lower()
+    assert "cram" in parsed.problem.lower()
+    assert parsed.solution and "flashcards" in parsed.solution.lower()
+
+
+@pytest.mark.asyncio
+async def test_ai_provider_runtime_error_uses_deterministic_parser():
+    provider = AsyncMock()
+    provider.parse_raw_prompt.side_effect = RuntimeError("AI provider rate limited 429")
+    body = PromptAnalysisRequest(
+        ai_provider="groq",
+        groq_api_key="test-groq-key",
+        prompt="MedSchedule replaces paper appointment books for rural clinics in Texas.",
+    )
+    with patch(
+        "assumption_zero.api.routes.build_llm_adapter",
+        side_effect=[provider, MockAdapter()],
+    ):
+        parsed = await _parse_prompt_with_fallback(body, "groq")
+
+    assert parsed.name.startswith("MedSchedule")
+    assert "clinics" in parsed.target_customer.lower()
+
+
+def test_gibberish_prompt_rejection_message(client):
+    resp = client.post(
+        "/api/analyses/from-prompt",
+        json={"prompt": "asdfghjkl zxcvbnm", "run_without_ai": True},
+    )
+    assert resp.status_code in (400, 422)
+    assert "gibberish" in resp.json()["detail"].lower()

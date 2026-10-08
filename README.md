@@ -128,7 +128,7 @@ Terminal one:
 
 ```bash
 cd backend
-.venv/Scripts/uvicorn assumption_zero.main:app --reload --port 8000
+.venv/Scripts/uvicorn assumption_zero.main:app --reload --port 8010
 ```
 
 On macOS or Linux, use `.venv/bin/uvicorn` instead.
@@ -146,7 +146,7 @@ Open [http://localhost:5173](http://localhost:5173).
 The in-app founder guide and CLI/API reference are available at [http://localhost:5173/docs](http://localhost:5173/docs). The detailed web brief supports industry, stage, solution, team, runway, timeline, revenue goal, acquisition channels, competitors, moat, assumptions, and regulatory constraints.
 
 > [!TIP]
-> If Windows reports `WinError 10013` on port 8000, another process or Windows port reservation is blocking it. Try `--port 8010`, then set `VITE_API_BASE_URL=http://localhost:8010` for the frontend.
+> Local development uses port `8010` for the Assumption Zero API so it can run alongside common Django services on port `8000`. To choose another port, set `AZERO_BACKEND_PORT` before running the launcher, or set `VITE_API_PROXY_TARGET` when starting the frontend manually.
 
 ## AI providers
 

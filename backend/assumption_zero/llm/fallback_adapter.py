@@ -80,14 +80,28 @@ class FallbackChainAdapter(LLMAdapter):
         raise RuntimeError("No available LLM provider could complete the request.")
 
     async def parse_raw_prompt(self, raw_text: str) -> IdeaInput:
+        from assumption_zero.schemas import is_gibberish
+
+        text = raw_text.strip()
+        if is_gibberish(text):
+            raise ValueError(
+                "The input text appears to be random characters or gibberish. Please enter a valid product or business idea."
+            )
+
         last_error = None
         for adapter in self.adapters:
             try:
                 logger.info("Parsing prompt via adapter: %s", adapter.model_id)
                 return await adapter.parse_raw_prompt(raw_text)
-            except ValueError:
-                # Do not suppress input validation errors (gibberish rejection)
-                raise
+            except ValueError as ve:
+                if is_gibberish(text):
+                    raise
+                logger.warning(
+                    "Adapter %s raised ValueError parsing prompt: %s. Failing over...",
+                    adapter.model_id,
+                    ve,
+                )
+                continue
             except Exception as exc:
                 last_error = exc
                 logger.warning(
@@ -97,9 +111,8 @@ class FallbackChainAdapter(LLMAdapter):
                 )
                 continue
 
-        if last_error:
-            raise RuntimeError(public_provider_error(last_error))
-        raise RuntimeError("Failed to parse prompt across all available AI providers.")
+        logger.info("All chain adapters failed for prompt parsing; falling back to deterministic parser")
+        return await super().parse_raw_prompt(raw_text)
 
     async def clarify_idea(self, idea: IdeaInput) -> str:
         for adapter in self.adapters:

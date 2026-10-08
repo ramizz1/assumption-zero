@@ -429,26 +429,26 @@ export const HomePage: React.FC = () => {
   const browserKeyMissing = shouldOfferEvidenceOnly(aiSettings)
 
   return (
-    <div className="min-h-screen flex flex-col overflow-x-hidden verseo-grid motion-scene text-zinc-900 selection:bg-zinc-200" style={{backgroundColor: '#ffffff'}}>
+    <div className="az-home min-h-screen overflow-x-hidden motion-scene selection:bg-lime-300 selection:text-zinc-950">
       <div className="ambient-shape ambient-shape-one" aria-hidden="true" />
       <div className="ambient-shape ambient-shape-two" aria-hidden="true" />
       <div className="ambient-ring ambient-ring-one" aria-hidden="true" />
       {/* Header */}
-      <header className="glass-nav relative z-20 border-b px-4 sm:px-6 py-4" style={{borderColor: '#e4e4e7', backgroundColor: 'rgba(255,255,255,0.88)', backdropFilter: 'blur(20px)'}}>
-        <div className="max-w-6xl mx-auto flex items-center justify-between gap-4">
+      <header className="az-topbar glass-nav relative z-20 border-b px-4 sm:px-6 py-4">
+        <div className="max-w-[1480px] mx-auto flex items-center justify-between gap-4">
           <div className="flex items-center gap-2 sm:gap-3">
-            <div className="w-10 h-10 rounded-xl border overflow-hidden flex items-center justify-center" style={{borderColor: '#e4e4e7', backgroundColor: '#f4f4f5'}}>
-              <img src="/logo.png" alt="Assumption Zero Logo" className="w-full h-full object-cover" />
+            <div className="az-brandmark w-10 h-10 rounded-xl border flex items-center justify-center" aria-hidden="true">
+              <span>A0</span>
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="font-display font-bold tracking-tight text-base" style={{color: '#18181b'}}>Assumption Zero</span>
-                <span className="hidden sm:inline-flex font-mono text-[10px] font-bold px-2 py-0.5 rounded-full" style={{color: '#52525b', backgroundColor: '#f4f4f5', border: '1px solid #e4e4e7'}}>
+                <span className="az-wordmark font-display font-bold tracking-tight text-base">Assumption Zero</span>
+                <span className="az-version hidden sm:inline-flex font-mono text-[10px] font-bold px-2 py-0.5 rounded-full">
                   v0.1.0
                 </span>
               </div>
-              <p className="text-[11px] font-mono hidden sm:block" style={{color: '#a1a1aa'}}>
-                [ OPEN-SOURCE MVP VALIDATION ENGINE ]
+              <p className="az-kicker text-[11px] font-mono hidden sm:block">
+                VALIDATE BEFORE YOU BUILD
               </p>
             </div>
           </div>
@@ -472,7 +472,7 @@ export const HomePage: React.FC = () => {
               type="button"
               onClick={() => navigate('/docs')}
               aria-label="Open documentation"
-              className="nav-action-3d flex items-center gap-1.5 rounded-xl border border-zinc-950 bg-zinc-950 px-2.5 py-1.5 text-xs font-mono font-bold text-white shadow-md transition-all hover:bg-zinc-800 sm:px-3.5"
+              className="az-nav-primary nav-action-3d flex items-center gap-1.5 rounded-xl border px-2.5 py-1.5 text-xs font-mono font-bold shadow-md transition-all sm:px-3.5"
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></svg>
               <span>Docs</span>
@@ -482,12 +482,11 @@ export const HomePage: React.FC = () => {
               onClick={() => setIsHistoryOpen(true)}
               aria-label="Open analysis history"
               className="nav-action-3d px-2.5 sm:px-3.5 py-1.5 rounded-xl border text-xs font-mono font-medium transition-all flex items-center gap-2 shadow-sm hover:bg-zinc-50"
-              style={{borderColor: '#e4e4e7', backgroundColor: '#fafafa', color: '#52525b'}}
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg>
               <span className="hidden sm:inline">History</span>
               {historyCount !== null && (
-                <span className="px-1.5 py-0.5 rounded-md text-[10px] font-bold" style={{backgroundColor: '#f4f4f5', color: '#52525b', border: '1px solid #e4e4e7'}}>
+                <span className="az-count px-1.5 py-0.5 rounded-md text-[10px] font-bold">
                   {historyCount}
                 </span>
               )}
@@ -498,7 +497,6 @@ export const HomePage: React.FC = () => {
               onClick={() => setIsSettingsOpen(true)}
               aria-label="Open AI provider settings"
               className="nav-action-3d px-2.5 sm:px-3.5 py-1.5 rounded-xl border text-xs font-mono font-medium transition-all flex items-center gap-1.5 shadow-sm hover:bg-zinc-50"
-              style={{borderColor: '#e4e4e7', backgroundColor: '#fafafa', color: '#52525b'}}
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
               <span className="hidden sm:inline">AI Setup</span>
@@ -518,7 +516,6 @@ export const HomePage: React.FC = () => {
                 src="https://github.com/ramizz1.png?size=96"
                 alt="@ramizz1 GitHub avatar"
                 className="creator-avatar w-8 h-8 rounded-full border object-cover"
-                style={{borderColor: '#e4e4e7'}}
                 onError={(event) => {
                   event.currentTarget.src = '/avatar.jpg'
                 }}
@@ -529,30 +526,55 @@ export const HomePage: React.FC = () => {
       </header>
 
       {/* Hero Section */}
-      <section className="hero-depth relative z-10 text-center px-6 pt-16 pb-12 border-b" style={{borderColor: '#e4e4e7'}}>
+      <section className="az-hero hero-depth relative z-10 px-6 lg:px-10 py-12 lg:py-16">
         <div className="hero-orbit hero-orbit-left" aria-hidden="true">✦</div>
         <div className="hero-orbit hero-orbit-right" aria-hidden="true">+</div>
-        <div className="max-w-4xl mx-auto space-y-5">
-          <div className="inline-flex items-center gap-2 verseo-badge shadow-sm">
-            <span className="w-2 h-2 rounded-full animate-pulse" style={{backgroundColor: '#18181b'}} />
-            <span>[ ✦ EVIDENCE · REAL DEMAND TESTS · BUDGET GUARDRAILS ]</span>
+        <div className="max-w-2xl mx-auto lg:mx-0 space-y-7">
+          <div className="az-eyebrow inline-flex items-center gap-2 verseo-badge shadow-sm">
+            <span className="w-2 h-2 rounded-full animate-pulse" />
+            <span>STARTUP VALIDATION, WITHOUT THE GUESSWORK</span>
           </div>
 
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-display font-black tracking-tight leading-[1.1]" style={{color: '#09090b'}}>
-            Find out if people <br />
-            <span style={{color: '#52525b'}}>
-              actually want your idea.
+          <h1 className="az-hero-title text-5xl sm:text-6xl xl:text-7xl font-display font-black tracking-[-0.055em] leading-[0.98]">
+            Evidence before <br />
+            <span>
+              engineering.
             </span>
           </h1>
 
-          <p className="text-base sm:text-lg max-w-2xl mx-auto font-normal leading-relaxed" style={{color: '#71717a'}}>
-            Research the market, see what is still unproven, and get a tailored sequence of tests that moves from real customer pain to payment and repeat use—without wasting your build budget.
+          <p className="az-hero-copy text-base sm:text-lg max-w-xl font-normal leading-relaxed">
+            Turn a rough startup idea into a research-backed validation plan. See the market signal, the risky assumptions, and the exact experiment to run next.
           </p>
+
+          <a href="#idea-workspace" className="az-hero-cta inline-flex items-center justify-center rounded-xl px-5 py-3 text-sm font-bold lg:hidden">
+            Start with your idea
+          </a>
+
+          <div className="az-proof-list" aria-label="What the analysis includes">
+            {[
+              ['01', 'Market signal', 'Live category and competitor evidence'],
+              ['02', 'Assumption map', 'What is proven, risky, or still unknown'],
+              ['03', 'Next experiment', 'A bounded test with a clear stop rule'],
+            ].map(([index, title, detail]) => (
+              <div key={index} className="az-proof-row">
+                <span className="az-proof-index">{index}</span>
+                <div>
+                  <strong>{title}</strong>
+                  <p>{detail}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="az-hero-note">
+            <span className="az-note-dot" />
+            Your API keys stay in this browser session and are never saved.
+          </div>
         </div>
       </section>
 
       {/* Main Content */}
-      <main className="relative z-10 flex-1 px-4 sm:px-6 py-10 max-w-5xl mx-auto w-full space-y-12">
+      <main className="az-main relative z-10 flex-1 px-4 sm:px-6 lg:px-8 py-8 lg:py-12 w-full space-y-10">
         {error && (
           <div className="p-5 bg-red-50 border border-red-200 rounded-2xl text-red-700 flex items-start gap-3 shadow-sm backdrop-blur-md">
             <span className="text-xl">⚠️</span>
@@ -570,7 +592,7 @@ export const HomePage: React.FC = () => {
         )}
 
         {/* Verseo Input Card Container */}
-        <div className="verseo-card depth-panel p-6 sm:p-8 backdrop-blur-xl shadow-md">
+        <div id="idea-workspace" className="az-workspace verseo-card depth-panel p-5 sm:p-7 xl:p-8 shadow-md">
           {/* Corner Crosshairs */}
           <span className="verseo-corner-tl">+</span>
           <span className="verseo-corner-tr">+</span>
@@ -651,10 +673,10 @@ export const HomePage: React.FC = () => {
                     }}
                     className="px-3 py-1.5 rounded-xl border font-medium flex items-center gap-2 transition-all hover:scale-[1.02] active:scale-[0.98]"
                     style={{
-                      background: isActive ? '#18181b' : '#fafafa',
-                      borderColor: isActive ? '#18181b' : '#e4e4e7',
-                      color: isActive ? '#ffffff' : '#71717a',
-                      boxShadow: isActive ? '0 2px 8px rgba(0,0,0,0.15)' : 'none',
+                      background: isActive ? '#b7f429' : '#f7f8f4',
+                      borderColor: isActive ? '#98d80e' : '#dfe3dc',
+                      color: isActive ? '#101310' : '#667064',
+                      boxShadow: isActive ? '0 5px 18px rgba(183,244,41,0.22)' : 'none',
                     }}
                   >
                     <ProviderIcon id={p.id} isActive={isActive} size="sm" />
@@ -1016,13 +1038,13 @@ export const HomePage: React.FC = () => {
         </div>
 
         {/* Verseo Bento Grid — 4 Core Feature Cards */}
-        <section className="space-y-6 pt-4">
-          <div className="text-center space-y-2">
+        <section className="az-features space-y-6 pt-2 pb-10">
+          <div className="text-left space-y-2">
             <span className="verseo-badge">[ ✦ HOW IT WORKS ]</span>
-            <h2 className="text-3xl font-display font-black text-gray-900 tracking-tight">
-              From market signals to real demand proof.
+            <h2 className="text-3xl font-display font-black tracking-tight">
+              Four layers of proof. One clear next move.
             </h2>
-            <p className="text-sm text-gray-500 max-w-lg mx-auto">
+            <p className="text-sm max-w-lg">
               Research tells you where to look. Customer behavior, commitment, and retention tell you whether to build.
             </p>
           </div>

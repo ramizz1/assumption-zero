@@ -5,6 +5,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 BACKEND="$SCRIPT_DIR/backend"
 FRONTEND="$SCRIPT_DIR/frontend"
 VENV="$BACKEND/.venv"
+BACKEND_PORT="${AZERO_BACKEND_PORT:-8010}"
 
 echo ""
 echo "╔══════════════════════════════════════════════════════════╗"
@@ -49,9 +50,9 @@ fi
 mkdir -p "$SCRIPT_DIR/azero_data/analyses"
 
 # Start backend
-echo "[INFO] Starting backend API on http://localhost:8000 ..."
+echo "[INFO] Starting backend API on http://localhost:$BACKEND_PORT ..."
 cd "$BACKEND"
-"$VENV/bin/uvicorn" assumption_zero.main:app --host 0.0.0.0 --port 8000 --reload &
+"$VENV/bin/uvicorn" assumption_zero.main:app --host 0.0.0.0 --port "$BACKEND_PORT" --reload &
 BACKEND_PID=$!
 
 # Wait for backend
@@ -60,7 +61,7 @@ sleep 2
 # Start frontend
 echo "[INFO] Starting frontend on http://localhost:5173 ..."
 cd "$FRONTEND"
-npm run dev &
+VITE_API_PROXY_TARGET="http://127.0.0.1:$BACKEND_PORT" npm run dev &
 FRONTEND_PID=$!
 
 # Wait for Vite to compile
@@ -80,8 +81,8 @@ echo "╔═══════════════════════�
 echo "║  ✓  Assumption Zero is running!                          ║"
 echo "║                                                          ║"
 echo "║  Frontend:  http://localhost:5173                        ║"
-echo "║  Backend:   http://localhost:8000                        ║"
-echo "║  API Docs:  http://localhost:8000/docs                   ║"
+echo "║  Backend:   http://localhost:$BACKEND_PORT                        ║"
+echo "║  API Docs:  http://localhost:$BACKEND_PORT/docs                   ║"
 echo "║                                                          ║"
 echo "║  Press Ctrl+C to stop both servers.                      ║"
 echo "╚══════════════════════════════════════════════════════════╝"

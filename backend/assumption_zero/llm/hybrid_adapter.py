@@ -127,19 +127,31 @@ class HybridLLMAdapter(LLMAdapter):
         return await super().clarify_idea(idea)
 
     async def parse_raw_prompt(self, raw_text: str) -> IdeaInput:
+        from assumption_zero.schemas import is_gibberish
+
+        text = raw_text.strip()
+        if is_gibberish(text):
+            raise ValueError(
+                "The input text appears to be random characters or gibberish. Please enter a valid product or business idea."
+            )
+
         if self.groq.is_available:
             try:
                 return await self.groq.parse_raw_prompt(raw_text)
-            except ValueError:
-                raise
+            except ValueError as ve:
+                if is_gibberish(text):
+                    raise
+                logger.warning("Groq prompt parsing raised ValueError (%s) — failing over to OpenRouter", ve)
             except Exception as exc:
                 logger.warning("Groq prompt parsing failed (%s) — failing over to OpenRouter", exc)
 
         if self.openrouter.is_available:
             try:
                 return await self.openrouter.parse_raw_prompt(raw_text)
-            except ValueError:
-                raise
+            except ValueError as ve:
+                if is_gibberish(text):
+                    raise
+                logger.warning("OpenRouter prompt parsing raised ValueError (%s)", ve)
             except Exception as exc:
                 logger.warning("OpenRouter prompt parsing failed (%s)", exc)
 

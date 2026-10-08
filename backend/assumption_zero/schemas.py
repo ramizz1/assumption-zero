@@ -238,7 +238,26 @@ class IdeaInput(BaseModel):
     def sanitize_text(cls, value: object) -> object:
         return sanitize_untrusted_text(value) if isinstance(value, str) else value
 
-    @field_validator("name", "description", "problem")
+    @field_validator("name")
+    @classmethod
+    def validate_name_not_gibberish(cls, v: str) -> str:
+        s = v.strip()
+        if not s:
+            raise ValueError("Product or idea name cannot be empty.")
+        if len(s) < 2:
+            raise ValueError(f"Invalid startup name '{s}': name is too short.")
+        if len(s) < 4:
+            if s.lower() in {"idk", "n/a", "na", "no", "foo", "bar", "123", "abc", "xyz", "tmp"}:
+                raise ValueError(f"Invalid startup name '{s}': please enter a clear product or business name.")
+            return v
+        if is_gibberish(v):
+            raise ValueError(
+                f"Invalid startup prompt '{v[:30]}': The input text appears to be random characters or gibberish. "
+                "Please enter a clear product or business idea."
+            )
+        return v
+
+    @field_validator("description", "problem")
     @classmethod
     def validate_not_gibberish(cls, v: str) -> str:
         if is_gibberish(v):
