@@ -5,7 +5,6 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 BACKEND="$SCRIPT_DIR/backend"
 FRONTEND="$SCRIPT_DIR/frontend"
 VENV="$BACKEND/.venv"
-BACKEND_PORT="${AZERO_BACKEND_PORT:-8010}"
 
 echo ""
 echo "╔══════════════════════════════════════════════════════════╗"
@@ -46,6 +45,15 @@ else
     echo "[INFO] Frontend node_modules found."
 fi
 
+# Determine free backend and frontend ports
+if [ -z "$AZERO_BACKEND_PORT" ]; then
+    BACKEND_PORT=$(python3 -c "import socket; print(next(p for p in range(8010, 8040) if socket.socket().connect_ex(('127.0.0.1', p)) != 0))" 2>/dev/null || echo 8010)
+else
+    BACKEND_PORT="$AZERO_BACKEND_PORT"
+fi
+
+FRONTEND_PORT=$(python3 -c "import socket; print(next(p for p in range(5173, 5200) if socket.socket().connect_ex(('127.0.0.1', p)) != 0))" 2>/dev/null || echo 5173)
+
 # Create data directories
 mkdir -p "$SCRIPT_DIR/azero_data/analyses"
 
@@ -59,16 +67,16 @@ BACKEND_PID=$!
 sleep 2
 
 # Start frontend
-echo "[INFO] Starting frontend on http://localhost:5173 ..."
+echo "[INFO] Starting frontend on http://localhost:$FRONTEND_PORT ..."
 cd "$FRONTEND"
-VITE_API_PROXY_TARGET="http://127.0.0.1:$BACKEND_PORT" npm run dev &
+VITE_API_PROXY_TARGET="http://127.0.0.1:$BACKEND_PORT" npm run dev -- --port "$FRONTEND_PORT" --strictPort &
 FRONTEND_PID=$!
 
 # Wait for Vite to compile
 sleep 3
 
 # Open browser
-URL="http://localhost:5173"
+URL="http://localhost:$FRONTEND_PORT"
 echo "[INFO] Opening $URL ..."
 if command -v xdg-open &>/dev/null; then
     xdg-open "$URL"
@@ -80,7 +88,7 @@ echo ""
 echo "╔══════════════════════════════════════════════════════════╗"
 echo "║  ✓  Assumption Zero is running!                          ║"
 echo "║                                                          ║"
-echo "║  Frontend:  http://localhost:5173                        ║"
+echo "║  Frontend:  http://localhost:$FRONTEND_PORT                        ║"
 echo "║  Backend:   http://localhost:$BACKEND_PORT                        ║"
 echo "║  API Docs:  http://localhost:$BACKEND_PORT/docs                   ║"
 echo "║                                                          ║"
